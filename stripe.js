@@ -1,4 +1,6 @@
 const URL = "http://localhost:3000"
+const ASYNC = require('async')
+
 let stripe
 
 const getPublicKey = async () => {
@@ -66,7 +68,13 @@ button.addEventListener('click', async () => {
         event.preventDefault()
 
         // After collecting card details in Card Element, finalize payment when submit button is clicked
-        payWithCard(stripe, card, data.clientSecret)
+        ASYNC.retry(3, payWithCard(stripe, card, data.clientSecret), (err, result) => {
+            if (response.error) {
+                showError(response.error.message)
+            } else {
+                orderComplete(response.paymentIntent.id)
+            }
+        })
 
     })
 })
@@ -95,13 +103,13 @@ const payWithCard = async (stripe, card, clientSecret) => {
             }
         }
     })
-    .then((response) => {
-        if (response.error) {
-            showError(response.error.message)
-        } else {
-            orderComplete(response.paymentIntent.id)
-        }
-    })
+    // .then((response) => {
+    //     if (response.error) {
+    //         showError(response.error.message)
+    //     } else {
+    //         orderComplete(response.paymentIntent.id)
+    //     }
+    // })
 }
 
 /* ------- UI HELPERS ------- */
