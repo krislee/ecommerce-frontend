@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://js.stripe.com/v3/"></script>
+    <!-- <script src="https://polyfill.io/v3/polyfill.min.js?version=3.52.1&features=fetch"></script> -->
+    <script src="stripe.js" defer></script>
+</head>
+<body>
+
+    <button id='checkoutButton'>Checkout</button> 
+
+    <!-- After clicking Checkout button, a form to collect Contact info details is shown -->
+
+    <!-- After clicking Next, a form to collect card details is shown -->
+    <form id="payment-form">
+        <div id="card-element"><!--Stripe.js injects the Card Element--></div>
+
+        <button id="submit">
+            <div class="spinner hidden" id="spinner"></div>
+            <span id="button-text">Pay</span>
+        </button>
+
+        <!-- Put error messages in this element -->
+        <div id="card-error" role="alert"></div>
+
+        <p class="result-message hidden">Payment succeeded</p>
+
+    </form>
+
+</body>
+</html>
