@@ -5,7 +5,7 @@ import Input from '../components/Input'
 function BuyerLogin ({}) {
     return (
         <React.Fragment>
-            <Input />
+            <Input name={'Buyer Login'}/>
         </React.Fragment>
     )
 }
