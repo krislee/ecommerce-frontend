@@ -6,14 +6,14 @@ import '../styles/Login.css'
 
 function Login ({}) {
     return (
-        <div className="login">
+        <form className="login">
             <Input name={'Username'}/>
             <Input name={'Email'}/>
             <Input name={'Password'}/>
             <Link to="/">
                 <Button name={'Submit'}></Button>
             </Link>
-        </div>
+        </form>
     )
 }
 

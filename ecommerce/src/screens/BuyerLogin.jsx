@@ -10,9 +10,8 @@ function BuyerLogin ({}) {
         <div className="buyer-login">
             <Link to="/">
                 <Button name={'Back'}></Button>
-                <Login />
             </Link>
-
+            <Login />
         </div>
     )
 }
