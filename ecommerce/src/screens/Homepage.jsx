@@ -5,14 +5,12 @@ import Button from '../components/Button'
 function Homepage ({}) {
     return (
         <React.Fragment>
-            <BrowserRouter>
-                <Link to='/buyer'>
-                    <Button name={'Buyer'}/>
-                </Link>
-                <Link to='/seller'>
-                    <Button name={'Seller'}/>
-                </Link>
-            </BrowserRouter>
+            <Link to='/buyer'>
+                <Button name={'Buyer'}/>
+            </Link>
+            <Link to='/seller'>
+                <Button name={'Seller'}/>
+            </Link>
         </React.Fragment>
     )
 }

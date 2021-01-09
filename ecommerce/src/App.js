@@ -11,15 +11,9 @@ function App() {
     <div className="App">
       <BrowserRouter>
         <Switch>
-          <Route path="/buyer">
-            <BuyerLogin />
-          </Route>
-          <Route path="/seller">
-            <SellerLogin />
-          </Route>
-          <Route path="/">
-            <Homepage />
-          </Route>
+          <Route path="/buyer" exact component={BuyerLogin} />
+          <Route path="/seller" exact component={SellerLogin} />
+          <Route path="" exact component={Homepage} />
         </Switch>
       </BrowserRouter>
     </div>
