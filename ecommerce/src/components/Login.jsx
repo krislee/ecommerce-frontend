@@ -18,15 +18,15 @@ function Login ({}) {
     }
 
     const handleChangeUsername = e => {
-        setUsername({ [e.target.name]: e.target.value })
+        setUsername(e.target.value)
     }
 
     const handleChangePassword = e => {
-        setPassword({ [e.target.name]: e.target.value })
+        setPassword(e.target.value)
     }
 
     const handleChangeEmail = e => {
-        setEmail({ [e.target.name]: e.target.value })
+        setEmail(e.target.value)
     }
 
     // const fetchItems = () => {
