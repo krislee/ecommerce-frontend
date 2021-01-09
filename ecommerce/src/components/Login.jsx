@@ -18,7 +18,7 @@ function Login ({}) {
             username: username,
             password: password,
         }
-        const resp = await fetch('localhost:3001/auth/buyer/login', {
+        const resp = await fetch('http://localhost:3001/auth/buyer/login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
