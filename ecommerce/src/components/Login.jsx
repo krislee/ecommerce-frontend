@@ -11,7 +11,8 @@ function Login ({}) {
     const [password, setPassword] = useState('');
     const [email, setEmail] = useState('');
 
-    const testChange = () => {
+    const testChange = (e) => {
+        e.preventDefault();
         console.log(username);
         console.log(password);
         console.log(email);
@@ -29,16 +30,12 @@ function Login ({}) {
         setEmail(e.target.value)
     }
 
-    // const fetchItems = () => {
-    //     fetch()
-    // }
-
     return (
-        <form className="login">
+        <form className="login" onSubmit={testChange}>
             <input type="text" placeholder="Username" value={username} onChange={handleChangeUsername}></input>
-            <input type="text" placeholder="Email" value={email} onChange={handleChangeEmail}></input>
-            <input type="text" placeholder="Password" value={password} onChange={handleChangePassword}></input>
-            <input className="submit-button" type="submit" onSubmit={testChange()}></input>
+            <input type="email" placeholder="Email" value={email} onChange={handleChangeEmail}></input>
+            <input type="password" placeholder="Password" value={password} onChange={handleChangePassword}></input>
+            <input className="submit-button" type="submit"></input>
         </form>
     )
 }
