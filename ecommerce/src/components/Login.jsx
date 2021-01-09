@@ -2,19 +2,19 @@ import React, {useEffect, useState} from 'react'
 import {BrowserRouter, Switch, Route, Link} from 'react-router-dom';
 import Input from '../components/Input'
 import Button from '../components/Button'
-import Login from '../components/Login'
-import '../styles/BuyerLogin.css'
+import '../styles/Login.css'
 
-function BuyerLogin ({}) {
+function Login ({}) {
     return (
-        <div className="buyer-login">
+        <div className="login">
+            <Input name={'Username'}/>
+            <Input name={'Email'}/>
+            <Input name={'Password'}/>
             <Link to="/">
-                <Button name={'Back'}></Button>
-                <Login />
+                <Button name={'Submit'}></Button>
             </Link>
-
         </div>
     )
 }
 
-export default BuyerLogin
+export default Login
