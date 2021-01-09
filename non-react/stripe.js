@@ -1,25 +1,25 @@
 const URL = "http://localhost:3000"
-const ASYNC = require('async')
 
-let stripe
-
-const getPublicKey = async () => {
-    const response = await fetch(`${URL}/getpublickey`)
-    const data = await response.json()
-    console.log(data.publicKey, typeof data.publicKey)
-    stripe = Stripe(data.publicKey)
-}
-getPublicKey()
-
-const button = document.querySelector('button')
+const button = document.querySelector('#checkoutButton')
+let paymentIntentId = ''
 
 button.addEventListener('click', async () => {
     const response = await fetch(`${URL}/create-payment-intent`, {
         method: 'POST',
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+            'Content-Type': 'application/json',
+            // get the idempotency key value from the guest or logged in customer's cart id (cart id can be the id of the checkout button)
+            // 'Idempotency-Key':
+        },
+        body: JSON.stringify({paymentIntentId: paymentIntentId})
     })
     const data = await response.json()
     console.log("data: ", data)
+
+    paymentIntentId ? paymentIntentId : data.paymentIntentId
+    console.log("paymentIntentId ", paymentIntentId)
+
+    const stripe = Stripe(data.publicKey)
 
     // Get Stripe Elements UI library
     const elements = stripe.elements()
@@ -64,17 +64,11 @@ button.addEventListener('click', async () => {
 
     const form = document.getElementById('payment-form')
     form.addEventListener('submit', (event) => {
-
+        
         event.preventDefault()
 
-        // After collecting card details in Card Element, finalize payment when submit button is clicked
-        ASYNC.retry(3, payWithCard(stripe, card, data.clientSecret), (err, result) => {
-            if (response.error) {
-                showError(response.error.message)
-            } else {
-                orderComplete(response.paymentIntent.id)
-            }
-        })
+        // After collecting card details in Card Element, finalize payment 
+       payWithCard(stripe, card, data.clientSecret)
 
     })
 })
@@ -85,8 +79,8 @@ const payWithCard = async (stripe, card, clientSecret) => {
 
     loading(true)
 
+    // Confirms the Payment Intent, creates and attaches a new Payment Method, and creates a charge to the card
     stripe.confirmCardPayment(clientSecret, {
-        // Creates a Payment Method object
         payment_method: {
             card: card,
             billing_details: {
@@ -101,21 +95,27 @@ const payWithCard = async (stripe, card, clientSecret) => {
                 name: 'Test1',
                 phone: '1234567890'
             }
+        },
+        receipt_email: document.getElementById('email').value
+    }).then((response) => {
+        if (response.error) {
+            showError(response.error.message)
+        } else {
+            // delete the guest or logged in cart first and then run orderComplete function
+            fetch (`${URL}`)
+            .then(response => response.json())
+            .then(() => {orderComplete(response.paymentIntent.id)})
+        
         }
     })
-    // .then((response) => {
-    //     if (response.error) {
-    //         showError(response.error.message)
-    //     } else {
-    //         orderComplete(response.paymentIntent.id)
-    //     }
-    // })
 }
 
-/* ------- UI HELPERS ------- */
+
+
+/* ------- POST PAYMENT HELPERS ------- */
 
 // Shows a success message when the payment is complete
-var orderComplete = function(paymentIntentId) {
+const orderComplete = function(paymentIntentId) {
 
     loading(false);
 
@@ -153,3 +153,8 @@ if (isLoading) {
 
 // https://medium.com/dsc-hit/creating-an-idempotent-api-using-node-js-bdfd7e52a947
 // https://medium.com/@saurav200892/how-to-achieve-idempotency-in-post-method-d88d7b08fcdd
+// https://github.com/stripe/stripe-node/issues/877
+// https://github.com/stripe/react-stripe-js/issues/85
+
+// If you experience network issues:
+// offline: did not get charged and then do not refresh, 
