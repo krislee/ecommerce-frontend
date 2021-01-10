@@ -63,8 +63,11 @@ button.addEventListener('click', async () => {
             document.querySelector('#card-error').textContent = event.error ? event.error.message : ""
         })
     } else {
-        // fetch customer shipping details & default payment method
+        // fetch customer shipping details & default payment method, having an edit button on the side of shipping details and payment method
         // (do not need to display billing details unless customer clicks on edit payment method button - billing details need to be retrieved from payment method obj vs. shipping details retrieved from customer obj)
+        const response = await fetch(`$URL/getCustomer`)
+        const data = await response.json()
+        console.log("customer: ", data)
     }
     
     /* ------- SUBMIT PAYMENT ------- */
