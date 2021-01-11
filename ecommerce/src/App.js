@@ -8,14 +8,25 @@ import ItemPage from './screens/ItemPage';
 
 function App() {
 
+  const [url, setURL] = useState('');
+
+  const grabURL = (url) => {
+    setURL(url)
+    // console.log(url);
+  }
+
   return (
     <div className="App">
       <BrowserRouter>
         <Switch>
           <Route path="/buyer" exact component={BuyerLogin} />
           <Route path="/seller" exact component={SellerLogin} />
-          <Route path="/store" exact component={ItemPage} />
-          <Route path="" exact component={Homepage} />
+          <Route path='/store'>
+            <ItemPage url={url}/>
+          </Route>
+          <Route path="">
+            <Homepage grabURL={grabURL}/>
+          </Route>
         </Switch>
       </BrowserRouter>
     </div>

@@ -1,12 +1,19 @@
-import React, { Component } from 'react';
+import React, { Component, useEffect } from 'react';
 // import '../styles/Button.css'
 
-function Item ({ name, url}) {
+function Item ({ name, url, grabURL}) {
 
-    
+    // useEffect(() => {
+    //     grabURL(url)
+    // },[])
+
+    function grabAndLogURL() {
+        console.log(url);
+        grabURL(url)
+    }
 
     return (
-        <div className="item" onClick={() => console.log(url)}>
+        <div className="item" onClick={() => grabAndLogURL()}>
             <div>{name}</div>
         </div>
     )

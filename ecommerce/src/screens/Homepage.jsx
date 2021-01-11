@@ -5,7 +5,7 @@ import Item from '../components/Item';
 import '../styles/Homepage.css'
 import ItemPage from '../screens/ItemPage'
 
-function Homepage ({}) {
+function Homepage ({ grabURL }) {
 
     const URL = "http://localhost:3001"
 
@@ -26,6 +26,9 @@ function Homepage ({}) {
         fetchItems();
     },[])
 
+
+
+
     const itemList = items.map((item, index) => 
         <React.Fragment>
         <Link to={{
@@ -38,12 +41,9 @@ function Homepage ({}) {
             name={item.Name}
             description={item.Description}
             url={`${electronicURL}/${item._id}`}
+            grabURL={grabURL}
             />
         </Link>
-        <ItemPage 
-        key={index}
-        url={`${electronicURL}/${item._id}`}
-        />
         </React.Fragment>
     )
 

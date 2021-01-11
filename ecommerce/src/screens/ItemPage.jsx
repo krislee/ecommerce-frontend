@@ -10,12 +10,13 @@ function ItemPage ({ url }) {
     const [itemInfo, setItemInfo] = useState('')
     
     useEffect(() => {
-        async function grabItemInformation() {
-            const resp = await fetch(`${url}`);
-            const data = await resp.json();
-            console.log(data);
-            setItemInfo(data.Name);
+        async function fetchData() {
+            let resp = await fetch(`${url}`);
+            let data = await resp.json();
+            setItemInfo(data.electronicItem.Name);
         }
+        fetchData();
+        // console.log(url)
     }, [])
 
     return (
