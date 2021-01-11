@@ -6,9 +6,13 @@ import '../styles/Homepage.css'
 
 function Homepage ({}) {
 
+    const URL = "http://localhost:3001"
+
     const [items, setItems] = useState([]);
     const [isLoaded, setIsLoaded] = useState(false);
-    const electronicURL = "http://localhost:3001/buyer/electronic"
+    const [isItemSelected, setIsItemSelected] = useState(false);
+    const electronicURL = `${URL}/buyer/electronic`
+    // const url = "http://localhost:3001/buyer/electronic/"
 
     useEffect(() => {
         async function fetchItems() {
@@ -22,15 +26,19 @@ function Homepage ({}) {
     },[])
 
     const itemList = items.map((item, index) => 
-        <Item 
-        key={index}
-        id={item._id}
-        name={item.Name}
-        description={item.Description}
-        />
+        <Link to={{
+            pathname:"/store",
+            search: `?${item.Name}=${item._id}`
+        }}>
+            <Item 
+            key={index}
+            id={item._id}
+            name={item.Name}
+            description={item.Description}
+            url={`${electronicURL}/${item._id}`}
+            />
+        </Link>
     )
-
-    console.log(items);
 
     return (
         <React.Fragment>
@@ -42,9 +50,10 @@ function Homepage ({}) {
                 <Button name={'Seller'}/>
             </Link>
             </div>
-            <div className="itemContainer">
+            {!isItemSelected && <div className="itemContainer">
                 {itemList}
-            </div>
+            </div>}
+            {/* {isItemSelected && } */}
         </React.Fragment>
     )
 }

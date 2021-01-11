@@ -13,6 +13,7 @@ function App() {
         <Switch>
           <Route path="/buyer" exact component={BuyerLogin} />
           <Route path="/seller" exact component={SellerLogin} />
+          {/* <Route path="/store" exact component={SellerLogin} /> */}
           <Route path="" exact component={Homepage} />
         </Switch>
       </BrowserRouter>

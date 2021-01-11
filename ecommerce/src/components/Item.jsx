@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
 // import '../styles/Button.css'
 
-function Item ({ name, description}) {
+function Item ({ name, url}) {
+
+    
+
     return (
-        <div className="item">
+        <div className="item" onClick={() => console.log(url)}>
             <div>{name}</div>
-            {/* <div>{description}</div> */}
         </div>
     )
 }
