@@ -1,17 +1,17 @@
 import React, {useEffect, useState} from 'react'
 import {BrowserRouter, Switch, Route, Link} from 'react-router-dom';
-import Input from '../components/Input'
-import Button from '../components/Button'
-import Login from '../components/Login'
-// import '../styles/BuyerLogin.css'
+import '../styles/ItemPage.css'
+import AddCartButton from '../components/AddCartButton';
+import NavBar from '../components/NavigationBar';
 
 function ItemPage ({ url }) {
 
     const [itemInfo, setItemInfo] = useState('');
-    const itemURL = 'http://localhost:3001/buyer/electronic'
-    let currentURL = window.location.href
-    let indexOfEqualSign = currentURL.split('=')
-    let id=indexOfEqualSign[indexOfEqualSign.length - 1]
+    const [quantity, setQuantity] = useState(1);
+    const itemURL = 'http://localhost:3001';
+    let currentURL = window.location.href;
+    let indexOfEqualSign = currentURL.split('=');
+    let id=indexOfEqualSign[indexOfEqualSign.length - 1];
 
     useEffect(() => {
         console.log(currentURL)
@@ -24,20 +24,29 @@ function ItemPage ({ url }) {
             fetchData();
         } else {
             async function fetchData() {
-                let resp = await fetch(`${itemURL}/${id}`);
+                let resp = await fetch(`${itemURL}/buyer/electronic/${id}`);
                 let data = await resp.json();
+                // console.log(data)
                 setItemInfo(data.electronicItem);
             }
             fetchData();
         }
     }, [])
 
+    const handleChangeQuantity = e => {
+        setQuantity(e.target.value)
+    };
+
     return (
-        // Name, price, add to cart
+        // Name, price, description, add to cart
         <div className="item-info">
-            <div>Name: {itemInfo.Name}</div>
-            <div>Price: ${itemInfo.Price}</div>
-            <Button name={'Add To Cart'} />
+            <NavBar />
+            <div className="name">{itemInfo.Name}</div>
+            <div className="price">Price: ${itemInfo.Price}</div>
+            <div className="description">Description: {itemInfo.Description}</div>
+            <input type="number" value={quantity} onChange={handleChangeQuantity}></input>
+            <br />
+            <AddCartButton url={itemURL} id={itemInfo._id} quantity={quantity} name={'Add To Cart'} />
         </div>
     )
 }

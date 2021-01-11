@@ -1,0 +1,21 @@
+.item-info {
+    display: flex;
+    height: 100vh;
+    /* justify-content: space-evenly; */
+    align-items: center;
+    flex-direction: column;
+}
+
+.name {
+    font-size: 32px;
+}
+
+.price {
+    margin: 30px;
+    font-size: 20px;
+}
+
+.description {
+    width: 80vw;
+    margin: 30px;
+}

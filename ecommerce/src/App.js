@@ -5,8 +5,11 @@ import Homepage from './screens/Homepage'
 import BuyerLogin from './screens/BuyerLogin'
 import SellerLogin from './screens/SellerLogin'
 import ItemPage from './screens/ItemPage';
+import CartPage from './screens/CartPage';
 
 function App() {
+
+  const localURL = 'http://localhost:3001'
 
   const [url, setURL] = useState('');
 
@@ -22,6 +25,9 @@ function App() {
           <Route path="/seller" exact component={SellerLogin} />
           <Route path='/store'>
             <ItemPage url={url}/>
+          </Route>
+          <Route path="/cart">
+            <CartPage url={localURL}/>
           </Route>
           <Route path="">
             <Homepage grabURL={grabURL}/>
