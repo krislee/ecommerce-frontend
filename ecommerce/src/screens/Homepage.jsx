@@ -3,6 +3,7 @@ import {BrowserRouter, Switch, Route, Link} from 'react-router-dom';
 import Button from '../components/Button';
 import Item from '../components/Item';
 import '../styles/Homepage.css'
+import ItemPage from '../screens/ItemPage'
 
 function Homepage ({}) {
 
@@ -26,6 +27,7 @@ function Homepage ({}) {
     },[])
 
     const itemList = items.map((item, index) => 
+        <React.Fragment>
         <Link to={{
             pathname:"/store",
             search: `?${item.Name}=${item._id}`
@@ -38,6 +40,11 @@ function Homepage ({}) {
             url={`${electronicURL}/${item._id}`}
             />
         </Link>
+        <ItemPage 
+        key={index}
+        url={`${electronicURL}/${item._id}`}
+        />
+        </React.Fragment>
     )
 
     return (
