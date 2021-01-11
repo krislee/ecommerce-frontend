@@ -1,9 +1,11 @@
-const URL = "http://localhost:3000"
+const URL = "http://localhost:3001"
 
 const button = document.querySelector('#checkoutButton')
 let paymentIntentId = ''
 
 button.addEventListener('click', async () => {
+    console.log("paymentIntentId 1", paymentIntentId)
+    
     const response = await fetch(`${URL}/create-payment-intent`, {
         method: 'POST',
         headers: {
@@ -17,7 +19,7 @@ button.addEventListener('click', async () => {
     console.log("data: ", data)
 
     paymentIntentId ? paymentIntentId : data.paymentIntentId
-    console.log("paymentIntentId ", paymentIntentId)
+    console.log("paymentIntentId 2", paymentIntentId)
 
     const stripe = Stripe(data.publicKey)
 
@@ -26,91 +28,112 @@ button.addEventListener('click', async () => {
 
     const style = {
         base: {
-          color: "#32325d",
-          fontFamily: 'Arial, sans-serif',
-          fontSmoothing: "antialiased",
-          fontSize: "16px",
-          "::placeholder": {
+        color: "#32325d",
+        fontFamily: 'Arial, sans-serif',
+        fontSmoothing: "antialiased",
+        fontSize: "16px",
+        "::placeholder": {
             color: "#32325d"
-          }
+        }
         },
         invalid: {
-          fontFamily: 'Arial, sans-serif',
-          color: "#fa755a",
-          iconColor: "#fa755a"
+        fontFamily: 'Arial, sans-serif',
+        color: "#fa755a",
+        iconColor: "#fa755a"
         }
     }
-   
-    /* ------- COLLECT CARD DETAILS ------- */
 
-    // Create Card Element to collect card details
-    const card = elements.create('card', {style: style})
+    if (!data.returningCustomer) {
+        // Display form to collect shipping info page
+        
+        /* ------- COLLECT CARD DETAILS ------- */
 
-    // Stripe injects Card Element iframe into the DOM
-    card.mount("#card-element");
+        // Create Card Element to collect card details
+        const card = elements.create('card', {style: style})
 
-    // Listen to changes on the Card Element to immediately display card errors (e.g. expiry date in the past) and disable the button if the Card Element is empty.
-    card.on('change', (event) => {
+        // Stripe injects Card Element iframe into the DOM
+        card.mount("#card-element");
 
-        console.log("event: ", event)
+        // Listen to changes on the Card Element to immediately display card errors (e.g. expiry date in the past) and disable the button if the Card Element is empty.
+        card.on('change', (event) => {
 
-        document.getElementById('submit').disabled = event.empty // event.empty = true when there is no values in the Card Element
-        document.querySelector('#card-error').textContent = event.error ? event.error.message : ""
-    })
+            console.log("event: ", event)
 
-
+            document.getElementById('submit').disabled = event.empty // event.empty = true when there is no values in the Card Element
+            document.querySelector('#card-error').textContent = event.error ? event.error.message : ""
+        })
+    } else {
+        // fetch customer shipping details & default payment method, having an edit button on the side of shipping details and payment method
+        // (do not need to display billing details unless customer clicks on edit payment method button - billing details need to be retrieved from payment method obj vs. shipping details retrieved from customer obj)
+        const response = await fetch(`$URL/getCustomer`)
+        const data = await response.json()
+        console.log("customer: ", data)
+    }
     
     /* ------- SUBMIT PAYMENT ------- */
 
     const form = document.getElementById('payment-form')
-    form.addEventListener('submit', (event) => {
+    form.addEventListener('submit', async (event) => {
         
         event.preventDefault()
-
-        // After collecting card details in Card Element, finalize payment 
-       payWithCard(stripe, card, data.clientSecret)
-
+        
+        // Finalize payment 
+        payWithCard(stripe, card, data.clientSecret, data.returningCustomer)
+        
     })
 })
 
 
 /* ------- SUBMIT PAYMENT HELPER ------- */
-const payWithCard = async (stripe, card, clientSecret) => {
+const payWithCard = async (stripe, card, clientSecret, returningCustomer) => {
 
     loading(true)
 
-    // Confirms the Payment Intent, creates and attaches a new Payment Method, and creates a charge to the card
-    stripe.confirmCardPayment(clientSecret, {
-        payment_method: {
-            card: card,
-            billing_details: {
-                address: {
-                    city: 'New York',
-                    country: 'US',
-                    line1: '123 Test Ave.',
-                    line2: null,
-                    state: 'NY'
-                },
-                email: 'test@gmail.com',
-                name: 'Test1',
-                phone: '1234567890'
+    if (!returningCustomer) {
+        // Confirms the Payment Intent, creates a new Payment Method and attaches the payment method to the payment intent, and creates a charge to the card
+        stripe.confirmCardPayment(clientSecret, {
+            payment_method: {
+                card: card, // card details are collected from Card Element
+                billing_details: {
+                    address: {
+                        city: 'New York',
+                        country: 'US',
+                        line1: '123 Test Ave.',
+                        line2: null,
+                        state: 'NY'
+                    },
+                    email: 'test@gmail.com',
+                    name: 'Test1',
+                    phone: '1234567890'
+                }
+            },
+            // receipt_email: document.getElementById('email').value
+        }).then((response) => {
+            if (response.error) {
+                showError(response.error.message)
+            } else {
+                // delete the guest or logged in cart first and then run orderComplete function
+                // fetch (`${URL}`)
+                // .then(response => response.json())
+                // .then(() => {orderComplete(response.paymentIntent.id)})
+                orderComplete(response.paymentIntent.id)
             }
-        },
-        receipt_email: document.getElementById('email').value
-    }).then((response) => {
-        if (response.error) {
-            showError(response.error.message)
-        } else {
-            // delete the guest or logged in cart first and then run orderComplete function
-            fetch (`${URL}`)
-            .then(response => response.json())
-            .then(() => {orderComplete(response.paymentIntent.id)})
-        
-        }
-    })
+        })
+    } else { // When confirming the payment intent, you do not need to attach payment method for returning customers because payment has already been attached to the payment intent when creating it
+        stripe.confirmCardPayment(clientSecret)
+        .then((response) => {
+            if (response.error) {
+                showError(response.error.message)
+            } else {
+                // delete the guest or logged in cart first and then run orderComplete function
+                // fetch (`${URL}`)
+                // .then(response => response.json())
+                // .then(() => {orderComplete(response.paymentIntent.id)})
+                orderComplete(response.paymentIntent.id)
+            }
+        })
+    }
 }
-
-
 
 /* ------- POST PAYMENT HELPERS ------- */
 

@@ -17,8 +17,19 @@
 
     <!-- After clicking Next, a form to collect card details is shown -->
     <form id="payment-form">
-        <input type="text" id="email" placeholder="Email address" />
-        <div id="card-element"><!--Stripe.js injects the Card Element--></div>
+        <!-- <input type="text" id="email" placeholder="Email address" /> -->
+
+        <!-- Div will show if first time customer to fill out  -->
+        <div hidden>
+            <input> 
+            <!-- After filling out inputs, click next to show the #card-element div-->
+            <div id="card-element"><!--Stripe.js injects the Card Element--></div>
+        </div>
+
+        <!-- Div will show fetched info if returning customer -->
+        <div hidden> </div>
+
+       
 
         <button id="submit">
             <div class="spinner hidden" id="spinner"></div>
