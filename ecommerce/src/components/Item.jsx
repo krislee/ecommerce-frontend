@@ -9,7 +9,7 @@ function Item ({ name, url, grabURL}) {
 
     function grabAndLogURL() {
         console.log(url);
-        grabURL(url)
+        grabURL(url);
     }
 
     return (

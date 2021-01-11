@@ -11,8 +11,7 @@ function App() {
   const [url, setURL] = useState('');
 
   const grabURL = (url) => {
-    setURL(url)
-    // console.log(url);
+    setURL(url);
   }
 
   return (

@@ -7,21 +7,37 @@ import Login from '../components/Login'
 
 function ItemPage ({ url }) {
 
-    const [itemInfo, setItemInfo] = useState('')
-    
+    const [itemInfo, setItemInfo] = useState('');
+    const itemURL = 'http://localhost:3001/buyer/electronic'
+    let currentURL = window.location.href
+    let indexOfEqualSign = currentURL.split('=')
+    let id=indexOfEqualSign[indexOfEqualSign.length - 1]
+
     useEffect(() => {
-        async function fetchData() {
-            let resp = await fetch(`${url}`);
-            let data = await resp.json();
-            setItemInfo(data.electronicItem.Name);
+        console.log(currentURL)
+        if (url !== '') {
+            async function fetchData() {
+                let resp = await fetch(`${url}`);
+                let data = await resp.json();
+                setItemInfo(data.electronicItem);
+            }
+            fetchData();
+        } else {
+            async function fetchData() {
+                let resp = await fetch(`${itemURL}/${id}`);
+                let data = await resp.json();
+                setItemInfo(data.electronicItem);
+            }
+            fetchData();
         }
-        fetchData();
-        // console.log(url)
     }, [])
 
     return (
+        // Name, price, add to cart
         <div className="item-info">
-            <div>{itemInfo}</div>
+            <div>Name: {itemInfo.Name}</div>
+            <div>Price: ${itemInfo.Price}</div>
+            <Button name={'Add To Cart'} />
         </div>
     )
 }
