@@ -11,7 +11,17 @@ function CartPage ({url}) {
 
     useEffect(() => {
         async function getCartItems() {
-            let resp = await fetch(`http://localhost:3001/buyer/cart`, {
+            // let resp = await fetch(`http://localhost:3001/buyer/cart`, {
+            //     method: 'GET',
+            //     credentials: 'include',
+            //     headers: {
+            //         'Content-Type': 'application/json'
+            //     }
+            // });
+            // const data = await resp.json();
+            // console.log(data);
+            // setItems(data.cart);
+            let resp = await fetch(`https://elecommerce.herokuapp.com/buyer/cart`, {
                 method: 'GET',
                 credentials: 'include',
                 headers: {
