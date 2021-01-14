@@ -17,19 +17,33 @@ function ItemPage ({ url }) {
         console.log(currentURL)
         if (url !== '') {
             async function fetchData() {
-                let resp = await fetch(`${url}`);
+                let resp = await fetch(`${url}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include'
+                });
                 let data = await resp.json();
                 setItemInfo(data.electronicItem);
             }
             fetchData();
+            console.log(1, document.cookie)
         } else {
             async function fetchData() {
-                let resp = await fetch(`${itemURL}/buyer/electronic/${id}`);
+                let resp = await fetch(`${itemURL}/buyer/electronic/${id}`,{
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include'
+                });
                 let data = await resp.json();
                 // console.log(data)
                 setItemInfo(data.electronicItem);
             }
             fetchData();
+            console.log(2, document.cookie)
         }
     }, [])
 
