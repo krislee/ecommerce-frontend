@@ -7,19 +7,27 @@ function CartPage ({url}) {
 
     useEffect(() => {
         async function getCartItems() {
-            const resp = await fetch(`http://localhost:3001/buyer/cart`);
-            const data = await resp.json();
-            console.log(data);
+            // const resp = await fetch(`http://localhost:3001/buyer/cart`, {
+            //     method: 'GET',
+            //     credentials: true,
+            //     headers: {
+            //         'Content-Type': 'application/json'
+            //     }
+            // });
+            // const data = await resp.json();
+            // console.log(data);
 
             // axios.defaults.withCredentials = true;
             // axios.get('http://localhost:3001/buyer/cart', {
             //     headers: {withCredentials:true}
             // });
+            
 
-            // axios('http://localhost:3001/buyer/cart', {
-            //     method: "get",
-            //     withCredentials: true
-            // })
+            const resp = await axios('http://localhost:3001/buyer/cart', {
+                method: "get",
+                withCredentials: true
+            })
+            console.log(resp.data);
         }
         getCartItems();
     },[])
