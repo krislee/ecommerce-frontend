@@ -11,7 +11,8 @@ function CartPage ({url}) {
 
     useEffect(() => {
         async function getCartItems() {
-            let resp = await getCart(`http://localhost:3001/buyer/cart`);
+            // let resp = await getCart(`http://localhost:3001/buyer/cart`);
+            let resp = await getCart(`https://elecommerce.herokuapp.com/buyer/cart`);
             console.log(resp);
             setItems(resp.cart);
             console.log(items)

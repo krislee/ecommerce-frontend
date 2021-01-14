@@ -7,7 +7,8 @@ import ItemPage from '../screens/ItemPage'
 
 function Homepage ({ grabURL }) {
 
-    const URL = "http://localhost:3001"
+    // const URL = "http://localhost:3001"
+    const URL = `https://elecommerce.herokuapp.com`
 
     const [items, setItems] = useState([]);
     const [isLoaded, setIsLoaded] = useState(false);
