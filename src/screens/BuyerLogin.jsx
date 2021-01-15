@@ -1,11 +1,10 @@
-import React, {useEffect, useState} from 'react'
-import {BrowserRouter, Switch, Route, Link} from 'react-router-dom';
-import Input from '../components/Input'
+import React from 'react'
+import {Link} from 'react-router-dom';
 import Button from '../components/Button'
 import Login from '../components/Login'
 import '../styles/BuyerLogin.css'
 
-function BuyerLogin ({}) {
+function BuyerLogin () {
     return (
         <div className="buyer-login">
             <Link to="/">

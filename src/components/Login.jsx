@@ -1,11 +1,9 @@
-import React, {useEffect, useState} from 'react'
-import {BrowserRouter, Switch, Route, Link, Redirect} from 'react-router-dom';
-import Input from '../components/Input'
-import Button from '../components/Button'
+import React, {useState} from 'react'
+import {Redirect} from 'react-router-dom';
 import '../styles/Login.css'
 import '../styles/BuyerLogin.css'
 
-function Login ({}) {
+function Login () {
 
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');

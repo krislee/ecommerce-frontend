@@ -1,9 +1,9 @@
 import React, {useEffect, useState} from 'react'
-import {BrowserRouter, Switch, Route, Link} from 'react-router-dom';
+import {Link} from 'react-router-dom';
 import Button from '../components/Button';
 import Item from '../components/Item';
 import '../styles/Homepage.css'
-import ItemPage from '../screens/ItemPage'
+import NavBar from '../components/NavigationBar'
 
 function Homepage ({ grabURL }) {
 
@@ -11,8 +11,8 @@ function Homepage ({ grabURL }) {
     const URL = `https://elecommerce.herokuapp.com`
 
     const [items, setItems] = useState([]);
-    const [isLoaded, setIsLoaded] = useState(false);
-    const [isItemSelected, setIsItemSelected] = useState(false);
+    // const [isLoaded, setIsLoaded] = useState(false);
+    // const [isItemSelected, setIsItemSelected] = useState(false);
     const electronicURL = `${URL}/buyer/electronic`
     // const url = "http://localhost:3001/buyer/electronic/"
 
@@ -22,22 +22,21 @@ function Homepage ({ grabURL }) {
             const data = await resp.json();
             console.log(data.allElectronic);
             setItems(data.allElectronic);
-            setIsLoaded(true)
+            // setIsLoaded(true)
         };
         fetchItems();
-    },[])
+    },[electronicURL])
 
 
 
 
     const itemList = items.map((item, index) => 
-        <React.Fragment>
+        <React.Fragment key={index}>
         <Link to={{
             pathname:"/store",
             search: `?${item.Name}=${item._id}`
         }}>
             <Item 
-            key={index}
             id={item._id}
             name={item.Name}
             description={item.Description}
@@ -50,6 +49,7 @@ function Homepage ({ grabURL }) {
 
     return (
         <React.Fragment>
+            <NavBar />
             <div className="login-button">
             <Link to='/buyer'>
                 <Button name={'Buyer'}/>
@@ -58,7 +58,7 @@ function Homepage ({ grabURL }) {
                 <Button name={'Seller'}/>
             </Link>
             </div>
-            {!isItemSelected && <div className="itemContainer">
+            {<div className="itemContainer">
                 {itemList}
             </div>}
             {/* {isItemSelected && } */}

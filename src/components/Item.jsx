@@ -1,4 +1,4 @@
-import React, { Component, useEffect } from 'react';
+import React from 'react';
 // import '../styles/Button.css'
 
 function Item ({ name, url, grabURL}) {

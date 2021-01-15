@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react'
-import {BrowserRouter, Switch, Route, Link} from 'react-router-dom';
+// import {BrowserRouter, Switch, Route, Link} from 'react-router-dom';
 import '../styles/ItemPage.css'
 import AddCartButton from '../components/AddCartButton';
 import NavBar from '../components/NavigationBar';
@@ -46,7 +46,7 @@ function ItemPage ({ url }) {
             fetchData();
             console.log(2, document.cookie)
         }
-    }, [])
+    }, [currentURL, id, url])
 
     const handleChangeQuantity = e => {
         setQuantity(e.target.value)
@@ -54,13 +54,14 @@ function ItemPage ({ url }) {
 
     return (
         // Name, price, description, add to cart
-        <div className="item-info">
+        <div className="item-page">
             <NavBar />
-            <div className="name">{itemInfo.Name}</div>
-            <div className="price">Price: ${itemInfo.Price}</div>
-            <div className="description">Description: {itemInfo.Description}</div>
-            <input type="number" value={quantity} onChange={handleChangeQuantity}></input>
-            <br />
+            <div className="item-info">
+                <div className="name">{itemInfo.Name}</div>
+                <div className="price">Price: ${itemInfo.Price}</div>
+                <div className="description">Description: {itemInfo.Description}</div>
+                <input type="number" value={quantity} onChange={handleChangeQuantity}></input>
+            </div>
             <AddCartButton url={itemURL} id={itemInfo._id} quantity={quantity} name={'Add To Cart'} />
         </div>
     )

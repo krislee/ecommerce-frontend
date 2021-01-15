@@ -1,0 +1,33 @@
+.navbar {
+    background-color: #fff;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    position: fixed;
+    height: 8vh;
+    align-items: center;
+}
+
+.link-home {
+    margin-left: 5vw;
+    color: #000;
+    transition: 0.2s all ease-in-out;
+}
+
+.link-home:hover {
+    transition: 0.2s all ease-in-out;
+    color: #b8b8b8;
+}
+
+.icon {
+    color: #000;
+    margin-right: 5vw;
+    font-size: 32px;
+    transition: 0.5s all ease-in-out;
+}
+
+.icon:hover {
+    transform: rotate(15deg);
+    transition: 0.5s all ease-in-out;
+    color: #b8b8b8;
+}

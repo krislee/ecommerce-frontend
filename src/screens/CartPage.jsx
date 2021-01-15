@@ -1,7 +1,9 @@
 import React, {useEffect, useState} from 'react'
-import {BrowserRouter, Switch, Route, Link} from 'react-router-dom';
+// import {BrowserRouter, Switch, Route, Link} from 'react-router-dom';
 import '../styles/BuyerLogin.css'
-import axios from 'axios';
+import '../styles/CartPage.css'
+import NavBar from '../components/NavigationBar'
+// import axios from 'axios';
 // import { getCart } from '../services/url'
 
 function CartPage ({url}) {
@@ -21,6 +23,7 @@ function CartPage ({url}) {
             // const data = await resp.json();
             // console.log(data);
             // setItems(data.cart);
+            // setPrice(data.totalPrice)
             let resp = await fetch(`https://elecommerce.herokuapp.com/buyer/cart`, {
                 method: 'GET',
                 credentials: 'include',
@@ -68,15 +71,19 @@ function CartPage ({url}) {
 
 
     return (
-        <div className="cart">
-            {items === [] ? <div>Loading...</div>: 
-            <div>{items.map(item => [
-                <div>
-                    <div>{item.Name}</div>
-                    <div>{item.Quantity }</div>
-                </div>
-            ])}</div>}
-        </div>
+        <>
+            <NavBar />
+            <div className="cart">
+                {items === [] || items === undefined ? <div className="noItems">No Items...</div>: 
+                <div>{items.map(item => [
+                    <div>
+                        <div>{item.Name}</div>
+                        <div>{item.Quantity}</div>
+                        <div>{price}</div>
+                    </div>
+                ])}</div>}
+            </div>
+        </>
     )
 }
 

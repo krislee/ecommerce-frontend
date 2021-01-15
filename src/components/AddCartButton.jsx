@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
+import React from 'react';
 import '../styles/Button.css'
-import axios from 'axios';
+// import axios from 'axios';
 
 function AddCartButton ({ name, id, url, quantity }) {
 
