@@ -9,7 +9,9 @@ function ItemPage ({ url }) {
     const [itemInfo, setItemInfo] = useState('');
     const [quantity, setQuantity] = useState(1);
     // const itemURL = 'http://localhost:3001';
-    const itemURL = 'https://elecommerce.herokuapp.com'
+    // const itemURL = 'https://elecommerce.herokuapp.com'
+    const itemURL = "https://happy-bohr-10f4b0.netlify.app/.netlify/functions/server"
+    
     let currentURL = window.location.href;
     let indexOfEqualSign = currentURL.split('=');
     let id=indexOfEqualSign[indexOfEqualSign.length - 1];
