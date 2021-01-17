@@ -6,7 +6,8 @@ function AddCartButton ({ name, id, url, quantity }) {
 
     const addItem = async () => {
         console.log(3, document.cookie)
-        const resp = await fetch(`${url}/buyer/electronic/cart/${id}`, {
+        const testURL = "https://happy-bohr-10f4b0.netlify.app"
+        const resp = await fetch(`${testUrl}/buyer/electronic/cart/${id}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
