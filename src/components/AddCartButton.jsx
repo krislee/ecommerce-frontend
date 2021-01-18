@@ -9,7 +9,7 @@ function AddCartButton ({ name, id, url, quantity }) {
         // const testURL = "https://happy-bohr-10f4b0.netlify.app"
         // const testURL = "https://elecommerce.herokuapp.com"
         const testURL = "https://backend-elecommerce.netlify.app/.netlify/functions/server"
-        const resp = await fetch(`${testUrl}/buyer/electronic/cart/${id}`, {
+        const resp = await fetch(`${testURL}/buyer/electronic/cart/${id}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
