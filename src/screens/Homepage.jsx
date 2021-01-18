@@ -9,7 +9,7 @@ function Homepage ({ grabURL }) {
 
     // const URL = "http://localhost:3001"
     // const URL = `https://elecommerce.herokuapp.com`
-    const URL = "https://happy-bohr-10f4b0.netlify.app/.netlify/functions/server"
+    const URL = "elecommerce.netlify.app/.netlify/functions/server"
 
     const [items, setItems] = useState([]);
     // const [isLoaded, setIsLoaded] = useState(false);
