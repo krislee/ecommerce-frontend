@@ -26,7 +26,7 @@ function CartPage ({url}) {
             // setPrice(data.totalPrice)
 
             // let resp = await fetch(`https://elecommerce.herokuapp.com/buyer/cart`, {
-            let resp = await fetch("https://backend-elecommerce.netlify.app/.netlify/functions/server", {
+            let resp = await fetch("https://backend-elecommerce.netlify.app/.netlify/functions/server/buyer/cart", {
                 method: 'GET',
                 credentials: 'include',
                 headers: {
