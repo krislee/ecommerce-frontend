@@ -6,7 +6,8 @@ function AddCartButton ({ name, id, url, quantity }) {
 
     const addItem = async () => {
         console.log(3, document.cookie)
-        const testURL = "https://happy-bohr-10f4b0.netlify.app"
+        // const testURL = "https://happy-bohr-10f4b0.netlify.app"
+        const testURL = "https://elecommerce.herokuapp.com"
         const resp = await fetch(`${testUrl}/buyer/electronic/cart/${id}`, {
             method: 'POST',
             headers: {
