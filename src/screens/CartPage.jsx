@@ -24,7 +24,9 @@ function CartPage ({url}) {
             // console.log(data);
             // setItems(data.cart);
             // setPrice(data.totalPrice)
-            let resp = await fetch(`https://elecommerce.herokuapp.com/buyer/cart`, {
+
+            // let resp = await fetch(`https://elecommerce.herokuapp.com/buyer/cart`, {
+            let resp = await fetch(`https://123testing.netlify.app`, {
                 method: 'GET',
                 credentials: 'include',
                 headers: {
