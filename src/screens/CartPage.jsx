@@ -80,7 +80,7 @@ function CartPage ({url}) {
                     <div>
                         <div>{item.Name}</div>
                         <div>{item.Quantity}</div>
-                        <div>{price}</div>
+                        <div>{item.TotalPrice}</div>
                     </div>
                 ])}</div>}
             </div>
