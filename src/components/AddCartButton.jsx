@@ -6,10 +6,8 @@ function AddCartButton ({ name, id, url, quantity }) {
 
     const addItem = async () => {
         console.log(3, document.cookie)
-        // const testURL = "https://happy-bohr-10f4b0.netlify.app"
-        // const testURL = "https://elecommerce.herokuapp.com"
-        const testURL = "https://backend-elecommerce.netlify.app/.netlify/functions/server"
-        const resp = await fetch(`${testURL}/buyer/electronic/cart/${id}`, {
+        const baseURL = "https://elecommerce.herokuapp.com"
+        const resp = await fetch(`${baseURL}/buyer/electronic/cart/${id}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -23,20 +21,6 @@ function AddCartButton ({ name, id, url, quantity }) {
         const data = await resp.json()
         console.log(data)
         console.log(4, document.cookie)
-
-        // const resp = await axios(`${url}/buyer/electronic/cart/${id}`, {
-        //     method: 'post',
-        //     data: {Quantity: quantity}, 
-        //     withCredentials: true,
-        //     // credentials: 'include'
-        // })
-        // console.log(resp)
-
-        // axios.defaults.withCredentials = true;
-        // axios.post(`${url}/buyer/electronic/cart/${id}`, {
-        //     data: {Quantity: quantity},
-        //     headers:{withCredentials:true}
-        // });
     }
 
     return (
