@@ -1,7 +1,7 @@
 const URL = "http://localhost:3001"
 
 const button = document.querySelector('#checkoutButton')
-let paymentIntentId = ''
+let paymentIntentId = '' // store paymentIntentId in cookie? or local storage?
 
 button.addEventListener('click', async () => {
     console.log("paymentIntentId 1", paymentIntentId)
@@ -10,7 +10,7 @@ button.addEventListener('click', async () => {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            // get the idempotency key value from the guest or logged in customer's cart id (cart id can be the id of the checkout button)
+            // get the value of idempotency key wil be from the guest or logged in customer's cart id (cart id can be the id of the checkout button)
             // 'Idempotency-Key':
         },
         body: JSON.stringify({paymentIntentId: paymentIntentId})
@@ -18,6 +18,7 @@ button.addEventListener('click', async () => {
     const data = await response.json()
     console.log("data: ", data)
 
+    // retrieve payment intent ID from cookie or local storage
     paymentIntentId ? paymentIntentId : data.paymentIntentId
     console.log("paymentIntentId 2", paymentIntentId)
 
@@ -43,28 +44,38 @@ button.addEventListener('click', async () => {
         }
     }
 
-    if (!data.returningCustomer) {
-        // Display form to collect shipping info page
+    /* ------- COLLECT CARD DETAILS ------- */
+
+    // Create Card Element to collect card details
+    const card = elements.create('card', {style: style})
+
+    // Stripe injects Card Element iframe into the DOM
+    card.mount("#card-element");
+
+    // Listen to changes on the Card Element to immediately display card errors (e.g. expiry date in the past) and disable the button if the Card Element is empty.
+    card.on('change', (event) => {
+
+        console.log("event: ", event)
+
+        document.getElementById('submit').disabled = event.empty // event.empty = true when there is no values in the Card Element
+        document.querySelector('#card-error').textContent = event.error ? event.error.message : ""
+    })
+
+    if (!data.returningCustomer && !data.customer) {
+        // CREATE A FORM TO COLLECT SHIPPING DETAILS AND BILLING DETAILS (BILLING DETAILS FORM UNDER CARD DETAILS)
         
-        /* ------- COLLECT CARD DETAILS ------- */
+        // SHOW CARD ELEMENT
 
-        // Create Card Element to collect card details
-        const card = elements.create('card', {style: style})
-
-        // Stripe injects Card Element iframe into the DOM
-        card.mount("#card-element");
-
-        // Listen to changes on the Card Element to immediately display card errors (e.g. expiry date in the past) and disable the button if the Card Element is empty.
-        card.on('change', (event) => {
-
-            console.log("event: ", event)
-
-            document.getElementById('submit').disabled = event.empty // event.empty = true when there is no values in the Card Element
-            document.querySelector('#card-error').textContent = event.error ? event.error.message : ""
-        })
     } else {
-        // fetch customer shipping details & default payment method, having an edit button on the side of shipping details and payment method
+        // fetch customer shipping details having an edit button on the side of shipping details (fetch(/lastUsed/address)) - if no shipping details, display shipping form
+
+        // fetch customer's card details, if no card details, display card element and billing details form
+        
         // (do not need to display billing details unless customer clicks on edit payment method button - billing details need to be retrieved from payment method obj vs. shipping details retrieved from customer obj)
+
+        
+
+        // div with shipping details will contain the id of the selected address
         const response = await fetch(`$URL/getCustomer`)
         const data = await response.json()
         console.log("customer: ", data)
@@ -105,6 +116,18 @@ const payWithCard = async (stripe, card, clientSecret, returningCustomer) => {
                     email: 'test@gmail.com',
                     name: 'Test1',
                     phone: '1234567890'
+                }, 
+                shipping : {
+                    name: ,
+                    phone: ,
+                    address: {
+                        line1: ,
+                        line2: ,
+                        city: ,
+                        state: ,
+                        postal_code: ,
+                        country: 
+                    }
                 }
             },
             // receipt_email: document.getElementById('email').value
@@ -119,8 +142,24 @@ const payWithCard = async (stripe, card, clientSecret, returningCustomer) => {
                 orderComplete(response.paymentIntent.id)
             }
         })
-    } else { // When confirming the payment intent, you do not need to attach payment method for returning customers because payment has already been attached to the payment intent when creating it
-        stripe.confirmCardPayment(clientSecret)
+    } else { 
+        updateLastUsedShipping(FILL IN ID NUMBER HERE) // need to put in the id of the shipping edit button as the argument
+        
+        // When confirming the payment intent, you do not need to attach payment method for returning customers because payment has already been attached to the payment intent when creating it
+        stripe.confirmCardPayment(clientSecret, {
+            shipping : {
+                name: ,
+                phone: ,
+                address: {
+                    line1: ,
+                    line2: ,
+                    city: ,
+                    state: ,
+                    postal_code: ,
+                    country: 
+                }
+            }
+        })
         .then((response) => {
             if (response.error) {
                 showError(response.error.message)
@@ -133,6 +172,19 @@ const payWithCard = async (stripe, card, clientSecret, returningCustomer) => {
             }
         })
     }
+}
+
+/* ------- UPDATE LAST USED SHIPPING HELPERS ------- */
+const updateLastUsedShipping = async(shippingID) => {
+    // if default checked, then add in the body
+    const response = await fetch(`${URL}/lastUsed/address/${shippingID}`, {
+        method: 'PUT',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.parse({LastUsed: true})
+    })
+    const data = response.json()
+
+    console.log("updated last used shipping: ", data)
 }
 
 /* ------- POST PAYMENT HELPERS ------- */
@@ -181,3 +233,4 @@ if (isLoading) {
 
 // If you experience network issues:
 // offline: did not get charged and then do not refresh, 
+

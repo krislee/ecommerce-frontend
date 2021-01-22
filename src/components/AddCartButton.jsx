@@ -1,11 +1,13 @@
 import React from 'react';
 import '../styles/Button.css'
+import cookie from 'react-cookie'
 // import axios from 'axios';
 
 function AddCartButton ({ name, id, url, quantity }) {
 
     const addItem = async () => {
         console.log(3, document.cookie)
+        console.log('3a', cookie.load('connect.sid'))
         const baseURL = "https://elecommerce.herokuapp.com"
         const resp = await fetch(`${baseURL}/buyer/electronic/cart/${id}`, {
             method: 'POST',
