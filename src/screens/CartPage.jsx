@@ -3,7 +3,8 @@ import React, {useEffect, useState} from 'react'
 import '../styles/BuyerLogin.css'
 import '../styles/CartPage.css'
 import NavBar from '../components/NavigationBar'
-// import axios from 'axios';
+import Cookies from 'js-cookie'
+
 // import { getCart } from '../services/url'
 
 function CartPage ({url}) {
@@ -13,19 +14,8 @@ function CartPage ({url}) {
 
     useEffect(() => {
         async function getCartItems() {
-            // let resp = await fetch(`http://localhost:3001/buyer/cart`, {
-            //     method: 'GET',
-            //     credentials: 'include',
-            //     headers: {
-            //         'Content-Type': 'application/json'
-            //     }
-            // });
-            // const data = await resp.json();
-            // console.log(data);
-            // setItems(data.cart);
-            // setPrice(data.totalPrice)
 
-            let resp = await fetch(`https://elecommerce.herokuapp.com/buyer/cart`, {
+            let resp = await fetch(`http://localhost:3001/buyer/cart`, {
                 method: 'GET',
                 credentials: 'include',
                 headers: {
@@ -35,41 +25,30 @@ function CartPage ({url}) {
             const data = await resp.json();
             console.log(data);
             setItems(data.cart);
-            // console.log(items)
-            // await setItemsFunction(resp.cart);
-            // console.log(items)
-            // console.log(items);
-            // console.log(items)
-
-            // axios.defaults.withCredentials = true;
-            // axios.get('http://localhost:3001/buyer/cart', {
-            //     headers: {withCredentials:true}
-            // });
-
-
-            // const resp = await axios('http://localhost:3001/buyer/cart', {
-            //     method: "get",
-            //     withCredentials: true
-            // })
-            // console.log(resp.data);
-            // setItems(resp.data.cart)
-            // console.log(items)
         };
         getCartItems();
-        // const test = async () => {
-        //     const abc = await getCartItems();
-        //     setItems(abc.cart)
-        //     console.log(items)
-        // }
-        // test();
     },[])
 
-    // const setItemsFunction = async (data) => {
-    //     console.log(data)
-    //     setItems(data)
-    //     console.log(items)
-    // }
+    const checkout = async() => {
+        console.log(1, Cookies.get('idempotency'))
 
+        
+        if(!Cookies.get('idempotency')){
+            Cookies.set('idempotency', data.idempotency)
+        } 
+        console.log(2, Cookies.get('idempotency'))
+        const resp = await fetch(`http://localhost:3000/create-payment-intent`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Idempotency-Key': `${Cookies.get('idempotency')}`
+            }
+        })
+
+        const data = resp.json()
+
+        console.log("created payment intent: ", data)
+    }
 
     return (
         <>
@@ -84,6 +63,7 @@ function CartPage ({url}) {
                     </div>
                 ])}</div>}
             </div>
+            <button onClick={checkout}>Checkout</button>
         </>
     )
 }

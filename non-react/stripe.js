@@ -1,10 +1,8 @@
 const URL = "http://localhost:3001"
 
 const button = document.querySelector('#checkoutButton')
-let paymentIntentId = '' // store paymentIntentId in cookie? or local storage?
 
 button.addEventListener('click', async () => {
-    console.log("paymentIntentId 1", paymentIntentId)
     
     const response = await fetch(`${URL}/create-payment-intent`, {
         method: 'POST',
@@ -12,15 +10,10 @@ button.addEventListener('click', async () => {
             'Content-Type': 'application/json',
             // get the value of idempotency key wil be from the guest or logged in customer's cart id (cart id can be the id of the checkout button)
             // 'Idempotency-Key':
-        },
-        body: JSON.stringify({paymentIntentId: paymentIntentId})
+        }
     })
     const data = await response.json()
     console.log("data: ", data)
-
-    // retrieve payment intent ID from cookie or local storage
-    paymentIntentId ? paymentIntentId : data.paymentIntentId
-    console.log("paymentIntentId 2", paymentIntentId)
 
     const stripe = Stripe(data.publicKey)
 
@@ -103,6 +96,7 @@ const payWithCard = async (stripe, card, clientSecret, returningCustomer) => {
     if (!returningCustomer) {
         // Confirms the Payment Intent, creates a new Payment Method and attaches the payment method to the payment intent, and creates a charge to the card
         stripe.confirmCardPayment(clientSecret, {
+            set_up_future_usage:
             payment_method: {
                 card: card, // card details are collected from Card Element
                 billing_details: {
@@ -147,6 +141,7 @@ const payWithCard = async (stripe, card, clientSecret, returningCustomer) => {
         
         // When confirming the payment intent, you do not need to attach payment method for returning customers because payment has already been attached to the payment intent when creating it
         stripe.confirmCardPayment(clientSecret, {
+            set_up_future_usage
             shipping : {
                 name: ,
                 phone: ,

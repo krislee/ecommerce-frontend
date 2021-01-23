@@ -6,9 +6,12 @@ function AddCartButton ({ name, id, url, quantity }) {
 
     const addItem = async () => {
         console.log(3, document.cookie)
-        const sid = Cookies.get() 
-        console.log("sid: ", sid)
-        const baseURL = "https://elecommerce.herokuapp.com"
+        // const sid = browser.cookie
+        // console.log("sid: ", sid)
+        var cookieEnabled = navigator.cookieEnabled;
+        console.log("cookie enabled: ", cookieEnabled)
+        // const baseURL = "https://elecommerce.herokuapp.com"
+        const baseURL = "http://localhost:3001"
         const resp = await fetch(`${baseURL}/buyer/electronic/cart/${id}`, {
             method: 'POST',
             headers: {
