@@ -36,7 +36,8 @@ function CartPage ({url}) {
         if(!Cookies.get('idempotency')){
             Cookies.set('idempotency', data.idempotency)
         } 
-        console.log(2, Cookies.get('idempotency'))
+        console.log(2, document.cookie)
+        console.log(3, Cookies.get('idempotency'))
         const resp = await fetch(`http://localhost:3000/create-payment-intent`, {
             method: 'POST',
             headers: {
