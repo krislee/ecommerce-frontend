@@ -29,27 +29,27 @@ function CartPage ({url}) {
         getCartItems();
     },[])
 
-    const checkout = async() => {
-        console.log(1, Cookies.get('idempotency'))
+    // const checkout = async() => {
+    //     console.log(1, Cookies.get('idempotency'))
 
         
-        if(!Cookies.get('idempotency')){
-            Cookies.set('idempotency', data.idempotency)
-        } 
-        console.log(2, document.cookie)
-        console.log(3, Cookies.get('idempotency'))
-        const resp = await fetch(`http://localhost:3000/create-payment-intent`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Idempotency-Key': `${Cookies.get('idempotency')}`
-            }
-        })
+    //     if(!Cookies.get('idempotency')){
+    //         Cookies.set('idempotency', data.idempotency)
+    //     } 
+    //     console.log(2, document.cookie)
+    //     console.log(3, Cookies.get('idempotency'))
+    //     const resp = await fetch(`http://localhost:3000/create-payment-intent`, {
+    //         method: 'POST',
+    //         headers: {
+    //             'Content-Type': 'application/json',
+    //             'Idempotency-Key': `${Cookies.get('idempotency')}`
+    //         }
+    //     })
 
-        const data = resp.json()
+    //     const data = resp.json()
 
-        console.log("created payment intent: ", data)
-    }
+    //     console.log("created payment intent: ", data)
+    // }
 
     return (
         <>
@@ -64,7 +64,7 @@ function CartPage ({url}) {
                     </div>
                 ])}</div>}
             </div>
-            <button onClick={checkout}>Checkout</button>
+            {/* <button onClick={checkout}>Checkout</button> */}
         </>
     )
 }
