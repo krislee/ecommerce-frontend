@@ -31,7 +31,7 @@ function Login ({backend, grabLoginInfo}) {
         } else if (data.success === true) {
             console.log(data)
             console.log(data.token, typeof data.token)
-            const resp = await fetch(`${backend}/sync/cart`, {
+            const resp = await fetch(`${backend}/buyer/sync/cart`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
