@@ -30,7 +30,7 @@ function Login ({backend, grabLoginInfo}) {
             setIsLogin(false);
         } else if (data.success === true) {
             console.log(data)
-            console.log(data.token)
+            console.log(data.token, typeof data.token)
             const resp = await fetch(`${backend}/sync/cart`, {
                 method: 'POST',
                 headers: {
