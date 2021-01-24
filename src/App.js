@@ -9,8 +9,8 @@ import CartPage from './screens/CartPage';
 
 function App() {
 
-  const backend = 'http://localhost:3001'
-  // const backend = `https://elecommerce.herokuapp.com`
+  // const backend = 'http://localhost:3001'
+  const backend = `https://elecommerce.herokuapp.com`
 
   const [url, setURL] = useState('');
 
