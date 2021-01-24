@@ -31,16 +31,16 @@ function Login ({backend, grabLoginInfo}) {
         } else if (data.success === true) {
             console.log(data)
             console.log(data.token)
-            // const resp = await fetch(`${backend}/sync/cart`, {
-            //     method: 'POST',
-            //     headers: {
-            //         'Content-Type': 'application/json',
-            //         'Authorization': data.token
-            //     },
+            const resp = await fetch(`${backend}/sync/cart`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': data.token
+                },
 
-            // })
-            // const syncData = await resp.json()
-            // console.log(syncData)
+            })
+            const syncData = await resp.json()
+            console.log(syncData)
             // await grabLoginInfo(username, password, true, data.token);
             // setIsLogin(true);
         }
