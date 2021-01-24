@@ -6,10 +6,7 @@ import '../styles/Homepage.css'
 import NavBar from '../components/NavigationBar'
 
 function Homepage ({ grabURL, backend, loggedIn }) {
-
-    // const URL = "http://localhost:3001"
-    // const URL = `https://elecommerce.herokuapp.com`
-
+    
     const [items, setItems] = useState([]);
     // const [isLoaded, setIsLoaded] = useState(false);
     // const [isItemSelected, setIsItemSelected] = useState(false);
