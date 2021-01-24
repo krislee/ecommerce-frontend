@@ -30,7 +30,17 @@ function Login ({backend, grabLoginInfo}) {
             setIsLogin(false);
         } else if (data.success === true) {
             console.log(data.token)
-            grabLoginInfo(username, password, true, data.token);
+            const resp = await fetch(`${backend}/sync/cart`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': data.token
+                },
+
+            })
+            const data = await resp.json()
+            console.log(data)
+            await grabLoginInfo(username, password, true, data.token);
             setIsLogin(true);
         }
         // e.preventDefault();
