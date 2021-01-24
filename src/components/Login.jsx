@@ -10,7 +10,7 @@ function Login ({backend}) {
     // const [email, setEmail] = useState('');
     const [isLogin, setIsLogin] = useState(false)
 
-    const login = async (e) => {
+    const handleLogin = async (e) => {
         e.preventDefault();
         const loginInfo = {
             username: username,
@@ -50,7 +50,7 @@ function Login ({backend}) {
         )
     } else {
         return (
-            <form className="login" onSubmit={login}>
+            <form className="login" onSubmit={handleLogin}>
                 <input type="text" placeholder="Username" value={username} onChange={handleChangeUsername}></input>
                 {/* <input type="email" placeholder="Email" value={email} onChange={handleChangeEmail}></input> */}
                 <input type="password" placeholder="Password" value={password} onChange={handleChangePassword}  autoComplete="current-password"></input>

@@ -57,7 +57,7 @@ function CartPage ({backend}) {
             <div className="cart">
                 {items === [] || items === undefined ? <div className="noItems">No Items...</div>: 
                 <div>{items.map(item => [
-                    <div>
+                    <div key={item.ItemId}>
                         <div>{item.Name}</div>
                         <div>{item.Quantity}</div>
                         <div>{item.TotalPrice}</div>

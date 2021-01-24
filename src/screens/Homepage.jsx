@@ -52,12 +52,12 @@ function Homepage ({ grabURL, backend }) {
         <React.Fragment>
             <NavBar />
             <div className="login-button">
-            <Link to='/buyer'>
-                <Button name={'Buyer'}/>
-            </Link>
-            <Link to='/seller'>
-                <Button name={'Seller'}/>
-            </Link>
+                <Link to='/buyer'>
+                    <Button name={'Buyer'}/>
+                </Link>
+                <Link to='/seller'>
+                    <Button name={'Seller'}/>
+                </Link>
             </div>
             {<div className="itemContainer">
                 {itemList}
