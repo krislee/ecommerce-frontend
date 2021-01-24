@@ -115,19 +115,19 @@ const payWithCard = async (stripe, card, clientSecret, returningCustomer) => {
                     name: 'Test1',
                     phone: '1234567890'
                 }, 
-                shipping : {
-                    name: ,
-                    phone: ,
-                    address: {
-                        line1: ,
-                        line2: ,
-                        city: ,
-                        state: ,
-                        postal_code: ,
-                        country: 
-                    }
-                }
             },
+            shipping : {
+                name: ,
+                phone: ,
+                address: {
+                    line1: ,
+                    line2: ,
+                    city: ,
+                    state: ,
+                    postal_code: ,
+                    country: 
+                }
+            }
             // receipt_email: document.getElementById('email').value
         }).then((response) => {
             if (response.error) {
@@ -145,7 +145,7 @@ const payWithCard = async (stripe, card, clientSecret, returningCustomer) => {
         
         // When confirming the payment intent, you do not need to attach payment method for returning customers because payment has already been attached to the payment intent when creating it
         stripe.confirmCardPayment(clientSecret, {
-            set_up_future_usage
+            payment_method: paymentMethodID, //put in some payment method id depending on the displayed payment method
             shipping : {
                 name: ,
                 phone: ,
