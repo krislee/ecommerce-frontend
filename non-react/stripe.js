@@ -59,13 +59,17 @@ button.addEventListener('click', async () => {
         
         // SHOW CARD ELEMENT
 
+        // STORE data.idempotency in a cookie
+
     } else {
         // fetch customer shipping details having an edit button on the side of shipping details (fetch(/lastUsed/address)) - if no shipping details, display shipping form
 
         // fetch customer's card details, if no card details, display card element and billing details form
         
-        // (do not need to display billing details unless customer clicks on edit payment method button - billing details need to be retrieved from payment method obj vs. shipping details retrieved from customer obj)
+        // (do not need to display billing details unless customer clicks on edit payment method button)
 
+        // If edit button next to card details is clicked, then collect the CVV using card element, expiration using input type=month, and name and billing details input type=text
+        // Note, that edit button in payment method component will not collect the CVV when editing
         
 
         // div with shipping details will contain the id of the selected address
