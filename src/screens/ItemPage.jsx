@@ -4,11 +4,11 @@ import '../styles/ItemPage.css'
 import AddCartButton from '../components/AddCartButton';
 import NavBar from '../components/NavigationBar';
 
-function ItemPage ({ url }) {
+function ItemPage ({ url, backend }) {
 
     const [itemInfo, setItemInfo] = useState('');
     const [quantity, setQuantity] = useState(1);
-    const itemURL = 'http://localhost:3001';
+    // const itemURL = 'http://localhost:3001';
     // const itemURL = 'https://elecommerce.herokuapp.com'
     
     let currentURL = window.location.href;
@@ -33,7 +33,7 @@ function ItemPage ({ url }) {
             console.log(1, document.cookie)
         } else {
             async function fetchData() {
-                let resp = await fetch(`${itemURL}/buyer/electronic/${id}`,{
+                let resp = await fetch(`${backend}/buyer/electronic/${id}`,{
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json'
@@ -47,7 +47,7 @@ function ItemPage ({ url }) {
             fetchData();
             console.log(2, document.cookie)
         }
-    }, [currentURL, id, url])
+    }, [currentURL, id, url, backend])
 
     const handleChangeQuantity = e => {
         setQuantity(e.target.value)
@@ -63,7 +63,7 @@ function ItemPage ({ url }) {
                 <div className="description">Description: {itemInfo.Description}</div>
                 <input type="number" value={quantity} onChange={handleChangeQuantity}></input>
             </div>
-            <AddCartButton url={itemURL} id={itemInfo._id} quantity={quantity} name={'Add To Cart'} />
+            <AddCartButton backend={backend} id={itemInfo._id} quantity={quantity} name={'Add To Cart'} />
         </div>
     )
 }

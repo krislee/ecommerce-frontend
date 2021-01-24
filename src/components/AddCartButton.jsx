@@ -1,8 +1,8 @@
 import React from 'react';
 import '../styles/Button.css'
-import Cookies from 'js-cookie'
+// import Cookies from 'js-cookie'
 
-function AddCartButton ({ name, id, url, quantity }) {
+function AddCartButton ({ name, id, backend, quantity }) {
 
     const addItem = async () => {
         console.log(3, document.cookie)
@@ -11,8 +11,8 @@ function AddCartButton ({ name, id, url, quantity }) {
         var cookieEnabled = navigator.cookieEnabled;
         console.log("cookie enabled: ", cookieEnabled)
         // const baseURL = "https://elecommerce.herokuapp.com"
-        const baseURL = "http://localhost:3001"
-        const resp = await fetch(`${baseURL}/buyer/electronic/cart/${id}`, {
+        // const baseURL = "http://localhost:3001"
+        const resp = await fetch(`${backend}/buyer/electronic/cart/${id}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

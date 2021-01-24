@@ -3,7 +3,7 @@ import {Redirect} from 'react-router-dom';
 import '../styles/Login.css'
 import '../styles/BuyerLogin.css'
 
-function Login () {
+function Login ({backend}) {
 
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -16,7 +16,7 @@ function Login () {
             username: username,
             password: password,
         }
-        const resp = await fetch('http://localhost:3001/auth/buyer/login', {
+        const resp = await fetch(`${backend}/auth/buyer/login`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

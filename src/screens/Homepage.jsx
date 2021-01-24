@@ -5,15 +5,15 @@ import Item from '../components/Item';
 import '../styles/Homepage.css'
 import NavBar from '../components/NavigationBar'
 
-function Homepage ({ grabURL }) {
+function Homepage ({ grabURL, backend }) {
 
-    const URL = "http://localhost:3001"
+    // const URL = "http://localhost:3001"
     // const URL = `https://elecommerce.herokuapp.com`
 
     const [items, setItems] = useState([]);
     // const [isLoaded, setIsLoaded] = useState(false);
     // const [isItemSelected, setIsItemSelected] = useState(false);
-    const electronicURL = `${URL}/buyer/electronic`
+    const electronicURL = `${backend}/buyer/electronic`
     // const url = "http://localhost:3001/buyer/electronic/"
 
     useEffect(() => {
@@ -22,10 +22,11 @@ function Homepage ({ grabURL }) {
             const data = await resp.json();
             console.log(data.allElectronic);
             setItems(data.allElectronic);
+            console.log(backend);
             // setIsLoaded(true)
         };
         fetchItems();
-    },[electronicURL])
+    },[electronicURL, backend])
 
 
 

@@ -4,13 +4,13 @@ import {Link} from 'react-router-dom';
 import Button from '../components/Button'
 import Login from '../components/Login'
 
-function SellerLogin () {
+function SellerLogin ({backend}) {
     return (
         <React.Fragment>
             <Link to="/">
                 <Button name={'Back'}></Button>
             </Link>
-            <Login />
+            <Login backend={backend}/>
         </React.Fragment>
     )
 }

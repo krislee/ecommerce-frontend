@@ -9,7 +9,8 @@ import CartPage from './screens/CartPage';
 
 function App() {
 
-  const localURL = 'http://localhost:3001'
+  const backend = 'http://localhost:3001'
+  // const backend = `https://elecommerce.herokuapp.com`
 
   const [url, setURL] = useState('');
 
@@ -21,16 +22,20 @@ function App() {
     <div className="App">
       <BrowserRouter>
         <Switch>
-          <Route path="/buyer" exact component={BuyerLogin} />
-          <Route path="/seller" exact component={SellerLogin} />
+          <Route path="/buyer">
+            <BuyerLogin backend={backend}/>
+          </Route>
+          <Route path="/seller">
+            <SellerLogin backend={backend}/>
+          </Route>
           <Route path='/store'>
-            <ItemPage url={url}/>
+            <ItemPage url={url} backend={backend}/>
           </Route>
           <Route path="/cart">
-            <CartPage url={localURL}/>
+            <CartPage backend={backend}/>
           </Route>
           <Route path="">
-            <Homepage grabURL={grabURL}/>
+            <Homepage grabURL={grabURL} backend={backend}/>
           </Route>
         </Switch>
       </BrowserRouter>

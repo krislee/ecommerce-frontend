@@ -3,19 +3,19 @@ import React, {useEffect, useState} from 'react'
 import '../styles/BuyerLogin.css'
 import '../styles/CartPage.css'
 import NavBar from '../components/NavigationBar'
-import Cookies from 'js-cookie'
+// import Cookies from 'js-cookie'
 
 // import { getCart } from '../services/url'
 
-function CartPage ({url}) {
+function CartPage ({backend}) {
 
     const [items, setItems] = useState([]);
-    const [price, setPrice] = useState(0);
+    // const [price, setPrice] = useState(0);
 
     useEffect(() => {
         async function getCartItems() {
 
-            let resp = await fetch(`http://localhost:3001/buyer/cart`, {
+            let resp = await fetch(`${backend}/buyer/cart`, {
                 method: 'GET',
                 credentials: 'include',
                 headers: {
@@ -27,7 +27,7 @@ function CartPage ({url}) {
             setItems(data.cart);
         };
         getCartItems();
-    },[])
+    },[backend])
 
     // const checkout = async() => {
     //     console.log(1, Cookies.get('idempotency'))
