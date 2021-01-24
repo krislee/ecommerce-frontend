@@ -7,7 +7,7 @@ import NavBar from '../components/NavigationBar'
 
 // import { getCart } from '../services/url'
 
-function CartPage ({backend}) {
+function CartPage ({ backend, loggedIn }) {
 
     const [items, setItems] = useState([]);
     // const [price, setPrice] = useState(0);
@@ -53,7 +53,7 @@ function CartPage ({backend}) {
 
     return (
         <>
-            <NavBar />
+            {loggedIn ? <NavBar /> : <div>Not Logged In</div>}
             <div className="cart">
                 {items === [] || items === undefined ? <div className="noItems">No Items...</div>: 
                 <div>{items.map(item => [

@@ -3,7 +3,7 @@ import {Redirect} from 'react-router-dom';
 import '../styles/Login.css'
 import '../styles/BuyerLogin.css'
 
-function Login ({backend}) {
+function Login ({backend, grabLoginInfo}) {
 
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -11,25 +11,28 @@ function Login ({backend}) {
     const [isLogin, setIsLogin] = useState(false)
 
     const handleLogin = async (e) => {
-        e.preventDefault();
-        const loginInfo = {
-            username: username,
-            password: password,
-        }
-        const resp = await fetch(`${backend}/auth/buyer/login`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(loginInfo)
-        });
-        const data = await resp.json()
-        console.log(data.success)
-        if (data.success === false) {
-            setIsLogin(false);
-        } else if (data.success === true) {
-            setIsLogin(true);
-        }
+        // e.preventDefault();
+        // const loginInfo = {
+        //     username: username,
+        //     password: password,
+        // }
+        // const resp = await fetch(`${backend}/auth/buyer/login`, {
+        //     method: 'POST',
+        //     headers: {
+        //         'Content-Type': 'application/json'
+        //     },
+        //     body: JSON.stringify(loginInfo)
+        // });
+        // const data = await resp.json()
+        // console.log(data.success)
+        // if (data.success === false) {
+        //     setIsLogin(false);
+        // } else if (data.success === true) {
+        //     grabLoginInfo(username, password, true);
+        //     setIsLogin(true);
+        // }
+        grabLoginInfo('Billy', 'rockstar', true, 'd92d900290');
+        setIsLogin(true);
     }
 
     const handleChangeUsername = e => {

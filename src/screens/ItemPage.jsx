@@ -4,7 +4,7 @@ import '../styles/ItemPage.css'
 import AddCartButton from '../components/AddCartButton';
 import NavBar from '../components/NavigationBar';
 
-function ItemPage ({ url, backend }) {
+function ItemPage ({ url, backend, loggedIn }) {
 
     const [itemInfo, setItemInfo] = useState('');
     const [quantity, setQuantity] = useState(1);
@@ -56,7 +56,7 @@ function ItemPage ({ url, backend }) {
     return (
         // Name, price, description, add to cart
         <div className="item-page">
-            <NavBar />
+            {loggedIn ? <NavBar /> : <div>Not Logged In</div>}
             <div className="item-info">
                 <div className="name">{itemInfo.Name}</div>
                 <div className="price">Price: ${itemInfo.Price}</div>

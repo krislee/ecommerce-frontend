@@ -4,13 +4,13 @@ import Button from '../components/Button'
 import Login from '../components/Login'
 import '../styles/BuyerLogin.css'
 
-function BuyerLogin ({backend}) {
+function BuyerLogin ({backend, grabLoginInfo}) {
     return (
         <div className="buyer-login">
             <Link to="/">
                 <Button name={'Back'}></Button>
             </Link>
-            <Login backend={backend}/>
+            <Login backend={backend} grabLoginInfo={grabLoginInfo}/>
         </div>
     )
 }

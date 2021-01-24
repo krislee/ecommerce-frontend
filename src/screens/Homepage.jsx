@@ -5,7 +5,7 @@ import Item from '../components/Item';
 import '../styles/Homepage.css'
 import NavBar from '../components/NavigationBar'
 
-function Homepage ({ grabURL, backend }) {
+function Homepage ({ grabURL, backend, loggedIn }) {
 
     // const URL = "http://localhost:3001"
     // const URL = `https://elecommerce.herokuapp.com`
@@ -50,7 +50,7 @@ function Homepage ({ grabURL, backend }) {
 
     return (
         <React.Fragment>
-            <NavBar />
+            {loggedIn ? <NavBar /> : <div>Not Logged In</div>}
             <div className="login-button">
                 <Link to='/buyer'>
                     <Button name={'Buyer'}/>
