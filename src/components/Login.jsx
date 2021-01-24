@@ -29,6 +29,7 @@ function Login ({backend, grabLoginInfo}) {
         if (data.success === false) {
             setIsLogin(false);
         } else if (data.success === true) {
+            console.log(data)
             console.log(data.token)
             const resp = await fetch(`${backend}/sync/cart`, {
                 method: 'POST',
