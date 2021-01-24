@@ -53,7 +53,7 @@ function CartPage ({ backend, loggedIn }) {
 
     return (
         <>
-            {loggedIn ? <NavBar /> : <div>Not Logged In</div>}
+            {localStorage.getItem('token') ? <NavBar /> : <div>Not Logged In</div>}
             <div className="cart">
                 {items === [] || items === undefined ? <div className="noItems">No Items...</div>: 
                 <div>{items.map(item => [

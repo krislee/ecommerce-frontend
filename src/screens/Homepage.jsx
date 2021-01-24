@@ -6,7 +6,7 @@ import '../styles/Homepage.css'
 import NavBar from '../components/NavigationBar'
 
 function Homepage ({ grabURL, backend, loggedIn }) {
-    
+
     const [items, setItems] = useState([]);
     // const [isLoaded, setIsLoaded] = useState(false);
     // const [isItemSelected, setIsItemSelected] = useState(false);
@@ -23,6 +23,7 @@ function Homepage ({ grabURL, backend, loggedIn }) {
             // setIsLoaded(true)
         };
         fetchItems();
+        console.log(loggedIn)
     },[electronicURL, backend])
 
 
@@ -47,7 +48,7 @@ function Homepage ({ grabURL, backend, loggedIn }) {
 
     return (
         <React.Fragment>
-            {loggedIn ? <NavBar /> : <div>Not Logged In</div>}
+            {localStorage.getItem('token') ? <NavBar /> : <div>Not Logged In</div>}
             <div className="login-button">
                 <Link to='/buyer'>
                     <Button name={'Buyer'}/>

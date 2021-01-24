@@ -29,7 +29,7 @@ function Login ({backend, grabLoginInfo}) {
         if (data.success === false) {
             setIsLogin(false);
         } else if (data.success === true) {
-            grabLoginInfo(username, password, true);
+            grabLoginInfo(username, password, true, data.token);
             setIsLogin(true);
         }
         // e.preventDefault();

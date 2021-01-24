@@ -53,7 +53,7 @@ function App() {
             <CartPage backend={backend} loggedIn={loggedIn}/>
           </Route>
           <Route path="">
-            <Homepage grabURL={grabURL} backend={backend} loggedIn={loggedIn}/>
+            <Homepage grabURL={grabURL} backend={backend} loggedIn={token}/>
           </Route>
         </Switch>
       </BrowserRouter>
