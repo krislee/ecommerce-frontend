@@ -39,6 +39,7 @@ function Login ({backend, grabLoginInfo}) {
                     'Content-Type': 'application/json',
                     'Authorization': data.token
                 },
+                credentials: 'include'
 
             })
             const syncData = await resp.json()
