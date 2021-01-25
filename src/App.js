@@ -22,17 +22,13 @@ function App() {
     setURL(url);
   }
 
-  const grabLoginInfo = (username, password, loggedIn, token) => {
+  const grabLoginInfo = (username, loggedIn, token) => {
     setUsername(username);
     localStorage.setItem("username", username);
-    setPassword(password);
-    localStorage.setItem("password", password);
     setLoggedIn(loggedIn);
+    localStorage.setItem("loggedIn", loggedIn);
     setToken(token);
     localStorage.setItem("token", token);
-    console.log(username);
-    console.log(password);
-    console.log(token);
   }
 
 

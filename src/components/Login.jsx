@@ -44,7 +44,7 @@ function Login ({backend, grabLoginInfo}) {
             })
             const syncData = await resp.json()
             console.log(syncData)
-            await grabLoginInfo(username, password, true, data.token);
+            await grabLoginInfo(username, true, data.token);
             setIsLogin(true);
         }
         // e.preventDefault();
