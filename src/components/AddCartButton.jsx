@@ -25,8 +25,7 @@ function AddCartButton ({ name, id, backend, quantity }) {
             const resp = await fetch(`${backend}/buyer/electronic/cart/${id}`, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
-                    authorization
+                    'Content-Type': 'application/json'
                 },
                 credentials: 'include', // always send the cookies
                 body: JSON.stringify({
