@@ -24,15 +24,15 @@ function Login ({backend, grabLoginInfo}) {
             body: JSON.stringify(loginInfo)
         });
         const data = await resp.json()
-        console.log(data);
-        console.log(data.success);
+        // console.log(data);
+        // console.log(data.success);
         if (data.success === false) {
             setIsLogin(false);
         } else if (data.success === true) {
-            console.log(data)
-            console.log(data.token, typeof data.token)
-            await grabLoginInfo(username, password, true, data.token);
-            setIsLogin(true);
+            // console.log(data)
+            console.log(data.token)
+            // await grabLoginInfo(username, password, true, data.token);
+            // setIsLogin(true);
             const resp = await fetch(`${backend}/buyer/sync/cart`, {
                 method: 'POST',
                 headers: {
@@ -43,8 +43,8 @@ function Login ({backend, grabLoginInfo}) {
             })
             const syncData = await resp.json()
             console.log(syncData)
-            // await grabLoginInfo(username, password, true, data.token);
-            // setIsLogin(true);
+            await grabLoginInfo(username, password, true, data.token);
+            setIsLogin(true);
         }
         // e.preventDefault();
         // grabLoginInfo('Billy', 'rockstar', true, 'd92d900290');
