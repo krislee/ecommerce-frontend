@@ -27,6 +27,7 @@ function CartPage ({ backend, loggedIn }) {
                 const data = await resp.json();
                 console.log(data);
                 setItems(data.cart);
+                console.log(30, "items: ", items)
             } else {
                 let resp = await fetch(`${backend}/buyer/cart`, {
                     method: 'GET',
@@ -38,6 +39,7 @@ function CartPage ({ backend, loggedIn }) {
                 const data = await resp.json();
                 console.log(data);
                 setItems(data.cart);
+                console.log(42, "items: ", items)
             }
         };
         getCartItems();
@@ -67,7 +69,7 @@ function CartPage ({ backend, loggedIn }) {
 
     return (
         <>
-            {localStorage.getItem('token') ? <NavBar /> : <div>Not Logged In</div>}
+            {localStorage.getItem('loggedIn') ? <NavBar /> : <div>Not Logged In</div>}
             <div className="cart">
                 {items === [] || items === undefined ? <div className="noItems">No Items...</div>: 
                 <div>{items.map(item => [
