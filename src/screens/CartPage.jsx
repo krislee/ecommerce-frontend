@@ -26,7 +26,7 @@ function CartPage ({ backend, loggedIn }) {
                 });
                 const data = await resp.json();
                 console.log(data);
-                setItems(data.cart.items);
+                setItems(data.cart.Items);
                 console.log(30, "items: ", items)
             } else {
                 let resp = await fetch(`${backend}/buyer/cart`, {
