@@ -15,16 +15,30 @@ function CartPage ({ backend, loggedIn }) {
     useEffect(() => {
         async function getCartItems() {
 
-            let resp = await fetch(`${backend}/buyer/cart`, {
-                method: 'GET',
-                credentials: 'include',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-            const data = await resp.json();
-            console.log(data);
-            setItems(data.cart);
+            if(localStorage.getItem('loggedIn')){
+                let resp = await fetch(`${backend}/buyer/cart`, {
+                    method: 'GET',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': localStorage.getItem('token')
+                    }
+                });
+                const data = await resp.json();
+                console.log(data);
+                setItems(data.cart);
+            } else {
+                let resp = await fetch(`${backend}/buyer/cart`, {
+                    method: 'GET',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                const data = await resp.json();
+                console.log(data);
+                setItems(data.cart);
+            }
         };
         getCartItems();
     },[backend])
