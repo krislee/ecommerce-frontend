@@ -1,3 +1,5 @@
+const { response } = require("express")
+
 const URL = "http://localhost:3001"
 
 const button = document.querySelector('#checkoutButton')
@@ -86,21 +88,20 @@ button.addEventListener('click', async () => {
         event.preventDefault()
         
         // Finalize payment 
-        payWithCard(stripe, card, data.clientSecret, data.returningCustomer)
+        payWithCard(stripe, card, data.clientSecret, data.customer, data.returningCustomer)
         
     })
 })
 
 
 /* ------- SUBMIT PAYMENT HELPER ------- */
-const payWithCard = async (stripe, card, clientSecret, returningCustomer) => {
+const payWithCard = async (stripe, card, clientSecret, customer, returningCustomer) => {
 
     loading(true)
 
-    if (!returningCustomer) {
+    if (!returningCustomer && !customer) {
         // Confirms the Payment Intent, creates a new Payment Method and attaches the payment method to the payment intent, and creates a charge to the card
         stripe.confirmCardPayment(clientSecret, {
-            set_up_future_usage:
             payment_method: {
                 card: card, // card details are collected from Card Element
                 billing_details: {
@@ -116,57 +117,51 @@ const payWithCard = async (stripe, card, clientSecret, returningCustomer) => {
                     phone: '1234567890'
                 }, 
             },
-            shipping : {
-                name: ,
-                phone: ,
-                address: {
-                    line1: ,
-                    line2: ,
-                    city: ,
-                    state: ,
-                    postal_code: ,
-                    country: 
-                }
-            }
+            // shipping : {
+            //     name: ,
+            //     phone: ,
+            //     address: {
+            //         line1: ,
+            //         line2: ,
+            //         city: ,
+            //         state: ,
+            //         postal_code: ,
+            //         country: 
+            //     }
+            // }
             // receipt_email: document.getElementById('email').value
         }).then((response) => {
             if (response.error) {
                 showError(response.error.message)
+                // SHOW THE CARD ELEMENT AGAIN
             } else {
-                // delete the guest or logged in cart first and then run orderComplete function
-                // fetch (`${URL}`)
-                // .then(response => response.json())
-                // .then(() => {orderComplete(response.paymentIntent.id)})
                 orderComplete(response.paymentIntent.id)
             }
         })
     } else { 
-        updateLastUsedShipping(FILL IN ID NUMBER HERE) // need to put in the id of the shipping edit button as the argument
+        updateLastUsedShipping(ID_Number) // need to put in the id of the shipping edit button as the argument
         
         // When confirming the payment intent, you do not need to attach payment method for returning customers because payment has already been attached to the payment intent when creating it
-        stripe.confirmCardPayment(clientSecret, {
+        await stripe.confirmCardPayment(clientSecret, {
             payment_method: paymentMethodID, //put in some payment method id depending on the displayed payment method
-            shipping : {
-                name: ,
-                phone: ,
-                address: {
-                    line1: ,
-                    line2: ,
-                    city: ,
-                    state: ,
-                    postal_code: ,
-                    country: 
-                }
-            }
+            // shipping : {
+            //     name: ,
+            //     phone: ,
+            //     address: {
+            //         line1: ,
+            //         line2: ,
+            //         city: ,
+            //         state: ,
+            //         postal_code: ,
+            //         country: 
+            //     }
+            // }
         })
         .then((response) => {
             if (response.error) {
                 showError(response.error.message)
+                 // SHOW THE CARD ELEMENT AGAIN
             } else {
-                // delete the guest or logged in cart first and then run orderComplete function
-                // fetch (`${URL}`)
-                // .then(response => response.json())
-                // .then(() => {orderComplete(response.paymentIntent.id)})
                 orderComplete(response.paymentIntent.id)
             }
         })
@@ -225,11 +220,5 @@ if (isLoading) {
 }
 };
 
-// https://medium.com/dsc-hit/creating-an-idempotent-api-using-node-js-bdfd7e52a947
-// https://medium.com/@saurav200892/how-to-achieve-idempotency-in-post-method-d88d7b08fcdd
-// https://github.com/stripe/stripe-node/issues/877
-// https://github.com/stripe/react-stripe-js/issues/85
 
-// If you experience network issues:
-// offline: did not get charged and then do not refresh, 
 

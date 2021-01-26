@@ -48,7 +48,8 @@ function Homepage ({ grabURL, backend, loggedIn }) {
 
     return (
         <React.Fragment>
-            {localStorage.getItem('loggedIn') ? <NavBar /> : <div>Not Logged In</div>}
+            {/* {localStorage.getItem('loggedIn') ? <NavBar /> : <div>Not Logged In</div>} */}
+            <NavBar />
             <div className="login-button">
                 <Link to='/buyer'>
                     <Button name={'Buyer'}/>

@@ -36,6 +36,27 @@
             <span id="button-text">Pay</span>
         </button>
 
+
+        <!-- View to ask for new card details -->
+        <div class="sr-result requires-pm hidden">
+            <div class="sr-result-container">
+                <img
+                src="./images/card-blocked.svg"
+                alt="Credit card image with a blocking icon"
+                />
+                <p>
+                Your card was declined, please provide a new payment method.
+                </p>
+            </div>
+            <div id="card-element"></div>
+            <div class="sr-field-error"></div>
+            
+            <button id="update-pm">
+                <div class="spinner hidden"></div>
+                <span class="button-text">Update payment method</span>
+            </button>
+        </div>
+
         <!-- Put error messages in this element -->
         <div id="card-error" role="alert"></div>
 
