@@ -171,10 +171,9 @@ const payWithCard = async (stripe, card, clientSecret, customer, returningCustom
 /* ------- UPDATE LAST USED SHIPPING HELPERS ------- */
 const updateLastUsedShipping = async(shippingID) => {
     // if default checked, then add in the body
-    const response = await fetch(`${URL}/lastUsed/address/${shippingID}`, {
+    const response = await fetch(`${URL}/last-used/address/${shippingID}`, {
         method: 'PUT',
         headers: {'Content-Type': 'application/json'},
-        body: JSON.parse({LastUsed: true})
     })
     const data = response.json()
 
