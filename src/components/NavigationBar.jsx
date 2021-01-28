@@ -12,6 +12,7 @@ function NavBar () {
             <Link to="/">
                 <div className="link-home">Homepage</div>
             </Link>
+            {localStorage.getItem('loggedIn') ? <div>Logged In</div> : null}
             <Link to="/cart">
                 <FontAwesomeIcon className="icon" icon={faShoppingCart}/>
             </Link>

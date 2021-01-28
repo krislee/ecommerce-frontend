@@ -56,7 +56,11 @@ function ItemPage ({ url, backend, loggedIn }) {
     return (
         // Name, price, description, add to cart
         <div className="item-page">
-            {localStorage.getItem('token') ? <NavBar /> : <div>Not Logged In</div>}
+            {localStorage.getItem('loggedIn') ? 
+            <>
+                <NavBar />
+            </>
+             : <NavBar />}
             <div className="item-info">
                 <div className="name">{itemInfo.Name}</div>
                 <div className="price">Price: ${itemInfo.Price}</div>

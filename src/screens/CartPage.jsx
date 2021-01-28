@@ -43,7 +43,7 @@ function CartPage ({ backend, loggedIn }) {
             }
         };
         getCartItems();
-    },[backend])
+    },[backend, items])
 
     // const checkout = async() => {
     //     console.log(1, Cookies.get('idempotency'))
@@ -69,7 +69,11 @@ function CartPage ({ backend, loggedIn }) {
 
     return (
         <>
-            {localStorage.getItem('loggedIn') ? <NavBar /> : <div>Not Logged In</div>}
+            {localStorage.getItem('loggedIn') ? 
+            <>
+                <NavBar />
+            </>
+             : <NavBar />}
             <div className="cart">
                 {items === [] || items === undefined ? <div className="noItems">No Items...</div>: 
                 <div>{items.map(item => [

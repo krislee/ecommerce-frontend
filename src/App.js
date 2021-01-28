@@ -14,8 +14,8 @@ function App() {
 
   const [url, setURL] = useState('');
   const [loggedIn, setLoggedIn] = useState(false);
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
+  // const [username, setUsername] = useState('')
+  // const [password, setPassword] = useState('')
   const [token, setToken] = useState('')
 
   const grabURL = (url) => {
@@ -23,11 +23,11 @@ function App() {
   }
 
   const grabLoginInfo = (username, loggedIn, token) => {
-    setUsername(username);
+    // setUsername(username);
     localStorage.setItem("username", username);
-    setLoggedIn(loggedIn);
+    // setLoggedIn(loggedIn);
     localStorage.setItem("loggedIn", loggedIn);
-    setToken(token);
+    // setToken(token);
     localStorage.setItem("token", token);
   }
 
