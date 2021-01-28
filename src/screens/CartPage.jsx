@@ -11,10 +11,11 @@ function CartPage ({ backend }) {
 
     const [items, setItems] = useState([]);
     // const [price, setPrice] = useState(0);
+    const [token, setToken] = useState('');
+    const [cartID, setCartID] = useState('');
 
     useEffect(() => {
         async function getCartItems() {
-
             if(localStorage.getItem('loggedIn')){
                 let resp = await fetch(`${backend}/buyer/cart`, {
                     method: 'GET',
@@ -27,6 +28,8 @@ function CartPage ({ backend }) {
                 const data = await resp.json();
                 console.log(data);
                 setItems(data.cart.Items);
+                setCartID(data.cart._id);
+                console.log(cartID)
                 console.log(30, "items: ", items)
             } else {
                 let resp = await fetch(`${backend}/buyer/cart`, {
@@ -39,11 +42,43 @@ function CartPage ({ backend }) {
                 const data = await resp.json();
                 console.log(data);
                 setItems(data.cart);
+                setCartID(data.cart._id);
+                console.log(cartID)
                 console.log(42, "items: ", items)
             }
         };
+        setToken(localStorage.getItem('token'));
+        // console.log(localStorage.getItem('token'));
+        // console.log(token);
         getCartItems();
     },[])
+
+    const handleCheckout = async () => {
+        if (localStorage.getItem('token')) {
+            console.log("logged in")
+            console.log(56, `${cartID}`)
+            console.log(60, token)
+            const response = await fetch(`${backend}/order/payment-intent`, {
+                method: 'POST',
+                header: {
+                    'Content-Type': 'application/json',
+                    'Idempotency-Key': `${cartID}`,
+                    'Authorization': `${token}`
+                }
+            })
+            const data = await response.json()
+        } else {
+            if(token) {
+                console.log("Cleared local storage")
+            } else {
+                console.log('I am not logged in')
+            }
+            // if
+            // fetch('', {
+
+            // })
+        }
+    }
 
     // const checkout = async() => {
     //     console.log(1, Cookies.get('idempotency'))
@@ -76,13 +111,17 @@ function CartPage ({ backend }) {
              : <NavBar />}
             <div className="cart">
                 {items === [] || items === undefined ? <div className="noItems">No Items...</div>: 
+                <>
                 <div>{items.map(item => [
                     <div key={item.ItemId}>
                         <div>{item.Name}</div>
                         <div>{item.Quantity}</div>
                         <div>{item.TotalPrice}</div>
                     </div>
-                ])}</div>}
+                ])}</div>
+                <button onClick={() => handleCheckout()}>Checkout</button>
+                <button onClick={() => console.log(token)}>Token</button>
+                </>}
             </div>
             {/* <button onClick={checkout}>Checkout</button> */}
         </>
