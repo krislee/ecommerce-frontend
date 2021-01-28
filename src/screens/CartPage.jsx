@@ -7,7 +7,7 @@ import NavBar from '../components/NavigationBar'
 
 // import { getCart } from '../services/url'
 
-function CartPage ({ backend, loggedIn }) {
+function CartPage ({ backend }) {
 
     const [items, setItems] = useState([]);
     // const [price, setPrice] = useState(0);
@@ -43,7 +43,7 @@ function CartPage ({ backend, loggedIn }) {
             }
         };
         getCartItems();
-    },[backend, items])
+    },[])
 
     // const checkout = async() => {
     //     console.log(1, Cookies.get('idempotency'))
