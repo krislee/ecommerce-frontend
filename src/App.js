@@ -6,6 +6,8 @@ import BuyerLogin from './screens/BuyerLogin'
 import SellerLogin from './screens/SellerLogin'
 import ItemPage from './screens/ItemPage';
 import CartPage from './screens/CartPage';
+import Checkout from './screens/Checkout'
+import UserProfile from './screens/UserProfile'
 
 function App() {
 
@@ -36,6 +38,9 @@ function App() {
     <div className="App">
       <BrowserRouter>
         <Switch>
+          <Route path="/checkout">
+            <Checkout backend={backend} />
+          </Route>
           <Route path="/buyer">
             <BuyerLogin backend={backend} grabLoginInfo={grabLoginInfo}/>
           </Route>
@@ -47,6 +52,9 @@ function App() {
           </Route>
           <Route path="/cart">
             <CartPage backend={backend} loggedIn={loggedIn}/>
+          </Route>
+          <Route path="/profile">
+            <UserProfile backend={backend} loggedIn={loggedIn}/>
           </Route>
           <Route path="">
             <Homepage grabURL={grabURL} backend={backend} loggedIn={token}/>

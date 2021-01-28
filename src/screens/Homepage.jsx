@@ -52,16 +52,15 @@ function Homepage ({ grabURL, backend }) {
                 <NavBar />
             </>
              : <NavBar />}
-            {/* <NavBar /> */}
-            <div className="login-button">
+            {localStorage.getItem('token') ? null : <div className="login-button">
                 <Link to='/buyer'>
                     <Button name={'Buyer'}/>
                 </Link>
                 <Link to='/seller'>
                     <Button name={'Seller'}/>
                 </Link>
-            </div>
-            {<div className="itemContainer">
+            </div>}
+            {<div className={localStorage.getItem('token') ? 'itemContainerLoggedIn' : 'itemContainer'}>
                 {itemList}
             </div>}
             {/* {isItemSelected && } */}

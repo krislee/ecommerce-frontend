@@ -6,6 +6,7 @@
     position: fixed;
     height: 8vh;
     align-items: center;
+    border-bottom: 1px solid #000;
 }
 
 .link-home {
@@ -19,15 +20,31 @@
     color: #b8b8b8;
 }
 
-.icon {
+.cart-icon {
     color: #000;
     margin-right: 5vw;
     font-size: 32px;
     transition: 0.5s all ease-in-out;
 }
 
-.icon:hover {
+.cart-icon:hover {
     transform: rotate(15deg);
     transition: 0.5s all ease-in-out;
     color: #b8b8b8;
+}
+
+.user-icon {
+    color: #000;
+    margin-right: 5vw;
+    font-size: 32px;
+    transition: 0.5s all ease-in-out;
+}
+
+.user-icon:hover {
+    transition: 0.5s all ease-in-out;
+    color: #b8b8b8;
+}
+
+.row {
+    display: flex;
 }

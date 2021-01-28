@@ -13,6 +13,11 @@ function CartPage ({ backend }) {
     // const [price, setPrice] = useState(0);
     const [token, setToken] = useState('');
     const [cartID, setCartID] = useState('');
+    const [returningCustomer, setReturningCustomer] = useState(false);
+    const [customer, setCustomer] = useState(false);
+    const [clientSecret, setClientSecret] = useState('');
+    const [publicKey, setPublicKey] = useState('');
+    // const [checkoutData, setCheckoutData] = ('');
 
     useEffect(() => {
         async function getCartItems() {
@@ -60,13 +65,20 @@ function CartPage ({ backend }) {
             console.log(60, token)
             const response = await fetch(`${backend}/order/payment-intent`, {
                 method: 'POST',
-                header: {
+                headers: {
                     'Content-Type': 'application/json',
                     'Idempotency-Key': `${cartID}`,
                     'Authorization': `${token}`
                 }
             })
-            const data = await response.json()
+            const checkoutData = await response.json()
+            console.log(checkoutData);
+            // setCheckoutData(checkoutData);
+            setReturningCustomer(checkoutData.returningCustomer);
+            setCustomer(checkoutData.customer);
+            setPublicKey(checkoutData.publicKey);
+            setClientSecret(checkoutData.clientSecret);
+            
         } else {
             if(token) {
                 console.log("Cleared local storage")
@@ -120,7 +132,7 @@ function CartPage ({ backend }) {
                     </div>
                 ])}</div>
                 <button onClick={() => handleCheckout()}>Checkout</button>
-                <button onClick={() => console.log(token)}>Token</button>
+                {/* <button onClick={() => paymentIntent()}>Token</button> */}
                 </>}
             </div>
             {/* <button onClick={checkout}>Checkout</button> */}
