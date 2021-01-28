@@ -23,7 +23,6 @@ function Homepage ({ grabURL, backend }) {
             // setIsLoaded(true)
         };
         fetchItems();
-        console.log(loggedIn)
     },[electronicURL, backend])
 
 
