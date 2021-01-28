@@ -5,7 +5,7 @@ import Item from '../components/Item';
 import '../styles/Homepage.css'
 import NavBar from '../components/NavigationBar'
 
-function Homepage ({ grabURL, backend, loggedIn }) {
+function Homepage ({ grabURL, backend }) {
 
     const [items, setItems] = useState([]);
     // const [isLoaded, setIsLoaded] = useState(false);
@@ -23,7 +23,6 @@ function Homepage ({ grabURL, backend, loggedIn }) {
             // setIsLoaded(true)
         };
         fetchItems();
-        console.log(loggedIn)
     },[electronicURL, backend])
 
 
@@ -48,8 +47,12 @@ function Homepage ({ grabURL, backend, loggedIn }) {
 
     return (
         <React.Fragment>
-            {/* {localStorage.getItem('loggedIn') ? <NavBar /> : <div>Not Logged In</div>} */}
-            <NavBar />
+            {localStorage.getItem('loggedIn') ? 
+            <>
+                <NavBar />
+            </>
+             : <NavBar />}
+            {/* <NavBar /> */}
             <div className="login-button">
                 <Link to='/buyer'>
                     <Button name={'Buyer'}/>
