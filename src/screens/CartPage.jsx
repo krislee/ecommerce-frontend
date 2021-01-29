@@ -19,6 +19,7 @@ function CartPage ({ backend, grabItem }) {
     const [clientSecret, setClientSecret] = useState('');
     const [publicKey, setPublicKey] = useState('');
     const [checkoutData, setCheckoutData] = useState('');
+    const [redirect, setRedirect] = useState(false)
 
     useEffect(() => {
         async function getCartItems() {
@@ -79,6 +80,9 @@ function CartPage ({ backend, grabItem }) {
             setPublicKey(checkoutData.publicKey);
             setClientSecret(checkoutData.clientSecret);
             setCheckoutData(checkoutData);
+            if (checkoutData) {
+                setRedirect(true)
+            }
         } else {
             if(token) {
                 console.log("Cleared local storage")
@@ -89,6 +93,12 @@ function CartPage ({ backend, grabItem }) {
             // fetch('', {
 
             // })
+        }
+    }
+
+    const renderRedirect = () => {
+        if (redirect === true) {
+            return <Redirect to="/checkout"/>
         }
     }
 
@@ -133,6 +143,7 @@ function CartPage ({ backend, grabItem }) {
                         <div>{item.TotalPrice}</div>
                     </div>
                 ])}</div>
+                {renderRedirect()}
                 <button onClick={() => handleCheckout()}>Checkout</button>
                 </>}
             </div>
