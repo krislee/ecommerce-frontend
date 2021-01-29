@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 // import Button from '../components/Button'
 // import Login from '../components/Login'
 // import '../styles/BuyerLogin.css'
-
+import PaymentMethod from './PaymentMethod'
 function Checkout ({backend, paymentIntentInfo}) {
 
     const [token, setToken] = useState('');
@@ -20,10 +20,16 @@ function Checkout ({backend, paymentIntentInfo}) {
         setToken(localStorage.getItem('token'));
         console.log(1, token);
         const handleCheckout = async () => {
-            if (localStorage.getItem('token')) {
+            if (token) {
                 console.log("logged in")
                 console.log(2, token)
-                const responseCartID = await fetch(`${backend}/buyer/cartID`)
+                const responseCartID = await fetch(`${backend}/buyer/cartID`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': token
+                    }
+                })
                 const dataCartID = await responseCartID.json()
                 console.log("cart id: ", dataCartID)
                 const response = await fetch(`${backend}/order/payment-intent`, {
@@ -31,7 +37,7 @@ function Checkout ({backend, paymentIntentInfo}) {
                     headers: {
                         'Content-Type': 'application/json',
                         'Idempotency-Key': dataCartID.cartID,
-                        'Authorization': `${token}`
+                        'Authorization': token
                     }
                 })
                 const checkoutData = await response.json()
@@ -57,16 +63,15 @@ function Checkout ({backend, paymentIntentInfo}) {
     
                 // })
             }
-        }
+        }     
         handleCheckout();
-        // handleCheckout();
-        // console.log(paymentIntentInfo);
-    },[]);
+    },[token]);
     
     return (
         <div className="buyer-login">
             <div>Checkout Screen</div>
-            <button onClick={() => console.log(paymentIntentInfo)}>Cart Items</button>
+            <button onClick={() => console.log(token)}>Cart Items</button>
+            <PaymentMethod checkoutData={checkoutData}/>
         </div>
     )
 }
