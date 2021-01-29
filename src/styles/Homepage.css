@@ -20,6 +20,21 @@
     border: 1px solid black;
 }
 
+.itemContainerLoggedIn {
+    display: flex;
+    width: 80vw;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 20vh;
+}
+
+.itemContainerLoggedIn > a > div {
+    padding: 30px;
+    height: 100px;
+    width: 100vw;
+    border: 1px solid black;
+}
+
 a {
     text-decoration: none;
     color: black;
