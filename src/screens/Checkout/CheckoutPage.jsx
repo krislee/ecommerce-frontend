@@ -5,23 +5,32 @@ import React, { useEffect, useState } from 'react';
 // import Login from '../components/Login'
 // import '../styles/BuyerLogin.css'
 
-function Checkout ({backend, grabPaymentIntentInfo, paymentIntentInfo}) {
+function Checkout ({backend, paymentIntentInfo}) {
 
-    const [token, setToken] = useState('')
+    const [token, setToken] = useState('');
+    const [cartID, setCartID] = useState('');
+    const [returningCustomer, setReturningCustomer] = useState(false);
+    const [customer, setCustomer] = useState(false);
+    const [clientSecret, setClientSecret] = useState('');
+    const [publicKey, setPublicKey] = useState('');
+    const [checkoutData, setCheckoutData] = useState('');
+    const [redirect, setRedirect] = useState(false)
 
     useEffect(() => {
         setToken(localStorage.getItem('token'));
-        console.log(token);
+        console.log(1, token);
         const handleCheckout = async () => {
             if (localStorage.getItem('token')) {
                 console.log("logged in")
-                console.log(56, `${cartID}`)
-                console.log(60, token)
+                console.log(2, token)
+                const responseCartID = await fetch(`${backend}/buyer/cartID`)
+                const dataCartID = await responseCartID.json()
+                console.log("cart id: ", dataCartID)
                 const response = await fetch(`${backend}/order/payment-intent`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Idempotency-Key': `${cartID}`,
+                        'Idempotency-Key': dataCartID.cartID,
                         'Authorization': `${token}`
                     }
                 })
@@ -49,9 +58,10 @@ function Checkout ({backend, grabPaymentIntentInfo, paymentIntentInfo}) {
                 // })
             }
         }
-        grabPaymentIntentInfo();
-        console.log(paymentIntentInfo);
-    });
+        handleCheckout();
+        // handleCheckout();
+        // console.log(paymentIntentInfo);
+    },[]);
     
     return (
         <div className="buyer-login">
