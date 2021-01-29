@@ -6,7 +6,7 @@ import BuyerLogin from './screens/BuyerLogin'
 import SellerLogin from './screens/SellerLogin'
 import ItemPage from './screens/ItemPage';
 import CartPage from './screens/CartPage';
-import Checkout from './screens/Checkout'
+import Checkout from './screens/Checkout/CheckoutPage'
 import UserProfile from './screens/UserProfile'
 
 function App() {
@@ -19,15 +19,15 @@ function App() {
   // const [username, setUsername] = useState('')
   // const [password, setPassword] = useState('')
   const [token, setToken] = useState('')
-  const [cartItems, setCartItems] = useState('')
+  const [paymenIntentInfo, setPaymenIntentInfo] = useState('')
 
   const grabURL = (url) => {
     setURL(url);
   }
 
-  const grabItem = (cartItems) => {
-    setCartItems(cartItems);
-    console.log(cartItems);
+  const grabPaymenIntentInfo = (paymenIntentInfo) => {
+    setPaymenIntentInfo(paymenIntentInfo);
+    console.log(paymenIntentInfo);
   }
 
   const grabLoginInfo = (username, loggedIn, token) => {
@@ -45,7 +45,7 @@ function App() {
       <BrowserRouter>
         <Switch>
           <Route path="/checkout">
-            <Checkout backend={backend} cartItems={cartItems}/>
+            <Checkout backend={backend} grabPaymenIntentInfo={grabPaymenIntentInfo} paymenIntentInfo={paymenIntentInfo}/>
           </Route>
           <Route path="/buyer">
             <BuyerLogin backend={backend} grabLoginInfo={grabLoginInfo}/>
@@ -57,7 +57,7 @@ function App() {
             <ItemPage url={url} backend={backend} loggedIn={loggedIn}/>
           </Route>
           <Route path="/cart">
-            <CartPage backend={backend} loggedIn={loggedIn} grabItem={grabItem}/>
+            <CartPage backend={backend} loggedIn={loggedIn} />
           </Route>
           <Route path="/profile">
             <UserProfile backend={backend} loggedIn={loggedIn}/>

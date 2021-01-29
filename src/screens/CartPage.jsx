@@ -8,7 +8,7 @@ import { Redirect } from 'react-router-dom';
 
 // import { getCart } from '../services/url'
 
-function CartPage ({ backend, grabItem }) {
+function CartPage ({ backend, grabPaymentIntentInfo }) {
 
     const [items, setItems] = useState([]);
     // const [price, setPrice] = useState(0);
@@ -57,7 +57,7 @@ function CartPage ({ backend, grabItem }) {
         setToken(localStorage.getItem('token'));
         // console.log(localStorage.getItem('token'));
         // console.log(token);
-        getCartItems();
+        grabPaymentIntentInfo();
     },[])
 
     const handleCheckout = async () => {
@@ -80,10 +80,11 @@ function CartPage ({ backend, grabItem }) {
             setPublicKey(checkoutData.publicKey);
             setClientSecret(checkoutData.clientSecret);
             setCheckoutData(checkoutData);
-            grabItem(checkoutData);
-            if (checkoutData) {
-                setRedirect(true)
-            }
+            // console.log(checkoutData);
+            // grabItem(checkoutData);
+            // if (checkoutData) {
+            //     setRedirect(true)
+            // }
         } else {
             if(token) {
                 console.log("Cleared local storage")
