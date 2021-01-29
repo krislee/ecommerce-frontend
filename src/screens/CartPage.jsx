@@ -80,6 +80,7 @@ function CartPage ({ backend, grabItem }) {
             setPublicKey(checkoutData.publicKey);
             setClientSecret(checkoutData.clientSecret);
             setCheckoutData(checkoutData);
+            grabItem(checkoutData);
             if (checkoutData) {
                 setRedirect(true)
             }
