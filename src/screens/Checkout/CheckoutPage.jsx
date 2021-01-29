@@ -1,13 +1,8 @@
 import React, { useEffect, useState } from 'react';
-// import PaymentIntent from './PaymentIntent';
-// import {Link} from 'react-router-dom';
-// import Button from '../components/Button'
-// import Login from '../components/Login'
-// import '../styles/BuyerLogin.css'
+import { Redirect } from 'react-router-dom';
 import PaymentMethod from './PaymentMethod'
 function Checkout ({backend, paymentIntentInfo}) {
-
-    const [token, setToken] = useState(localStorage.getItem('token'));
+    const token = localStorage.getItem('token')
     const [cartID, setCartID] = useState('');
     const [returningCustomer, setReturningCustomer] = useState(false);
     const [customer, setCustomer] = useState(false);
@@ -15,71 +10,62 @@ function Checkout ({backend, paymentIntentInfo}) {
     const [publicKey, setPublicKey] = useState('');
     const [checkoutData, setCheckoutData] = useState('');
     const [redirect, setRedirect] = useState(false)
-
     useEffect(() => {
-        setToken((prevToken) => {
-            if (prevToken === (localStorage.getItem('token'))) {
-                return true
-            } else {
-                return false
-            }
-        });
-        console.log(1, token);
         const handleCheckout = async () => {
+            console.log("token", token)
             if (token) {
-                console.log("logged in")
-                console.log(2, token)
-                const responseCartID = await fetch(`${backend}/buyer/cartID`, {
+                console.log("hi")
+                const cartResponse = await fetch(`${backend}/buyer/cart`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': token
+                        'Authorization': localStorage.getItem('token')
                     }
                 })
-                const dataCartID = await responseCartID.json()
-                console.log("cart id: ", dataCartID)
-                const response = await fetch(`${backend}/order/payment-intent`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Idempotency-Key': dataCartID.cartID,
-                        'Authorization': token
-                    }
-                })
-                const checkoutData = await response.json()
-                console.log(checkoutData);
-                setReturningCustomer(checkoutData.returningCustomer);
-                setCustomer(checkoutData.customer);
-                setPublicKey(checkoutData.publicKey);
-                setClientSecret(checkoutData.clientSecret);
-                setCheckoutData(checkoutData);
-                // console.log(checkoutData);
-                // grabItem(checkoutData);
-                // if (checkoutData) {
-                //     setRedirect(true)
-                // }
+                const data = await cartResponse.json();
+                console.log(data);
+                if(typeof data.cart !== 'string'){
+                    const response = await fetch(`${backend}/order/payment-intent`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Idempotency-Key': data.cart._id,
+                            'Authorization': token
+                        }
+                    })
+                    const checkoutData = await response.json()
+                    console.log(checkoutData);
+                    setReturningCustomer(checkoutData.returningCustomer);
+                    setCustomer(checkoutData.customer);
+                    setPublicKey(checkoutData.publicKey);
+                    setClientSecret(checkoutData.clientSecret);
+                    setCheckoutData(checkoutData);
+                } else {
+                    setRedirect(true)
+                };
             } else {
-                // if(token) {
-                    console.log("Cleared local storage")
-                // } else {
-                    console.log('I am not logged in')
-                // }
-                // if
-                // fetch('', {
-    
-                // })
+                const cartResponse = await fetch(`${backend}/buyer/cart`)
+                const data = await cartResponse.json()
+                console.log(data);
+                if(data.message) {
+                    setRedirect(true)
+                }
             }
         }     
         handleCheckout();
-    },[token]);
-    
+    },[]);
+    const redirectToCart = () => {
+        if (redirect === true) {
+            return <Redirect to="/cart"/>
+        }
+    }
     return (
         <div className="buyer-login">
             <div>Checkout Screen</div>
             <button onClick={() => console.log(token)}>Cart Items</button>
-            <PaymentMethod checkoutData={checkoutData}/>
+            {redirectToCart()}
+            <PaymentMethod backend={backend} checkoutData={checkoutData} token={token}/>
         </div>
     )
 }
-
 export default Checkout

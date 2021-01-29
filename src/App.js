@@ -8,6 +8,9 @@ import ItemPage from './screens/ItemPage';
 import CartPage from './screens/CartPage';
 import Checkout from './screens/Checkout/CheckoutPage'
 import UserProfile from './screens/UserProfile'
+import { loadStripe } from "@stripe/stripe-js";
+import { Elements } from "@stripe/react-stripe-js";
+import collectCard from "./components/Card";
 
 function App() {
 
