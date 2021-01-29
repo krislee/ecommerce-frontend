@@ -7,7 +7,7 @@ import React, { useEffect, useState } from 'react';
 import PaymentMethod from './PaymentMethod'
 function Checkout ({backend, paymentIntentInfo}) {
 
-    const [token, setToken] = useState('');
+    const [token, setToken] = useState(localStorage.getItem('token'));
     const [cartID, setCartID] = useState('');
     const [returningCustomer, setReturningCustomer] = useState(false);
     const [customer, setCustomer] = useState(false);
@@ -17,7 +17,13 @@ function Checkout ({backend, paymentIntentInfo}) {
     const [redirect, setRedirect] = useState(false)
 
     useEffect(() => {
-        setToken(localStorage.getItem('token'));
+        setToken((prevToken) => {
+            if (prevToken === (localStorage.getItem('token'))) {
+                return true
+            } else {
+                return false
+            }
+        });
         console.log(1, token);
         const handleCheckout = async () => {
             if (token) {
@@ -53,11 +59,11 @@ function Checkout ({backend, paymentIntentInfo}) {
                 //     setRedirect(true)
                 // }
             } else {
-                if(token) {
+                // if(token) {
                     console.log("Cleared local storage")
-                } else {
+                // } else {
                     console.log('I am not logged in')
-                }
+                // }
                 // if
                 // fetch('', {
     
