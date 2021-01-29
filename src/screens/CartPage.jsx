@@ -49,6 +49,7 @@ function CartPage ({ backend }) {
             }
         };
         setToken(localStorage.getItem('token'));
+        getCartItems();
         // console.log(localStorage.getItem('token'));
         // console.log(token);
     },[])
