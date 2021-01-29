@@ -56,7 +56,7 @@ button.addEventListener('click', async () => {
         document.querySelector('#card-error').textContent = event.error ? event.error.message : ""
     })
 
-    if (!data.returningCustomer && !data.customer) {
+    if (!data.customer) {
         // CREATE A FORM TO COLLECT SHIPPING DETAILS AND BILLING DETAILS (BILLING DETAILS FORM UNDER CARD DETAILS)
         
         // SHOW CARD ELEMENT

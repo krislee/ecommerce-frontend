@@ -1,25 +1,19 @@
 import React, {useEffect, useState} from 'react'
-// import {BrowserRouter, Switch, Route, Link} from 'react-router-dom';
+import {Link} from 'react-router-dom';
 import '../styles/BuyerLogin.css'
 import '../styles/CartPage.css'
 import NavBar from '../components/NavigationBar'
-import { Redirect } from 'react-router-dom';
+// import { Redirect } from 'react-router-dom';
 // import Cookies from 'js-cookie'
 
 // import { getCart } from '../services/url'
 
-function CartPage ({ backend, grabItem }) {
+function CartPage ({ backend }) {
 
     const [items, setItems] = useState([]);
-    // const [price, setPrice] = useState(0);
     const [token, setToken] = useState('');
     const [cartID, setCartID] = useState('');
-    const [returningCustomer, setReturningCustomer] = useState(false);
-    const [customer, setCustomer] = useState(false);
-    const [clientSecret, setClientSecret] = useState('');
-    const [publicKey, setPublicKey] = useState('');
-    const [checkoutData, setCheckoutData] = useState('');
-    const [redirect, setRedirect] = useState(false)
+    // const [redirect, setRedirect] = useState(false)
 
     useEffect(() => {
         async function getCartItems() {
@@ -57,51 +51,51 @@ function CartPage ({ backend, grabItem }) {
         setToken(localStorage.getItem('token'));
         // console.log(localStorage.getItem('token'));
         // console.log(token);
-        getCartItems();
     },[])
 
-    const handleCheckout = async () => {
-        if (localStorage.getItem('token')) {
-            console.log("logged in")
-            console.log(56, `${cartID}`)
-            console.log(60, token)
-            const response = await fetch(`${backend}/order/payment-intent`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Idempotency-Key': `${cartID}`,
-                    'Authorization': `${token}`
-                }
-            })
-            const checkoutData = await response.json()
-            console.log(checkoutData);
-            setReturningCustomer(checkoutData.returningCustomer);
-            setCustomer(checkoutData.customer);
-            setPublicKey(checkoutData.publicKey);
-            setClientSecret(checkoutData.clientSecret);
-            setCheckoutData(checkoutData);
-            grabItem(checkoutData);
-            if (checkoutData) {
-                setRedirect(true)
-            }
-        } else {
-            if(token) {
-                console.log("Cleared local storage")
-            } else {
-                console.log('I am not logged in')
-            }
-            // if
-            // fetch('', {
+    // const handleCheckout = async () => {
+    //     if (localStorage.getItem('token')) {
+    //         console.log("logged in")
+    //         console.log(56, `${cartID}`)
+    //         console.log(60, token)
+    //         const response = await fetch(`${backend}/order/payment-intent`, {
+    //             method: 'POST',
+    //             headers: {
+    //                 'Content-Type': 'application/json',
+    //                 'Idempotency-Key': `${cartID}`,
+    //                 'Authorization': `${token}`
+    //             }
+    //         })
+    //         const checkoutData = await response.json()
+    //         console.log(checkoutData);
+    //         setReturningCustomer(checkoutData.returningCustomer);
+    //         setCustomer(checkoutData.customer);
+    //         setPublicKey(checkoutData.publicKey);
+    //         setClientSecret(checkoutData.clientSecret);
+    //         setCheckoutData(checkoutData);
+    //         // console.log(checkoutData);
+    //         // grabItem(checkoutData);
+    //         // if (checkoutData) {
+    //         //     setRedirect(true)
+    //         // }
+    //     } else {
+    //         if(token) {
+    //             console.log("Cleared local storage")
+    //         } else {
+    //             console.log('I am not logged in')
+    //         }
+    //         // if
+    //         // fetch('', {
 
-            // })
-        }
-    }
+    //         // })
+    //     }
+    // }
 
-    const renderRedirect = () => {
-        if (redirect === true) {
-            return <Redirect to="/checkout"/>
-        }
-    }
+    // const renderRedirect = () => {
+    //     if (redirect === true) {
+    //         return <Redirect to="/checkout"/>
+    //     }
+    // }
 
 
 
@@ -144,8 +138,10 @@ function CartPage ({ backend, grabItem }) {
                         <div>{item.TotalPrice}</div>
                     </div>
                 ])}</div>
-                {renderRedirect()}
-                <button onClick={() => handleCheckout()}>Checkout</button>
+                {/* {renderRedirect()} */}
+                <Link to="/checkout">
+                <button>Checkout</button>
+                </Link>
                 </>}
             </div>
             {/* <button onClick={checkout}>Checkout</button> */}
