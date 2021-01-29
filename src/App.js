@@ -19,9 +19,15 @@ function App() {
   // const [username, setUsername] = useState('')
   // const [password, setPassword] = useState('')
   const [token, setToken] = useState('')
+  const [cartItems, setCartItems] = useState('')
 
   const grabURL = (url) => {
     setURL(url);
+  }
+
+  const grabItem = (cartItems) => {
+    setCartItems(cartItems);
+    console.log(cartItems);
   }
 
   const grabLoginInfo = (username, loggedIn, token) => {
@@ -39,7 +45,7 @@ function App() {
       <BrowserRouter>
         <Switch>
           <Route path="/checkout">
-            <Checkout backend={backend} />
+            <Checkout backend={backend} cartItems={cartItems}/>
           </Route>
           <Route path="/buyer">
             <BuyerLogin backend={backend} grabLoginInfo={grabLoginInfo}/>
@@ -51,7 +57,7 @@ function App() {
             <ItemPage url={url} backend={backend} loggedIn={loggedIn}/>
           </Route>
           <Route path="/cart">
-            <CartPage backend={backend} loggedIn={loggedIn}/>
+            <CartPage backend={backend} loggedIn={loggedIn} grabItem={grabItem}/>
           </Route>
           <Route path="/profile">
             <UserProfile backend={backend} loggedIn={loggedIn}/>

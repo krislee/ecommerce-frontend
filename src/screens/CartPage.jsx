@@ -3,11 +3,12 @@ import React, {useEffect, useState} from 'react'
 import '../styles/BuyerLogin.css'
 import '../styles/CartPage.css'
 import NavBar from '../components/NavigationBar'
+import { Redirect } from 'react-router-dom';
 // import Cookies from 'js-cookie'
 
 // import { getCart } from '../services/url'
 
-function CartPage ({ backend }) {
+function CartPage ({ backend, grabItem }) {
 
     const [items, setItems] = useState([]);
     // const [price, setPrice] = useState(0);
@@ -17,7 +18,7 @@ function CartPage ({ backend }) {
     const [customer, setCustomer] = useState(false);
     const [clientSecret, setClientSecret] = useState('');
     const [publicKey, setPublicKey] = useState('');
-    // const [checkoutData, setCheckoutData] = ('');
+    const [checkoutData, setCheckoutData] = useState('');
 
     useEffect(() => {
         async function getCartItems() {
@@ -73,12 +74,11 @@ function CartPage ({ backend }) {
             })
             const checkoutData = await response.json()
             console.log(checkoutData);
-            // setCheckoutData(checkoutData);
             setReturningCustomer(checkoutData.returningCustomer);
             setCustomer(checkoutData.customer);
             setPublicKey(checkoutData.publicKey);
             setClientSecret(checkoutData.clientSecret);
-            
+            setCheckoutData(checkoutData);
         } else {
             if(token) {
                 console.log("Cleared local storage")
@@ -91,6 +91,8 @@ function CartPage ({ backend }) {
             // })
         }
     }
+
+
 
     // const checkout = async() => {
     //     console.log(1, Cookies.get('idempotency'))
@@ -132,7 +134,6 @@ function CartPage ({ backend }) {
                     </div>
                 ])}</div>
                 <button onClick={() => handleCheckout()}>Checkout</button>
-                {/* <button onClick={() => paymentIntent()}>Token</button> */}
                 </>}
             </div>
             {/* <button onClick={checkout}>Checkout</button> */}

@@ -26,7 +26,7 @@ function NavBar () {
             <>
             <Button onClick={() => handleLogout()} name={'Logout'} /> 
             <Link to="/profile">
-            <div class='row'>
+            <div className='row'>
                 <FontAwesomeIcon className="user-icon" icon={faUser}/>
                 <div>{username}</div>
             </div>
