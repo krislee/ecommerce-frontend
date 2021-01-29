@@ -4,10 +4,11 @@ import React from 'react'
 // import Login from '../components/Login'
 // import '../styles/BuyerLogin.css'
 
-function Checkout ({backend}) {
+function Checkout ({backend, cartItems}) {
     return (
         <div className="buyer-login">
             <div>Checkout Screen</div>
+            <button onClick={() => console.log(cartItems)}>Cart Items</button>
         </div>
     )
 }
