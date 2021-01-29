@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 function PaymentMethod ({ backend, checkoutData, token }) {
 
     useEffect(() => {
-        const fetchPaymentMethod = () => {
+        const fetchPaymentMethod = async () => {
             const paymentMethodResponse = await fetch(`${backend}/order/checkout/`, {
                 method: 'GET',
                 headers: {
