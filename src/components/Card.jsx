@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import {CardElement} from "@stripe/react-stripe-js";
 import '../styles/Card.css'
-function CollectCard({handleChange}) {
+
+function CollectCard({ handleChange }) {
 
     const cardStyle = {
         base: {
@@ -23,7 +24,7 @@ function CollectCard({handleChange}) {
     return (
         <label>
             Card details
-            <CardElement options={cardStyle} onChange={handleChange}/>
+            <CardElement options={cardStyle} onChange={(event) => handleChange(event)}/>
         </label>
     );
 

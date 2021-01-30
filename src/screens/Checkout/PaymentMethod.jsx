@@ -34,7 +34,7 @@ function PaymentMethod ({ backend, checkoutData, token, handleChange }) {
         <div>
             {/* <button onClick={()=> console.log(paymentData)}>Payment Method</button> */}
 
-            {(!paymentData.paymentMethodID) ? <CollectCard onChange={(event) => handleChange}/> : (
+            {(!paymentData.paymentMethodID) ? <CollectCard handleChange={handleChange}/> : (
                 <div>Payment Details</div>
                 // <div>
                 //     <h2>Payment Details</h2>
