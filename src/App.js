@@ -1,6 +1,7 @@
 import React, {useState} from 'react'
 import {BrowserRouter, Switch, Route} from 'react-router-dom';
 import './App.css';
+// import './styles/Card.css'
 import Homepage from './screens/Homepage'
 import BuyerLogin from './screens/BuyerLogin'
 import SellerLogin from './screens/SellerLogin'
@@ -8,11 +9,13 @@ import ItemPage from './screens/ItemPage';
 import CartPage from './screens/CartPage';
 import Checkout from './screens/Checkout/CheckoutPage'
 import UserProfile from './screens/UserProfile'
+// STRIPE
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
-import collectCard from "./components/Card";
 
 function App() {
+
+  const stripePromise = loadStripe('pk_test_51HnnIMIYuoOQip6pUnsYnuXlHlEZDBIrXMRatY8FOKakcOsFN08ptoIPrHIthMNBo8n58lvQGNoh5bYAfJFmgc6R00ufne9cZV')
 
   // const backend = 'http://localhost:3001'
   const backend = `https://elecommerce.herokuapp.com`
@@ -48,7 +51,9 @@ function App() {
       <BrowserRouter>
         <Switch>
           <Route path="/checkout">
-            <Checkout backend={backend} grabPaymenIntentInfo={grabPaymenIntentInfo} paymenIntentInfo={paymenIntentInfo}/>
+            <Elements stripe={stripePromise}>
+              <Checkout backend={backend} grabPaymenIntentInfo={grabPaymenIntentInfo} paymenIntentInfo={paymenIntentInfo}/>
+            </Elements>
           </Route>
           <Route path="/buyer">
             <BuyerLogin backend={backend} grabLoginInfo={grabLoginInfo}/>
@@ -70,6 +75,7 @@ function App() {
           </Route>
         </Switch>
       </BrowserRouter>
+      
     </div>
   );
 }

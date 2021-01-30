@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Redirect } from 'react-router-dom';
 import PaymentMethod from './PaymentMethod'
+import {useStripe, useElements, CardElement} from '@stripe/react-stripe-js';
+
 function Checkout ({backend, paymentIntentInfo}) {
     const token = localStorage.getItem('token')
     const [cartID, setCartID] = useState('');
@@ -10,11 +12,18 @@ function Checkout ({backend, paymentIntentInfo}) {
     const [publicKey, setPublicKey] = useState('');
     const [checkoutData, setCheckoutData] = useState('');
     const [redirect, setRedirect] = useState(false)
+
+    const [succeeded, setSucceeded] = useState(false);
+    const [error, setError] = useState(null);
+    const [processing, setProcessing] = useState('');
+    const [disabled, setDisabled] = useState(true);
+    const stripe = useStripe();
+    const elements = useElements();
+
     useEffect(() => {
         const handleCheckout = async () => {
             console.log("token", token)
             if (token) {
-                console.log("hi")
                 const cartResponse = await fetch(`${backend}/buyer/cart`, {
                     method: 'GET',
                     headers: {
@@ -54,18 +63,71 @@ function Checkout ({backend, paymentIntentInfo}) {
         }     
         handleCheckout();
     },[]);
+
+    // Listen to changes on the Card Element to immediately display card errors (e.g. expiry date in the past) and disable the button if the Card Element is empty.
+    const handleChange = async (event) => {
+        console.log("listening for card changes")
+        setDisabled(event.empty);
+        setError(event.error ? event.error.message : "");
+    };
+
+    const handleSubmit = async (event) => {
+        // We don't want to let default form submission happen here,
+        // which would refresh the page.
+        event.preventDefault();
+    
+        if (!stripe || !elements) {
+          // Stripe.js has not yet loaded.
+          // Make sure to disable form submission until Stripe.js has loaded.
+          return;
+        }
+    
+        const result = await stripe.confirmCardPayment(clientSecret, {
+          payment_method: {
+            card: elements.getElement(CardElement),
+            billing_details: {
+              name: 'Jenny Rosen',
+            },
+          }
+        });
+
+        console.log("result: ", result)
+
+        if (result.error) {
+            // Show error to your customer (e.g., insufficient funds)
+            setError(`Payment failed ${result.error.message}`);
+            setProcessing(false);
+          } else {
+            // The payment has been processed!
+            if (result.paymentIntent.status === 'succeeded') {
+              console.log('succeeded')
+              setSucceeded(true)
+            }
+          }
+    }
+
     const redirectToCart = () => {
         if (redirect === true) {
             return <Redirect to="/cart"/>
         }
     }
     return (
-        <div className="buyer-login">
+        <form id="payment-form" onSubmit={handleSubmit}>
             <div>Checkout Screen</div>
-            <button onClick={() => console.log(token)}>Cart Items</button>
             {redirectToCart()}
-            <PaymentMethod backend={backend} checkoutData={checkoutData} token={token}/>
-        </div>
+
+            <PaymentMethod backend={backend} checkoutData={checkoutData} token={token} handleChange={handleChange}/>
+
+            {/* Show any error that happens when processing the payment */}
+            {error && (<div className="card-error" role="alert">{error}</div>)}
+
+            <button disabled={processing || disabled || succeeded} id="submit">
+                <span id="button-text">
+                    {processing ? (<div className="spinner" id="spinner"></div>) : ("Confirm Payment")}
+                </span>
+            </button>
+            
+        </form>
     )
 }
 export default Checkout

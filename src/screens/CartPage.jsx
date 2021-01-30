@@ -3,10 +3,7 @@ import {Link} from 'react-router-dom';
 import '../styles/BuyerLogin.css'
 import '../styles/CartPage.css'
 import NavBar from '../components/NavigationBar'
-// import { Redirect } from 'react-router-dom';
-// import Cookies from 'js-cookie'
 
-// import { getCart } from '../services/url'
 
 function CartPage ({ backend }) {
 
