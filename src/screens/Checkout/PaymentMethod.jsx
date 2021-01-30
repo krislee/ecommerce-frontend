@@ -6,7 +6,7 @@ import CollectCard from "../../components/Card"
 function PaymentMethod ({ backend, checkoutData, token, handleChange }) {
 
     const [paymentData, setPaymentData] = useState({})
-    const [paymentMethodID, setPaymentMethodID] = useState('')
+    // const [paymentMethodID, setPaymentMethodID] = useState('')
 
     useEffect(() => {
         const fetchPaymentMethod = async () => {
@@ -26,7 +26,7 @@ function PaymentMethod ({ backend, checkoutData, token, handleChange }) {
             // }
         }
         fetchPaymentMethod();
-    },[])
+    },[backend, token])
 
     
     

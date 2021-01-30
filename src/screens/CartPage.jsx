@@ -8,7 +8,7 @@ import NavBar from '../components/NavigationBar'
 function CartPage ({ backend }) {
 
     const [items, setItems] = useState([]);
-    const [token, setToken] = useState('');
+    // const [token, setToken] = useState('');
     const [cartID, setCartID] = useState('');
     // const [redirect, setRedirect] = useState(false)
 
@@ -47,7 +47,7 @@ function CartPage ({ backend }) {
         };
         getCartItems();
 
-    },[])
+    },[backend, cartID, items])
 
     return (
         <>
