@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Redirect } from 'react-router-dom';
+import { Redirect, Link } from 'react-router-dom';
 import PaymentMethod from './PaymentMethod'
 import {useStripe, useElements, CardElement} from '@stripe/react-stripe-js';
 
@@ -11,7 +11,8 @@ function Checkout ({backend, paymentIntentInfo}) {
     const [clientSecret, setClientSecret] = useState('');
     const [publicKey, setPublicKey] = useState('');
     const [checkoutData, setCheckoutData] = useState('');
-    const [redirect, setRedirect] = useState(false)
+    const [redirect, setRedirect] = useState(true)
+    // const [isMounted, setIsMounted] = useState(false)
 
     const [succeeded, setSucceeded] = useState(false);
     const [error, setError] = useState(null);
@@ -33,6 +34,10 @@ function Checkout ({backend, paymentIntentInfo}) {
                 })
                 const data = await cartResponse.json();
                 console.log(data);
+                if(data.cart === "No cart available") {
+                    setRedirect(true)
+                    // setIsMounted(false)
+                }
                 if(typeof data.cart !== 'string'){
                     const response = await fetch(`${backend}/order/payment-intent`, {
                         method: 'POST',
@@ -49,9 +54,7 @@ function Checkout ({backend, paymentIntentInfo}) {
                     setPublicKey(checkoutData.publicKey);
                     setClientSecret(checkoutData.clientSecret);
                     setCheckoutData(checkoutData);
-                } else {
-                    setRedirect(true)
-                };
+                } 
             } else {
                 const cartResponse = await fetch(`${backend}/buyer/cart`)
                 const data = await cartResponse.json()
@@ -72,6 +75,7 @@ function Checkout ({backend, paymentIntentInfo}) {
     };
 
     const handleSubmit = async (event) => {
+        setProcessing(true)
         // We don't want to let default form submission happen here,
         // which would refresh the page.
         event.preventDefault();
@@ -81,7 +85,7 @@ function Checkout ({backend, paymentIntentInfo}) {
           // Make sure to disable form submission until Stripe.js has loaded.
           return;
         }
-    
+        console.log(85, clientSecret)
         const result = await stripe.confirmCardPayment(clientSecret, {
           payment_method: {
             card: elements.getElement(CardElement),
@@ -95,13 +99,14 @@ function Checkout ({backend, paymentIntentInfo}) {
 
         if (result.error) {
             // Show error to your customer (e.g., insufficient funds)
-            setError(`Payment failed ${result.error.message}`);
+            setError(`Payment failed. ${result.error.message}`);
             setProcessing(false);
           } else {
             // The payment has been processed!
             if (result.paymentIntent.status === 'succeeded') {
               console.log('succeeded')
               setSucceeded(true)
+              setProcessing(false)
             }
           }
     }
@@ -112,22 +117,28 @@ function Checkout ({backend, paymentIntentInfo}) {
         }
     }
     return (
+        <>
+        {redirectToCart()}
+
         <form id="payment-form" onSubmit={handleSubmit}>
             <div>Checkout Screen</div>
-            {redirectToCart()}
-
-            <PaymentMethod backend={backend} checkoutData={checkoutData} token={token} handleChange={handleChange}/>
+            <PaymentMethod backend={backend} checkoutData={checkoutData} token={token} handleChange={handleChange} redirect={!redirect}/>
 
             {/* Show any error that happens when processing the payment */}
             {error && (<div className="card-error" role="alert">{error}</div>)}
 
-            <button disabled={processing || disabled || succeeded} id="submit">
+            <button disabled={processing || disabled || succeeded} id="submit" onClick={handleSubmit}>
                 <span id="button-text">
                     {processing ? (<div className="spinner" id="spinner"></div>) : ("Confirm Payment")}
                 </span>
             </button>
             
         </form>
+           
+        
+        </>
     )
 }
 export default Checkout
+
+// 4000 0027 6000 3184 (auth card)

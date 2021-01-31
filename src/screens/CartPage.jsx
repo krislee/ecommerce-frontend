@@ -10,6 +10,7 @@ function CartPage ({ backend }) {
     const [items, setItems] = useState([]);
     const [token, setToken] = useState('');
     const [cartID, setCartID] = useState('');
+    const [data, setData] = useState('');
     // const [redirect, setRedirect] = useState(false)
 
     useEffect(() => {
@@ -24,6 +25,7 @@ function CartPage ({ backend }) {
                 });
                 const data = await resp.json();
                 console.log(data);
+                setData(data);
                 setItems(data.cart.Items);
                 setCartID(data.cart._id);
                 console.log(cartID)
@@ -57,7 +59,7 @@ function CartPage ({ backend }) {
             </>
              : <NavBar />}
             <div className="cart">
-                {items.length === 0 ? <div className="noItems">No Items...</div>: 
+                {typeof data.cart === 'string' || items.length === 0? <div className="noItems">No Items...</div>: 
                 <>
                 <div>{items.map(item => [
                     <div key={item.ItemId}>
