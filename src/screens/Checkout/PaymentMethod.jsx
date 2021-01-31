@@ -6,7 +6,7 @@ import CollectCard from "../../components/Card"
 function PaymentMethod ({ backend, checkoutData, token, handleChange, redirect }) {
 
     const [paymentData, setPaymentData] = useState({})
-    const [paymentMethodID, setPaymentMethodID] = useState('')
+    // const [paymentMethodID, setPaymentMethodID] = useState('')
 
     useEffect(() => {
         console.log(12, redirect)

@@ -39,9 +39,9 @@ function App() {
   const grabLoginInfo = (username, loggedIn, token) => {
     // setUsername(username);
     localStorage.setItem("username", username);
-    // setLoggedIn(loggedIn);
+    setLoggedIn(loggedIn);
     localStorage.setItem("loggedIn", loggedIn);
-    // setToken(token);
+    setToken(token);
     localStorage.setItem("token", token);
   }
 

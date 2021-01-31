@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react'
+import React from 'react'
 import {Link} from 'react-router-dom';
 import Button from '../components/Button'
 // import '../styles/BuyerLogin.css'
@@ -14,7 +14,7 @@ function NavBar () {
         // return false;
     }
 
-    const [username, setUsername] = useState(localStorage.getItem('username'));
+    let username = localStorage.getItem('username');
     
 
     return (

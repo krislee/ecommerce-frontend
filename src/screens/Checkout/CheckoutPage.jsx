@@ -5,7 +5,7 @@ import {useStripe, useElements, CardElement} from '@stripe/react-stripe-js';
 
 function Checkout ({backend, paymentIntentInfo}) {
     const token = localStorage.getItem('token')
-    const [cartID, setCartID] = useState('');
+    // const [cartID, setCartID] = useState('');
     const [returningCustomer, setReturningCustomer] = useState(false);
     const [customer, setCustomer] = useState(false);
     const [clientSecret, setClientSecret] = useState('');
@@ -50,8 +50,11 @@ function Checkout ({backend, paymentIntentInfo}) {
                     const checkoutData = await response.json()
                     console.log(checkoutData);
                     setReturningCustomer(checkoutData.returningCustomer);
+                    console.log(returningCustomer)
                     setCustomer(checkoutData.customer);
+                    console.log(customer)
                     setPublicKey(checkoutData.publicKey);
+                    console.log(publicKey)
                     setClientSecret(checkoutData.clientSecret);
                     setCheckoutData(checkoutData);
                 } 
@@ -65,7 +68,7 @@ function Checkout ({backend, paymentIntentInfo}) {
             }
         }     
         handleCheckout();
-    },[]);
+    },[backend, token, customer, publicKey, returningCustomer]);
 
     // Listen to changes on the Card Element to immediately display card errors (e.g. expiry date in the past) and disable the button if the Card Element is empty.
     const handleChange = async (event) => {
