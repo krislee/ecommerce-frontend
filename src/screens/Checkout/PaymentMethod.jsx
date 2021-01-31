@@ -41,9 +41,9 @@ function PaymentMethod ({ backend, checkoutData, token, handleCardChange, redire
     
     return (
         
-       <>   
         {/* Show Card and Billing Details or Card element and input depending if there is an already default or last used, saved card for logged in user. If there is an already default or last used, saved card, a payment method ID gets returned from the server. */}
-        {!paymentData.paymentMethodID} ? (
+        {!paymentData.paymentMethodID ? (
+            <div>
             <h2>Payment</h2>
             <CollectCard handleCardChange={handleCardChange}/>
             <p>Payment method ID: {paymentData.paymentMethodID}</p>
@@ -55,7 +55,8 @@ function PaymentMethod ({ backend, checkoutData, token, handleCardChange, redire
             <input value={billing.city || ""} name="city" placeholder="City" onChange={handleBillingChange}/>
             <input value={billing.state || ""} name="state" placeholder="State" onChange={handleBillingChange}/>
             <input value={billing.postalCode || ""} name="postalCode" placeholder="Zipcode" onChange={handleBillingChange}/>
-        ): (
+            </div>
+        ) : (
             <div>
                 <h2>Payment</h2>
                 <p>{paymentData.brand}</p>
@@ -67,10 +68,7 @@ function PaymentMethod ({ backend, checkoutData, token, handleCardChange, redire
                 <p>{paymentData.billingDetails.address}</p> */}
                 <button id={paymentData.paymentMethodID}>Edit</button>
             </div>
-        )
-       
-        </>
-    )
+        )}
 
 }
 

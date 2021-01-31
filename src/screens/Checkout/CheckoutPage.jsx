@@ -70,7 +70,7 @@ function Checkout ({backend, paymentIntentInfo}) {
                         }
                     })
                     const checkoutIntentData = await response.json()
-                    console.log(checkoutData);
+                    console.log(checkoutIntentData);
                     setCustomer(checkoutIntentData.customer);
                     console.log(customer)
                     setPublicKey(checkoutIntentData.publicKey);
@@ -78,7 +78,6 @@ function Checkout ({backend, paymentIntentInfo}) {
                     setClientSecret(checkoutIntentData.clientSecret);
                     console.log(clientSecret)
                     setCheckoutData(checkoutIntentData);
-                    console.log(checkoutData)
                 } 
             } else {
                 const cartResponse = await fetch(`${backend}/buyer/cart`)
