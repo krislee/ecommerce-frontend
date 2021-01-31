@@ -224,12 +224,12 @@ function Checkout ({backend, paymentIntentInfo}) {
             {error && (<div className="card-error" role="alert">{error}</div>)}
 
             {/* Show Save card checkbox if user is logged in and does not have an already default, saved or last used, saved card to display. Do not show the checkbox for guests. */}
-            {customer && !paymentMethodID} ? (
+            {(customer && !paymentMethodID)? (
                 <div>
                     <input type="checkbox" id="saveCard" name="saveCard" />
                     <label htmlFor="saveCard">Save card for future purchases</label>
                 </div>
-            ): <div></div>
+            ): <div></div>}
 
             <button disabled={processing || disabled || succeeded} id="submit" onClick={handleSubmit}>
                 <span id="button-text">
