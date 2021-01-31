@@ -3,32 +3,37 @@ import React, { useEffect, useState } from 'react';
 // import { Elements } from "@stripe/react-stripe-js";
 import CollectCard from "../../components/Card"
 
-function PaymentMethod ({ backend, checkoutData, token, handleChange, redirect }) {
+function PaymentMethod ({ backend, checkoutData, token, handleCardChange, redirect, billing, handleBillingChange, grabPaymentMethodID }) {
 
     const [paymentData, setPaymentData] = useState({})
-    // const [paymentMethodID, setPaymentMethodID] = useState('')
 
     useEffect(() => {
         console.log(12, redirect)
-        if(redirect){
-            console.log(14)
-            const fetchPaymentMethod = async () => {
-                const paymentMethodResponse = await fetch(`${backend}/order/checkout/payment`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': token
-                    }
-                })
-                const paymentMethodData = await paymentMethodResponse.json()
-                console.log(paymentMethodData);
+        if(!redirect){
+            console.log("running fetching payment method if no redirect")
+            if(token){
+                // Get either a 1) default, saved card or 2) last used, saved (but not default) card info back (will be an object response), OR 3) no saved cards (will be null response)
+                const fetchPaymentMethod = async () => {
+                    const paymentMethodResponse = await fetch(`${backend}/order/checkout/payment`, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': token
+                        }
+                    })
+                    const paymentMethodData = await paymentMethodResponse.json()
+                    console.log(paymentMethodData);
+                    // After getting the card info, update paymentMethodID state in Checkout Page. The value is either a string of the payment method ID or null if there is no payment method saved for the logged in user. 
+                    grabPaymentMethodID(paymentMethodData.paymentMethodID)
+                    setPaymentData(paymentMethodData)
 
-                setPaymentData(paymentMethodData)
-                if(paymentMethodData.paymentMethodID) {
-                    setPaymentMethodID(paymentMethodData.paymentMethodID)
+                    
+                    
                 }
+                fetchPaymentMethod();
+            } else {
+                grabPaymentMethodID(null)
             }
-            fetchPaymentMethod();
         }
     },[])
 
@@ -36,21 +41,35 @@ function PaymentMethod ({ backend, checkoutData, token, handleChange, redirect }
     
     return (
         
-        <div>
-            {(!paymentData.paymentMethodID) ? <CollectCard handleChange={handleChange}/> : (
-                // <div>Payment Details</div>
-                <div>
-                    <h2>Payment Details</h2>
-                        <p>{paymentData.brand}</p>
-                        <p>{paymentData.last4}</p>
-                        <p>{paymentData.expDate}</p>
-                    <h2>Billing Details</h2>
-                        <p>{paymentData.billingDetails.name}</p>
-                        <p>{paymentData.billingDetails.address}</p>
-                    <button id={paymentData.paymentMethodID}>Edit</button>
-                </div>
-            )}
-        </div>
+       <>   
+        {/* Show Card and Billing Details or Card element and input depending if there is an already default or last used, saved card for logged in user. If there is an already default or last used, saved card, a payment method ID gets returned from the server. */}
+        {!paymentData.paymentMethodID} ? (
+            <h2>Payment</h2>
+            <CollectCard handleCardChange={handleCardChange}/>
+            <p>Payment method ID: {paymentData.paymentMethodID}</p>
+            <h2>Billing Address</h2>
+            <input value={billing.firstName || ""} name="firstName" placeholder="First Name" onChange={handleBillingChange}/>
+            <input value={billing.lastName || ""} name="lastName" placeholder="Last Name" onChange={handleBillingChange}/>
+            <input value={billing.line1 || ""} name="line1" placeholder="Address 1" onChange={handleBillingChange}/>
+            <input value={billing.line2 || ""} name="line2" placeholder="Address 2" onChange={handleBillingChange} />
+            <input value={billing.city || ""} name="city" placeholder="City" onChange={handleBillingChange}/>
+            <input value={billing.state || ""} name="state" placeholder="State" onChange={handleBillingChange}/>
+            <input value={billing.postalCode || ""} name="postalCode" placeholder="Zipcode" onChange={handleBillingChange}/>
+        ): (
+            <div>
+                <h2>Payment</h2>
+                <p>{paymentData.brand}</p>
+                <p>{paymentData.last4}</p>
+                <p>{paymentData.expDate}</p>
+
+                {/* <h2>Billing Address</h2>
+                <p>{paymentData.billingDetails.name}</p>
+                <p>{paymentData.billingDetails.address}</p> */}
+                <button id={paymentData.paymentMethodID}>Edit</button>
+            </div>
+        )
+       
+        </>
     )
 
 }

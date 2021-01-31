@@ -81,3 +81,5 @@ function App() {
 }
 
 export default App;
+
+// https://github.com/stripe/react-stripe-elements/issues/468
