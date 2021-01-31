@@ -44,7 +44,6 @@ function PaymentMethod ({ backend, checkoutData, token, handleCardChange, redire
             <div>
             <h2>Payment</h2>
             <CollectCard handleCardChange={handleCardChange}/>
-            <p>Payment method ID: {paymentData.paymentMethodID}</p>
             <h2>Billing Address</h2>
             <input value={billing.firstName || ""} name="firstName" placeholder="First Name" onChange={handleBillingChange}/>
             <input value={billing.lastName || ""} name="lastName" placeholder="Last Name" onChange={handleBillingChange}/>

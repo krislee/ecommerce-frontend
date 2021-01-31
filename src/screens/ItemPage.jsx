@@ -30,7 +30,6 @@ function ItemPage ({ url, backend, loggedIn }) {
                 setItemInfo(data.electronicItem);
             }
             fetchData();
-            console.log(1, document.cookie)
         } else {
             async function fetchData() {
                 let resp = await fetch(`${backend}/buyer/electronic/${id}`,{
@@ -45,7 +44,6 @@ function ItemPage ({ url, backend, loggedIn }) {
                 setItemInfo(data.electronicItem);
             }
             fetchData();
-            console.log(2, document.cookie)
         }
     }, [currentURL, id, url, backend])
 

@@ -110,18 +110,20 @@ function Checkout ({backend, paymentIntentInfo}) {
           return;
         }
 
-        console.log(96, clientSecret)
+        console.log(clientSecret)
 
         // If there is no already saved card, and therefore, no card details displayed by PaymentMethod component, then we need to only display the Card Element that is also via the PaymentMethod component, but if the user is logged in then we need to also give the option of saving the card details from the Card Element. So let's run saveCardForFuture helper function.
         let paymentMethod
+        console.log(paymentMethodID)
         if(!paymentMethodID){
             paymentMethod = await saveCardForFuture()
+            console.log(paymentMethod)
         }
-        
 
-        // Confirm the payment using either 1) an already saved card (default or last used) 2) a card being created and saved during checkout 3) a card being created and not saved during checkout
+        // Confirm the payment using either 1) an already saved card (default or last used) - designated by paymentMethodID state 2) a card being created and saved during checkout - designated by paymentMethod.paymentMethod 3) a card being created and not saved during checkout
         let confirmCardResult
-        if(paymentMethodID || paymentMethod.paymentMethod){
+        if(paymentMethodID || paymentMethod.paymentMethodID){
+            console.log(126, paymentMethod)
             confirmCardResult = await stripe.confirmCardPayment(clientSecret, {
                 payment_method: {
                     // Check if there is an already default or last used saved card first. 
@@ -130,17 +132,18 @@ function Checkout ({backend, paymentIntentInfo}) {
                 }
             })
         } else {
+            console.log(135, paymentMethod)
             confirmCardResult = await stripe.confirmCardPayment(clientSecret, {
                 payment_method: {
                     card: elements.getElement(CardElement),
                     billing_details: {
-                        name: 'Jack Rosen',
+                        name: `${billing.firstName} ${billing.lastName}`,
                         address: {
-                            line1: '123 Test St.',
-                            line2: null,
-                            city: 'Test',
-                            state: 'Test',
-                            postal_code: 12345,
+                            line1: `${billing.line1}`,
+                            line2: `${billing.line2}`,
+                            city: `${billing.city}`,
+                            state: `${billing.state}`,
+                            postal_code: `${billing.postalCode}`,
                             country: 'US'
                         }
                     }
@@ -166,19 +169,22 @@ function Checkout ({backend, paymentIntentInfo}) {
 
     const saveCardForFuture = async() => {
         const checkbox = document.getElementById('saveCard')
+        
+        console.log(checkbox, checkbox.checked)
+
         // If user is logged in, user is also a Stripe customer. If logged in user checks the Save Card box, create the payment method with stripe.createPaymentMethod(), and on the server-side, check if the newly created payment method is a duplicate of already saved payment methods attached to Stripe customer before attaching to the Stripe customer. If duplicate card number, detach old one and attach the new one to Stripe customer. The server will send back the new payment method ID that was created by stripe.createPaymentMethod().
         if(checkbox && checkbox.checked) {
             const createPaymentMethodResponse = await stripe.createPaymentMethod({
                 type: 'card',
                 card: elements.getElement(CardElement),
                 billing_details: {
-                    name: 'Jill Rosen',
+                    name: `${billing.firstName} ${billing.lastName}`,
                     address: {
-                        line1: '123 Test St.',
-                        line2: null,
-                        city: 'Test',
-                        state: 'Test',
-                        postal_code: 12345,
+                        line1: `${billing.line1}`,
+                        line2: `${billing.line2}`,
+                        city: `${billing.city}`,
+                        state: `${billing.state}`,
+                        postal_code: `${billing.postalCode}`,
                         country: 'US'
                     }
                 },
@@ -187,7 +193,9 @@ function Checkout ({backend, paymentIntentInfo}) {
                     recollect_cvv: false
                 }
             })
-            const createPaymentMethodData = await createPaymentMethodResponse.json()
+
+            console.log(createPaymentMethodResponse)
+
             const savePaymentMethodToCustomerResponse = await fetch(`${backend}/order/payment?checkout=true`, {
                 method: 'POST',
                 headers: {
@@ -195,12 +203,15 @@ function Checkout ({backend, paymentIntentInfo}) {
                     'Authorization': localStorage.getItem('token')
                 },
                 body: JSON.stringify({
-                    fingerprint: createPaymentMethodData.card.fingerprint,
-                    paymentMethodID: createPaymentMethodData.id,
+                    fingerprint: createPaymentMethodResponse.paymentMethod.card.fingerprint,
+                    paymentMethodID: createPaymentMethodResponse.paymentMethod.id,
                     default: false
                 })
             })
             const savePaymentMethodToCustomerData = await savePaymentMethodToCustomerResponse.json()
+
+            console.log(savePaymentMethodToCustomerData)
+
             return savePaymentMethodToCustomerData
         }
         // Return null for payment method ID if guest or if logged in user did not check Save Card 
