@@ -17,8 +17,9 @@ function PaymentMethod ({ backend, checkoutData, token, handleCardChange, redire
     useEffect(() => {
         // console.log(12, redirect)
         console.log("running fetching payment method if no redirect")
-        if(!localStorage.getItem('cartItems') === 'false' && token){
-            // Get either a 1) default, saved card or 2) last used, saved (but not default) card info back (will be an object response), OR 3) no saved cards (will be null     response)
+        if(localStorage.getItem('cartItems') !== 'false' && token){
+            // Get either a 1) default, saved card or 2) last used, saved (but not default) card info back (will be an object response), OR 3) no saved cards (will be null response)
+            console.log(22)
             const fetchPaymentMethod = async () => {
                 const paymentMethodResponse = await fetch(`${backend}/order/checkout/payment`, {
                     method: 'GET',

@@ -85,7 +85,13 @@ function Checkout ({backend, paymentIntentInfo}) {
         setCardholderName(value)
     }   
 
-    
+     // Listen to changes on the Card Element to immediately display card errors (e.g. expiry date in the past) and disable the button if the Card Element is empty.
+    const handleCardChange = async (event) => {
+        console.log("listening for card changes")
+        setDisabled(event.empty);
+        setError(event.error ? event.error.message : "");
+    };
+
     /* ------- CREATE NEW OR UPDATE EXISTING PAYMENT INTENT AFTER RENDERING DOM ------- */
     useEffect(() => {
         const handleCheckout = async () => {
@@ -107,6 +113,7 @@ function Checkout ({backend, paymentIntentInfo}) {
                     // setIsMounted(false)
                 }
                 if(typeof data.cart !== 'string'){
+                    localStorage.setItem('cartItems', true)
                     const response = await fetch(`${backend}/order/payment-intent`, {
                         method: 'POST',
                         headers: {
@@ -134,13 +141,6 @@ function Checkout ({backend, paymentIntentInfo}) {
         }    
         handleCheckout();
     },[]);
-
-    // Listen to changes on the Card Element to immediately display card errors (e.g. expiry date in the past) and disable the button if the Card Element is empty.
-    const handleCardChange = async (event) => {
-        console.log("listening for card changes")
-        setDisabled(event.empty);
-        setError(event.error ? event.error.message : "");
-    };
 
     /* 
     Confirm card payment with either:
@@ -174,20 +174,28 @@ function Checkout ({backend, paymentIntentInfo}) {
         console.log("collect CVV: ", collectCVV)
         // Confirm the payment using either 1) an already saved card (default or last used) - designated by paymentMethodID state 2) a card being created and saved during checkout - designated by paymentMethod.paymentMethodID 3) a card being created and not saved during checkout
         let confirmCardResult
-        if(paymentMethodID || paymentMethod.paymentMethodID){
-            console.log(176, paymentMethod)
+        if(paymentMethodID && collectCVV) {
+            console.log("HIIIII")
             confirmCardResult = await stripe.confirmCardPayment(clientSecret, {
-                // Check if there is an already default or last used saved card first. 
-                // If there is one, use that first. If there is not one, use the NEW card created during checkout that has now been saved to the logged in user through saveCardForFuture helper function.
-                payment_method: paymentMethodID ? paymentMethodID : paymentMethod.paymentMethodID,
-                payment_method_options: collectCVV ? {
+                payment_method: paymentMethodID,
+                payment_method_options: {
                     card: {
                       cvc: elements.getElement(CardCvcElement)
                     }
-                } : undefined
+                }
+            })
+        }
+        else if((paymentMethodID && !collectCVV) || (paymentMethod.paymentMethodID && !collectCVV)){
+            console.log("BYEEE")
+            console.log(177, paymentMethod)
+            confirmCardResult = await stripe.confirmCardPayment(clientSecret, {
+                // Check if there is an already default or last used saved card first. 
+                // If there is one, use that first. If there is not one, use the NEW card created during checkout that has now been saved to the logged in user through saveCardForFuture helper function.
+                payment_method: paymentMethodID ? paymentMethodID : paymentMethod.paymentMethodID
             })
         } else {
             console.log(135, paymentMethod)
+            console.log("WHATS UP")
             confirmCardResult = await stripe.confirmCardPayment(clientSecret, {
                 payment_method: {
                     card: elements.getElement(CardElement),
