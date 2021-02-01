@@ -280,7 +280,7 @@ function Checkout ({backend, paymentIntentInfo}) {
         <>
         {redirectToCart()}
 
-        <form id="payment-form">
+        <div id="payment-form">
             <div>Checkout Screen</div>
             <PaymentMethod backend={backend} checkoutData={checkoutData} token={token} billing={billing} handleBillingChange={handleBillingChange} grabBilling={grabBilling} grabPaymentMethodID={grabPaymentMethodID} cardholderName={cardholderName} handleCardholderNameChange={handleCardholderNameChange} handleCardChange={handleCardChange} grabEditPayment={grabEditPayment} grabCollectCVV={grabCollectCVV} redirect={redirect}/>
 
@@ -303,7 +303,7 @@ function Checkout ({backend, paymentIntentInfo}) {
             ) : <></>
             }
             
-        </form>
+        </div>
            
         
         </>

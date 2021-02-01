@@ -48,9 +48,10 @@ function PaymentMethod ({ backend, checkoutData, token, handleCardChange, redire
                 grabPaymentMethodID(null)
             }
         }
-    },[])
+    },[updatedPayment])
 
-    const handleUpdatePayment = async() => {
+    const handleUpdatePayment = async(event) => {
+        event.preventDefault()
         console.log("Update payment")
         
         if (localStorage.getItem('token')) {
@@ -72,6 +73,7 @@ function PaymentMethod ({ backend, checkoutData, token, handleCardChange, redire
                         line2: billing.line2,
                         city: billing.city,
                         state: billing.state,
+                        postalCode: billing.postalCode,
                         country: 'US'
                     },
                     expMonth: 11,
@@ -83,7 +85,7 @@ function PaymentMethod ({ backend, checkoutData, token, handleCardChange, redire
             console.log(updatePaymentMethodData)
             if(await updatePaymentMethodData.paymentMethodID) {
                 setEditPayment(false)
-                // setUpdatedPayment(true)
+                setUpdatedPayment(true)
             }
         } else {
             return (
