@@ -1,8 +1,8 @@
 import React from 'react';
-import {CardElement} from "@stripe/react-stripe-js";
+import {CardCvcElement, CardElement, CardExpiryElement} from "@stripe/react-stripe-js";
 import '../styles/Card.css'
 
-function CollectCard({ handleCardChange }) {
+function CollectCard({ handleCardChange, editPayment }) {
 
     const cardStyle = {
         base: {
@@ -20,13 +20,22 @@ function CollectCard({ handleCardChange }) {
         iconColor: "#fa755a"
         }
     }
-  
-    return (
-        <label>
-            Card details
-            <CardElement options={cardStyle} onChange={(event) => handleCardChange(event)}/>
-        </label>
-    );
+    
+    if(editPayment) {
+        return (
+            <>
+                <CardExpiryElement options={cardStyle} onChange={(event) => handleCardChange(event)}/>
+                <CardCvcElement options={cardStyle} onChange={(event) => handleCardChange(event)}/>
+            </>
+        )
+    } else {
+        return (
+            <label>
+                Card details
+                <CardElement options={cardStyle} onChange={(event) => handleCardChange(event)}/>
+            </label>
+        )
+    }
 
 }
 

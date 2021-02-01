@@ -5,44 +5,81 @@ import {useStripe, useElements, CardElement} from '@stripe/react-stripe-js';
 
 function Checkout ({backend, paymentIntentInfo}) {
     const token = localStorage.getItem('token')
-
+    
+    /* ------- PAYMENT INTENT-RELATED STATES ------- */
     const [customer, setCustomer] = useState(false);
     const [clientSecret, setClientSecret] = useState('');
-    const [publicKey, setPublicKey] = useState('');
     const [checkoutData, setCheckoutData] = useState('');
     const [redirect, setRedirect] = useState(false)
 
-    // SET UP STRIPE
-    const stripe = useStripe();
-    const elements = useElements();
-
-    // PAYMENT-RELATED STATES
-    // Update billing state through Checkout/PaymentMethod by sending handleBillingChange function as a prop down to it, listening to the input changes
-    const [billing, setBilling] = useState({})
-    // Update paymentMethodID state through Checkout/PaymentMethod by sending grabPaymentMethodID function as prop down to it. The grabPaymentMethodID function will run in Checkout/PaymentMethod right after fetching the server to see if there are any default, saved OR last used, saved, or no, saved cards. 
-    const [paymentMethodID, setPaymentMethodID] = useState('')
-
-    // UI STRIPE STATES
-    const [succeeded, setSucceeded] = useState(false);
+    /* ------- UI STRIPE STATES ------- */
     const [error, setError] = useState(null);
     const [processing, setProcessing] = useState('');
     const [disabled, setDisabled] = useState(true);
+
+    /* ------- PAYMENT-RELATED STATES ------- */
+
+    // Update cardholder's name state by sending handleCardholderNameChange function as a prop down to Checkout/PaymentMethod
+    const [cardholderName, setCardholderName] = useState('')
+
+    // Update billing state by sending handleBillingChange function as a prop down to Checkout/PaymentMethod, listening to the input changes
+    const [billing, setBilling] = useState({})
+
+    // Update paymentMethodID state by sending grabPaymentMethodID function as prop down to Checkout/PaymentMethod. The grabPaymentMethodID function will run in Checkout/PaymentMethod right after fetching the server to see if there are any default, saved OR last used, saved, or no, saved cards. 
+    const [paymentMethodID, setPaymentMethodID] = useState('')
     
+    const[editPayment, setEditPayment] = useState(false)
+
+
+    /* ------- SET UP STRIPE ------- */
+    const stripe = useStripe();
+    const elements = useElements();
+
+    /* ------- HELPERS TO UPDATE PAYMENT-RELATED STATES ------- */
     
-     // Update paymentMethodID state through Checkout/PaymentMethod by sending grabPaymentMethodID function as prop down to it.
-     const grabPaymentMethodID = (paymentMethodID) => {
+    // Update paymentMethodID state by sending grabPaymentMethodID function as prop down to Checkout/PaymentMethod
+    const grabPaymentMethodID = (paymentMethodID) => {
         setPaymentMethodID(paymentMethodID)      
-        // If the logged in user has a default, saved or last used, saved card, the paymentMethodID state is a string.
-        // If the logged in user has neither or if user is a guest, then paymementMethodID is updated to null.
+        // If the logged in user has a default, saved or last used, saved card, the paymentMethodID state is a string. If paymentMethodID is truthy, then we will use it as the first option to confirm the card payment in stripe.confirmCardPayment(). If truthy, we would also not need to run the saveCardForFuture() helper since that should be run only if the card Element is displayed but it would not be displayed if there is a payment method ID from Checkout/PaymentMethod.
+        // If the logged in user has neither or if user is a guest, then paymementMethodID is updated to null. If paymentMethodID is falsy, then we need to run saveCardForFuture() helper in case the user wants to save the card. 
     }
 
+    // We need to prefill the billing details input when user wants to edit the displayed, saved card. So we pass the grabBilling function as prop to Checkout/PaymentMethod to update the billing state IF the payment data that comes back from fetching the server for either default, saved or last used, saved, or no, saved cards is default, saved or last used, saved card. 
+    // By updating the billing state, and sending the billing state as prop down to Checkout/PaymentMethod and then further down to Component/BillingInput, the Component/BillingInput inputs value property can now use the billing state.
+    const grabBilling = (billing) => {
+        console.log(billing)
+        const name = billing.name.split(" ")
+        setBilling({
+            firstName: name[0],
+            lastName: name[1],
+            line1: billing.address.line1,
+            line2: billing.address.line2 ? billing.address.line2 : "",
+            city: billing.address.city,
+            state: billing.address.state,
+            postalCode: billing.address.postalCode
+        })
+    }
+
+    // Update editPayment state by sending grabEditPayment() down as prop to Checkout/PaymentMethod, which gets updated to true if the Edit button in Checkout/PaymentMethod component is clicked. If editPayment is true, then we do not show Confirm Card Payment button.
+    const grabEditPayment = (edit) => {
+        setEditPayment(edit)
+    }
+
+    // handleBillingChange() gets passed down as prop to Checkout/PaymentMethod, and then to Component/BillingInput
     const handleBillingChange = (event) => {
         const { name, value } = event.target
         setBilling((prevBilling) => ({
-            ...prevBilling, [name] : value
+            ...prevBilling, [name] : value // need the previous billing state when updating the billing state (hence the ...prevBilling) or else the other input values will be empty
         }))
     }
 
+    // Listen to changes on cardholder name's input. handleCardholderNameChange() is passed as a prop to Checkout/PaymentMethod
+    const handleCardholderNameChange = (event) => {
+        const { value } = event.target
+        setCardholderName(value)
+    }
+
+    /* ------- CREATE NEW OR UPDATE EXISTING PAYMENT INTENT AFTER RENDERING DOM ------- */
     useEffect(() => {
         const handleCheckout = async () => {
             console.log("token", token)
@@ -73,8 +110,6 @@ function Checkout ({backend, paymentIntentInfo}) {
                     console.log(checkoutIntentData);
                     setCustomer(checkoutIntentData.customer);
                     console.log(customer)
-                    setPublicKey(checkoutIntentData.publicKey);
-                    console.log(publicKey)
                     setClientSecret(checkoutIntentData.clientSecret);
                     console.log(clientSecret)
                     setCheckoutData(checkoutIntentData);
@@ -98,21 +133,29 @@ function Checkout ({backend, paymentIntentInfo}) {
         setError(event.error ? event.error.message : "");
     };
 
+    /* 
+    Confirm card payment with either:
+        1) An existing payment method ID from a default, saved or last used, saved card. We get the existing payment method ID from paymentMethodID state. Recall the paymentMethodID state is updated from Checkout/PaymentMethod component after fetching the server in its useEffect()). Using the existing payment method ID immediately runs stripe.confirmCardPayment().
+        2) A newly created AND saved card. We create and save the card in saveCardForFuture(). saveCardForFuture() calls stripe.createPaymentMethod(), creating a new payment method with its ID. To save, saveCardForFuture() then runs a fetch to our server. Our server ensures the newly created card is not a duplicate before attaching to the Stripe customer. By attaching the payment method to the Stripe customer, we save the card. After saveCardForFuture() is ran, we call stripe.confirmCardPayment() with the newly, created payment method ID.  
+        3) A newly created, non-saved card (this applies to logged in users who did not click Save Card or for guests). We still run saveCardForFuture() but since the card is not saved, the function does not run stripe.createPaymentMethod() and does not fetch to our server - it just returns null. Then stripe.confirmCardPayment() is ran collecting the card details straight from the Stripe's Card element. 
+    */
     const handleSubmit = async (event) => {
         // Disable Confirm Payment button
+        setDisabled(true)
         setProcessing(true)
         // We don't want to let default form submission happen here, which would refresh the page.
         event.preventDefault();
-    
+        
+        // Check if Stripe.js has loaded yet.
         if (!stripe || !elements) {
-          // Stripe.js has not yet loaded.
+          setDisabled(true)
           setProcessing(false)
-          return;
+          return; // return when Stripe.js is not loaded
         }
 
         console.log(clientSecret)
 
-        // If there is no already saved card, and therefore, no card details displayed by PaymentMethod component, then we need to only display the Card Element that is also via the PaymentMethod component, but if the user is logged in then we need to also give the option of saving the card details from the Card Element. So let's run saveCardForFuture helper function.
+        // If there is no already saved card, and therefore, no card details displayed by PaymentMethod component, then we need to only display the Card Element that is also via the PaymentMethod component, but if the user is logged in then we need to also give the option of saving the card details from the Card Element. So let's run saveCardForFuture helper function. If user did not click save card, then saveCardForFuture will just return null.
         let paymentMethod
         console.log(paymentMethodID)
         if(!paymentMethodID){
@@ -125,11 +168,9 @@ function Checkout ({backend, paymentIntentInfo}) {
         if(paymentMethodID || paymentMethod.paymentMethodID){
             console.log(126, paymentMethod)
             confirmCardResult = await stripe.confirmCardPayment(clientSecret, {
-                payment_method: {
-                    // Check if there is an already default or last used saved card first. 
-                    // If there is one, use that first. If there is not one, use the NEW card created during checkout that has now been saved to the logged in user through saveCardForFuture helper function.
-                    card: paymentMethodID ? paymentMethodID : paymentMethod.paymentMethodID  
-                }
+                // Check if there is an already default or last used saved card first. 
+                // If there is one, use that first. If there is not one, use the NEW card created during checkout that has now been saved to the logged in user through saveCardForFuture helper function.
+                payment_method: paymentMethodID ? paymentMethodID : paymentMethod.paymentMethodID  
             })
         } else {
             console.log(135, paymentMethod)
@@ -148,7 +189,7 @@ function Checkout ({backend, paymentIntentInfo}) {
                         }
                     }
                 }
-            }) 
+            })
         }
         
         console.log("result: ", confirmCardResult)
@@ -156,13 +197,15 @@ function Checkout ({backend, paymentIntentInfo}) {
         if (confirmCardResult.error) {
             // Show error to your customer (e.g., insufficient funds)
             setError(`Payment failed. ${confirmCardResult.error.message}`);
-            setProcessing(false);
+            setDisabled(false);
           } else {
             // The payment has been processed!
             if (confirmCardResult.paymentIntent.status === 'succeeded') {
               console.log('succeeded')
-              setSucceeded(true)
+              setDisabled(true)
               setProcessing(false)
+
+            // Redirect to Order Page
             }
           }
     }
@@ -203,7 +246,6 @@ function Checkout ({backend, paymentIntentInfo}) {
                     'Authorization': localStorage.getItem('token')
                 },
                 body: JSON.stringify({
-                    fingerprint: createPaymentMethodResponse.paymentMethod.card.fingerprint,
                     paymentMethodID: createPaymentMethodResponse.paymentMethod.id,
                     default: false
                 })
@@ -229,7 +271,7 @@ function Checkout ({backend, paymentIntentInfo}) {
 
         <form id="payment-form" onSubmit={handleSubmit}>
             <div>Checkout Screen</div>
-            <PaymentMethod backend={backend} checkoutData={checkoutData} token={token} billing={billing} handleBillingChange={handleBillingChange} grabPaymentMethodID={grabPaymentMethodID} handleCardChange={handleCardChange} redirect={redirect}/>
+            <PaymentMethod backend={backend} checkoutData={checkoutData} token={token} billing={billing} handleBillingChange={handleBillingChange} grabBilling={grabBilling} grabPaymentMethodID={grabPaymentMethodID} cardholderName={cardholderName} handleCardholderNameChange={handleCardholderNameChange} handleCardChange={handleCardChange} grabEditPayment={grabEditPayment} redirect={redirect}/>
 
             {/* Show any error that happens when processing the payment */}
             {error && (<div className="card-error" role="alert">{error}</div>)}
@@ -241,12 +283,14 @@ function Checkout ({backend, paymentIntentInfo}) {
                     <label htmlFor="saveCard">Save card for future purchases</label>
                 </div>
             ): <div></div>}
-
-            <button disabled={processing || disabled || succeeded} id="submit" onClick={handleSubmit}>
-                <span id="button-text">
-                    {processing ? (<div className="spinner" id="spinner"></div>) : ("Confirm Payment")}
-                </span>
-            </button>
+            {!editPayment ? (
+                <button disabled={ disabled && !paymentMethodID }  id="submit" onClick={handleSubmit}>
+                    <span id="button-text">
+                        {processing ? (<div className="spinner" id="spinner"></div>) : ("Confirm Payment")}
+                    </span>
+                </button>
+            ) : <></>
+            }
             
         </form>
            
