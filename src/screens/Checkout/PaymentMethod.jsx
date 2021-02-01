@@ -18,8 +18,7 @@ function PaymentMethod ({ backend, checkoutData, token, handleCardChange, redire
         // console.log(12, redirect)
         console.log("running fetching payment method if no redirect")
         if(localStorage.getItem('cartItems') !== 'false' && token){
-            // Get either a 1) default, saved card or 2) last used, saved (but not default) card info back (will be an object response), OR 3) no saved cards (will be null response)
-            console.log(22)
+            // Get either a 1) default, saved card or 2) last used, saved (but not default) card info back (will be an object response), OR 3) no saved cards (will be null     response)
             const fetchPaymentMethod = async () => {
                 const paymentMethodResponse = await fetch(`${backend}/order/checkout/payment`, {
                     method: 'GET',
@@ -47,10 +46,10 @@ function PaymentMethod ({ backend, checkoutData, token, handleCardChange, redire
         } else if (localStorage.getItem('cartItems') === 'false'){
             grabPaymentMethodID(null)
         }
-    },[updatedPayment])
+    },[editPayment])
 
     const handleUpdatePayment = async(event) => {
-        event.preventDefault()
+        event.preventDefault();
         console.log("Update payment")
         
         if (localStorage.getItem('token')) {
@@ -81,10 +80,11 @@ function PaymentMethod ({ backend, checkoutData, token, handleCardChange, redire
             })
             
             const updatePaymentMethodData = await updatePaymentMethodReponse.json()
-            console.log(updatePaymentMethodData)
+            console.log(updatePaymentMethodData);
+            // console.log(paymentMethodData);
             if(await updatePaymentMethodData.paymentMethodID) {
                 setEditPayment(false)
-                setUpdatedPayment(true)
+                // setUpdatedPayment(true)
             }
         } else {
             return (
@@ -125,7 +125,6 @@ function PaymentMethod ({ backend, checkoutData, token, handleCardChange, redire
                 <p>{paymentData.billingDetails.address.line2}</p>
                 <p>{paymentData.billingDetails.address.city}, {paymentData.billingDetails.address.state} {paymentData.billingDetails.address.postalCode}</p>
                 <button id={paymentData.paymentMethodID} onClick={() => setEditPayment(true)}>Edit</button>
-                <button onClick={() => console.log(paymentData.billingDetails.address.line2)}>Testing Billing 2</button>
             </div>
         )
     } else if(paymentData.paymentMethodID && editPayment) {
