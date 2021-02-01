@@ -229,6 +229,7 @@ function Checkout ({backend, paymentIntentInfo}) {
               console.log('succeeded')
               setDisabled(true)
               setProcessing(false)
+              localStorage.setItem('cartItems', false);
 
             // Redirect to Order Page
             }
