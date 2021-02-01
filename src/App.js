@@ -36,13 +36,26 @@ function App() {
     console.log(paymenIntentInfo);
   }
 
-  const grabLoginInfo = (username, loggedIn, token) => {
+  const grabLoginInfo = async (username, loggedIn, token) => {
     // setUsername(username);
     localStorage.setItem("username", username);
     setLoggedIn(loggedIn);
     localStorage.setItem("loggedIn", loggedIn);
     setToken(token);
     localStorage.setItem("token", token);
+    const cartResponse = await fetch(`${backend}/buyer/cart`, {
+      method: 'GET',
+      headers: {
+          'Content-Type': 'application/json',
+          'Authorization': localStorage.getItem('token')
+      }
+    })
+    const data = await cartResponse.json();
+    if(data.cart === "No cart available") {
+        localStorage.setItem("cartItems", false);
+    } else {
+        localStorage.setItem("cartItems", true);
+    }
   }
 
 

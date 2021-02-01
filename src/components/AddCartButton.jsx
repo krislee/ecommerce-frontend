@@ -21,6 +21,7 @@ function AddCartButton ({ name, id, backend, quantity }) {
             const data = await resp.json()
             console.log(data)
             console.log(3, document.cookie)
+            localStorage.setItem("cartItems", true);
         } else{ 
             const resp = await fetch(`${backend}/buyer/electronic/cart/${id}`, {
                 method: 'POST',
@@ -35,6 +36,7 @@ function AddCartButton ({ name, id, backend, quantity }) {
             const data = await resp.json()
             console.log(data)
             console.log(4, document.cookie)
+            localStorage.setItem("cartItems", true);
         }
     }
 

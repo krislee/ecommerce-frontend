@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { Redirect } from 'react-router-dom';
 import PaymentMethod from './PaymentMethod'
 import {useStripe, useElements, CardElement, CardCvcElement} from '@stripe/react-stripe-js';
+import NavBar from '../../components/NavigationBar';
+import '../../styles/CheckoutPage.css';
 
 function Checkout ({backend, paymentIntentInfo}) {
     const token = localStorage.getItem('token')
@@ -283,43 +285,50 @@ function Checkout ({backend, paymentIntentInfo}) {
         return {paymentMethodID: null}
     }
 
-    const redirectToCart = () => {
-        if (redirect === true) {
-            return <Redirect to="/cart"/>
-        }
-    }
-    return (
-        <>
-        {redirectToCart()}
+    // const redirectToCart = () => {
+    //     if (redirect === true) {
+    //         return <Redirect to="/cart"/>
+    //     }
+    // }
 
-        <div id="payment-form">
-            <div>Checkout Screen</div>
-            <PaymentMethod backend={backend} checkoutData={checkoutData} token={token} billing={billing} handleBillingChange={handleBillingChange} grabBilling={grabBilling} grabPaymentMethodID={grabPaymentMethodID} cardholderName={cardholderName} handleCardholderNameChange={handleCardholderNameChange} handleCardChange={handleCardChange} grabEditPayment={grabEditPayment} grabCollectCVV={grabCollectCVV} redirect={redirect}/>
-
-            {/* Show any error that happens when processing the payment */}
-            {error && (<div className="card-error" role="alert">{error}</div>)}
-
-            {/* Show Save card checkbox if user is logged in and does not have an already default, saved or last used, saved card to display. Do not show the checkbox for guests. */}
-            {(customer && !paymentMethodID)? (
-                <div>
-                    <input type="checkbox" id="saveCard" name="saveCard" />
-                    <label htmlFor="saveCard">Save card for future purchases</label>
-                </div>
-            ): <div></div>}
-            {!editPayment ? (
-                <button disabled={ disabled && !paymentMethodID }  id="submit" onClick={handleSubmit}>
-                    <span id="button-text">
-                        {processing ? (<div className="spinner" id="spinner"></div>) : ("Confirm Payment")}
-                    </span>
-                </button>
-            ) : <></>
-            }
+    if (redirect === true) {
+        return (
+            <Redirect to="/cart"/>
+        )
+    } else {
+        return (
+            <>
+            <NavBar />
+            <div id="payment-form">
+                <div>Checkout Screen</div>
+                <PaymentMethod backend={backend} checkoutData={checkoutData} token={token} billing={billing} handleBillingChange={handleBillingChange} grabBilling={grabBilling} grabPaymentMethodID={grabPaymentMethodID} cardholderName={cardholderName} handleCardholderNameChange={handleCardholderNameChange} handleCardChange={handleCardChange} grabEditPayment={grabEditPayment} grabCollectCVV={grabCollectCVV} redirect={redirect}/>
+    
+                {/* Show any error that happens when processing the payment */}
+                {error && (<div className="card-error" role="alert">{error}</div>)}
+    
+                {/* Show Save card checkbox if user is logged in and does not have an already default, saved or last used, saved card to display. Do not show the checkbox for guests. */}
+                {(customer && !paymentMethodID)? (
+                    <div>
+                        <input type="checkbox" id="saveCard" name="saveCard" />
+                        <label htmlFor="saveCard">Save card for future purchases</label>
+                    </div>
+                ): <div></div>}
+                {!editPayment ? (
+                    <button disabled={ disabled && !paymentMethodID }  id="submit" onClick={handleSubmit}>
+                        <span id="button-text">
+                            {processing ? (<div className="spinner" id="spinner"></div>) : ("Confirm Payment")}
+                        </span>
+                    </button>
+                ) : <></>
+                }
+                
+            </div>
+               
             
-        </div>
-           
-        
-        </>
-    )
+            </>
+        )
+    }
+
 }
 export default Checkout
 
