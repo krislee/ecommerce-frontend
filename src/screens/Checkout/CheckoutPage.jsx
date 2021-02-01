@@ -10,7 +10,7 @@ function Checkout ({backend, paymentIntentInfo}) {
     const [customer, setCustomer] = useState(false);
     const [clientSecret, setClientSecret] = useState('');
     const [checkoutData, setCheckoutData] = useState('');
-    const [redirect, setRedirect] = useState(false)
+    const [redirect, setRedirect] = useState(false);
 
     /* ------- UI STRIPE STATES ------- */
     const [error, setError] = useState(null);
@@ -83,8 +83,9 @@ function Checkout ({backend, paymentIntentInfo}) {
     const handleCardholderNameChange = (event) => {
         const { value } = event.target
         setCardholderName(value)
-    }
+    }   
 
+    
     /* ------- CREATE NEW OR UPDATE EXISTING PAYMENT INTENT AFTER RENDERING DOM ------- */
     useEffect(() => {
         const handleCheckout = async () => {
@@ -100,7 +101,9 @@ function Checkout ({backend, paymentIntentInfo}) {
                 const data = await cartResponse.json();
                 console.log(data);
                 if(data.cart === "No cart available") {
-                    setRedirect(true)
+                    localStorage.setItem("cartItems", false);
+                    setRedirect(true);
+                    return;
                     // setIsMounted(false)
                 }
                 if(typeof data.cart !== 'string'){

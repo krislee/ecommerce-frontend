@@ -15,38 +15,36 @@ function PaymentMethod ({ backend, checkoutData, token, handleCardChange, redire
     const elements = useElements();
 
     useEffect(() => {
-        console.log(12, redirect)
-        if(!redirect){
-            console.log("running fetching payment method if no redirect")
-            if(token){
-                // Get either a 1) default, saved card or 2) last used, saved (but not default) card info back (will be an object response), OR 3) no saved cards (will be null response)
-                const fetchPaymentMethod = async () => {
-                    const paymentMethodResponse = await fetch(`${backend}/order/checkout/payment`, {
-                        method: 'GET',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': token
-                        }
-                    })
-                    const paymentMethodData = await paymentMethodResponse.json()
-                    console.log(paymentMethodData);
-                    // After getting the card info, update paymentMethodID state in Checkout Page. The value is either a string of the payment method ID or null if there is no payment method saved for the logged in user. 
-                    grabPaymentMethodID(paymentMethodData.paymentMethodID)
-
-                    setPaymentData(paymentMethodData)
-
-                    // grabBilling() only updates the billing state at Checkout if there are billing details sent back from the fetch to the server for checkout payments. Billing details are sent back from server if there is a default, saved or last used, saved card. The updated billing state will allow the input values in BillingInput components to be updated since billing state is passed as prop from Checkout to PaymentMethod to BillingInput component.
-                    if(paymentMethodData.paymentMethodID) {
-                        grabBilling(paymentMethodData.billingDetails)
+        // console.log(12, redirect)
+        console.log("running fetching payment method if no redirect")
+        if(!localStorage.getItem('cartItems') === 'false' && token){
+            // Get either a 1) default, saved card or 2) last used, saved (but not default) card info back (will be an object response), OR 3) no saved cards (will be null     response)
+            const fetchPaymentMethod = async () => {
+                const paymentMethodResponse = await fetch(`${backend}/order/checkout/payment`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': token
                     }
+                })
+                const paymentMethodData = await paymentMethodResponse.json()
+                console.log(paymentMethodData);
+                // After getting the card info, update paymentMethodID state in Checkout Page. The value is either a string of the payment method ID or null if there is no payment method saved for the logged in user. 
+                grabPaymentMethodID(paymentMethodData.paymentMethodID)
 
-                    // The editPayment state get changed to true depending if the Edit button is clicked or when the Close button is clicked. The editPayment state is passed back down to Checkout via the grabEditPayment() to determine if the Confirm Payment button in Checkout will be shown.
-                    grabEditPayment(editPayment)
+                setPaymentData(paymentMethodData)
+
+                // grabBilling() only updates the billing state at Checkout if there are billing details sent back from the fetch to the server for checkout payments. Billing details are sent back from server if there is a default, saved or last used, saved card. The updated billing state will allow the input values in BillingInput components to be updated since billing state is passed as prop from Checkout to PaymentMethod to BillingInput component.
+                if(paymentMethodData.paymentMethodID) {
+                    grabBilling(paymentMethodData.billingDetails)
                 }
-                fetchPaymentMethod();
-            } else {
-                grabPaymentMethodID(null)
+
+                // The editPayment state get changed to true depending if the Edit button is clicked or when the Close button is clicked. The editPayment state is passed back down to Checkout via the grabEditPayment() to determine if the Confirm Payment button in Checkout will be shown.
+                grabEditPayment(editPayment)
             }
+            fetchPaymentMethod();
+        } else if (localStorage.getItem('cartItems') === 'false'){
+            grabPaymentMethodID(null)
         }
     },[updatedPayment])
 
