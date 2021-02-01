@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Redirect } from 'react-router-dom';
 import PaymentMethod from './PaymentMethod'
-import {useStripe, useElements, CardElement} from '@stripe/react-stripe-js';
+import {useStripe, useElements, CardElement, CardCvcElement} from '@stripe/react-stripe-js';
 
 function Checkout ({backend, paymentIntentInfo}) {
     const token = localStorage.getItem('token')
@@ -28,14 +28,16 @@ function Checkout ({backend, paymentIntentInfo}) {
     // Update paymentMethodID state by sending grabPaymentMethodID function as prop down to Checkout/PaymentMethod. The grabPaymentMethodID function will run in Checkout/PaymentMethod right after fetching the server to see if there are any default, saved OR last used, saved, or no, saved cards. 
     const [paymentMethodID, setPaymentMethodID] = useState('')
     
+    // Update editPayment state by sending grabEditPayment functions as prop down to Checkout/PaymentMethod. 
     const[editPayment, setEditPayment] = useState(false)
 
+    const [collectCVV, setCollectCVV] = useState(false)
 
     /* ------- SET UP STRIPE ------- */
     const stripe = useStripe();
     const elements = useElements();
 
-    /* ------- HELPERS TO UPDATE PAYMENT-RELATED STATES ------- */
+    /* ------- FUNCTIONS TO UPDATE PAYMENT-RELATED STATES ------- */
     
     // Update paymentMethodID state by sending grabPaymentMethodID function as prop down to Checkout/PaymentMethod
     const grabPaymentMethodID = (paymentMethodID) => {
@@ -63,6 +65,10 @@ function Checkout ({backend, paymentIntentInfo}) {
     // Update editPayment state by sending grabEditPayment() down as prop to Checkout/PaymentMethod, which gets updated to true if the Edit button in Checkout/PaymentMethod component is clicked. If editPayment is true, then we do not show Confirm Card Payment button.
     const grabEditPayment = (edit) => {
         setEditPayment(edit)
+    }
+
+    const grabCollectCVV = (collectCVV) => {
+        setCollectCVV(collectCVV)
     }
 
     // handleBillingChange() gets passed down as prop to Checkout/PaymentMethod, and then to Component/BillingInput
@@ -162,15 +168,20 @@ function Checkout ({backend, paymentIntentInfo}) {
             paymentMethod = await saveCardForFuture()
             console.log(paymentMethod)
         }
-
-        // Confirm the payment using either 1) an already saved card (default or last used) - designated by paymentMethodID state 2) a card being created and saved during checkout - designated by paymentMethod.paymentMethod 3) a card being created and not saved during checkout
+        console.log("collect CVV: ", collectCVV)
+        // Confirm the payment using either 1) an already saved card (default or last used) - designated by paymentMethodID state 2) a card being created and saved during checkout - designated by paymentMethod.paymentMethodID 3) a card being created and not saved during checkout
         let confirmCardResult
         if(paymentMethodID || paymentMethod.paymentMethodID){
-            console.log(126, paymentMethod)
+            console.log(176, paymentMethod)
             confirmCardResult = await stripe.confirmCardPayment(clientSecret, {
                 // Check if there is an already default or last used saved card first. 
                 // If there is one, use that first. If there is not one, use the NEW card created during checkout that has now been saved to the logged in user through saveCardForFuture helper function.
-                payment_method: paymentMethodID ? paymentMethodID : paymentMethod.paymentMethodID  
+                payment_method: paymentMethodID ? paymentMethodID : paymentMethod.paymentMethodID,
+                payment_method_options: collectCVV ? {
+                    card: {
+                      cvc: elements.getElement(CardCvcElement)
+                    }
+                } : undefined
             })
         } else {
             console.log(135, paymentMethod)
@@ -269,9 +280,9 @@ function Checkout ({backend, paymentIntentInfo}) {
         <>
         {redirectToCart()}
 
-        <form id="payment-form" onSubmit={handleSubmit}>
+        <form id="payment-form">
             <div>Checkout Screen</div>
-            <PaymentMethod backend={backend} checkoutData={checkoutData} token={token} billing={billing} handleBillingChange={handleBillingChange} grabBilling={grabBilling} grabPaymentMethodID={grabPaymentMethodID} cardholderName={cardholderName} handleCardholderNameChange={handleCardholderNameChange} handleCardChange={handleCardChange} grabEditPayment={grabEditPayment} redirect={redirect}/>
+            <PaymentMethod backend={backend} checkoutData={checkoutData} token={token} billing={billing} handleBillingChange={handleBillingChange} grabBilling={grabBilling} grabPaymentMethodID={grabPaymentMethodID} cardholderName={cardholderName} handleCardholderNameChange={handleCardholderNameChange} handleCardChange={handleCardChange} grabEditPayment={grabEditPayment} grabCollectCVV={grabCollectCVV} redirect={redirect}/>
 
             {/* Show any error that happens when processing the payment */}
             {error && (<div className="card-error" role="alert">{error}</div>)}

@@ -3,11 +3,16 @@ import React, { useEffect, useState } from 'react';
 // import { Elements } from "@stripe/react-stripe-js";
 import CollectCard from "../../components/Card"
 import BillingInput from "../../components/BillingInput"
+import {useStripe, useElements, CardExpiryElement} from '@stripe/react-stripe-js';
 
-function PaymentMethod ({ backend, checkoutData, token, handleCardChange, redirect, billing, handleBillingChange, cardholderName, handleCardholderNameChange, grabPaymentMethodID, grabBilling, grabEditPayment }) {
+function PaymentMethod ({ backend, checkoutData, token, handleCardChange, redirect, billing, handleBillingChange, cardholderName, handleCardholderNameChange, grabPaymentMethodID, grabBilling, grabEditPayment, grabCollectCVV }) {
 
     const [paymentData, setPaymentData] = useState({})
     const [editPayment, setEditPayment] = useState(false)
+    const [updatedPayment, setUpdatedPayment] = useState(false)
+    /* ------- SET UP STRIPE ------- */
+    const stripe = useStripe();
+    const elements = useElements();
 
     useEffect(() => {
         console.log(12, redirect)
@@ -27,10 +32,15 @@ function PaymentMethod ({ backend, checkoutData, token, handleCardChange, redire
                     console.log(paymentMethodData);
                     // After getting the card info, update paymentMethodID state in Checkout Page. The value is either a string of the payment method ID or null if there is no payment method saved for the logged in user. 
                     grabPaymentMethodID(paymentMethodData.paymentMethodID)
+
                     setPaymentData(paymentMethodData)
+
+                    // grabBilling() only updates the billing state at Checkout if there are billing details sent back from the fetch to the server for checkout payments. Billing details are sent back from server if there is a default, saved or last used, saved card. The updated billing state will allow the input values in BillingInput components to be updated since billing state is passed as prop from Checkout to PaymentMethod to BillingInput component.
                     if(paymentMethodData.paymentMethodID) {
                         grabBilling(paymentMethodData.billingDetails)
                     }
+
+                    // The editPayment state get changed to true depending if the Edit button is clicked or when the Close button is clicked. The editPayment state is passed back down to Checkout via the grabEditPayment() to determine if the Confirm Payment button in Checkout will be shown.
                     grabEditPayment(editPayment)
                 }
                 fetchPaymentMethod();
@@ -42,6 +52,44 @@ function PaymentMethod ({ backend, checkoutData, token, handleCardChange, redire
 
     const handleUpdatePayment = async() => {
         console.log("Update payment")
+        
+        if (localStorage.getItem('token')) {
+            grabCollectCVV(true)
+
+            console.log(billing)
+            console.log(elements.getElement(CardExpiryElement))
+
+            const updatePaymentMethodReponse = await fetch(`${backend}/order/payment/${paymentData.paymentMethodID}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': token
+                }, 
+                body: JSON.stringify({
+                    billingDetails: {
+                        name: `${billing.firstName} ${billing.lastName}`,
+                        line1: billing.line1,
+                        line2: billing.line2,
+                        city: billing.city,
+                        state: billing.state,
+                        country: 'US'
+                    },
+                    expMonth: 11,
+                    recollectCVV: false
+                })
+            })
+            
+            const updatePaymentMethodData = await updatePaymentMethodReponse.json()
+            console.log(updatePaymentMethodData)
+            if(await updatePaymentMethodData.paymentMethodID) {
+                setEditPayment(false)
+                // setUpdatedPayment(true)
+            }
+        } else {
+            return (
+                <div>Uh oh! It looks like you are logged out. Please log back in.</div>
+            )
+        }
     }
     
     if(!paymentData.paymentMethodID && !editPayment) {
