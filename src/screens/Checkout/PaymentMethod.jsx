@@ -125,6 +125,7 @@ function PaymentMethod ({ backend, checkoutData, token, handleCardChange, redire
                 <p>{paymentData.billingDetails.address.line2}</p>
                 <p>{paymentData.billingDetails.address.city}, {paymentData.billingDetails.address.state} {paymentData.billingDetails.address.postalCode}</p>
                 <button id={paymentData.paymentMethodID} onClick={() => setEditPayment(true)}>Edit</button>
+                <button onClick={() => console.log(paymentData.billingDetails.address.line2)}>Testing Billing 2</button>
             </div>
         )
     } else if(paymentData.paymentMethodID && editPayment) {

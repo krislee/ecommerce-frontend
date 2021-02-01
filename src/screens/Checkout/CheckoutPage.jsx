@@ -55,7 +55,7 @@ function Checkout ({backend, paymentIntentInfo}) {
             firstName: name[0],
             lastName: name[1],
             line1: billing.address.line1,
-            line2: billing.address.line2 ? billing.address.line2 : "",
+            line2: billing.address.line2,
             city: billing.address.city,
             state: billing.address.state,
             postalCode: billing.address.postalCode
@@ -176,6 +176,7 @@ function Checkout ({backend, paymentIntentInfo}) {
         let confirmCardResult
         if(paymentMethodID && collectCVV) {
             console.log("HIIIII")
+            console.log(elements.getElement(CardCvcElement))
             confirmCardResult = await stripe.confirmCardPayment(clientSecret, {
                 payment_method: paymentMethodID,
                 payment_method_options: {
