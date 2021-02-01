@@ -59,7 +59,7 @@ function PaymentMethod ({ backend, checkoutData, token, handleCardChange, redire
             console.log(billing)
             console.log(elements.getElement(CardExpiryElement))
 
-            const updatePaymentMethodReponse = await fetch(`${backend}/order/payment/${paymentData.paymentMethodID}`, {
+            const updatePaymentMethodReponse = await fetch(`${backend}/order/update/payment/${paymentData.paymentMethodID}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
