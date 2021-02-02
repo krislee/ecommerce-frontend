@@ -79,6 +79,7 @@ function Checkout ({backend, paymentIntentInfo}) {
     const grabRedisplayCardElement = (redisplayCardElement) => {
         setRedisplayCardElement(redisplayCardElement)
     }
+
     // handleBillingChange() gets passed down as prop to Checkout/PaymentMethod, and then to Component/BillingInput
     const handleBillingChange = (event) => {
         const { name, value } = event.target
@@ -175,21 +176,21 @@ function Checkout ({backend, paymentIntentInfo}) {
         // If there is no already saved card, and therefore, no card details displayed by PaymentMethod component, then we need to only display the Card Element that is also via the PaymentMethod component, but if the user is logged in then we need to also give the option of saving the card details from the Card Element. So let's run saveCardForFuture helper function. If user did not click save card, then saveCardForFuture will just return null.
         let paymentMethod
         console.log(paymentMethodID)
-        if(!paymentMethodID){
+        if(!paymentMethodID || redisplayCardElement){
             paymentMethod = await saveCardForFuture()
             console.log(paymentMethod)
         }
         console.log("collect CVV: ", collectCVV)
         // Confirm the payment using either 1) an already saved card (default or last used) - designated by paymentMethodID state 2) a card being created and saved during checkout - designated by paymentMethod.paymentMethodID 3) a card being created and not saved during checkout
         let confirmCardResult
-        if (paymentMethodID || paymentMethod.paymentMethodID){ // For saved cards
+        if ((paymentMethodID && !redisplayCardElement)|| (paymentMethod && paymentMethod.paymentMethodID)){ // For saved cards
             console.log("HIIIII")
             console.log(181, elements.getElement(CardCvcElement))
             console.log(182, paymentMethod)
             confirmCardResult = await stripe.confirmCardPayment(clientSecret, {
                 // Check if there is an already default or last used saved card first. 
                 // If there is one, use that first. If there is not one, use the NEW card created during checkout that has now been saved to the logged in user through saveCardForFuture helper function.
-                payment_method: paymentMethodID ? paymentMethodID : paymentMethod.paymentMethodID,
+                payment_method: paymentMethodID && !redisplayCardElement ? paymentMethodID : paymentMethod.paymentMethodID,
                 payment_method_options: (collectCVV === 'true') ? {
                     card: {
                       cvc: elements.getElement(CardCvcElement)
@@ -307,7 +308,7 @@ function Checkout ({backend, paymentIntentInfo}) {
                 {error && (<div className="card-error" role="alert">{error}</div>)}
     
                 {/* Show Save card checkbox if user is logged in and does not have an already default, saved or last used, saved card to display. Do not show the checkbox for guests. */}
-                {(customer && !paymentMethodID)? (
+                {(customer && !paymentMethodID) || (customer && redisplayCardElement) ? (
                     <div>
                         <input type="checkbox" id="saveCard" name="saveCard" />
                         <label htmlFor="saveCard">Save card for future purchases</label>

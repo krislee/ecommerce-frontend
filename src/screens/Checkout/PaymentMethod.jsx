@@ -109,6 +109,7 @@ function PaymentMethod ({ backend, checkoutData, token, handleCardChange, redire
                 <CollectCard handleCardChange={handleCardChange} collectCVV={collectCVV} redisplayCardElement={redisplayCardElement} editPayment={editPayment}/>
                 <h2>Billing Address</h2>
                 <BillingInput handleBillingChange={handleBillingChange} billing={billing}/>
+                {redisplayCardElement && <button onClick={() => grabRedisplayCardElement(false)}>Close</button>}
             </div>
         )
     } else if(paymentData.paymentMethodID && !editPayment) {
