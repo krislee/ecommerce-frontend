@@ -37,6 +37,8 @@ function PaymentMethod ({ backend, checkoutData, token, handleCardChange, redire
                 // grabBilling() only updates the billing state at Checkout if there are billing details sent back from the fetch to the server for checkout payments. Billing details are sent back from server if there is a default, saved or last used, saved card. The updated billing state will allow the input values in BillingInput components to be updated since billing state is passed as prop from Checkout to PaymentMethod to BillingInput component.
                 if(paymentMethodData.paymentMethodID) {
                     grabBilling(paymentMethodData.billingDetails)
+                    console.log(typeof paymentMethodData.recollectCVV)
+                    grabCollectCVV(paymentMethodData.recollectCVV)
                 }
             }
             fetchPaymentMethod();
@@ -50,7 +52,7 @@ function PaymentMethod ({ backend, checkoutData, token, handleCardChange, redire
         
         if (localStorage.getItem('token')) {
 
-            grabCollectCVV(true)
+            grabCollectCVV('true')
 
             console.log(billing)
             console.log(elements.getElement(CardExpiryElement))
@@ -115,8 +117,8 @@ function PaymentMethod ({ backend, checkoutData, token, handleCardChange, redire
                 <p>{paymentData.last4}</p>
                 <p>{paymentData.expDate}</p>
 
-                {collectCVV && <CollectCard collectCVV={collectCVV} handleCardChange={handleCardChange} />}
-                
+                {collectCVV === 'true' && <CollectCard collectCVV={collectCVV} handleCardChange={handleCardChange} />}
+
                 <h2>Billing Address</h2>
                 <p>{paymentData.billingDetails.name}</p>
                 <p>{paymentData.billingDetails.address.line1}</p>
