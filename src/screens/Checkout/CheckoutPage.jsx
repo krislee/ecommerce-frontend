@@ -199,6 +199,8 @@ function Checkout ({backend, paymentIntentInfo}) {
         } else {
             console.log(135, paymentMethod)
             console.log("WHATS UP")
+            console.log(elements.getElement(CardElement))
+            // Do not include the cardholder's name when confirming card payment because metadata is not a property in stripe.confirmCardPayment(). We need to store cardholder's name in metadata property.
             confirmCardResult = await stripe.confirmCardPayment(clientSecret, {
                 payment_method: {
                     card: elements.getElement(CardElement),
@@ -258,7 +260,7 @@ function Checkout ({backend, paymentIntentInfo}) {
                     }
                 },
                 metadata: {
-                    cardholder_name: 'Jenny Rosen',
+                    cardholder_name: `${cardholderName}`,
                     recollect_cvv: false
                 }
             })
