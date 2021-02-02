@@ -5,12 +5,11 @@ import CollectCard from "../../components/Card"
 import BillingInput from "../../components/BillingInput"
 import {useStripe, useElements, CardExpiryElement, CardCvcElement} from '@stripe/react-stripe-js';
 
-function PaymentMethod ({ backend, checkoutData, token, handleCardChange, redirect, billing, handleBillingChange, cardholderName, handleCardholderNameChange, grabPaymentMethodID, grabBilling, grabEditPayment, grabCollectCVV }) {
+function PaymentMethod ({ backend, checkoutData, token, handleCardChange, redirect, billing, grabBilling, handleBillingChange, cardholderName, handleCardholderNameChange, grabPaymentMethodID, grabEditPayment, collectCVV, grabCollectCVV, }) {
 
     const [paymentData, setPaymentData] = useState({})
     const [editPayment, setEditPayment] = useState(false)
-    const [display, setDisplay] = useState(false)
-    const [editStyle, setEditStyle] = useState({display: "block"})
+
     /* ------- SET UP STRIPE ------- */
     const stripe = useStripe();
     const elements = useElements();
@@ -74,7 +73,7 @@ function PaymentMethod ({ backend, checkoutData, token, handleCardChange, redire
                         country: 'US'
                     },
                     expMonth: 11,
-                    recollectCVV: false
+                    recollectCVV: true
                 })
             })
             
@@ -84,8 +83,6 @@ function PaymentMethod ({ backend, checkoutData, token, handleCardChange, redire
             if(await updatePaymentMethodData.paymentMethodID) {
                 setEditPayment(false)
                 grabEditPayment(false)
-                setDisplay(true)
-                setEditStyle({display: "none"})
             }
         } else {
             return (
@@ -93,14 +90,53 @@ function PaymentMethod ({ backend, checkoutData, token, handleCardChange, redire
             )
         }
     }
-    
-    if(!paymentData.paymentMethodID && !editPayment) {
+
+    if(paymentData.paymentMethodID && editPayment) {
+        return (
+            <>
+                <div>
+                    <h2>Payment</h2>
+                    <p>{paymentData.brand}</p>
+                    <p>{paymentData.last4}</p>
+                </div>
+                    {/* <CollectCard handleCardChange={handleCardChange} collectCVV={collectCVV} /> */}
+                <div>
+                    <BillingInput billing={billing} handleBillingChange={handleBillingChange} />
+                    <button onClick={handleUpdatePayment}>Save</button>
+                    <button onClick={() => setEditPayment(false)}>Close</button>
+                </div>
+            </>
+        )
+    } else if(paymentData.paymentMethodID && !editPayment) {
+        return (
+            <div>
+                <h2>Payment</h2>
+                <p>{paymentData.brand}</p>
+                <p>{paymentData.last4}</p>
+                <p>{paymentData.expDate}</p>
+
+                {collectCVV && <CollectCard collectCVV={collectCVV} handleCardChange={handleCardChange} />}
+                
+                <h2>Billing Address</h2>
+                <p>{paymentData.billingDetails.name}</p>
+                <p>{paymentData.billingDetails.address.line1}</p>
+                <p>{paymentData.billingDetails.address.line2}</p>
+                <p>{paymentData.billingDetails.address.city}, {paymentData.billingDetails.address.state} {paymentData.billingDetails.address.postalCode}</p>
+
+                <button id={paymentData.paymentMethodID} onClick={() => { 
+                    setEditPayment(true) 
+                    // The editPayment state get changed to true depending if the Edit button is clicked or when the Close button is clicked. If Edit button is clicked, the value true is passed back down to Checkout via the grabEditPayment() to determine if the Confirm Payment button in Checkout will be shown.
+                    grabEditPayment(true)
+                }}>Edit</button>
+            </div>
+        )
+    } else if(!paymentData.paymentMethodID && !editPayment) {
         {/* Show Card and Billing Details or Card element and input depending if there is an already default or last used, saved card for logged in user. If there is an already default or last used, saved card, a payment method ID gets returned from the server. */}
         return (
             <div>
                 <h2>Payment</h2>
                 <input value={cardholderName || ""} name="name" placeholder="Name on card" onChange={handleCardholderNameChange}/>
-                <CollectCard handleCardChange={handleCardChange} editPayment={editPayment}/>
+                <CollectCard handleCardChange={handleCardChange} collectCVV={collectCVV}/>
                 <h2>Billing Address</h2>
                 <BillingInput handleBillingChange={handleBillingChange} billing={billing}/>
                 {/* <input value={billing.firstName || ""} name="firstName" placeholder="First Name" onChange={handleBillingChange}/>
@@ -112,45 +148,7 @@ function PaymentMethod ({ backend, checkoutData, token, handleCardChange, redire
                 <input value={billing.postalCode || ""} name="postalCode" placeholder="Zipcode" onChange={handleBillingChange}/> */}
             </div>
         )
-    } else if(paymentData.paymentMethodID && !editPayment) {
-        return (
-            <div>
-                <h2>Payment</h2>
-                <p>{paymentData.brand}</p>
-                <p>{paymentData.last4}</p>
-                <p>{paymentData.expDate}</p>
-
-                <h2>Billing Address</h2>
-                <p>{paymentData.billingDetails.name}</p>
-                <p>{paymentData.billingDetails.address.line1}</p>
-                <p>{paymentData.billingDetails.address.line2}</p>
-                <p>{paymentData.billingDetails.address.city}, {paymentData.billingDetails.address.state} {paymentData.billingDetails.address.postalCode}</p>
-                <button id={paymentData.paymentMethodID} onClick={() => { 
-                    setEditPayment(true) 
-                    // The editPayment state get changed to true depending if the Edit button is clicked or when the Close button is clicked. If Edit button is clicked, the value true is passed back down to Checkout via the grabEditPayment() to determine if the Confirm Payment button in Checkout will be shown.
-                    grabEditPayment(true)
-                    setEditStyle({display: "block"})
-                }}>Edit</button>
-            </div>
-        )
-    } else if((paymentData.paymentMethodID && editPayment) || display) {
-        return (
-            <>
-                <div style={editStyle}>
-                    <h2>Payment</h2>
-                    <p>{paymentData.brand}</p>
-                    <p>{paymentData.last4}</p>
-                </div>
-                    <CollectCard handleCardChange={handleCardChange} editPayment={editPayment} style={editStyle}/>
-                <div style={editStyle}>
-                    <BillingInput billing={billing} handleBillingChange={handleBillingChange} />
-                    <button onClick={handleUpdatePayment}>Save</button>
-                    <button onClick={() => setEditPayment(false)}>Close</button>
-                </div>
-            </>
-        )
-    }
-
+    } 
 }
 
 export default PaymentMethod

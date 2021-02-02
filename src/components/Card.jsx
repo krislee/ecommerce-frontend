@@ -2,7 +2,7 @@ import React from 'react';
 import {CardCvcElement, CardElement, CardExpiryElement} from "@stripe/react-stripe-js";
 import '../styles/Card.css'
 
-function CollectCard({ handleCardChange, editPayment }) {
+function CollectCard({ handleCardChange, collectCVV }) {
 
     const cardStyle = {
         base: {
@@ -20,14 +20,9 @@ function CollectCard({ handleCardChange, editPayment }) {
         iconColor: "#fa755a"
         }
     }
-    
-    if(editPayment) {
-        return (
-            <>
-                <CardExpiryElement options={cardStyle} onChange={(event) => handleCardChange(event)}/>
-                <CardCvcElement options={cardStyle} onChange={(event) => handleCardChange(event)}/>
-            </>
-        )
+
+    if (collectCVV) {
+        return <CardCvcElement options={cardStyle} onChange={(event) => handleCardChange(event)}/> 
     } else {
         return (
             <label>

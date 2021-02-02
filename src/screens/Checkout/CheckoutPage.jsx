@@ -225,6 +225,7 @@ function Checkout ({backend, paymentIntentInfo}) {
             // Show error to your customer (e.g., insufficient funds)
             setError(`Payment failed. ${confirmCardResult.error.message}`);
             setDisabled(false);
+            setProcessing(true)
           } else {
             // The payment has been processed!
             if (confirmCardResult.paymentIntent.status === 'succeeded') {
@@ -288,12 +289,6 @@ function Checkout ({backend, paymentIntentInfo}) {
         return {paymentMethodID: null}
     }
 
-    // const redirectToCart = () => {
-    //     if (redirect === true) {
-    //         return <Redirect to="/cart"/>
-    //     }
-    // }
-
     if (redirect === true) {
         return (
             <Redirect to="/cart"/>
@@ -304,7 +299,7 @@ function Checkout ({backend, paymentIntentInfo}) {
             <NavBar />
             <div id="payment-form">
                 <div>Checkout Screen</div>
-                <PaymentMethod backend={backend} checkoutData={checkoutData} token={token} billing={billing} handleBillingChange={handleBillingChange} grabBilling={grabBilling} grabPaymentMethodID={grabPaymentMethodID} cardholderName={cardholderName} handleCardholderNameChange={handleCardholderNameChange} handleCardChange={handleCardChange} grabEditPayment={grabEditPayment} grabCollectCVV={grabCollectCVV} redirect={redirect}/>
+                <PaymentMethod backend={backend} checkoutData={checkoutData} token={token} billing={billing} handleBillingChange={handleBillingChange} grabBilling={grabBilling} grabPaymentMethodID={grabPaymentMethodID} cardholderName={cardholderName} handleCardholderNameChange={handleCardholderNameChange} handleCardChange={handleCardChange} grabEditPayment={grabEditPayment} collectCVV={collectCVV} grabCollectCVV={grabCollectCVV} redirect={redirect}/>
     
                 {/* Show any error that happens when processing the payment */}
                 {error && (<div className="card-error" role="alert">{error}</div>)}
