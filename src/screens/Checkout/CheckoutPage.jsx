@@ -284,7 +284,7 @@ function Checkout ({backend, paymentIntentInfo}) {
             })
             const savePaymentMethodToCustomerData = await savePaymentMethodToCustomerResponse.json()
 
-            console.log(savePaymentMethodToCustomerData)
+            console.log(savePaymentMethodToCustomerData.billing_details)
 
             return savePaymentMethodToCustomerData
         }
