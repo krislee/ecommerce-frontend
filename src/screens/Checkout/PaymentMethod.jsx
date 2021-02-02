@@ -5,10 +5,11 @@ import CollectCard from "../../components/Card"
 import BillingInput from "../../components/BillingInput"
 import {useStripe, useElements, CardExpiryElement, CardCvcElement} from '@stripe/react-stripe-js';
 
-function PaymentMethod ({ backend, checkoutData, token, handleCardChange, redirect, billing, grabBilling, handleBillingChange, cardholderName, handleCardholderNameChange, grabPaymentMethodID, grabEditPayment, collectCVV, grabCollectCVV, }) {
+function PaymentMethod ({ backend, checkoutData, token, handleCardChange, redirect, billing, grabBilling, handleBillingChange, cardholderName, handleCardholderNameChange, grabPaymentMethodID, grabEditPayment, collectCVV, grabCollectCVV, redisplayCardElement, grabRedisplayCardElement}) {
 
     const [paymentData, setPaymentData] = useState({})
     const [editPayment, setEditPayment] = useState(false)
+    // const [redisplayCardElement, setRedisplayCardElement] = useState(false)
 
     /* ------- SET UP STRIPE ------- */
     const stripe = useStripe();
@@ -44,8 +45,8 @@ function PaymentMethod ({ backend, checkoutData, token, handleCardChange, redire
             }
             fetchPaymentMethod();
         } else if (localStorage.getItem('cartItems') === 'false'){
-            grabPaymentMethodID(null)
-            grabCollectCVV("false")
+            grabPaymentMethodID(null) // also applies to guest
+            grabCollectCVV("false") // also applies to guest
         }
     },[editPayment])
 
@@ -60,7 +61,7 @@ function PaymentMethod ({ backend, checkoutData, token, handleCardChange, redire
             console.log(elements.getElement(CardExpiryElement))
             console.log(elements.getElement(CardCvcElement))
 
-            const updatePaymentMethodReponse = await fetch(`${backend}/order/update/payment/${paymentData.paymentMethodID}`, {
+            const updatePaymentMethodReponse = await fetch(`${backend}/order/update/payment/${paymentData.paymentMethodID}?checkout=true`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -95,29 +96,29 @@ function PaymentMethod ({ backend, checkoutData, token, handleCardChange, redire
         }
     }
 
-    if(paymentData.paymentMethodID && editPayment) {
+    // Normally, Card Element is displayed only if 1) card and billing details are not sent back after fetching to /order/checkout/payment because it indicates there is no card attached to the Stripe customer (meaning there is no card saved to the user) so !paymentData.paymentMethodID, and 2) editPayment must also be false so that the Card Element is displayed because we do not want the Card Element when editing the card is happening. 
+    // But when we do have card and billing details, and we click Add New, we want to display the Card Element. 
+    // To do so, we click Add New -->  passing true to grabRedisplayCardElement() function that was sent down as a prop to PaymentMethod component --> redisplayCardElement state at Checkout component is updated to true --> Checkout component re-renders, causing PaymentMethod component. Cince redisplayCardElement state was passed a prop to PaymentMethod component, the true value of redisplayCardElement allows the Card Element to be displayed again through the conditional statement: if((!paymentData.paymentMethodID && !editPayment) || redisplayCardElement){}
+    // We need to reset the redisplayCardElement to false after confirming payment so that if user has a default or last used saved card, then the saved card details gets rendered and not the Card Element again when user goes to checkout with items. 
+    if((!paymentData.paymentMethodID && !editPayment) || redisplayCardElement) {
+        {/* Show Card and Billing Details or Card element and input depending if there is an already default or last used, saved card for logged in user. If there is an already default or last used, saved card, a payment method ID gets returned from the server. */}
         return (
-            <>
-                <div>
-                    <h2>Payment</h2>
-                    <p>{paymentData.brand}</p>
-                    <p>{paymentData.last4}</p>
-                </div>
-                    {/* <CollectCard handleCardChange={handleCardChange} collectCVV={collectCVV} /> */}
-                <div>
-                    <BillingInput billing={billing} handleBillingChange={handleBillingChange} />
-                    <button onClick={handleUpdatePayment}>Save</button>
-                    <button onClick={() => setEditPayment(false)}>Close</button>
-                </div>
-            </>
+            <div>
+                <h2>Payment</h2>
+                <input value={cardholderName || ""} name="name" placeholder="Name on card" onChange={handleCardholderNameChange}/>
+                <CollectCard handleCardChange={handleCardChange} collectCVV={collectCVV} redisplayCardElement={redisplayCardElement} editPayment={editPayment}/>
+                <h2>Billing Address</h2>
+                <BillingInput handleBillingChange={handleBillingChange} billing={billing}/>
+            </div>
         )
     } else if(paymentData.paymentMethodID && !editPayment) {
         return (
             <div>
                 <h2>Payment</h2>
-                <p>{paymentData.brand}</p>
-                <p>{paymentData.last4}</p>
-                <p>{paymentData.expDate}</p>
+                <p><b>{paymentData.brand}</b></p>
+                <p>Ending in <b>{paymentData.last4}</b></p>
+                <p>Expires <b>{paymentData.expDate}</b></p>
+                <p><b>{paymentData.cardholderName}</b></p>
 
                 {collectCVV === 'true' && <CollectCard collectCVV={collectCVV} handleCardChange={handleCardChange} />}
 
@@ -127,30 +128,35 @@ function PaymentMethod ({ backend, checkoutData, token, handleCardChange, redire
                 <p>{paymentData.billingDetails.address.line2}</p>
                 <p>{paymentData.billingDetails.address.city}, {paymentData.billingDetails.address.state} {paymentData.billingDetails.address.postalCode}</p>
 
+                {/* Click Edit to update payment method */}
                 <button id={paymentData.paymentMethodID} onClick={() => { 
-                    setEditPayment(true) 
                     // The editPayment state get changed to true depending if the Edit button is clicked or when the Close button is clicked. If Edit button is clicked, the value true is passed back down to Checkout via the grabEditPayment() to determine if the Confirm Payment button in Checkout will be shown.
+                    setEditPayment(true) 
                     grabEditPayment(true)
                 }}>Edit</button>
+
+                {/* Click Add New to add a new payment method */}
+                <button id={paymentData.paymentMethodID} onClick={() => grabRedisplayCardElement(true)}>Add New</button>
             </div>
         )
-    } else if(!paymentData.paymentMethodID && !editPayment) {
-        {/* Show Card and Billing Details or Card element and input depending if there is an already default or last used, saved card for logged in user. If there is an already default or last used, saved card, a payment method ID gets returned from the server. */}
+    } else if(paymentData.paymentMethodID && editPayment) {
         return (
-            <div>
-                <h2>Payment</h2>
-                <input value={cardholderName || ""} name="name" placeholder="Name on card" onChange={handleCardholderNameChange}/>
-                <CollectCard handleCardChange={handleCardChange} collectCVV={collectCVV} editPayment={editPayment}/>
-                <h2>Billing Address</h2>
-                <BillingInput handleBillingChange={handleBillingChange} billing={billing}/>
-                {/* <input value={billing.firstName || ""} name="firstName" placeholder="First Name" onChange={handleBillingChange}/>
-                <input value={billing.lastName || ""} name="lastName" placeholder="Last Name" onChange={handleBillingChange}/>
-                <input value={billing.line1 || ""} name="line1" placeholder="Address 1" onChange={handleBillingChange}/>
-                <input value={billing.line2 || ""} name="line2" placeholder="Address 2" onChange={handleBillingChange} />
-                <input value={billing.city || ""} name="city" placeholder="City" onChange={handleBillingChange}/>
-                <input value={billing.state || ""} name="state" placeholder="State" onChange={handleBillingChange}/>
-                <input value={billing.postalCode || ""} name="postalCode" placeholder="Zipcode" onChange={handleBillingChange}/> */}
-            </div>
+            <>
+                <div>
+                    <h2>Payment</h2>
+                    <p><b>{paymentData.brand}</b></p>
+                    <p>Ending in <b>{paymentData.last4}</b></p>
+                    <p>Expires <b>{paymentData.expDate}</b></p>
+                    <p><b>{paymentData.cardholderName}</b></p>
+                </div>
+                    {/* <CollectCard handleCardChange={handleCardChange} collectCVV={collectCVV} /> */}
+                <input type='text'></input>
+                <div>
+                    <BillingInput billing={billing} handleBillingChange={handleBillingChange} />
+                    <button onClick={handleUpdatePayment}>Save</button>
+                    <button onClick={() => setEditPayment(false)}>Close</button>
+                </div>
+            </>
         )
     } 
 }

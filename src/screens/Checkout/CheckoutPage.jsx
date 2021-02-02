@@ -33,7 +33,10 @@ function Checkout ({backend, paymentIntentInfo}) {
     // Update editPayment state by sending grabEditPayment functions as prop down to Checkout/PaymentMethod. 
     const[editPayment, setEditPayment] = useState(false)
 
+
     const [collectCVV, setCollectCVV] = useState('false')
+
+    const [redisplayCardElement, setRedisplayCardElement] = useState(false)
 
     /* ------- SET UP STRIPE ------- */
     const stripe = useStripe();
@@ -73,6 +76,9 @@ function Checkout ({backend, paymentIntentInfo}) {
         setCollectCVV(collectCVV)
     }
 
+    const grabRedisplayCardElement = (redisplayCardElement) => {
+        setRedisplayCardElement(redisplayCardElement)
+    }
     // handleBillingChange() gets passed down as prop to Checkout/PaymentMethod, and then to Component/BillingInput
     const handleBillingChange = (event) => {
         const { name, value } = event.target
@@ -224,11 +230,13 @@ function Checkout ({backend, paymentIntentInfo}) {
             // The payment has been processed!
             if (confirmCardResult.paymentIntent.status === 'succeeded') {
               console.log('succeeded')
+              localStorage.setItem('cartItems', false);
+            // Need to put these updating state functions in the Order Complete component??
               setDisabled(true)
               setProcessing(false)
-              localStorage.setItem('cartItems', false);
+              setRedisplayCardElement(false)
 
-            // Redirect to Order Page
+            // Redirect to Order Complete component
             }
           }
     }
@@ -293,7 +301,7 @@ function Checkout ({backend, paymentIntentInfo}) {
             <NavBar />
             <div id="payment-form">
                 <div>Checkout Screen</div>
-                <PaymentMethod backend={backend} checkoutData={checkoutData} token={token} billing={billing} handleBillingChange={handleBillingChange} grabBilling={grabBilling} grabPaymentMethodID={grabPaymentMethodID} cardholderName={cardholderName} handleCardholderNameChange={handleCardholderNameChange} handleCardChange={handleCardChange} grabEditPayment={grabEditPayment} collectCVV={collectCVV} grabCollectCVV={grabCollectCVV} redirect={redirect}/>
+                <PaymentMethod backend={backend} checkoutData={checkoutData} token={token} billing={billing} handleBillingChange={handleBillingChange} grabBilling={grabBilling} grabPaymentMethodID={grabPaymentMethodID} cardholderName={cardholderName} handleCardholderNameChange={handleCardholderNameChange} handleCardChange={handleCardChange} grabEditPayment={grabEditPayment} collectCVV={collectCVV} grabCollectCVV={grabCollectCVV} redisplayCardElement={redisplayCardElement} grabRedisplayCardElement={grabRedisplayCardElement} redirect={redirect}/>
     
                 {/* Show any error that happens when processing the payment */}
                 {error && (<div className="card-error" role="alert">{error}</div>)}
