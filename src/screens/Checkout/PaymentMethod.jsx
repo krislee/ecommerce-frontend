@@ -37,13 +37,15 @@ function PaymentMethod ({ backend, checkoutData, token, handleCardChange, redire
                 // grabBilling() only updates the billing state at Checkout if there are billing details sent back from the fetch to the server for checkout payments. Billing details are sent back from server if there is a default, saved or last used, saved card. The updated billing state will allow the input values in BillingInput components to be updated since billing state is passed as prop from Checkout to PaymentMethod to BillingInput component.
                 if(paymentMethodData.paymentMethodID) {
                     grabBilling(paymentMethodData.billingDetails)
-                    console.log(typeof paymentMethodData.recollectCVV)
+                    // When the logged in user first loads the checkout page, the payment method renders. If there are cart items, then it will render the card & billing details info. If, before checkout was completed, the payment method was at any time edited, either at non-checkout or at checkout, then we want <CollectCard /> to be rendered during checkout. 
+                    // So the <CollectCard /> component will render depending on the collectCVV state, which was passed as prop from CheckoutPage and is initially "false" (string value). The collectCVV state gets updated in this component when we either 1) fetch the server for the default, saved OR last used, saved OR null card 2) or when we click Edit to edit the displaying card expiration and/or billing details. We need to update the collectCVV state when we fetch the server because if there is a saved card that was previously edited during non-checkout OR during checkout, then the server's update payment method function will send back in the JSON recollectCVV: true (true is a string). So when the user does not hit the Edit button but the checkout page reloads (either because user decides to go back or refreshes), then we need to still show the CVV card element when the checkout page loads because user had previously edited the payment method.
                     grabCollectCVV(paymentMethodData.recollectCVV)
                 }
             }
             fetchPaymentMethod();
         } else if (localStorage.getItem('cartItems') === 'false'){
             grabPaymentMethodID(null)
+            grabCollectCVV("false")
         }
     },[editPayment])
 
@@ -138,7 +140,7 @@ function PaymentMethod ({ backend, checkoutData, token, handleCardChange, redire
             <div>
                 <h2>Payment</h2>
                 <input value={cardholderName || ""} name="name" placeholder="Name on card" onChange={handleCardholderNameChange}/>
-                <CollectCard handleCardChange={handleCardChange} collectCVV={collectCVV}/>
+                <CollectCard handleCardChange={handleCardChange} collectCVV={collectCVV} editPayment={editPayment}/>
                 <h2>Billing Address</h2>
                 <BillingInput handleBillingChange={handleBillingChange} billing={billing}/>
                 {/* <input value={billing.firstName || ""} name="firstName" placeholder="First Name" onChange={handleBillingChange}/>
