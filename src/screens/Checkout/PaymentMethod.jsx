@@ -109,7 +109,12 @@ function PaymentMethod ({ backend, checkoutData, token, handleCardChange, redire
                 <CollectCard handleCardChange={handleCardChange} collectCVV={collectCVV} redisplayCardElement={redisplayCardElement} editPayment={editPayment}/>
                 <h2>Billing Address</h2>
                 <BillingInput handleBillingChange={handleBillingChange} billing={billing}/>
-                {redisplayCardElement && <button onClick={() => grabRedisplayCardElement(false)}>Close</button>}
+                {redisplayCardElement && <button onClick={() => {
+                    grabRedisplayCardElement(false)
+                    if(paymentData.recollectCVV === 'true') {
+                        grabCollectCVV("true")
+                    }
+                }}>Close</button>}
             </div>
         )
     } else if(paymentData.paymentMethodID && !editPayment) {
@@ -137,7 +142,10 @@ function PaymentMethod ({ backend, checkoutData, token, handleCardChange, redire
                 }}>Edit</button>
 
                 {/* Click Add New to add a new payment method */}
-                <button id={paymentData.paymentMethodID} onClick={() => grabRedisplayCardElement(true)}>Add New</button>
+                <button id={paymentData.paymentMethodID} onClick={() => {
+                    grabRedisplayCardElement(true)
+                    grabCollectCVV("false")
+                }}>Add New</button>
             </div>
         )
     } else if(paymentData.paymentMethodID && editPayment) {
