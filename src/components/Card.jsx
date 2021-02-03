@@ -1,9 +1,9 @@
 import React from 'react';
-import {CardCvcElement, CardElement, CardExpiryElement} from "@stripe/react-stripe-js";
+import {CardCvcElement, CardElement, CardExpiryElement, useElements} from "@stripe/react-stripe-js";
 import '../styles/Card.css'
 
 function CollectCard({ handleCardChange, collectCVV, redisplayCardElement }) {
-
+    const elements = useElements()
     const cardStyle = {
         base: {
         color: "#32325d",
@@ -22,19 +22,22 @@ function CollectCard({ handleCardChange, collectCVV, redisplayCardElement }) {
     }
 
     // We want to show CVV Card Element whenever collectCVV is 'true'. This happenes when the json data we get back when we fetch to /order/checkout/payment has the property recollectCVV with a value of 'true'. But when user clicks Add New to add a new card, we cannot have CVV Card Element attached. So only when redisplayCardElement state is false (initial value), then we have the possibility to show CVV card element. redisplayCardElement state is true when Add New is clicked.
-    if (collectCVV === 'true' && !redisplayCardElement) {
+    if (collectCVV === 'false' && redisplayCardElement) {
         console.log("collect cvv in card comp: ", collectCVV)
         console.log("collect redisplay in card comp: ", redisplayCardElement)
-        return <CardCvcElement options={cardStyle} onChange={(event) => handleCardChange(event)}/> 
-    } else {
-        console.log("collect cvv in card comp: ", collectCVV)
-        console.log("collect redisplay in card comp: ", redisplayCardElement)
+        const CVC = elements.getElement(CardCvcElement)
+        // CVC.unmount()
+        console.log(CVC)
         return (
             <label>
                 Card details
                 <CardElement options={cardStyle} onChange={(event) => handleCardChange(event)}/>
             </label>
         )
+    } else {
+        console.log("collect cvv in card comp: ", collectCVV)
+        console.log("collect redisplay in card comp: ", redisplayCardElement)
+        return <CardCvcElement options={cardStyle} onChange={(event) => handleCardChange(event)}/> 
     }
 
 }
