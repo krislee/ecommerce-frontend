@@ -22,10 +22,10 @@ function NavBar () {
             <Link to="/">
                 <div className="home-container">
                 <FontAwesomeIcon className="home" icon={faHome}/>
-                <div className="home-name">Ele-Commerce</div>
+                {/* <div className="home-name">Ele-Commerce</div> */}
                 </div>
             </Link>
-            <div className="cart-profile">
+            <div className="cart-profile-container">
             {localStorage.getItem('loggedIn') ? 
             <Link to="/profile">
             <div className='column user-profile'>
@@ -36,8 +36,8 @@ function NavBar () {
             <Link to="/cart">
                 <FontAwesomeIcon className="cart-icon" icon={faShoppingCart}/>
             </Link>
-            </div>
             {localStorage.getItem('loggedIn') ? <button className="logout-button" onClick={() => handleLogout()}>Logout</button> : null}
+            </div>
         </div>
     )
 }
