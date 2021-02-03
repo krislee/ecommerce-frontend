@@ -107,17 +107,10 @@ function PaymentMethod ({ backend, checkoutData, token, handleCardChange, redire
         grabRedisplayCardElement(true)
         grabCollectCVV("false")
         console.log(105)
-        
-        // if(redisplayCardElement && collectCVV === 'false') {
-
-        // }
-            const CVV = elements.getElement(CardCvcElement)
-            console.log(CVV)
-            if(CVV) {
-                CVV.destroy()
-            }
-            console.log(CVV)
-        
+        const CVV = elements.getElement(CardCvcElement)
+        console.log(CVV)
+        if(CVV) CVV.destroy()
+        console.log(CVV)
     }
     // Normally, Card Element is displayed only if 1) card and billing details are not sent back after fetching to /order/checkout/payment because it indicates there is no card attached to the Stripe customer (meaning there is no card saved to the user) so !paymentData.paymentMethodID, and 2) editPayment must also be false so that the Card Element is displayed because we do not want the Card Element when editing the card is happening. 
     // But when we do have card and billing details, and we click Add New, we want to display the Card Element. 
@@ -138,7 +131,6 @@ function PaymentMethod ({ backend, checkoutData, token, handleCardChange, redire
                     if(paymentData.recollectCVV === 'true') {
                         grabCollectCVV("true")
                         const card = elements.getElement(CardElement)
-                        // console.log(card)
                         card.destroy()
                     }
                 }}>Close</button>}
@@ -172,7 +164,7 @@ function PaymentMethod ({ backend, checkoutData, token, handleCardChange, redire
                 {/* Click Add New to add a new payment method */}
                 <button id={paymentData.paymentMethodID} onClick={handleAddNew}>Add New</button>
 
-                <button onClick={()=> console.log("collect cvv: ", collectCVV, "redisplay card: ", redisplayCardElement)}>Check</button>
+                {/* <button onClick={()=> console.log("collect cvv: ", collectCVV, "redisplay card: ", redisplayCardElement)}>Check</button> */}
             </div>
         )
     } else if(paymentData.paymentMethodID && editPayment) {
