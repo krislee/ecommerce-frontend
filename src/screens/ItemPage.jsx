@@ -8,9 +8,6 @@ function ItemPage ({ url, backend, loggedIn }) {
 
     const [itemInfo, setItemInfo] = useState('');
     const [quantity, setQuantity] = useState(1);
-    // const itemURL = 'http://localhost:3001';
-    // const itemURL = 'https://elecommerce.herokuapp.com'
-    
     let currentURL = window.location.href;
     let indexOfEqualSign = currentURL.split('=');
     let id=indexOfEqualSign[indexOfEqualSign.length - 1];
