@@ -141,6 +141,7 @@ function PaymentMethod ({ backend, checkoutData, token, handleCardChange, redire
         }
     }
     
+    
     const showSavedCard = async(event) => {
         if(localStorage.getItem('token')) {
             const showSavedCardResponse = await fetch(`${backend}/order/show/payment/${event.target.id}`, {
