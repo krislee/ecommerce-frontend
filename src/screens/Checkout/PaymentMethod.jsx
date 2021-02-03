@@ -126,6 +126,7 @@ function PaymentMethod ({ backend, checkoutData, token, handleCardChange, redire
                 <CollectCard handleCardChange={handleCardChange} collectCVV={collectCVV} redisplayCardElement={redisplayCardElement} editPayment={editPayment}/>
                 <h2>Billing Address</h2>
                 <BillingInput handleBillingChange={handleBillingChange} billing={billing}/>
+                {/* Close button is displayed if the div with Card Element and inputs are REdisplayed, which happens when Add new button is clicked to change redisplayCardElement to true. When Close button is clicked, we grab the Card Element displayed and destroy it to allow for the old CVV element to be shown. */}
                 {redisplayCardElement && <button onClick={() => {
                     grabRedisplayCardElement(false)
                     if(paymentData.recollectCVV === 'true') {
