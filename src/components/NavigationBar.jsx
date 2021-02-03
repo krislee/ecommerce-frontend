@@ -4,7 +4,7 @@ import Button from '../components/Button'
 // import '../styles/BuyerLogin.css'
 import '../styles/NavigationBar.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faShoppingCart, faUser } from '@fortawesome/free-solid-svg-icons'
+import { faHome, faShoppingCart, faUser } from '@fortawesome/free-solid-svg-icons'
 
 function NavBar () {
 
@@ -20,21 +20,24 @@ function NavBar () {
     return (
         <div className="navbar">
             <Link to="/">
-                <div className="link-home">Homepage</div>
+                <div className="home-container">
+                <FontAwesomeIcon className="home" icon={faHome}/>
+                <div className="home-name">Ele-Commerce</div>
+                </div>
             </Link>
+            <div className="cart-profile">
             {localStorage.getItem('loggedIn') ? 
-            <>
-            <Button onClick={() => handleLogout()} name={'Logout'} /> 
             <Link to="/profile">
-            <div className='row'>
+            <div className='column user-profile'>
                 <FontAwesomeIcon className="user-icon" icon={faUser}/>
                 <div>{username}</div>
             </div>
-            </Link>
-            </>: null}
+            </Link>: null}
             <Link to="/cart">
                 <FontAwesomeIcon className="cart-icon" icon={faShoppingCart}/>
             </Link>
+            </div>
+            {localStorage.getItem('loggedIn') ? <button className="logout-button" onClick={() => handleLogout()}>Logout</button> : null}
         </div>
     )
 }

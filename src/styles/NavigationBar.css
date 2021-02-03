@@ -1,50 +1,92 @@
 .navbar {
-    background-color: #fff;
+    background-color: #000;
     width: 100%;
     display: flex;
-    justify-content: space-between;
+    justify-content: space-around;
     position: fixed;
-    height: 8vh;
+    height: 10vh;
     align-items: center;
     border-bottom: 1px solid #000;
 }
 
-.link-home {
-    margin-left: 5vw;
-    color: #000;
-    transition: 0.2s all ease-in-out;
+.home-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 100%;
+    width: 11vw;
+    color: #fff;
 }
 
-.link-home:hover {
-    transition: 0.2s all ease-in-out;
+.home {
+    /* margin-left: 5vw; */
+    /* color: #fff; */
+    font-size: 32px;
+    /* transition: 0.2s all ease-in-out; */
+}
+
+.home-container:hover {
+    /* transition: 0.2s all ease-in-out; */
     color: #b8b8b8;
 }
 
+.cart-profile {
+    display: flex;
+    width: 15vw;
+    justify-content: space-between;
+    align-items: center;
+}
+
 .cart-icon {
-    color: #000;
-    margin-right: 5vw;
+    color: #fff;
+    /* margin-right: 5vw; */
     font-size: 32px;
-    transition: 0.5s all ease-in-out;
+    /* transition: 0.5s all ease-in-out; */
 }
 
 .cart-icon:hover {
     transform: rotate(15deg);
-    transition: 0.5s all ease-in-out;
+    /* transition: 0.5s all ease-in-out; */
+    color: #b8b8b8;
+}
+
+.user-profile {
+    color: #fff;
+}
+
+.user-profile:hover {
     color: #b8b8b8;
 }
 
 .user-icon {
-    color: #000;
-    margin-right: 5vw;
+    /* color: #000; */
     font-size: 32px;
-    transition: 0.5s all ease-in-out;
 }
 
-.user-icon:hover {
-    transition: 0.5s all ease-in-out;
+/* .user-icon:hover {
     color: #b8b8b8;
+} */
+
+.column {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
-.row {
-    display: flex;
+.logout-button {
+    height: 100%;
+    background-color: black;
+    color: white;
+    /* border: 1px solid #fff; */
+    font-size: 16px;
+    cursor: pointer;
+    font-family: 'Roboto', sans-serif;
+}
+
+.logout-button:hover {
+    background-color: white;
+    color: black;
+    transition: 0.2s all ease-in;
+    /* border: 1px solid #000; */
 }

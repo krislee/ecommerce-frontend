@@ -1,9 +1,8 @@
 .side-bar {
     position: fixed;
     left: 0;
-    top: 10vh;
+    top: 12vh;
     display: flex;
-
 }
 
 .container {

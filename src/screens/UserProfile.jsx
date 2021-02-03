@@ -51,7 +51,7 @@ function UserProfile ({backend}) {
     return (
         <>
             <Navbar />
-            <div className="user-profile">
+            <div className="user-profile-container">
                 <div className='side-bar'>
                     <Button name={'Addresses'} onClick={handleClickAddresses}/>
                     <Button name={'Payments'} onClick={handleClickPayments}/>
