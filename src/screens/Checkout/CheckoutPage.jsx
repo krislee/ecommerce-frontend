@@ -73,10 +73,12 @@ function Checkout ({backend, paymentIntentInfo}) {
     }
 
     const grabCollectCVV = (collectCVV) => {
+        console.log("checkout collect cvv", collectCVV)
         setCollectCVV(collectCVV)
     }
 
     const grabRedisplayCardElement = (redisplayCardElement) => {
+        console.log("checkout redisplay", redisplayCardElement)
         setRedisplayCardElement(redisplayCardElement)
     }
 
@@ -236,6 +238,7 @@ function Checkout ({backend, paymentIntentInfo}) {
               setDisabled(true)
               setProcessing(false)
               setRedisplayCardElement(false)
+              setCollectCVV("false")
 
             // Redirect to Order Complete component
             }

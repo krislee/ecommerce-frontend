@@ -18,6 +18,8 @@ function PaymentMethod ({ backend, checkoutData, token, handleCardChange, redire
     useEffect(() => {
         // console.log(12, redirect)
         console.log("running fetching payment method if no redirect")
+        console.log("CVV state payment: ", collectCVV)
+        console.log("redisplay card element payment", redisplayCardElement)
         if(localStorage.getItem('cartItems') !== 'false' && token){
             // Get either a 1) default, saved card or 2) last used, saved (but not default) card info back (will be an object response), OR 3) no saved cards (will be null     response)
             const fetchPaymentMethod = async () => {
@@ -40,6 +42,7 @@ function PaymentMethod ({ backend, checkoutData, token, handleCardChange, redire
                     grabBilling(paymentMethodData.billingDetails)
                     // When the logged in user first loads the checkout page, the payment method renders. If there are cart items, then it will render the card & billing details info. If, before checkout was completed, the payment method was at any time edited, either at non-checkout or at checkout, then we want <CollectCard /> to be rendered during checkout. 
                     // So the <CollectCard /> component will render depending on the collectCVV state, which was passed as prop from CheckoutPage and is initially "false" (string value). The collectCVV state gets updated in this component when we either 1) fetch the server for the default, saved OR last used, saved OR null card 2) or when we click Edit to edit the displaying card expiration and/or billing details. We need to update the collectCVV state when we fetch the server because if there is a saved card that was previously edited during non-checkout OR during checkout, then the server's update payment method function will send back in the JSON recollectCVV: true (true is a string). So when the user does not hit the Edit button but the checkout page reloads (either because user decides to go back or refreshes), then we need to still show the CVV card element when the checkout page loads because user had previously edited the payment method.
+                    console.log("property recollectCVV", paymentMethodData.recollectCVV, typeof paymentMethodData.recollectCVV )
                     grabCollectCVV(paymentMethodData.recollectCVV)
                 }
             }
@@ -56,7 +59,7 @@ function PaymentMethod ({ backend, checkoutData, token, handleCardChange, redire
         if (localStorage.getItem('token')) {
 
             grabCollectCVV('true')
-
+            console.log(redisplayCardElement)
             console.log(billing)
             console.log(elements.getElement(CardExpiryElement))
             console.log(elements.getElement(CardCvcElement))
@@ -100,13 +103,16 @@ function PaymentMethod ({ backend, checkoutData, token, handleCardChange, redire
     // But when we do have card and billing details, and we click Add New, we want to display the Card Element. 
     // To do so, we click Add New -->  passing true to grabRedisplayCardElement() function that was sent down as a prop to PaymentMethod component --> redisplayCardElement state at Checkout component is updated to true --> Checkout component re-renders, causing PaymentMethod component. Cince redisplayCardElement state was passed a prop to PaymentMethod component, the true value of redisplayCardElement allows the Card Element to be displayed again through the conditional statement: if((!paymentData.paymentMethodID && !editPayment) || redisplayCardElement){}
     // We need to reset the redisplayCardElement to false after confirming payment so that if user has a default or last used saved card, then the saved card details gets rendered and not the Card Element again when user goes to checkout with items. 
-    if((!paymentData.paymentMethodID && !editPayment) || redisplayCardElement) {
+    if((!paymentData.paymentMethodID && !editPayment) || redisplayCardElement || (paymentData.paymentMethodID && redisplayCardElement)) {
         {/* Show Card and Billing Details or Card element and input depending if there is an already default or last used, saved card for logged in user. If there is an already default or last used, saved card, a payment method ID gets returned from the server. */}
+        console.log(108)
+        console.log(collectCVV)
+        console.log(redisplayCardElement)
         return (
             <div>
                 <h2>Payment</h2>
                 <input value={cardholderName || ""} name="name" placeholder="Name on card" onChange={handleCardholderNameChange}/>
-                <CollectCard handleCardChange={handleCardChange} collectCVV={collectCVV} redisplayCardElement={redisplayCardElement} editPayment={editPayment}/>
+                {(collectCVV === 'true' && !redisplayCardElement) && <CollectCard handleCardChange={handleCardChange} collectCVV={collectCVV} redisplayCardElement={redisplayCardElement} editPayment={editPayment}/>}
                 <h2>Billing Address</h2>
                 <BillingInput handleBillingChange={handleBillingChange} billing={billing}/>
                 {redisplayCardElement && <button onClick={() => {
@@ -117,7 +123,8 @@ function PaymentMethod ({ backend, checkoutData, token, handleCardChange, redire
                 }}>Close</button>}
             </div>
         )
-    } else if(paymentData.paymentMethodID && !editPayment) {
+    } else if(paymentData.paymentMethodID && !editPayment && !redisplayCardElement) {
+        console.log(124)
         return (
             <div>
                 <h2>Payment</h2>
@@ -126,7 +133,7 @@ function PaymentMethod ({ backend, checkoutData, token, handleCardChange, redire
                 <p>Expires <b>{paymentData.expDate}</b></p>
                 <p><b>{paymentData.cardholderName}</b></p>
 
-                {collectCVV === 'true' && <CollectCard collectCVV={collectCVV} handleCardChange={handleCardChange} />}
+                {(collectCVV === 'true' && !redisplayCardElement) && <CollectCard collectCVV={collectCVV} redisplayCardElement={redisplayCardElement} handleCardChange={handleCardChange} />}
 
                 <h2>Billing Address</h2>
                 <p>{paymentData.billingDetails.name}</p>
@@ -146,9 +153,12 @@ function PaymentMethod ({ backend, checkoutData, token, handleCardChange, redire
                     grabRedisplayCardElement(true)
                     grabCollectCVV("false")
                 }}>Add New</button>
+
+                <button onClick={()=> console.log("collect cvv: ", collectCVV, "redisplay card: ", redisplayCardElement)}>Check</button>
             </div>
         )
     } else if(paymentData.paymentMethodID && editPayment) {
+        console.log(156)
         return (
             <>
                 <div>
