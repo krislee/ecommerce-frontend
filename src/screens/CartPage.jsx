@@ -49,7 +49,7 @@ function CartPage ({ backend }) {
         };
         getCartItems();
 
-    },[])
+    })
 
     return (
         <>

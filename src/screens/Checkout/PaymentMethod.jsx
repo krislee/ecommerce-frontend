@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import CollectCard from "../../components/Card"
 import BillingInput from "../../components/BillingInput"
-import {useStripe, useElements, CardElement, CardCvcElement} from '@stripe/react-stripe-js';
+import {useElements, CardElement, CardCvcElement} from '@stripe/react-stripe-js';
 import Modal from 'react-modal';
 // import Button from 'react-bootstrap/Button';
 // import Modal from 'react-bootstrap/Modal'
@@ -61,7 +61,7 @@ function PaymentMethod ({ backend, token, handleCardChange, billing, grabBilling
             grabPaymentMethodID(null) // also applies to guest
             grabCollectCVV("false") // also applies to guest
         }
-    }, [])
+    })
 
     const handleUpdatePayment = async(event) => {
         console.log("Update payment")
@@ -162,7 +162,7 @@ function PaymentMethod ({ backend, token, handleCardChange, billing, grabBilling
     // To do so, we click Add New -->  passing true to grabRedisplayCardElement() function that was sent down as a prop to PaymentMethod component --> redisplayCardElement state at Checkout component is updated to true --> Checkout component re-renders, causing PaymentMethod component. Since redisplayCardElement state was passed a prop to PaymentMethod component, the true value of redisplayCardElement allows the Card Element to be displayed again through the conditional statement: if((!paymentData.paymentMethodID && !editPayment) || redisplayCardElement){}
     // We need to reset the redisplayCardElement to false after confirming payment so that if user has a default or last used saved card, then the saved card details gets rendered and not the Card Element again when user goes to checkout with items. 
     if((!paymentData.paymentMethodID && !editPayment) || (paymentData.paymentMethodID && redisplayCardElement)) {
-        {/* Show Card and Billing Details or Card element and input depending if there is an already default or last used, saved card for logged in user. If there is an already default or last used, saved card, a payment method ID gets returned from the server. */}
+        /* Show Card and Billing Details or Card element and input depending if there is an already default or last used, saved card for logged in user. If there is an already default or last used, saved card, a payment method ID gets returned from the server. */
         console.log(108, "collect cvv: ", collectCVV, "redisplay card: ", redisplayCardElement)
         return (
             <div>
