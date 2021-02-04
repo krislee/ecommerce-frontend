@@ -4,7 +4,7 @@ import '../styles/ItemPage.css'
 import AddCartButton from '../components/AddCartButton';
 import NavBar from '../components/NavigationBar';
 
-function ItemPage ({ url, backend, loggedIn }) {
+function ItemPage ({ url, backend }) {
 
     const [itemInfo, setItemInfo] = useState('');
     const [quantity, setQuantity] = useState(1);
@@ -51,18 +51,26 @@ function ItemPage ({ url, backend, loggedIn }) {
     return (
         // Name, price, description, add to cart
         <div className="item-page">
-            {localStorage.getItem('loggedIn') ? 
-            <>
-                <NavBar />
-            </>
-             : <NavBar />}
+            <NavBar />
             <div className="item-info">
-                <div className="name">{itemInfo.Name}</div>
-                <div className="price">Price: ${itemInfo.Price}</div>
-                <div className="description">Description: {itemInfo.Description}</div>
-                <input type="number" value={quantity} onChange={handleChangeQuantity}></input>
+                <div className="left-side-item-page">
+                    <div class="item-image">Image of Item Here</div>
+                </div>
+                <div className="right-side-item-page">
+                    <div className="item-logistics">
+                        <div>
+                            <div className="name">{itemInfo.Name}</div>
+                            <div className="price">Price: ${itemInfo.Price}</div>
+                            <div className="description">Description: {itemInfo.Description}</div>
+                        </div>
+                        <div class="input-info">
+                        <div class="quantity-tag">Quantity</div>
+                        <input  className="quantity-input" type="number" value={quantity} onChange={handleChangeQuantity}></input>
+                        <AddCartButton backend={backend} id={itemInfo._id} quantity={quantity} name={'Add To Cart'} />
+                        </div>
+                    </div>
+                </div>
             </div>
-            <AddCartButton backend={backend} id={itemInfo._id} quantity={quantity} name={'Add To Cart'} />
         </div>
     )
 }

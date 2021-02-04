@@ -30,10 +30,11 @@ function Homepage ({ grabURL, backend }) {
 
     const itemList = items.map((item, index) => 
         <React.Fragment key={index}>
-        <Link to={{
+        <Link className="homepage-items" to={{
             pathname:"/store",
             search: `?${item.Name}=${item._id}`
-        }}>
+        }
+        }>
             <Item 
             id={item._id}
             name={item.Name}
@@ -47,19 +48,7 @@ function Homepage ({ grabURL, backend }) {
 
     return (
         <React.Fragment>
-            {localStorage.getItem('loggedIn') ? 
-            <>
-                <NavBar />
-            </>
-             : <NavBar />}
-            {localStorage.getItem('token') ? null : <div className="login-button">
-                <Link to='/buyer'>
-                    <Button name={'Buyer'}/>
-                </Link>
-                <Link to='/seller'>
-                    <Button name={'Seller'}/>
-                </Link>
-            </div>}
+            <NavBar />
             {<div className={localStorage.getItem('token') ? 'itemContainerLoggedIn' : 'itemContainer'}>
                 {itemList}
             </div>}

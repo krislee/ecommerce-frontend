@@ -158,7 +158,7 @@ function Checkout ({backend, paymentIntentInfo}) {
             }
         }    
         handleCheckout();
-    },[]);
+    }, []);
 
     /* 
     Confirm card payment with either:
