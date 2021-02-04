@@ -28,7 +28,7 @@ function UserProfile ({backend}) {
             setAddressData(data);
         }
         fetchAddressData();
-    }, [addressData, backend]);
+    }, []);
 
     const handleClickAddresses = () => {
         if (addresses) {
