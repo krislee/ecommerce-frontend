@@ -308,7 +308,6 @@ function Checkout ({backend, paymentIntentInfo}) {
             <NavBar />
             <div id="payment-form">
                 <PaymentMethod backend={backend} token={token} paymentLoading={paymentLoading} grabPaymentLoading={grabPaymentLoading} billing={billing} handleBillingChange={handleBillingChange} grabBilling={grabBilling} paymentMethod={paymentMethod} grabPaymentMethod={grabPaymentMethod} cardholderName={cardholderName} handleCardholderNameChange={handleCardholderNameChange} handleCardChange={handleCardChange} editPayment={editPayment} grabEditPayment={grabEditPayment} collectCVV={collectCVV} grabCollectCVV={grabCollectCVV} redisplayCardElement={redisplayCardElement} grabRedisplayCardElement={grabRedisplayCardElement} />
-
                 {/* Show any error that happens when processing the payment */}
                 {error && (<div className="card-error" role="alert">{error}</div>)}
     
@@ -334,8 +333,6 @@ function Checkout ({backend, paymentIntentInfo}) {
             </>
         )
     }
-
 }
 export default Checkout
-
 // 4000 0027 6000 3184 (auth card)
