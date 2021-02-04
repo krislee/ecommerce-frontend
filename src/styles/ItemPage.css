@@ -8,24 +8,58 @@
 }
 
 .item-info {
-    margin-top: 10vh;
+    margin-top: 15vh;
     margin-bottom: 10vh;
+    width: 90vw;
     display: flex;
-    flex-direction: column;
-    justify-content: center;
+    flex-direction: row;
+    justify-content: space-around;
     align-items: center;
 }
 
+.item-image {
+    height: 70vh;
+    width: 30vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #000;
+    color: #fff;
+}
+
+.item-logistics {
+    height: 70vh;
+    width: 30vw;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
 .name {
-    font-size: 32px;
+    font-size: 24px;
+    margin-bottom: 2vh;
 }
 
 .price {
-    margin: 30px;
-    font-size: 20px;
+    font-size: 16px;
+    margin: 2vh 0vw;
 }
 
 .description {
-    width: 80vw;
-    margin: 30px;
+    font-size: 14px;
+    margin: 2vh 0vw;
+}
+
+.input-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.quantity-tag {
+    margin: 2vh 0vw;
+}
+
+.quantity-input {
+    width: 60%;
 }
