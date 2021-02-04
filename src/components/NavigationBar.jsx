@@ -36,7 +36,15 @@ function NavBar () {
             <Link to="/cart">
                 <FontAwesomeIcon className="cart-icon" icon={faShoppingCart}/>
             </Link>
-            {localStorage.getItem('loggedIn') ? <button className="logout-button" onClick={() => handleLogout()}>Logout</button> : null}
+            {localStorage.getItem('loggedIn') ? <button className="logout-button" onClick={() => handleLogout()}>Logout</button> : 
+            <div className="login-button-container">
+                <Link to='/buyer'>
+                <button className="login-button">Buyer</button>
+                </Link>
+                <Link to='/seller'>
+                <button className="login-button">Seller</button>
+                </Link>
+            </div>}
             </div>
         </div>
     )
