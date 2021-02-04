@@ -15,7 +15,6 @@ function UserProfile ({backend}) {
     // const [addressData, setAddressData] = useState([]);
 
     useEffect(() => {
-        // console.log(backend);
         async function fetchAddressData() {
             let resp = await fetch(`${backend}/shipping/address`, {
                 method: 'GET',
@@ -28,7 +27,7 @@ function UserProfile ({backend}) {
             setAddressData(data);
         }
         fetchAddressData();
-    }, [addressData, backend]);
+    }, []);
 
     const handleClickAddresses = () => {
         if (addresses) {
