@@ -8,10 +8,13 @@ import '../../styles/CheckoutPage.css';
 function Checkout ({backend, paymentIntentInfo}) {
     const token = localStorage.getItem('token')
     
+    const [redirect, setRedirect] = useState(false);
+    const [loading, setLoading] = useState(true)
+    const [paymentLoading, setPaymentLoading] = useState(true)
+
     /* ------- PAYMENT INTENT-RELATED STATES ------- */
     const [customer, setCustomer] = useState(false);
     const [clientSecret, setClientSecret] = useState('');
-    const [redirect, setRedirect] = useState(false);
 
     /* ------- UI STRIPE STATES ------- */
     const [error, setError] = useState(null);
@@ -27,7 +30,7 @@ function Checkout ({backend, paymentIntentInfo}) {
     const [billing, setBilling] = useState({})
 
     // Update paymentMethodID state by sending grabPaymentMethodID function as prop down to Checkout/PaymentMethod. The grabPaymentMethodID function will run in Checkout/PaymentMethod right after fetching the server to see if there are any default, saved OR last used, saved, or no, saved cards. 
-    const [paymentMethodID, setPaymentMethodID] = useState('')
+    const [paymentMethod, setPaymentMethod] = useState({})
     
     // Update editPayment state by sending grabEditPayment functions as prop down to Checkout/PaymentMethod. 
     const[editPayment, setEditPayment] = useState(false)
@@ -41,11 +44,14 @@ function Checkout ({backend, paymentIntentInfo}) {
     const stripe = useStripe();
     const elements = useElements();
 
+
     /* ------- FUNCTIONS TO UPDATE PAYMENT-RELATED STATES ------- */
-    
+    const grabPaymentLoading = (paymentLoading) => {
+        setPaymentLoading(paymentLoading)
+    }
     // Update paymentMethodID state by sending grabPaymentMethodID function as prop down to Checkout/PaymentMethod
-    const grabPaymentMethodID = (paymentMethodID) => {
-        setPaymentMethodID(paymentMethodID)      
+    const grabPaymentMethod = (paymentMethod) => {
+        setPaymentMethod(paymentMethod)      
         // If the logged in user has a default, saved or last used, saved card, the paymentMethodID state is a string. If paymentMethodID is truthy, then we will use it as the first option to confirm the card payment in stripe.confirmCardPayment(). If truthy, we would also not need to run the saveCardForFuture() helper since that should be run only if the card Element is displayed but it would not be displayed if there is a payment method ID from Checkout/PaymentMethod.
         // If the logged in user has neither or if user is a guest, then paymementMethodID is updated to null. If paymentMethodID is falsy, then we need to run saveCardForFuture() helper in case the user wants to save the card. 
     }
@@ -106,6 +112,7 @@ function Checkout ({backend, paymentIntentInfo}) {
     useEffect(() => {
         const handleCheckout = async () => {
             console.log("token", token)
+            // setLoading(false)
             if (token) {
                 const cartResponse = await fetch(`${backend}/buyer/cart`, {
                     method: 'GET',
@@ -119,6 +126,7 @@ function Checkout ({backend, paymentIntentInfo}) {
                 if(data.cart === "No cart available") {
                     localStorage.setItem("cartItems", false);
                     setRedirect(true);
+                    setLoading(false)
                     return;
                     // setIsMounted(false)
                 }
@@ -136,6 +144,7 @@ function Checkout ({backend, paymentIntentInfo}) {
                     console.log(checkoutIntentData);
                     setCustomer(checkoutIntentData.customer);
                     setClientSecret(checkoutIntentData.clientSecret);
+                    setLoading(false)
                 } 
             } else {
                 const cartResponse = await fetch(`${backend}/buyer/cart`)
@@ -172,23 +181,21 @@ function Checkout ({backend, paymentIntentInfo}) {
         console.log(clientSecret)
 
         // If there is no already saved card, and therefore, no card details displayed by PaymentMethod component, then we need to only display the Card Element that is also via the PaymentMethod component, but if the user is logged in then we need to also give the option of saving the card details from the Card Element. So let's run saveCardForFuture helper function. If user did not click save card, then saveCardForFuture will just return null.
-        let paymentMethod
-        console.log(paymentMethodID)
-        if(!paymentMethodID || redisplayCardElement){
-            paymentMethod = await saveCardForFuture()
-            console.log(paymentMethod)
+        let newSavedCheckoutPaymentMethod
+        console.log(newSavedCheckoutPaymentMethod)
+        if(!paymentMethod.paymentMethodID || redisplayCardElement){
+            newSavedCheckoutPaymentMethod = await saveCardForFuture()
+            console.log(newSavedCheckoutPaymentMethod)
         }
         console.log("collect CVV: ", collectCVV)
         // Confirm the payment using either 1) an already saved card (default or last used) - designated by paymentMethodID state 2) a card being created and saved during checkout - designated by paymentMethod.paymentMethodID 3) a card being created and not saved during checkout
         let confirmCardResult
-        if ((paymentMethodID && !redisplayCardElement)|| (paymentMethod && paymentMethod.paymentMethodID)){ // For saved cards
-            console.log("HIIIII")
+        if ((paymentMethod.paymentMethodID && !redisplayCardElement)|| (newSavedCheckoutPaymentMethod && newSavedCheckoutPaymentMethod.paymentMethodID)){ // For saved cards
             console.log(181, elements.getElement(CardCvcElement))
-            console.log(182, paymentMethod)
             confirmCardResult = await stripe.confirmCardPayment(clientSecret, {
                 // Check if there is an already default or last used saved card first. 
                 // If there is one, use that first. If there is not one, use the NEW card created during checkout that has now been saved to the logged in user through saveCardForFuture helper function.
-                payment_method: paymentMethodID && !redisplayCardElement ? paymentMethodID : paymentMethod.paymentMethodID,
+                payment_method: paymentMethod.paymentMethodID && !redisplayCardElement ? paymentMethod.paymentMethodID : newSavedCheckoutPaymentMethod.paymentMethodID,
                 payment_method_options: (collectCVV === 'true') ? {
                     card: {
                       cvc: elements.getElement(CardCvcElement)
@@ -197,7 +204,6 @@ function Checkout ({backend, paymentIntentInfo}) {
             })
         } else { // For none-saved cards
             console.log(135, paymentMethod)
-            console.log("WHATS UP")
             console.log(elements.getElement(CardElement))
             // Do not include the cardholder's name when confirming card payment because metadata is not a property in stripe.confirmCardPayment(). We need to store cardholder's name in metadata property.
             confirmCardResult = await stripe.confirmCardPayment(clientSecret, {
@@ -290,8 +296,9 @@ function Checkout ({backend, paymentIntentInfo}) {
         // Return null for payment method ID if guest or if logged in user did not check Save Card 
         return {paymentMethodID: null}
     }
-
-    if (redirect === true) {
+    if(loading) {
+        return <></>
+    }else if (redirect === true) {
         return (
             <Redirect to="/cart"/>
         )
@@ -300,21 +307,20 @@ function Checkout ({backend, paymentIntentInfo}) {
             <>
             <NavBar />
             <div id="payment-form">
-                <div>Checkout Screen</div>
-                <PaymentMethod backend={backend} token={token} billing={billing} handleBillingChange={handleBillingChange} grabBilling={grabBilling} grabPaymentMethodID={grabPaymentMethodID} cardholderName={cardholderName} handleCardholderNameChange={handleCardholderNameChange} handleCardChange={handleCardChange} editPayment={editPayment} grabEditPayment={grabEditPayment} collectCVV={collectCVV} grabCollectCVV={grabCollectCVV} redisplayCardElement={redisplayCardElement} grabRedisplayCardElement={grabRedisplayCardElement} />
-    
+                <PaymentMethod backend={backend} token={token} paymentLoading={paymentLoading} grabPaymentLoading={grabPaymentLoading} billing={billing} handleBillingChange={handleBillingChange} grabBilling={grabBilling} paymentMethod={paymentMethod} grabPaymentMethod={grabPaymentMethod} cardholderName={cardholderName} handleCardholderNameChange={handleCardholderNameChange} handleCardChange={handleCardChange} editPayment={editPayment} grabEditPayment={grabEditPayment} collectCVV={collectCVV} grabCollectCVV={grabCollectCVV} redisplayCardElement={redisplayCardElement} grabRedisplayCardElement={grabRedisplayCardElement} />
+
                 {/* Show any error that happens when processing the payment */}
                 {error && (<div className="card-error" role="alert">{error}</div>)}
     
                 {/* Show Save card checkbox if user is logged in and does not have an already default, saved or last used, saved card to display as indicated by paymentMethodID state OR does have an already default/last used saved card but want to add a new card as indicated by redisplayCardElement state. Do not show the checkbox for guests (as indicated by customer state). */}
-                {(customer && !paymentMethodID) || (customer && redisplayCardElement) ? (
+                {(customer && !paymentMethod && !paymentLoading) || (customer && !paymentMethod.paymentMethodID && !paymentLoading) || (customer && redisplayCardElement && !paymentLoading) ? (
                     <div>
                         <input type="checkbox" id="saveCard" name="saveCard" />
                         <label htmlFor="saveCard">Save card for future purchases</label>
                     </div>
                 ): <div></div>}
-                {!editPayment ? (
-                    <button disabled={ disabled && !paymentMethodID }  id="submit" onClick={handleSubmit}>
+                {!editPayment && !paymentLoading || (customer && !paymentMethod && !paymentLoading) ? (
+                    <button disabled={ disabled && !paymentMethod}  id="submit" onClick={handleSubmit}>
                         <span id="button-text">
                             {processing ? (<div className="spinner" id="spinner"></div>) : ("Confirm Payment")}
                         </span>

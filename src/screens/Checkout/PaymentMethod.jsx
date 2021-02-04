@@ -6,11 +6,9 @@ import Modal from 'react-modal';
 // import Button from 'react-bootstrap/Button';
 // import Modal from 'react-bootstrap/Modal'
 
-function PaymentMethod ({ backend, token, handleCardChange, billing, grabBilling, handleBillingChange, cardholderName, handleCardholderNameChange, grabPaymentMethodID, editPayment, grabEditPayment, collectCVV, grabCollectCVV, redisplayCardElement, grabRedisplayCardElement}) {
+function PaymentMethod ({ backend, token, paymentLoading, grabPaymentLoading, handleCardChange, billing, grabBilling, handleBillingChange, cardholderName, handleCardholderNameChange, paymentMethod, grabPaymentMethod, editPayment, grabEditPayment, collectCVV, grabCollectCVV, redisplayCardElement, grabRedisplayCardElement}) {
 
-    const [paymentData, setPaymentData] = useState({})
-    // const [editPayment, setEditPayment] = useState(false)
-    // const [redisplayCardElement, setRedisplayCardElement] = useState(false)
+    // const [paymentData, setPaymentData] = useState({})
 
     /* ------- SAVED CARDS RELATED STATE------- */
     const [savedCards, setSavedCards] = useState([])
@@ -36,9 +34,9 @@ function PaymentMethod ({ backend, token, handleCardChange, billing, grabBilling
                 const paymentMethodData = await paymentMethodResponse.json()
                 console.log(paymentMethodData);
                 // After getting the card info, update paymentMethodID state in Checkout Page. The value is either a string of the payment method ID or null if there is no payment method saved for the logged in user. 
-                grabPaymentMethodID(paymentMethodData.paymentMethodID)
-
-                setPaymentData(paymentMethodData)
+                grabPaymentMethod(paymentMethodData)
+                grabPaymentLoading(false)
+                // setPaymentData(paymentMethodData)
 
                 // grabBilling() only updates the billing state at Checkout if there are billing details sent back from the fetch to the server for checkout payments. Billing details are sent back from server if there is a default, saved or last used, saved card. The updated billing state will allow the input values in BillingInput components to be updated since billing state is passed as prop from Checkout to PaymentMethod to BillingInput component.
                 if(paymentMethodData.paymentMethodID) {
@@ -58,7 +56,7 @@ function PaymentMethod ({ backend, token, handleCardChange, billing, grabBilling
             fetchPaymentMethod();
         } else if (localStorage.getItem('cartItems') === 'false'){
             
-            grabPaymentMethodID(null) // also applies to guest
+            grabPaymentMethod(null) // also applies to guest
             grabCollectCVV("false") // also applies to guest
         }
     }, [])
@@ -72,7 +70,7 @@ function PaymentMethod ({ backend, token, handleCardChange, billing, grabBilling
             console.log(redisplayCardElement)
             console.log(billing)
 
-            const updatePaymentMethodReponse = await fetch(`${backend}/order/update/payment/${paymentData.paymentMethodID}?checkout=true`, {
+            const updatePaymentMethodReponse = await fetch(`${backend}/order/update/payment/${paymentMethod.paymentMethodID}?checkout=true`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -97,7 +95,8 @@ function PaymentMethod ({ backend, token, handleCardChange, billing, grabBilling
             console.log(updatePaymentMethodData);
                 // setEditPayment(false)
             grabEditPayment(false)
-            setPaymentData(updatePaymentMethodData)
+            // setPaymentData(updatePaymentMethodData)
+            grabPaymentMethod(updatePaymentMethodData)
         } else {
             return (
                 <div>Uh oh! It looks like you are logged out. Please log back in.</div>
@@ -150,18 +149,22 @@ function PaymentMethod ({ backend, token, handleCardChange, billing, grabBilling
                 }
             })
             const showSavedCardData = await showSavedCardResponse.json()
-            setPaymentData(showSavedCardData)
+            // setPaymentData(showSavedCardData)
+            grabPaymentMethod(showSavedCardData)
             setShowModal(false)
-            grabPaymentMethodID(showSavedCardData.paymentMethodID)
+            // grabPaymentMethodID(showSavedCardData.paymentMethodID)
             grabBilling(showSavedCardData.billingDetails)
             grabCollectCVV(showSavedCardData.recollectCVV)
         }
     }
+
     // Normally, Card Element is displayed only if 1) card and billing details are not sent back after fetching to /order/checkout/payment because it indicates there is no card attached to the Stripe customer (meaning there is no card saved to the user) so !paymentData.paymentMethodID, and 2) editPayment must also be false so that the Card Element is displayed because we do not want the Card Element when editing the card is happening. 
     // But when we do have card and billing details, and we click Add New, we want to display the Card Element. 
     // To do so, we click Add New -->  passing true to grabRedisplayCardElement() function that was sent down as a prop to PaymentMethod component --> redisplayCardElement state at Checkout component is updated to true --> Checkout component re-renders, causing PaymentMethod component. Since redisplayCardElement state was passed a prop to PaymentMethod component, the true value of redisplayCardElement allows the Card Element to be displayed again through the conditional statement: if((!paymentData.paymentMethodID && !editPayment) || redisplayCardElement){}
     // We need to reset the redisplayCardElement to false after confirming payment so that if user has a default or last used saved card, then the saved card details gets rendered and not the Card Element again when user goes to checkout with items. 
-    if((!paymentData.paymentMethodID && !editPayment) || (paymentData.paymentMethodID && redisplayCardElement)) {
+    if(paymentLoading) {
+        return <h1>Loading...</h1>
+    } else if((!paymentMethod.paymentMethodID && !editPayment) || (paymentMethod.paymentMethodID && redisplayCardElement)) {
         {/* Show Card and Billing Details or Card element and input depending if there is an already default or last used, saved card for logged in user. If there is an already default or last used, saved card, a payment method ID gets returned from the server. */}
         console.log(108, "collect cvv: ", collectCVV, "redisplay card: ", redisplayCardElement)
         return (
@@ -174,7 +177,7 @@ function PaymentMethod ({ backend, token, handleCardChange, billing, grabBilling
                 {/* Close button is displayed if the div with Card Element and inputs are REdisplayed, which happens when Add new button is clicked to change redisplayCardElement to true. When Close button is clicked, we grab the Card Element displayed and destroy it to allow for the old CVV element to be shown. */}
                 {redisplayCardElement && <button onClick={() => {
                     grabRedisplayCardElement(false)
-                    if(paymentData.recollectCVV === 'true') {
+                    if(paymentMethod.recollectCVV === 'true') {
                         grabCollectCVV("true")
                         const card = elements.getElement(CardElement)
                         card.destroy()
@@ -182,26 +185,26 @@ function PaymentMethod ({ backend, token, handleCardChange, billing, grabBilling
                 }}>Close</button>}
             </div>
         )
-    } else if((paymentData.paymentMethodID && !editPayment && !redisplayCardElement) ) {
+    } else if((paymentMethod.paymentMethodID && !editPayment && !redisplayCardElement) ) {
         console.log(124, "collect cvv: ", collectCVV, "redisplay card: ", redisplayCardElement)
         return (
             <div>
                 <h2>Payment</h2>
-                <p><b>{paymentData.brand}</b></p>
-                <p>Ending in <b>{paymentData.last4}</b></p>
-                <p>Expires <b>{paymentData.expDate}</b></p>
-                <p><b>{paymentData.cardholderName}</b></p>
+                <p><b>{paymentMethod.brand}</b></p>
+                <p>Ending in <b>{paymentMethod.last4}</b></p>
+                <p>Expires <b>{paymentMethod.expDate}</b></p>
+                <p><b>{paymentMethod.cardholderName}</b></p>
 
                 {(collectCVV === 'true' && !redisplayCardElement) && <CollectCard collectCVV={collectCVV} redisplayCardElement={redisplayCardElement} handleCardChange={handleCardChange} />}
 
                 <h2>Billing Address</h2>
-                <p>{paymentData.billingDetails.name}</p>
-                <p>{paymentData.billingDetails.address.line1}</p>
-                <p>{paymentData.billingDetails.address.line2}</p>
-                <p>{paymentData.billingDetails.address.city}, {paymentData.billingDetails.address.state} {paymentData.billingDetails.address.postalCode}</p>
+                <p>{paymentMethod.billingDetails.name}</p>
+                <p>{paymentMethod.billingDetails.address.line1}</p>
+                <p>{paymentMethod.billingDetails.address.line2}</p>
+                <p>{paymentMethod.billingDetails.address.city}, {paymentMethod.billingDetails.address.state} {paymentMethod.billingDetails.address.postalCode}</p>
 
                 {/* Click Edit to update payment method */}
-                <button id={paymentData.paymentMethodID} onClick={() => { 
+                <button id={paymentMethod.paymentMethodID} onClick={() => { 
                     // The editPayment state get changed to true depending if the Edit button is clicked or when the Close button is clicked. If Edit button is clicked, the value true is passed back down to Checkout via the grabEditPayment() to determine if the Confirm Payment button in Checkout will be shown.
                     // setEditPayment(true) 
                     console.log("Edit")
@@ -209,8 +212,8 @@ function PaymentMethod ({ backend, token, handleCardChange, billing, grabBilling
                 }}>Edit</button>
 
                 {/* Click Add New to add a new payment method */}
-                <button id={paymentData.paymentMethodID} onClick={handleAddNew}>Add New</button>
-                <button id={paymentData.paymentMethodID} onClick={showAllSavedCards}>Saved Cards</button>
+                <button id={paymentMethod.paymentMethodID} onClick={handleAddNew}>Add New</button>
+                <button id={paymentMethod.paymentMethodID} onClick={showAllSavedCards}>Saved Cards</button>
 
                 {/* Modal will only be displayed if showModal state is true. showModal state changes from initial false to true when Saved Cards button is clicked. When Saved Cards button is clicked, it updates both the showModal and savedCards state, rerendering the component with the updated showModal and savedCards state allowing for the modal to be shown with information. */}
                 {showModal && <Modal isOpen={showModal} onRequestClose={() => setShowModal(false)} ariaHideApp={false} contentLabel="Saved Cards">
@@ -227,16 +230,16 @@ function PaymentMethod ({ backend, token, handleCardChange, billing, grabBilling
                 </Modal>}
             </div>
         )
-    } else if(paymentData.paymentMethodID && editPayment) {
+    } else if(paymentMethod.paymentMethodID && editPayment) {
         console.log(156)
         return (
             <>
                 <div>
                     <h2>Payment</h2>
-                    <p><b>{paymentData.brand}</b></p>
-                    <p>Ending in <b>{paymentData.last4}</b></p>
-                    <p>Expires <b>{paymentData.expDate}</b></p>
-                    <p><b>{paymentData.cardholderName}</b></p>
+                    <p><b>{paymentMethod.brand}</b></p>
+                    <p>Ending in <b>{paymentMethod.last4}</b></p>
+                    <p>Expires <b>{paymentMethod.expDate}</b></p>
+                    <p><b>{paymentMethod.cardholderName}</b></p>
                 </div>
                     {/* <CollectCard handleCardChange={handleCardChange} collectCVV={collectCVV} /> */}
                 <input type='text'></input>
