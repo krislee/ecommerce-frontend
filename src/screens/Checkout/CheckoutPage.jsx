@@ -11,7 +11,6 @@ function Checkout ({backend, paymentIntentInfo}) {
     /* ------- PAYMENT INTENT-RELATED STATES ------- */
     const [customer, setCustomer] = useState(false);
     const [clientSecret, setClientSecret] = useState('');
-    const [checkoutData, setCheckoutData] = useState('');
     const [redirect, setRedirect] = useState(false);
 
     /* ------- UI STRIPE STATES ------- */
@@ -136,10 +135,7 @@ function Checkout ({backend, paymentIntentInfo}) {
                     const checkoutIntentData = await response.json()
                     console.log(checkoutIntentData);
                     setCustomer(checkoutIntentData.customer);
-                    console.log(customer)
                     setClientSecret(checkoutIntentData.clientSecret);
-                    console.log(clientSecret)
-                    setCheckoutData(checkoutIntentData);
                 } 
             } else {
                 const cartResponse = await fetch(`${backend}/buyer/cart`)
@@ -305,12 +301,12 @@ function Checkout ({backend, paymentIntentInfo}) {
             <NavBar />
             <div id="payment-form">
                 <div>Checkout Screen</div>
-                <PaymentMethod backend={backend} checkoutData={checkoutData} token={token} billing={billing} handleBillingChange={handleBillingChange} grabBilling={grabBilling} grabPaymentMethodID={grabPaymentMethodID} cardholderName={cardholderName} handleCardholderNameChange={handleCardholderNameChange} handleCardChange={handleCardChange} editPayment={editPayment} grabEditPayment={grabEditPayment} collectCVV={collectCVV} grabCollectCVV={grabCollectCVV} redisplayCardElement={redisplayCardElement} grabRedisplayCardElement={grabRedisplayCardElement} redirect={redirect}/>
+                <PaymentMethod backend={backend} token={token} billing={billing} handleBillingChange={handleBillingChange} grabBilling={grabBilling} grabPaymentMethodID={grabPaymentMethodID} cardholderName={cardholderName} handleCardholderNameChange={handleCardholderNameChange} handleCardChange={handleCardChange} editPayment={editPayment} grabEditPayment={grabEditPayment} collectCVV={collectCVV} grabCollectCVV={grabCollectCVV} redisplayCardElement={redisplayCardElement} grabRedisplayCardElement={grabRedisplayCardElement} />
     
                 {/* Show any error that happens when processing the payment */}
                 {error && (<div className="card-error" role="alert">{error}</div>)}
     
-                {/* Show Save card checkbox if user is logged in and does not have an already default, saved or last used, saved card to display. Do not show the checkbox for guests. */}
+                {/* Show Save card checkbox if user is logged in and does not have an already default, saved or last used, saved card to display as indicated by paymentMethodID state OR does have an already default/last used saved card but want to add a new card as indicated by redisplayCardElement state. Do not show the checkbox for guests (as indicated by customer state). */}
                 {(customer && !paymentMethodID) || (customer && redisplayCardElement) ? (
                     <div>
                         <input type="checkbox" id="saveCard" name="saveCard" />

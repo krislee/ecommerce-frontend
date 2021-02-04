@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from 'react';
-// import { loadStripe } from "@stripe/stripe-js";
-// import { Elements } from "@stripe/react-stripe-js";
 import CollectCard from "../../components/Card"
 import BillingInput from "../../components/BillingInput"
 import {useStripe, useElements, CardElement, CardCvcElement} from '@stripe/react-stripe-js';
@@ -8,7 +6,7 @@ import Modal from 'react-modal';
 // import Button from 'react-bootstrap/Button';
 // import Modal from 'react-bootstrap/Modal'
 
-function PaymentMethod ({ backend, checkoutData, token, handleCardChange, redirect, billing, grabBilling, handleBillingChange, cardholderName, handleCardholderNameChange, grabPaymentMethodID, editPayment, grabEditPayment, collectCVV, grabCollectCVV, redisplayCardElement, grabRedisplayCardElement}) {
+function PaymentMethod ({ backend, token, handleCardChange, billing, grabBilling, handleBillingChange, cardholderName, handleCardholderNameChange, grabPaymentMethodID, editPayment, grabEditPayment, collectCVV, grabCollectCVV, redisplayCardElement, grabRedisplayCardElement}) {
 
     const [paymentData, setPaymentData] = useState({})
     // const [editPayment, setEditPayment] = useState(false)
@@ -20,12 +18,9 @@ function PaymentMethod ({ backend, checkoutData, token, handleCardChange, redire
     // const [showSavedCard, setShowSavedCard] = useState(false)
     
     /* ------- SET UP STRIPE ------- */
-    const stripe = useStripe();
     const elements = useElements();
 
     useEffect(() => {
-        // console.log(12, redirect)
-        console.log("running fetching payment method if no redirect")
         console.log("CVV state payment: ", collectCVV)
         console.log("redisplay card element payment", redisplayCardElement)
         if(localStorage.getItem('cartItems') !== 'false' && token){
@@ -62,6 +57,7 @@ function PaymentMethod ({ backend, checkoutData, token, handleCardChange, redire
             }
             fetchPaymentMethod();
         } else if (localStorage.getItem('cartItems') === 'false'){
+            
             grabPaymentMethodID(null) // also applies to guest
             grabCollectCVV("false") // also applies to guest
         }
