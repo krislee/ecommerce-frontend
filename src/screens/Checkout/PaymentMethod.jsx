@@ -108,17 +108,18 @@ function PaymentMethod ({ backend, token, paymentLoading, grabPaymentLoading, ha
     const handleAddNew = async () => {
         grabRedisplayCardElement(true)
         grabCollectCVV("false")
+        setShowModal(true)
         console.log(105)
-        const CVV = elements.getElement(CardCvcElement)
-        console.log(CVV)
-        if(CVV) CVV.destroy()
-        // if(CVV && collectCVV === "false") {
-        //     console.log(114)
-        //     CVV.destroy()
-        // } else if(CVV && collectCVV === "true") {
-        //     console.log(117)
-        // }
-        console.log(CVV)
+        // const CVV = elements.getElement(CardCvcElement)
+        // console.log(CVV)
+        // if(CVV) CVV.destroy()
+        // // if(CVV && collectCVV === "false") {
+        // //     console.log(114)
+        // //     CVV.destroy()
+        // // } else if(CVV && collectCVV === "true") {
+        // //     console.log(117)
+        // // }
+        // console.log(CVV)
     }
 
     const showAllSavedCards = async(event) => {
@@ -171,18 +172,32 @@ function PaymentMethod ({ backend, token, paymentLoading, grabPaymentLoading, ha
             <div>
                 <h2>Payment</h2>
                 <input value={cardholderName || ""} name="name" placeholder="Name on card" onChange={handleCardholderNameChange}/>
+
+                 {/* Close button is displayed if the div with Card Element and inputs are REdisplayed, which happens when Add new button is clicked to change redisplayCardElement to true. When Close button is clicked, we grab the Card Element displayed and destroy it to allow for the old CVV element to be shown. */}
+                {(showModal && redisplayCardElement) && <Modal isOpen={showModal} ariaHideApp={false} contentLabel="Saved Cards">
                 <CollectCard handleCardChange={handleCardChange} collectCVV={collectCVV} redisplayCardElement={redisplayCardElement} editPayment={editPayment}/>
-                <h2>Billing Address</h2>
-                <BillingInput handleBillingChange={handleBillingChange} billing={billing}/>
-                {/* Close button is displayed if the div with Card Element and inputs are REdisplayed, which happens when Add new button is clicked to change redisplayCardElement to true. When Close button is clicked, we grab the Card Element displayed and destroy it to allow for the old CVV element to be shown. */}
-                {redisplayCardElement && <button onClick={() => {
-                    grabRedisplayCardElement(false)
-                    if(paymentMethod.recollectCVV === 'true') {
+                    <h2>Billing Address</h2>
+                    <BillingInput handleBillingChange={handleBillingChange} billing={billing}/>
+                    <button onClick={() => {
+                        grabRedisplayCardElement(false)
                         grabCollectCVV("true")
+                        console.log("exit")
+                    }}>Exit</button>
+                    {/* <button onClick={() => {
                         const card = elements.getElement(CardElement)
                         card.destroy()
-                    }
-                }}>Close</button>}
+                        grabRedisplayCardElement(false)
+                    }}>Close</button> */}
+                </Modal>}
+
+                {/* <CollectCard handleCardChange={handleCardChange} collectCVV={collectCVV} redisplayCardElement={redisplayCardElement} editPayment={editPayment}/> */}
+
+                { (!showModal && !redisplayCardElement) && 
+                    <div>
+                        <h2>Billing Address</h2>
+                        <BillingInput handleBillingChange={handleBillingChange} billing={billing}/>
+                    </div>
+                }
             </div>
         )
     } else if((paymentMethod.paymentMethodID && !editPayment && !redisplayCardElement) ) {
@@ -195,7 +210,7 @@ function PaymentMethod ({ backend, token, paymentLoading, grabPaymentLoading, ha
                 <p>Expires <b>{paymentMethod.expDate}</b></p>
                 <p><b>{paymentMethod.cardholderName}</b></p>
 
-                {(collectCVV === 'true' && !redisplayCardElement) && <CollectCard collectCVV={collectCVV} redisplayCardElement={redisplayCardElement} handleCardChange={handleCardChange} />}
+                <CollectCard collectCVV={collectCVV} redisplayCardElement={redisplayCardElement} handleCardChange={handleCardChange} />
 
                 <h2>Billing Address</h2>
                 <p>{paymentMethod.billingDetails.name}</p>
@@ -216,7 +231,7 @@ function PaymentMethod ({ backend, token, paymentLoading, grabPaymentLoading, ha
                 <button id={paymentMethod.paymentMethodID} onClick={showAllSavedCards}>Saved Cards</button>
 
                 {/* Modal will only be displayed if showModal state is true. showModal state changes from initial false to true when Saved Cards button is clicked. When Saved Cards button is clicked, it updates both the showModal and savedCards state, rerendering the component with the updated showModal and savedCards state allowing for the modal to be shown with information. */}
-                {showModal && <Modal isOpen={showModal} onRequestClose={() => setShowModal(false)} ariaHideApp={false} contentLabel="Saved Cards">
+                {(showModal && !redisplayCardElement) && <Modal isOpen={showModal} onRequestClose={() => setShowModal(false)} ariaHideApp={false} contentLabel="Saved Cards">
                     {savedCards.map(savedCard => {
                     return <div>
                         <h1>{savedCard.brand}</h1>

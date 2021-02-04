@@ -37,6 +37,7 @@ function CollectCard({ handleCardChange, collectCVV, redisplayCardElement }) {
     } else {
         console.log("collect cvv in card comp: ", collectCVV)
         console.log("collect redisplay in card comp: ", redisplayCardElement)
+        console.log(elements.getElement(CardElement))
         return <CardCvcElement options={cardStyle} onChange={(event) => handleCardChange(event)}/> 
     }
 
