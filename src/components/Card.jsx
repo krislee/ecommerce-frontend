@@ -40,6 +40,7 @@ function CollectCard({ handleCardChange, collectCVV, redisplayCardElement }) {
         console.log(elements.getElement(CardElement))
         return <CardCvcElement options={cardStyle} onChange={(event) => handleCardChange(event)}/> 
     }
+
 }
 
 export default CollectCard

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import CollectCard from "../../components/Card"
 import BillingInput from "../../components/BillingInput"
-import {useStripe, useElements, CardElement, CardCvcElement} from '@stripe/react-stripe-js';
+import { useElements } from '@stripe/react-stripe-js';
 import Modal from 'react-modal';
 // import Button from 'react-bootstrap/Button';
 // import Modal from 'react-bootstrap/Modal'
@@ -181,7 +181,9 @@ function PaymentMethod ({ backend, token, paymentLoading, grabPaymentLoading, ha
                     <button onClick={() => {
                         grabRedisplayCardElement(false)
                         grabCollectCVV("true")
+                        setShowModal(false)
                         console.log("exit")
+                        console.log("redisplay: ", redisplayCardElement, "collect CVV: ", collectCVV, "show modal: ", showModal)
                     }}>Exit</button>
                     {/* <button onClick={() => {
                         const card = elements.getElement(CardElement)
@@ -210,7 +212,7 @@ function PaymentMethod ({ backend, token, paymentLoading, grabPaymentLoading, ha
                 <p>Expires <b>{paymentMethod.expDate}</b></p>
                 <p><b>{paymentMethod.cardholderName}</b></p>
 
-                <CollectCard collectCVV={collectCVV} redisplayCardElement={redisplayCardElement} handleCardChange={handleCardChange} />
+                {(collectCVV === "true" && !redisplayCardElement) && <CollectCard collectCVV={collectCVV} redisplayCardElement={redisplayCardElement} handleCardChange={handleCardChange} />}
 
                 <h2>Billing Address</h2>
                 <p>{paymentMethod.billingDetails.name}</p>
