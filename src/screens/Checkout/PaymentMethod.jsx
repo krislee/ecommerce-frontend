@@ -4,7 +4,9 @@ import React, { useEffect, useState } from 'react';
 import CollectCard from "../../components/Card"
 import BillingInput from "../../components/BillingInput"
 import {useStripe, useElements, CardElement, CardCvcElement} from '@stripe/react-stripe-js';
-import Modal from 'react-modal';
+// import Modal from 'react-modal';
+import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal'
 
 function PaymentMethod ({ backend, checkoutData, token, handleCardChange, redirect, billing, grabBilling, handleBillingChange, cardholderName, handleCardholderNameChange, grabPaymentMethodID, editPayment, grabEditPayment, collectCVV, grabCollectCVV, redisplayCardElement, grabRedisplayCardElement}) {
 
@@ -63,7 +65,7 @@ function PaymentMethod ({ backend, checkoutData, token, handleCardChange, redire
             grabPaymentMethodID(null) // also applies to guest
             grabCollectCVV("false") // also applies to guest
         }
-    }, [editPayment])
+    }, [editPayment, savedCards])
 
     const handleUpdatePayment = async(event) => {
         console.log("Update payment")
@@ -136,11 +138,12 @@ function PaymentMethod ({ backend, checkoutData, token, handleCardChange, redire
                 }
             })
             const savedCardsData = await savedCardsResponse.json()
-            setSavedCards(savedCardsData)
-            setShowModal(true)
+            console.log(savedCardsData.paymentMethods)
+
+            setSavedCards(savedCardsData.paymentMethods)
+            setShowModal(true);
         }
     }
-    
     
     const showSavedCard = async(event) => {
         if(localStorage.getItem('token')) {
@@ -181,7 +184,7 @@ function PaymentMethod ({ backend, checkoutData, token, handleCardChange, redire
                 }}>Close</button>}
             </div>
         )
-    } else if(paymentData.paymentMethodID && !editPayment && !redisplayCardElement) {
+    } else if((paymentData.paymentMethodID && !editPayment && !redisplayCardElement) || (savedCards.length > 1)) {
         console.log(124, "collect cvv: ", collectCVV, "redisplay card: ", redisplayCardElement)
         return (
             <div>
@@ -209,21 +212,27 @@ function PaymentMethod ({ backend, checkoutData, token, handleCardChange, redire
                 {/* Click Add New to add a new payment method */}
                 <button id={paymentData.paymentMethodID} onClick={handleAddNew}>Add New</button>
                 <button onClick={handleSavedCards}>Saved Cards</button>
-                {/* <button onClick={()=> console.log("collect cvv: ", collectCVV, "redisplay card: ", redisplayCardElement)}>Check</button> */}
-                {showModal && <Modal isOpen={showModal} onRequestClose={showModal} contentLabel="Saved Cards">
-                    {
-                        savedCards.map(savedCard => {
-                            <div>
-                                <h1>{savedCard.brand}</h1>
-                                <p>Ending in <b>{savedCard.last4}</b></p>
-                                <p>Expires <b>{savedCard.expDate}</b></p>
-                                <p><b>{savedCard.cardholderName}</b></p>
-                                <button id={savedCard.paymentMethodID} onClick={showSavedCard}>Select</button>
-                            </div>
-                        })
-                    }
+
+                {/* {showModal && <Modal isOpen={showModal} onRequestClose={showModal} ariaHideApp={false} contentLabel="Saved Cards">
+                    
                     <button onClick={() => setShowModal(false)}>Close</button>
-                </Modal>}
+                </Modal>} */}
+                
+                       
+                
+                ({savedCards.length > 0}) ? ({savedCards.map(savedCard => {
+                    return <div>
+                        <h1>{savedCard.brand}</h1>
+                        <p>Ending in <b>{savedCard.last4}</b></p>
+                        <p>Expires <b>{savedCard.expDate}</b></p>
+                        <p><b>{savedCard.cardholderName}</b></p>
+                        <button id={savedCard.paymentMethodID} onClick={showSavedCard}>Select</button>
+                    </div>
+                    
+                })}) : <></>
+                
+                 
+                   
             </div>
         )
     } else if(paymentData.paymentMethodID && editPayment) {
