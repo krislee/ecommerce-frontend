@@ -338,3 +338,4 @@ function Checkout ({backend, paymentIntentInfo}) {
 }
 export default Checkout
 // 4000 0027 6000 3184 (auth card)
+// 
