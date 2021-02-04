@@ -48,20 +48,15 @@ function CartPage ({ backend }) {
             }
         };
         getCartItems();
-
-    })
+    },[])
 
     return (
         <>
-            {localStorage.getItem('loggedIn') ? 
-            <>
-                <NavBar />
-            </>
-             : <NavBar />}
+            <NavBar />
             <div className="cart">
                 {typeof data.cart === 'string' || items.length === 0? <div className="noItems">No Items...</div>: 
                 <>
-                <div>{items.map(item => [
+                <div className="cart-items">{items.map(item => [
                     <div key={item.ItemId}>
                         <div>{item.Name}</div>
                         <div>{item.Quantity}</div>

@@ -61,7 +61,7 @@ function PaymentMethod ({ backend, token, handleCardChange, billing, grabBilling
             grabPaymentMethodID(null) // also applies to guest
             grabCollectCVV("false") // also applies to guest
         }
-    })
+    }, [])
 
     const handleUpdatePayment = async(event) => {
         console.log("Update payment")
