@@ -4,9 +4,9 @@ import React, { useEffect, useState } from 'react';
 import CollectCard from "../../components/Card"
 import BillingInput from "../../components/BillingInput"
 import {useStripe, useElements, CardElement, CardCvcElement} from '@stripe/react-stripe-js';
-// import Modal from 'react-modal';
-import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal'
+import Modal from 'react-modal';
+// import Button from 'react-bootstrap/Button';
+// import Modal from 'react-bootstrap/Modal'
 
 function PaymentMethod ({ backend, checkoutData, token, handleCardChange, redirect, billing, grabBilling, handleBillingChange, cardholderName, handleCardholderNameChange, grabPaymentMethodID, editPayment, grabEditPayment, collectCVV, grabCollectCVV, redisplayCardElement, grabRedisplayCardElement}) {
 
@@ -65,7 +65,7 @@ function PaymentMethod ({ backend, checkoutData, token, handleCardChange, redire
             grabPaymentMethodID(null) // also applies to guest
             grabCollectCVV("false") // also applies to guest
         }
-    }, [editPayment, savedCards])
+    }, [])
 
     const handleUpdatePayment = async(event) => {
         console.log("Update payment")
@@ -99,11 +99,9 @@ function PaymentMethod ({ backend, checkoutData, token, handleCardChange, redire
             
             const updatePaymentMethodData = await updatePaymentMethodReponse.json()
             console.log(updatePaymentMethodData);
-            // console.log(paymentMethodData);
-            if(await updatePaymentMethodData.paymentMethodID) {
                 // setEditPayment(false)
-                grabEditPayment(false)
-            }
+            grabEditPayment(false)
+            setPaymentData(updatePaymentMethodData)
         } else {
             return (
                 <div>Uh oh! It looks like you are logged out. Please log back in.</div>
@@ -128,8 +126,9 @@ function PaymentMethod ({ backend, checkoutData, token, handleCardChange, redire
         console.log(CVV)
     }
 
-    const handleSavedCards = async(event) => {
+    const showAllSavedCards = async(event) => {
         if(localStorage.getItem('token')) {
+            console.log(event.target.id)
             const savedCardsResponse = await fetch(`${backend}/order/index/payment?save=true&id=${event.target.id}`, {
                 method: 'GET',
                 headers: {
@@ -145,7 +144,7 @@ function PaymentMethod ({ backend, checkoutData, token, handleCardChange, redire
         }
     }
     
-    const showSavedCard = async(event) => {
+    const showOneSavedCard = async(event) => {
         if(localStorage.getItem('token')) {
             const showSavedCardResponse = await fetch(`${backend}/order/show/payment/${event.target.id}`, {
                 method: 'GET',
@@ -157,6 +156,9 @@ function PaymentMethod ({ backend, checkoutData, token, handleCardChange, redire
             const showSavedCardData = await showSavedCardResponse.json()
             setPaymentData(showSavedCardData)
             setShowModal(false)
+            grabPaymentMethodID(showSavedCardData.paymentMethodID)
+            grabBilling(showSavedCardData.billingDetails)
+            grabCollectCVV(showSavedCardData.recollectCVV)
         }
     }
     // Normally, Card Element is displayed only if 1) card and billing details are not sent back after fetching to /order/checkout/payment because it indicates there is no card attached to the Stripe customer (meaning there is no card saved to the user) so !paymentData.paymentMethodID, and 2) editPayment must also be false so that the Card Element is displayed because we do not want the Card Element when editing the card is happening. 
@@ -184,7 +186,7 @@ function PaymentMethod ({ backend, checkoutData, token, handleCardChange, redire
                 }}>Close</button>}
             </div>
         )
-    } else if((paymentData.paymentMethodID && !editPayment && !redisplayCardElement) || (savedCards.length > 1)) {
+    } else if((paymentData.paymentMethodID && !editPayment && !redisplayCardElement) ) {
         console.log(124, "collect cvv: ", collectCVV, "redisplay card: ", redisplayCardElement)
         return (
             <div>
@@ -206,33 +208,27 @@ function PaymentMethod ({ backend, checkoutData, token, handleCardChange, redire
                 <button id={paymentData.paymentMethodID} onClick={() => { 
                     // The editPayment state get changed to true depending if the Edit button is clicked or when the Close button is clicked. If Edit button is clicked, the value true is passed back down to Checkout via the grabEditPayment() to determine if the Confirm Payment button in Checkout will be shown.
                     // setEditPayment(true) 
+                    console.log("Edit")
                     grabEditPayment(true)
                 }}>Edit</button>
 
                 {/* Click Add New to add a new payment method */}
                 <button id={paymentData.paymentMethodID} onClick={handleAddNew}>Add New</button>
-                <button onClick={handleSavedCards}>Saved Cards</button>
+                <button id={paymentData.paymentMethodID} onClick={showAllSavedCards}>Saved Cards</button>
 
-                {/* {showModal && <Modal isOpen={showModal} onRequestClose={showModal} ariaHideApp={false} contentLabel="Saved Cards">
-                    
-                    <button onClick={() => setShowModal(false)}>Close</button>
-                </Modal>} */}
-                
-                       
-                
-                ({savedCards.length > 0}) ? ({savedCards.map(savedCard => {
+                {/* Modal will only be displayed if showModal state is true. showModal state changes from initial false to true when Saved Cards button is clicked. When Saved Cards button is clicked, it updates both the showModal and savedCards state, rerendering the component with the updated showModal and savedCards state allowing for the modal to be shown with information. */}
+                {showModal && <Modal isOpen={showModal} onRequestClose={() => setShowModal(false)} ariaHideApp={false} contentLabel="Saved Cards">
+                    {savedCards.map(savedCard => {
                     return <div>
                         <h1>{savedCard.brand}</h1>
                         <p>Ending in <b>{savedCard.last4}</b></p>
                         <p>Expires <b>{savedCard.expDate}</b></p>
                         <p><b>{savedCard.cardholderName}</b></p>
-                        <button id={savedCard.paymentMethodID} onClick={showSavedCard}>Select</button>
+                        <button id={savedCard.paymentMethodID} onClick={showOneSavedCard}>Select</button>
                     </div>
-                    
-                })}) : <></>
-                
-                 
-                   
+                    })}
+                    <button onClick={() => setShowModal(false)}>Close</button>
+                </Modal>}
             </div>
         )
     } else if(paymentData.paymentMethodID && editPayment) {
