@@ -54,6 +54,8 @@ function Checkout ({backend, paymentIntentInfo}) {
         setPaymentMethod(paymentMethod)      
         // If the logged in user has a default, saved or last used, saved card, the paymentMethodID state is a string. If paymentMethodID is truthy, then we will use it as the first option to confirm the card payment in stripe.confirmCardPayment(). If truthy, we would also not need to run the saveCardForFuture() helper since that should be run only if the card Element is displayed but it would not be displayed if there is a payment method ID from Checkout/PaymentMethod.
         // If the logged in user has neither or if user is a guest, then paymementMethodID is updated to null. If paymentMethodID is falsy, then we need to run saveCardForFuture() helper in case the user wants to save the card. 
+        grabBilling(paymentMethod.billingDetails)
+        setCollectCVV(paymentMethod.recollectCVV)
     }
 
     // We need to prefill the billing details input when user wants to edit the displayed, saved card. So we pass the grabBilling function as prop to Checkout/PaymentMethod to update the billing state IF the payment data that comes back from fetching the server for either default, saved or last used, saved, or no, saved cards is default, saved or last used, saved card. 
@@ -318,7 +320,7 @@ function Checkout ({backend, paymentIntentInfo}) {
                         <label htmlFor="saveCard">Save card for future purchases</label>
                     </div>
                 ): <div></div>}
-                {!editPayment && !paymentLoading || (customer && !paymentMethod && !paymentLoading) ? (
+                {(!editPayment && !paymentLoading) || (customer && !paymentMethod && !paymentLoading) ? (
                     <button disabled={ disabled && !paymentMethod}  id="submit" onClick={handleSubmit}>
                         <span id="button-text">
                             {processing ? (<div className="spinner" id="spinner"></div>) : ("Confirm Payment")}
