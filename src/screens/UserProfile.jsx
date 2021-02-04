@@ -13,26 +13,8 @@ function UserProfile ({backend}) {
     const [payments, setPayments] = useState(false);
     const [addressData, setAddressData] = useState([]);
     const [modalIsOpen,setIsOpen] = useState(false);
-    const [firstName, setFirstName] = useState('');
-    const [lastName, setLastName] = useState('');
-    const [addressOne, setAddressOne] = useState('');
-    const [addressTwo, setAddressTwo] = useState('');
-    const [city, setCity] = useState('');
-    const [state, setState] = useState('');
-    const [zipcode, setZipcode] = useState('');
+    const [addressInput, setAddressInput] = useState({});
     let subtitle;
-
-    function openModal() {
-        setIsOpen(true);
-    }
-
-    function afterOpenModal() {
-    subtitle.style.color = '#000';
-    }
-
-    function closeModal() {
-        setIsOpen(false);
-    }
     
     const customStyles = {
         content : {
@@ -62,6 +44,51 @@ function UserProfile ({backend}) {
         fetchAddressData();
     }, []);
 
+    const openModal = () => {
+        setIsOpen(true);
+    }
+
+    const afterOpenModal = () => {
+    subtitle.style.color = '#000';
+    }
+
+    const closeModal = () => {
+        setIsOpen(false);
+    }
+
+    const handleAddressChange = (e) => {
+        const { name, value } = e.target
+        setAddressInput((prevAddress) => ({
+            ...prevAddress, [name] : value
+        }))
+    }
+
+    const handleCheckInput = (event) => {
+        event.preventDefault();
+        console.log('Address:', addressInput);
+    }
+
+    const handleSubmitAddress = async (event) => {
+        event.preventDefault();
+        const checkbox = document.getElementById('address-default');
+        const check = checkbox.checked
+        const newAddressResponse = await fetch(`${backend}/shipping/address?lastUse=false&default=${check}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': localStorage.getItem('token')
+            },
+            body: JSON.stringify({
+                name: `${addressInput.firstName}, ${addressInput.lastName}`,
+                address: `${addressInput.addressLineOne}, ${addressInput.addressLineTwo}, ${addressInput.city}, ${addressInput.state}, ${addressInput.zipcode}`
+            })
+        })
+        const newAddressData = await newAddressResponse.json();
+        console.log(newAddressData);
+        setAddressData(newAddressData);
+        setIsOpen(false);
+    }
+
     const handleClickAddresses = () => {
         if (addresses) {
             setAddresses(false);
@@ -79,6 +106,14 @@ function UserProfile ({backend}) {
             setPayments(true);
         }
     }
+
+    const allAddresses = addressData.map((address, index) => {
+        return(
+            <div key={index} className="one-address-container">
+                <div>{address.Name}</div>
+            </div>
+        )
+    })
 
     return (
         <>
@@ -108,20 +143,67 @@ function UserProfile ({backend}) {
                                 >
                                 <form>
                                     <h2 ref={_subtitle => (subtitle = _subtitle)}>Add Your Address</h2>
-                                    <input placeholder="First Name"/>
-                                    <input placeholder="Last Name"/>
-                                    <input placeholder="Address Line One"/>
-                                    <input placeholder="Address Line Two"/>
-                                    <input placeholder="City"/>
-                                    <input placeholder="State"/>
-                                    <input placeholder="Zipcode"/>
-                                    <button onClick={closeModal}>Submit</button>
+                                    <input value={addressInput.firstName || ""} name="firstName" placeholder="First Name" onChange={handleAddressChange}/>
+                                    <input value={addressInput.lastName || ""} name="lastName" placeholder="Last Name" onChange={handleAddressChange}/>
+                                    <input value={addressInput.addressLineOne || ""} name="addressLineOne" placeholder="Address Line One"
+                                    onChange={handleAddressChange}/>
+                                    <input value={addressInput.addressLineTwo || ""} name="addressLineTwo" placeholder="Address Line Two"
+                                    onChange={handleAddressChange}/>
+                                    <input value={addressInput.city || ""} name="city" placeholder="City"
+                                    onChange={handleAddressChange}/>
+                                    <input value={addressInput.state || ""} name="state" placeholder="State"
+                                    onChange={handleAddressChange}/>
+                                    <input value={addressInput.zipcode || ""} name="zipcode" placeholder="Zipcode"
+                                    onChange={handleAddressChange}/>
+                                    <div>
+                                        <label htmlFor="addressDefault">Save as default</label>
+                                        <input name="addressDefault" type="checkbox" id="address-default"/>
+                                    </div>
+                                    {/* <button onClick={handleCheckInput}>Test</button> */}
+                                    <button onClick={handleSubmitAddress}>Submit</button>
                                 </form>
                                 </Modal>
                             </>
                           
                             : 
-                            <div>You have an address</div>}
+                            <>
+                                <div className="all-address-container">
+                                    <div className="add-address one-address-container" onClick={openModal}>
+                                        <FontAwesomeIcon className="plus-icon" icon={faPlus}/>
+                                        <div>Add an Address</div> 
+                                    </div>
+                                    <div className="all-addresses-container">{allAddresses}</div>
+                                    <button onClick={() => console.log(addressData)}>Log Address Data</button>
+                                    <Modal
+                                isOpen={modalIsOpen}
+                                onAfterOpen={afterOpenModal}
+                                onRequestClose={closeModal}
+                                style={customStyles}
+                                contentLabel="Example Modal"
+                                >
+                                <form>
+                                    <h2 ref={_subtitle => (subtitle = _subtitle)}>Add Your Address</h2>
+                                    <input value={addressInput.firstName || ""} name="firstName" placeholder="First Name" onChange={handleAddressChange}/>
+                                    <input value={addressInput.lastName || ""} name="lastName" placeholder="Last Name" onChange={handleAddressChange}/>
+                                    <input value={addressInput.addressLineOne || ""} name="addressLineOne" placeholder="Address Line One"
+                                    onChange={handleAddressChange}/>
+                                    <input value={addressInput.addressLineTwo || ""} name="addressLineTwo" placeholder="Address Line Two"
+                                    onChange={handleAddressChange}/>
+                                    <input value={addressInput.city || ""} name="city" placeholder="City"
+                                    onChange={handleAddressChange}/>
+                                    <input value={addressInput.state || ""} name="state" placeholder="State"
+                                    onChange={handleAddressChange}/>
+                                    <input value={addressInput.zipcode || ""} name="zipcode" placeholder="Zipcode"
+                                    onChange={handleAddressChange}/>
+                                    <div>
+                                        <label htmlFor="addressDefault">Save as default</label>
+                                        <input name="addressDefault" type="checkbox" id="address-default"/>
+                                    </div>
+                                    <button onClick={handleSubmitAddress}>Submit</button>
+                                </form>
+                                </Modal>
+                                </div>
+                            </>}
                         </div>
                     </>
                 }
