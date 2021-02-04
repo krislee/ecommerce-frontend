@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import CollectCard from "../../components/Card"
 import BillingInput from "../../components/BillingInput"
-import {useElements, CardElement, CardCvcElement} from '@stripe/react-stripe-js';
 import Modal from 'react-modal';
+import {CardCvcElement, CardElement, useElements} from "@stripe/react-stripe-js"; 
 // import Button from 'react-bootstrap/Button';
 // import Modal from 'react-bootstrap/Modal'
 
@@ -142,18 +142,11 @@ function PaymentMethod ({ backend, token, paymentLoading, grabPaymentLoading, ha
         }
     }
 
-
     if(paymentLoading) {
         return <h1>Loading...</h1>
     } else if((!paymentMethod.paymentMethodID && !editPayment) || (paymentMethod.paymentMethodID && redisplayCardElement)) {
 
         console.log(143, "collect cvv: ", collectCVV, "redisplay card: ", redisplayCardElement)
-
-    // Normally, Card Element is displayed only if 1) card and billing details are not sent back after fetching to /order/checkout/payment because it indicates there is no card attached to the Stripe customer (meaning there is no card saved to the user) so !paymentData.paymentMethodID, and 2) editPayment must also be false so that the Card Element is displayed because we do not want the Card Element when editing the card is happening. 
-    // But when we do have card and billing details, and we click Add New, we want to display the Card Element. 
-    // To do so, we click Add New -->  passing true to grabRedisplayCardElement() function that was sent down as a prop to PaymentMethod component --> redisplayCardElement state at Checkout component is updated to true --> Checkout component re-renders, causing PaymentMethod component. Since redisplayCardElement state was passed a prop to PaymentMethod component, the true value of redisplayCardElement allows the Card Element to be displayed again through the conditional statement: if((!paymentData.paymentMethodID && !editPayment) || redisplayCardElement){}
-    // We need to reset the redisplayCardElement to false after confirming payment so that if user has a default or last used saved card, then the saved card details gets rendered and not the Card Element again when user goes to checkout with items. 
-
         return (
             <div>
                 {(!showModal && collectCVV==='false' && !redisplayCardElement) && (
