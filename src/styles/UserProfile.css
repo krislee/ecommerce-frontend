@@ -65,3 +65,27 @@
     justify-content: space-between;
     flex-wrap: wrap;
 }
+
+.form {
+    margin: 2vh 2vw;
+}
+
+.form > h2 {
+    margin-bottom: 2vh;
+}
+
+.form > input {
+    margin-bottom: 1rem;
+}
+
+.default-container {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.default-container > label {
+    margin-bottom: 0px !important;
+}

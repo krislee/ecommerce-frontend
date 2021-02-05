@@ -146,7 +146,7 @@ function UserProfile ({backend}) {
                                     style={customStyles}
                                     contentLabel="Example Modal"
                                     >
-                                    <form>
+                                    <form className="form">
                                         <h2 ref={_subtitle => (subtitle = _subtitle)}>Add Your Address</h2>
                                         <input value={addressInput.firstName || ""} name="firstName" placeholder="First Name" onChange={handleAddressChange}/>
                                         <input value={addressInput.lastName || ""} name="lastName" placeholder="Last Name" onChange={handleAddressChange}/>
@@ -160,16 +160,14 @@ function UserProfile ({backend}) {
                                         onChange={handleAddressChange}/>
                                         <input value={addressInput.zipcode || ""} name="zipcode" placeholder="Zipcode"
                                         onChange={handleAddressChange}/>
-                                        <div>
+                                        <div className="default-container">
                                             <label htmlFor="addressDefault">Save as default</label>
                                             <input name="addressDefault" type="checkbox" id="address-default"/>
                                         </div>
-                                        {/* <button onClick={handleCheckInput}>Test</button> */}
                                         <button onClick={handleSubmitAddress}>Submit</button>
                                     </form>
                                     </Modal>
                                 </>
-                              
                                 : 
                                 <>
                                     <div className="all-address-container">
@@ -186,7 +184,7 @@ function UserProfile ({backend}) {
                                     style={customStyles}
                                     contentLabel="Example Modal"
                                     >
-                                    <form>
+                                    <form className="form">
                                         <h2 ref={_subtitle => (subtitle = _subtitle)}>Add Your Address</h2>
                                         <input value={addressInput.firstName || ""} name="firstName" placeholder="First Name" onChange={handleAddressChange}/>
                                         <input value={addressInput.lastName || ""} name="lastName" placeholder="Last Name" onChange={handleAddressChange}/>
@@ -200,7 +198,7 @@ function UserProfile ({backend}) {
                                         onChange={handleAddressChange}/>
                                         <input value={addressInput.zipcode || ""} name="zipcode" placeholder="Zipcode"
                                         onChange={handleAddressChange}/>
-                                        <div>
+                                        <div className="default-container">
                                             <label htmlFor="addressDefault">Save as default</label>
                                             <input name="addressDefault" type="checkbox" id="address-default"/>
                                         </div>
