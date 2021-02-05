@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import {Link} from 'react-router-dom';
 // import Button from '../components/Button'
 // import '../styles/BuyerLogin.css'
@@ -9,7 +9,7 @@ import { Dropdown } from 'react-bootstrap'
 
 function NavBar () {
 
-    const [test, setTest] = useState(false);
+    // const [test, setTest] = useState(false);
 
     const handleLogout = () => {
         localStorage.clear();
@@ -29,24 +29,22 @@ function NavBar () {
                 </div>
             </Link>
             <div className="cart-profile-container">
-            {localStorage.getItem('loggedIn') ? 
-            <Link to="/profile">
-            <div className='column user-profile'>
-                <FontAwesomeIcon className="user-icon" icon={faUser}/>
-                <div>{username}</div>
-            </div>
-            </Link>: null}
             <Link to="/cart">
                 <FontAwesomeIcon className="cart-icon" icon={faShoppingCart}/>
             </Link>
-            {localStorage.getItem('loggedIn') ? <div className="logout-button" onClick={() => handleLogout()}>Logout</div> : 
+            {localStorage.getItem('loggedIn') ? 
+            <Dropdown>
+            <Dropdown.Toggle>
+            {localStorage.getItem('loggedIn') ? 
+                <FontAwesomeIcon className="user-icon" icon={faUser}/>
+            : null}
+            </Dropdown.Toggle>
+            <Dropdown.Menu className="dropdown-menu">
+                <Dropdown.Item href="/profile">Account Settings</Dropdown.Item>
+                <Dropdown.Item onClick={handleLogout}>Logout</Dropdown.Item>
+            </Dropdown.Menu>
+            </Dropdown> : 
             <div className="login-button-container">
-                {/* <Link to='/buyer'>
-                <div className="login-button">Buyer</div>
-                </Link>
-                <Link to='/seller'>
-                <div className="login-button">Seller</div>
-                </Link> */}
                 <Dropdown>
                 <Dropdown.Toggle id="dropdown-basic">
                     Login
@@ -56,7 +54,6 @@ function NavBar () {
                     <Dropdown.Item href="/seller">Seller</Dropdown.Item>
                 </Dropdown.Menu>
                 </Dropdown>
-                {/* {test && <div style={{color: '#fff'}}>Hello</div>} */}
             </div>}
             </div>
         </div>
