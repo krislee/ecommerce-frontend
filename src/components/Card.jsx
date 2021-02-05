@@ -22,9 +22,7 @@ function CollectCard({ handleCardChange, collectCVV, redisplayCardElement }) {
     }
 
     // We want to show CVV Card Element whenever collectCVV is 'true'. This happenes when the json data we get back when we fetch to /order/checkout/payment has the property recollectCVV with a value of 'true'. But when user clicks Add New to add a new card, we cannot have CVV Card Element attached. So only when redisplayCardElement state is false (initial value), then we have the possibility to show CVV card element. redisplayCardElement state is true when Add New is clicked.
-    if (collectCVV !== "true" || !collectCVV) {
-        console.log("collect cvv in card comp: ", collectCVV)
-        console.log("collect redisplay in card comp: ", redisplayCardElement)
+    if (collectCVV !== "true") {
         console.log(elements.getElement(CardCvcElement))
         return (
             <label>
@@ -33,8 +31,6 @@ function CollectCard({ handleCardChange, collectCVV, redisplayCardElement }) {
             </label>
         )
     } else {
-        console.log("collect cvv in card comp: ", collectCVV)
-        console.log("collect redisplay in card comp: ", redisplayCardElement)
         console.log(elements.getElement(CardElement))
         return <CardCvcElement options={cardStyle} onChange={(event) => handleCardChange(event)}/> 
     }

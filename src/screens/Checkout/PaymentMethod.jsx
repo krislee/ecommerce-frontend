@@ -40,8 +40,8 @@ function PaymentMethod ({ backend, token, error, disabled, grabDisabled, grabErr
         
             }
             fetchPaymentMethod();
-        } else if (localStorage.getItem('cartItems') === 'false'){
-            grabPaymentMethod(null) 
+        } else if (localStorage.getItem('guestCartItems') === 'true'){
+            grabPaymentMethod({}) 
             grabCollectCVV("false") 
             grabPaymentLoading(false)
         }

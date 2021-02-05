@@ -6,9 +6,10 @@ import NavBar from '../../components/NavigationBar';
 import '../../styles/CheckoutPage.css';
 import createPaymentMethod from './CreatePayment'
 
-function Checkout ({backend, paymentIntentInfo}) {
-    const token = localStorage.getItem('token')
-    
+function Checkout ({backend}) {
+
+    /* ------- LOADING STATES ------- */
+    // The loading states determine what you will see when you hit /checkout the first time
     const [redirect, setRedirect] = useState(false);
     const [loading, setLoading] = useState(true)
     const [paymentLoading, setPaymentLoading] = useState(true)
@@ -54,10 +55,12 @@ function Checkout ({backend, paymentIntentInfo}) {
     const grabPaymentMethod = (paymentMethod) => {
         setPaymentMethod(paymentMethod)      
         // If the logged in user has a default, saved or last used, saved card, the paymentMethodID state is a string. If paymentMethodID is truthy, then we will use it as the first option to confirm the card payment in stripe.confirmCardPayment(). If truthy, we would also not need to run the saveCardForFuture() helper since that should be run only if the card Element is displayed but it would not be displayed if there is a payment method ID from Checkout/PaymentMethod.
-        // If the logged in user has neither or if user is a guest, then paymementMethodID is updated to null. If paymentMethodID is falsy, then we need to run saveCardForFuture() helper in case the user wants to save the card. 
+        // If the logged in user has neither or if user is a guest, then paymementMethodID is updated to null. If paymentMethodID is falsy, then we need to run saveCardForFuture() helper in case the user wants to save the card.
+        
         grabBilling(paymentMethod.billingDetails)
         setCollectCVV(paymentMethod.recollectCVV)
         setCardholderName(paymentMethod.cardholderName)
+        
     }
 
     // We need to prefill the billing details input when user wants to edit the displayed, saved card. So we pass the grabBilling function as prop to Checkout/PaymentMethod to update the billing state IF the payment data that comes back from fetching the server for either default, saved or last used, saved, or no, saved cards is default, saved or last used, saved card. 
@@ -122,51 +125,74 @@ function Checkout ({backend, paymentIntentInfo}) {
         setError(event.error ? event.error.message : "");
     };
 
+    // Helper to check if user is logged in
+    const loggedIn = () => localStorage.getItem('token')
+
     /* ------- CREATE NEW OR UPDATE EXISTING PAYMENT INTENT AFTER RENDERING DOM ------- */
     useEffect(() => {
         const handleCheckout = async () => {
-            console.log("token", token)
-            // setLoading(false)
-            if (token) {
+
+            if (loggedIn()) {
                 const cartResponse = await fetch(`${backend}/buyer/cart`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': localStorage.getItem('token')
+                        'Authorization': loggedIn()
                     }
                 })
-                const data = await cartResponse.json();
-                console.log(data);
-                if(data.cart === "No cart available") {
+                const cartResponseData = await cartResponse.json();
+                console.log(cartResponseData);
+                if(cartResponseData.cart === "No cart available") {
                     localStorage.setItem("cartItems", false);
                     setRedirect(true);
                     setLoading(false)
                     return;
-                    // setIsMounted(false)
                 }
-                if(typeof data.cart !== 'string'){
+                if(typeof cartResponseData.cart !== 'string'){
                     localStorage.setItem('cartItems', true)
-                    const response = await fetch(`${backend}/order/payment-intent`, {
+                    const paymentIntentResponse = await fetch(`${backend}/order/payment-intent`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
-                            'Idempotency-Key': data.cart._id,
-                            'Authorization': token
+                            'Idempotency-Key': cartResponseData.cart._id,
+                            'Authorization': loggedIn()
                         }
                     })
-                    const checkoutIntentData = await response.json()
-                    console.log(checkoutIntentData);
-                    setCustomer(checkoutIntentData.customer);
-                    setClientSecret(checkoutIntentData.clientSecret);
+                    const paymentIntentData = await paymentIntentResponse.json()
+                    console.log(paymentIntentData);
                     setLoading(false)
+                    setCustomer(paymentIntentData.customer);
+                    setClientSecret(paymentIntentData.clientSecret);
                 } 
             } else {
-                const cartResponse = await fetch(`${backend}/buyer/cart`)
-                const data = await cartResponse.json()
-                console.log(data);
-                if(data.message) {
+                const cartResponse = await fetch(`${backend}/buyer/cart`, {
+                    method: 'GET',
+                    headers: {'Content-Type': 'application/json'},
+                    credentials: 'include'
+                })
+                const cartResponseData = await cartResponse.json()
+                console.log(cartResponseData);
+                if(cartResponseData.message) {
+                    localStorage.setItem('guestCartItems', false)
                     setRedirect(true)
                     setLoading(false)
+                    return
+                } else if(cartResponseData.sessionID){
+                    console.log("cookie checkout: ", document.cookie)
+                    localStorage.setItem('guestCartItems', true)
+                    const paymentIntentResponse = await fetch(`${backend}/order/payment-intent`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Idempotency-Key': cartResponseData.sessionID
+                        },
+                        credentials: 'include'
+                    })
+                    const paymentIntentData = await paymentIntentResponse.json()
+                    console.log(paymentIntentData);
+                    setLoading(false)
+                    setCustomer(paymentIntentData.customer)
+                    setClientSecret(paymentIntentData.clientSecret)
                 }
             }
         }    
@@ -180,87 +206,98 @@ function Checkout ({backend, paymentIntentInfo}) {
         3) A newly created, non-saved card (this applies to logged in users who did not click Save Card or for guests). We still run saveCardForFuture() but since the card is not saved, the function does not run stripe.createPaymentMethod() and does not fetch to our server - it just returns null. Then stripe.confirmCardPayment() is ran collecting the card details straight from the Stripe's Card element. 
     */
     const handleSubmit = async (event) => {
-        // Disable Confirm Payment button
-        setDisabled(true)
-        setProcessing(true)
-        // We don't want to let default form submission happen here, which would refresh the page.
-        event.preventDefault();
-        
-        // Check if Stripe.js has loaded yet.
-        if (!stripe || !elements) {
-          setDisabled(true)
-          setProcessing(false)
-          return; // return when Stripe.js is not loaded
-        }
+            if(!loggedIn()) {
+                const cartResponse = await fetch(`${backend}/buyer/cart`, {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include'
+                })
+                const cartResponseData = await cartResponse.json()
+                console.log(cartResponseData);
+                if(cartResponseData.message) return setRedirect(true)
+            }
+            // Disable Confirm Payment button
+            setDisabled(true)
+            setProcessing(true)
+            // We don't want to let default form submission happen here, which would refresh the page.
+            event.preventDefault();
+            
+            // Check if Stripe.js has loaded yet.
+            if (!stripe || !elements) {
+            setDisabled(true)
+            setProcessing(false)
+            return; // return when Stripe.js is not loaded
+            }
 
-        console.log(clientSecret)
+            console.log(clientSecret)
 
-        // If there is no already saved card, and therefore, no card details displayed by PaymentMethod component, then we need to only display the Card Element that is also via the PaymentMethod component, but if the user is logged in then we need to also give the option of saving the card details from the Card Element. So let's run saveCardForFuture helper function. If user did not click save card, then saveCardForFuture will just return null.
-        let newSavedCheckoutPaymentMethod
-        console.log(newSavedCheckoutPaymentMethod)
-        if(!paymentMethod.paymentMethodID && customer){
-            const cardElement = elements.getElement(CardElement)
-            newSavedCheckoutPaymentMethod = await saveCardForFuture(stripe, cardElement, billing, cardholderName, backend)
+            // If there is no already saved card, and therefore, no card details displayed by PaymentMethod component, then we need to only display the Card Element that is also via the PaymentMethod component, but if the user is logged in then we need to also give the option of saving the card details from the Card Element. So let's run saveCardForFuture helper function. If user did not click save card, then saveCardForFuture will just return null.
+            let newSavedCheckoutPaymentMethod
             console.log(newSavedCheckoutPaymentMethod)
-        }
-        console.log("collect CVV: ", collectCVV)
-        // Confirm the payment using either 1) an already saved card (default or last used) - designated by paymentMethodID state 2) a card being created and saved during checkout - designated by paymentMethod.paymentMethodID 3) a card being created and not saved during checkout
-        let confirmCardResult
-        if ((paymentMethod.paymentMethodID && !redisplayCardElement)|| (newSavedCheckoutPaymentMethod && newSavedCheckoutPaymentMethod.paymentMethodID)){ // For saved cards
-            console.log(181, elements.getElement(CardCvcElement))
-            confirmCardResult = await stripe.confirmCardPayment(clientSecret, {
-                // Check if there is an already default or last used saved card first. 
-                // If there is one, use that first. If there is not one, use the NEW card created during checkout that has now been saved to the logged in user through saveCardForFuture helper function.
-                payment_method: paymentMethod.paymentMethodID && !redisplayCardElement ? paymentMethod.paymentMethodID : newSavedCheckoutPaymentMethod.paymentMethodID,
-                payment_method_options: (collectCVV === 'true') ? {
-                    card: {
-                      cvc: elements.getElement(CardCvcElement)
-                    } 
-                } : undefined
-            })
-        } else { // For none-saved cards
-            console.log(135, paymentMethod)
-            console.log(elements.getElement(CardElement))
-            // Do not include the cardholder's name when confirming card payment because metadata is not a property in stripe.confirmCardPayment(). We need to store cardholder's name in metadata property.
-            confirmCardResult = await stripe.confirmCardPayment(clientSecret, {
-                payment_method: {
-                    card: elements.getElement(CardElement),
-                    billing_details: {
-                        name: `${billing.firstName}, ${billing.lastName}`,
-                        address: {
-                            line1: `${billing.line1}`,
-                            line2: `${billing.line2}`,
-                            city: `${billing.city}`,
-                            state: `${billing.state}`,
-                            country: 'US'
+            if(!paymentMethod.paymentMethodID && customer){
+                const cardElement = elements.getElement(CardElement)
+                newSavedCheckoutPaymentMethod = await saveCardForFuture(stripe, cardElement, billing, cardholderName, backend)
+                console.log(newSavedCheckoutPaymentMethod)
+            }
+            console.log("collect CVV: ", collectCVV)
+            // Confirm the payment using either 1) an already saved card (default or last used) - designated by paymentMethodID state 2) a card being created and saved during checkout - designated by paymentMethod.paymentMethodID 3) a card being created and not saved during checkout
+            let confirmCardResult
+            if ((paymentMethod.paymentMethodID && !redisplayCardElement)|| (newSavedCheckoutPaymentMethod && newSavedCheckoutPaymentMethod.paymentMethodID)){ // For saved cards
+                console.log(181, elements.getElement(CardCvcElement))
+                confirmCardResult = await stripe.confirmCardPayment(clientSecret, {
+                    // Check if there is an already default or last used saved card first. 
+                    // If there is one, use that first. If there is not one, use the NEW card created during checkout that has now been saved to the logged in user through saveCardForFuture helper function.
+                    payment_method: paymentMethod.paymentMethodID && !redisplayCardElement ? paymentMethod.paymentMethodID : newSavedCheckoutPaymentMethod.paymentMethodID,
+                    payment_method_options: (collectCVV === 'true') ? {
+                        card: {
+                        cvc: elements.getElement(CardCvcElement)
+                        } 
+                    } : undefined
+                })
+            } else { // For none-saved cards
+                console.log(135, paymentMethod)
+                console.log(elements.getElement(CardElement))
+                // Do not include the cardholder's name when confirming card payment because metadata is not a property in stripe.confirmCardPayment(). We need to store cardholder's name in metadata property.
+                confirmCardResult = await stripe.confirmCardPayment(clientSecret, {
+                    payment_method: {
+                        card: elements.getElement(CardElement),
+                        billing_details: {
+                            name: `${billing.firstName}, ${billing.lastName}`,
+                            address: {
+                                line1: `${billing.line1}`,
+                                line2: `${billing.line2}`,
+                                city: `${billing.city}`,
+                                state: `${billing.state}`,
+                                country: 'US'
+                            }
                         }
                     }
-                }
-            })
-        }
-        
-        console.log("result: ", confirmCardResult)
-
-        if (confirmCardResult.error) {
-            // Show error to your customer (e.g., insufficient funds)
-            setError(`Payment failed. ${confirmCardResult.error.message}`);
-            setDisabled(false);
-            setProcessing(false)
-          } else {
-            // The payment has been processed!
-            if (confirmCardResult.paymentIntent.status === 'succeeded') {
-              console.log('succeeded')
-              localStorage.setItem('cartItems', false);
-            // Need to put these updating state functions in the Order Complete component??
-              setDisabled(true)
-              setProcessing(false)
-              setRedisplayCardElement(false)
-              setCollectCVV("false")
-
-            // Redirect to Order Complete component
+                })
             }
-          }
-    }
+            
+            console.log("result: ", confirmCardResult)
+
+            if (confirmCardResult.error) {
+                // Show error to your customer (e.g., insufficient funds)
+                setError(`Payment failed. ${confirmCardResult.error.message}`);
+                setDisabled(false);
+                setProcessing(false)
+            } else {
+                // The payment has been processed!
+                if (confirmCardResult.paymentIntent.status === 'succeeded') console.log('succeeded')
+                if(localStorage.getItem('cartItems')) localStorage.setItem('cartItems', false);
+                if(localStorage.getItem('guestCartItems')) localStorage.setItem('guestCartItems', false)
+                // Need to put these updating state functions in the Order Complete component??
+                setDisabled(true)
+                setProcessing(false)
+                setRedisplayCardElement(false)
+                setCollectCVV("false")
+                setPaymentMethod({})
+
+                // Redirect to Order Complete component
+                }
+            }
+        
 
     const saveCardForFuture = async() => {
         const checkbox = document.getElementById('saveCard')
@@ -289,7 +326,7 @@ function Checkout ({backend, paymentIntentInfo}) {
             <>
             <NavBar />
             <div id="payment-form">
-                <PaymentMethod backend={backend} token={token} error={error} grabError={grabError} disabled={disabled} grabDisabled={grabDisabled} paymentLoading={paymentLoading} grabPaymentLoading={grabPaymentLoading} billing={billing} handleBillingChange={handleBillingChange} grabBilling={grabBilling} paymentMethod={paymentMethod} grabPaymentMethod={grabPaymentMethod} cardholderName={cardholderName} handleCardholderNameChange={handleCardholderNameChange} handleCardChange={handleCardChange} editPayment={editPayment} grabEditPayment={grabEditPayment} collectCVV={collectCVV} grabCollectCVV={grabCollectCVV} redisplayCardElement={redisplayCardElement} grabRedisplayCardElement={grabRedisplayCardElement} />
+                <PaymentMethod backend={backend} token={loggedIn()} error={error} grabError={grabError} disabled={disabled} grabDisabled={grabDisabled} paymentLoading={paymentLoading} grabPaymentLoading={grabPaymentLoading} billing={billing} handleBillingChange={handleBillingChange} grabBilling={grabBilling} paymentMethod={paymentMethod} grabPaymentMethod={grabPaymentMethod} cardholderName={cardholderName} handleCardholderNameChange={handleCardholderNameChange} handleCardChange={handleCardChange} editPayment={editPayment} grabEditPayment={grabEditPayment} collectCVV={collectCVV} grabCollectCVV={grabCollectCVV} redisplayCardElement={redisplayCardElement} grabRedisplayCardElement={grabRedisplayCardElement} />
                 {/* Show any error that happens when processing the payment */}
                 {( error) && (<div className="card-error" role="alert">{error}</div>)}
     
@@ -303,7 +340,7 @@ function Checkout ({backend, paymentIntentInfo}) {
                     </div>
                 ): <div></div>}
                 {(!editPayment && !paymentLoading) || (customer && !paymentMethod && !paymentLoading) ? (
-                    <button disabled={ disabled && !paymentMethod}  id="submit" onClick={handleSubmit}>
+                    <button disabled={ (disabled && !paymentMethod) || (disabled && paymentMethod.paymentMethodID) }  id="submit" onClick={handleSubmit}>
                         <span id="button-text">
                             {processing ? (<div className="spinner" id="spinner"></div>) : ("Confirm Payment")}
                         </span>
