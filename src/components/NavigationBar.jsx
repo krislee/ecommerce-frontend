@@ -17,7 +17,7 @@ function NavBar () {
         // return false;
     }
 
-    let username = localStorage.getItem('username');
+    // let username = localStorage.getItem('username');
     
 
     return (
