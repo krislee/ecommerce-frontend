@@ -67,6 +67,13 @@ function UserProfile ({backend}) {
         }))
     }
 
+    const handleEditAddressChange = (e) => {
+        const { name, value } = e.target
+        setAddress((prevAddress) => ({
+            ...prevAddress, [name] : value
+        }))
+    }
+
     // const handleCheckInput = (event) => {
     //     event.preventDefault();
     //     console.log('Address:', addressInput);
@@ -96,6 +103,10 @@ function UserProfile ({backend}) {
         setIsOpen(false);
     }
 
+    const grabAddressData = (addressData) => {
+        setAddressData(addressData);
+    }
+
     const handleClickAddresses = () => {
         if (addresses) {
             setAddresses(false);
@@ -119,7 +130,13 @@ function UserProfile ({backend}) {
             return null;
         } else {
             return( 
-                <AddressContainer key={index} address={address}/>
+                <AddressContainer 
+                key={index} 
+                address={address} 
+                backend={backend}
+                addressData={addressData}
+                grabAddressData={grabAddressData}
+                handleEditAddressChange={handleEditAddressChange}/>
             )
         }
     })
@@ -153,7 +170,6 @@ function UserProfile ({backend}) {
                                     <div className="all-address-container">
                                         <div className="all-addresses-container">{addressData.length !== 0 && allAddresses}
                                         </div>
-                                        <button onClick={() => console.log(addressData)}>Log Address Data</button>
                                     </div>
                                 </>}
                             </div>

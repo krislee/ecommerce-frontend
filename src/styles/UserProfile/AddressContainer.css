@@ -8,7 +8,7 @@
     /* align-items: center; */
     padding: 1rem 0rem 0rem 1rem;
     flex-direction: column;
-    cursor: pointer;
+    /* cursor: pointer; */
     border-radius: 1rem;
 }
 
@@ -19,18 +19,36 @@
 .person-name {
     font-size: 16px;
     font-weight: bold;
+    cursor: default;
 }
 
 .address {
     font-size: 14px;
-    color: #888;
+    color: rgb(57, 57, 57);
+    cursor: default;
 }
 
 .default-indicator{
+    position: absolute;
     margin-top: 1rem;
     border-radius: 1rem;
     background-color: #61e053;
     width: 5rem;
     text-align: center;
     font-size: 14px;
+    cursor: default;
+    top: 60%;
+}
+
+.update-address {
+    position: relative;
+    top: 40%;
+    display: flex;
+    width: 30%;
+    justify-content: space-between;
+}
+
+.update-address > div:hover {
+    text-decoration: underline;
+    cursor: pointer;
 }
