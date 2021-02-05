@@ -12,6 +12,7 @@ import UserProfile from './screens/UserProfile'
 // STRIPE
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
 

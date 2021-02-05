@@ -1,12 +1,15 @@
-import React from 'react'
+import React, { useState } from 'react'
 import {Link} from 'react-router-dom';
 // import Button from '../components/Button'
 // import '../styles/BuyerLogin.css'
 import '../styles/NavigationBar.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faHome, faShoppingCart, faUser } from '@fortawesome/free-solid-svg-icons'
+import { Dropdown } from 'react-bootstrap'
 
 function NavBar () {
+
+    const [test, setTest] = useState(false);
 
     const handleLogout = () => {
         localStorage.clear();
@@ -38,12 +41,22 @@ function NavBar () {
             </Link>
             {localStorage.getItem('loggedIn') ? <div className="logout-button" onClick={() => handleLogout()}>Logout</div> : 
             <div className="login-button-container">
-                <Link to='/buyer'>
+                {/* <Link to='/buyer'>
                 <div className="login-button">Buyer</div>
                 </Link>
                 <Link to='/seller'>
                 <div className="login-button">Seller</div>
-                </Link>
+                </Link> */}
+                <Dropdown>
+                <Dropdown.Toggle id="dropdown-basic">
+                    Login
+                </Dropdown.Toggle>
+                <Dropdown.Menu className="dropdown-menu">
+                    <Dropdown.Item href="/buyer">Buyer</Dropdown.Item>
+                    <Dropdown.Item href="/seller">Seller</Dropdown.Item>
+                </Dropdown.Menu>
+                </Dropdown>
+                {/* {test && <div style={{color: '#fff'}}>Hello</div>} */}
             </div>}
             </div>
         </div>

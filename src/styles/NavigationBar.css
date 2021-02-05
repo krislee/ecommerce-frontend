@@ -21,6 +21,11 @@
     margin-left: 5vw;
 }
 
+a {
+    color: #000 !important;
+    text-decoration: none !important;
+}
+
 .home {
     /* margin-left: 5vw; */
     /* color: #fff; */
@@ -108,4 +113,60 @@
 .login-button-container {
     display: flex;
     height: 100%;
+    justify-content: center;
+    align-items: center;
+}
+
+.dropdown-menu {
+    display: flex;
+    flex-direction: column;
+    background-color: #000 !important;
+    /* height: 10vh; */
+    /* width: 10rem; */
+    /* margin-top: 4vh !important; */
+    color: #fff;
+}
+
+.dropdown-menu > a {
+    background-color: #000;
+    color: #fff;
+}
+
+.dropdown-item {
+    font-size: 20px;
+}
+
+.dropdown {
+    height: 100%;
+}
+
+.dropdown > button {
+    height: 100%;
+    width: 100%;
+    font-size: 20px;
+    background-color: #000;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+}
+
+.dropdown > button:hover {
+    background-color: #fff !important;
+    color: #000;
+}
+
+.show>.btn-primary.dropdown-toggle {
+    color: #000 !important;
+    background-color: #fff !important;
+    border-color: #fff !important;
+}
+
+.btn-primary:not(:disabled):not(.disabled).active:focus, .btn-primary:not(:disabled):not(.disabled):active:focus, .show>.btn-primary.dropdown-toggle:focus {
+    box-shadow: none !important;
+}
+
+.btn-primary.focus, .btn-primary:focus {
+    background-color: #000 !important;
+    border-color: #000 !important;
+    box-shadow: none !important;
 }
