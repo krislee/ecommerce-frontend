@@ -66,7 +66,8 @@ function Checkout ({backend, paymentIntentInfo}) {
         console.log(billing)
 
         if(billing) {
-            const name = billing.name.split(" ")
+            const name = billing.name.split(", ")
+            console.log("name after splitting: ", name)
             setBilling({
                 firstName: name[0],
                 lastName: name[1],
@@ -159,6 +160,7 @@ function Checkout ({backend, paymentIntentInfo}) {
                 console.log(data);
                 if(data.message) {
                     setRedirect(true)
+                    setLoading(false)
                 }
             }
         }    
@@ -218,13 +220,12 @@ function Checkout ({backend, paymentIntentInfo}) {
                 payment_method: {
                     card: elements.getElement(CardElement),
                     billing_details: {
-                        name: `${billing.firstName} ${billing.lastName}`,
+                        name: `${billing.firstName}, ${billing.lastName}`,
                         address: {
                             line1: `${billing.line1}`,
                             line2: `${billing.line2}`,
                             city: `${billing.city}`,
                             state: `${billing.state}`,
-                            postal_code: `${billing.postalCode}`,
                             country: 'US'
                         }
                     }
@@ -262,11 +263,7 @@ function Checkout ({backend, paymentIntentInfo}) {
 
         // If user is logged in, user is also a Stripe customer. If logged in user checks the Save Card box, create the payment method with stripe.createPaymentMethod(), and on the server-side, check if the newly created payment method is a duplicate of already saved payment methods attached to Stripe customer before attaching to the Stripe customer. If duplicate card number, detach old one and attach the new one to Stripe customer. The server will send back the new payment method ID that was created by stripe.createPaymentMethod().
         const cardElement = elements.getElement(CardElement)
-        // const newBilling = billing
-        // const newCardholderName = cardholderName
-        // const URL = backend
-        // Attach payment method to Stripe customer. Returns back the payment method's ID.
-
+ 
         if(checkbox && checkbox.checked) {
             return await createPaymentMethod(stripe, cardElement, billing, cardholderName, backend)
         }

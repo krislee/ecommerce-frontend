@@ -4,17 +4,18 @@
 // const elements = useElements()
 
 const createPaymentMethod = async (stripe,cardElement, billing, cardholderName, backend) => {
+    console.log("from create payment ", billing)
+    console.log("from create payment ", billing.postalCode)
     const createPaymentMethodResponse = await stripe.createPaymentMethod({
         type: 'card',
         card: cardElement,
         billing_details: {
-            name: `${billing.firstName} ${billing.lastName}`,
+            name: `${billing.firstName}, ${billing.lastName}`,
             address: {
                 line1: `${billing.line1}`,
                 line2: `${billing.line2}`,
                 city: `${billing.city}`,
                 state: `${billing.state}`,
-                postal_code: `${billing.postalCode}`,
                 country: 'US'
             }
         },

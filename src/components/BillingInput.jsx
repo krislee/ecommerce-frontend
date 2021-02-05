@@ -1,7 +1,7 @@
 import React from 'react';
 import '../styles/Input.css'
 
-function BillingInput({ billing, handleBillingChange }) {
+function BillingInput({ billing, handleBillingChange, editPayment }) {
     return (
         <>
             <input value={billing.firstName || ""} name="firstName" placeholder="First Name" onChange={handleBillingChange}/>
@@ -10,7 +10,7 @@ function BillingInput({ billing, handleBillingChange }) {
             <input value={billing.line2 || ""} name="line2" placeholder="Address 2" onChange={handleBillingChange} />
             <input value={billing.city || ""} name="city" placeholder="City" onChange={handleBillingChange}/>
             <input value={billing.state || ""} name="state" placeholder="State" onChange={handleBillingChange}/>
-            <input value={billing.postalCode || ""} name="postalCode" placeholder="Zipcode" onChange={handleBillingChange}/>
+            {editPayment ? <input value={billing.postalCode || ""} name="postalCode" placeholder="Zipcode" onChange={handleBillingChange} /> : <></>}
         </>
     )
 }

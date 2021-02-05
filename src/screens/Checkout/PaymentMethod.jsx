@@ -35,7 +35,7 @@ function PaymentMethod ({ backend, token, paymentLoading, grabPaymentLoading, ha
                 // After getting the card info, update paymentMethod state in Checkout Page. The value is either an object or null if there is no payment method saved for the logged in user. 
                 grabPaymentMethod(paymentMethodData)
                 grabPaymentLoading(false)
-
+                
                 console.log("property recollectCVV", paymentMethodData.recollectCVV, typeof paymentMethodData.recollectCVV )
         
             }
@@ -61,7 +61,7 @@ function PaymentMethod ({ backend, token, paymentLoading, grabPaymentLoading, ha
                 }, 
                 body: JSON.stringify({
                     billingDetails: {
-                        name: `${billing.firstName} ${billing.lastName}`,
+                        name: `${billing.firstName}, ${billing.lastName}`,
                         line1: billing.line1,
                         line2: billing.line2,
                         city: billing.city,
@@ -98,15 +98,16 @@ function PaymentMethod ({ backend, token, paymentLoading, grabPaymentLoading, ha
     const saveNewCard = async() => {
         const cardElement = elements.getElement(CardElement)
         const newBilling = billing
-        const newCardholderName = cardholderName
-        const URL = backend
         // Attach payment method to Stripe customer. Returns back the payment method's ID.
-        const newSavedPaymentMethod = await createPaymentMethod(stripe, cardElement, newBilling, newCardholderName, URL)
-        // Update the payment method state to re-render the checkout payment method component
+        const newSavedPaymentMethod = await createPaymentMethod(stripe, cardElement, newBilling, cardholderName, backend)
+        // Update the payment method state to re-render the checkout payment method component with the new payment method info
         await grabPaymentMethod(newSavedPaymentMethod)
+        // Format of the return is based on redisplayCardElement
         await grabRedisplayCardElement(false)
+        // Close modal
         setShowModal(false)
-        grabBilling(newSavedPaymentMethod.billingDetails)
+        // Update billing
+        // await grabBilling(newSavedPaymentMethod.billingDetails)
     }
 
     const closeModal = async () => {
@@ -171,9 +172,11 @@ function PaymentMethod ({ backend, token, paymentLoading, grabPaymentLoading, ha
 
                  {/* Close button is displayed if the div with Card Element and inputs are REdisplayed, which happens when Add new button is clicked to change redisplayCardElement to true. When Close button is clicked, we grab the Card Element displayed and destroy it to allow for the old CVV element to be shown. */}
                 {(showModal && collectCVV==='false' && redisplayCardElement) && <Modal isOpen={showModal} ariaHideApp={false} contentLabel="Saved Cards" onRequestClose={closeModal}>
+                    <h1>Payment</h1>
+                     <input value={cardholderName || ""} name="name" placeholder="Name on card" onChange={handleCardholderNameChange}/>
                     <CollectCard handleCardChange={handleCardChange} collectCVV={collectCVV} redisplayCardElement={redisplayCardElement} editPayment={editPayment}/>
                     <h2>Billing Address</h2>
-                    <BillingInput handleBillingChange={handleBillingChange} billing={billing}/>
+                    <BillingInput handleBillingChange={handleBillingChange} billing={billing} editPayment={editPayment}/>
                     <button onClick={saveNewCard}>Save</button>
                     <button onClick={closeModal}>Close</button>
                 </Modal>}
@@ -192,6 +195,7 @@ function PaymentMethod ({ backend, token, paymentLoading, grabPaymentLoading, ha
     } else if((paymentMethod.paymentMethodID && !editPayment && !redisplayCardElement) ) {
         console.log(167, "collect cvv: ", collectCVV, "redisplay card: ", redisplayCardElement)
         console.log(elements.getElement(CardElement))
+
         return (
             <div>
                 <h2>Payment</h2>
@@ -205,10 +209,10 @@ function PaymentMethod ({ backend, token, paymentLoading, grabPaymentLoading, ha
                 {/* {(collectCVV==='true' && !redisplayCardElement) && <CardCvcElement collectCVV={collectCVV} redisplayCardElement={redisplayCardElement} handleCardChange={handleCardChange} />} */}
 
                 <h2>Billing Address</h2>
-                <p>{paymentMethod.billingDetails.name}</p>
-                <p>{paymentMethod.billingDetails.address.line1}</p>
-                <p>{paymentMethod.billingDetails.address.line2}</p>
-                <p>{paymentMethod.billingDetails.address.city}, {paymentMethod.billingDetails.address.state} {paymentMethod.billingDetails.address.postalCode}</p>
+                <p>{billing.firstName} {billing.lastName}</p>
+                <p>{billing.line1}</p>
+                <p>{billing.line2}</p>
+                <p>{billing.city}, {billing.state} {billing.postalCode}</p>
 
                 {/* Click Edit to update payment method */}
                 <button id={paymentMethod.paymentMethodID} onClick={() => { 
@@ -252,7 +256,7 @@ function PaymentMethod ({ backend, token, paymentLoading, grabPaymentLoading, ha
                 <input value={cardholderName || ""} name="name" placeholder="Name on card" onChange={handleCardholderNameChange}/>
 
                 <div>
-                    <BillingInput billing={billing} handleBillingChange={handleBillingChange} />
+                    <BillingInput billing={billing} handleBillingChange={handleBillingChange} editPayment={editPayment} />
                     <button onClick={handleUpdatePayment}>Save</button>
                     <button onClick={() => grabEditPayment(false)}>Close</button>
                 </div>
