@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import CollectCard from "../../components/Card"
+// import CollectCard from "../../components/Card"
 import BillingInput from "../../components/BillingInput"
 import Modal from 'react-modal';
 import { useStripe, CardElement, useElements } from "@stripe/react-stripe-js"; 
@@ -45,7 +45,7 @@ function PaymentMethod ({ backend, token, error, disabled, grabDisabled, grabErr
             grabPaymentMethod(null) // also applies to guest
             grabCollectCVV("false") // also applies to guest
         }
-    }, [])
+    }, [backend, collectCVV, grabBilling, grabCollectCVV, grabPaymentMethod, redisplayCardElement, token, grabPaymentLoading])
 
     const handleUpdatePayment = async(event) => {
         console.log("Update payment")

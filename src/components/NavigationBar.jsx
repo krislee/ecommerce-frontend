@@ -5,8 +5,11 @@ import {Link} from 'react-router-dom';
 import '../styles/NavigationBar.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faHome, faShoppingCart, faUser } from '@fortawesome/free-solid-svg-icons'
+import { Dropdown } from 'react-bootstrap'
 
 function NavBar () {
+
+    // const [test, setTest] = useState(false);
 
     const handleLogout = () => {
         localStorage.clear();
@@ -26,24 +29,31 @@ function NavBar () {
                 </div>
             </Link>
             <div className="cart-profile-container">
-            {localStorage.getItem('loggedIn') ? 
-            <Link to="/profile">
-            <div className='column user-profile'>
-                <FontAwesomeIcon className="user-icon" icon={faUser}/>
-                <div>{username}</div>
-            </div>
-            </Link>: null}
             <Link to="/cart">
                 <FontAwesomeIcon className="cart-icon" icon={faShoppingCart}/>
             </Link>
-            {localStorage.getItem('loggedIn') ? <button className="logout-button" onClick={() => handleLogout()}>Logout</button> : 
+            {localStorage.getItem('loggedIn') ? 
+            <Dropdown>
+            <Dropdown.Toggle>
+            {localStorage.getItem('loggedIn') ? 
+                <FontAwesomeIcon className="user-icon" icon={faUser}/>
+            : null}
+            </Dropdown.Toggle>
+            <Dropdown.Menu className="dropdown-menu">
+                <Dropdown.Item href="/profile">Account Settings</Dropdown.Item>
+                <Dropdown.Item onClick={handleLogout}>Logout</Dropdown.Item>
+            </Dropdown.Menu>
+            </Dropdown> : 
             <div className="login-button-container">
-                <Link to='/buyer'>
-                <button className="login-button">Buyer</button>
-                </Link>
-                <Link to='/seller'>
-                <button className="login-button">Seller</button>
-                </Link>
+                <Dropdown>
+                <Dropdown.Toggle id="dropdown-basic">
+                    Login
+                </Dropdown.Toggle>
+                <Dropdown.Menu className="dropdown-menu">
+                    <Dropdown.Item href="/buyer">Buyer</Dropdown.Item>
+                    <Dropdown.Item href="/seller">Seller</Dropdown.Item>
+                </Dropdown.Menu>
+                </Dropdown>
             </div>}
             </div>
         </div>

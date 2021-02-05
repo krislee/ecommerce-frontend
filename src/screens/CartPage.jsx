@@ -48,7 +48,7 @@ function CartPage ({ backend }) {
             }
         };
         getCartItems();
-    },[])
+    },[backend, cartID, items])
 
     return (
         <>
