@@ -26,6 +26,9 @@ const createPaymentMethod = async (stripe,cardElement, billing, cardholderName, 
     })
 
     console.log(createPaymentMethodResponse)
+    if(createPaymentMethodResponse.error) {
+        return createPaymentMethodResponse.error.message
+    }
 
     const savePaymentMethodToCustomerResponse = await fetch(`${backend}/order/payment?checkout=true`, {
         method: 'POST',

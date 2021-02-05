@@ -39,7 +39,8 @@ function Checkout ({backend, paymentIntentInfo}) {
 
     const [collectCVV, setCollectCVV] = useState('false')
 
-    const [redisplayCardElement, setRedisplayCardElement] = useState(false)
+    // const [redisplayCardElement, setRedisplayCardElement] = useState(false)
+    const [showModal, setShowModal] = useState(false)
 
     /* ------- SET UP STRIPE ------- */
     const stripe = useStripe();
@@ -90,10 +91,17 @@ function Checkout ({backend, paymentIntentInfo}) {
         setCollectCVV(collectCVV)
     }
 
-    const grabRedisplayCardElement = (redisplayCardElement) => {
-        console.log("checkout redisplay", redisplayCardElement)
-        setRedisplayCardElement(redisplayCardElement)
+    const grabShowModal = (showModal) => {
+        setShowModal(showModal)
     }
+
+    const grabError = (error) => {
+        setError(error)
+    }
+    // const grabRedisplayCardElement = (redisplayCardElement) => {
+    //     console.log("checkout redisplay", redisplayCardElement)
+    //     setRedisplayCardElement(redisplayCardElement)
+    // }
 
     // handleBillingChange() gets passed down as prop to Checkout/PaymentMethod, and then to Component/BillingInput
     const handleBillingChange = (event) => {
@@ -200,12 +208,12 @@ function Checkout ({backend, paymentIntentInfo}) {
         console.log("collect CVV: ", collectCVV)
         // Confirm the payment using either 1) an already saved card (default or last used) - designated by paymentMethodID state 2) a card being created and saved during checkout - designated by paymentMethod.paymentMethodID 3) a card being created and not saved during checkout
         let confirmCardResult
-        if ((paymentMethod.paymentMethodID && !redisplayCardElement)|| (newSavedCheckoutPaymentMethod && newSavedCheckoutPaymentMethod.paymentMethodID)){ // For saved cards
+        if ((paymentMethod.paymentMethodID )|| (newSavedCheckoutPaymentMethod && newSavedCheckoutPaymentMethod.paymentMethodID)){ // For saved cards
             console.log(181, elements.getElement(CardCvcElement))
             confirmCardResult = await stripe.confirmCardPayment(clientSecret, {
                 // Check if there is an already default or last used saved card first. 
                 // If there is one, use that first. If there is not one, use the NEW card created during checkout that has now been saved to the logged in user through saveCardForFuture helper function.
-                payment_method: paymentMethod.paymentMethodID && !redisplayCardElement ? paymentMethod.paymentMethodID : newSavedCheckoutPaymentMethod.paymentMethodID,
+                payment_method: paymentMethod.paymentMethodID  ? paymentMethod.paymentMethodID : newSavedCheckoutPaymentMethod.paymentMethodID,
                 payment_method_options: (collectCVV === 'true') ? {
                     card: {
                       cvc: elements.getElement(CardCvcElement)
@@ -248,7 +256,7 @@ function Checkout ({backend, paymentIntentInfo}) {
             // Need to put these updating state functions in the Order Complete component??
               setDisabled(true)
               setProcessing(false)
-              setRedisplayCardElement(false)
+            //   setRedisplayCardElement(false)
               setCollectCVV("false")
 
             // Redirect to Order Complete component
@@ -283,9 +291,9 @@ function Checkout ({backend, paymentIntentInfo}) {
             <>
             <NavBar />
             <div id="payment-form">
-                <PaymentMethod backend={backend} token={token} paymentLoading={paymentLoading} grabPaymentLoading={grabPaymentLoading} billing={billing} handleBillingChange={handleBillingChange} grabBilling={grabBilling} paymentMethod={paymentMethod} grabPaymentMethod={grabPaymentMethod} cardholderName={cardholderName} handleCardholderNameChange={handleCardholderNameChange} handleCardChange={handleCardChange} editPayment={editPayment} grabEditPayment={grabEditPayment} collectCVV={collectCVV} grabCollectCVV={grabCollectCVV} redisplayCardElement={redisplayCardElement} grabRedisplayCardElement={grabRedisplayCardElement} />
-                {/* Show any error that happens when processing the payment */}
-                {error && (<div className="card-error" role="alert">{error}</div>)}
+                <PaymentMethod backend={backend} token={token} error={error} grabError={grabError} paymentLoading={paymentLoading} grabPaymentLoading={grabPaymentLoading} billing={billing} handleBillingChange={handleBillingChange} grabBilling={grabBilling} paymentMethod={paymentMethod} grabPaymentMethod={grabPaymentMethod} cardholderName={cardholderName} handleCardholderNameChange={handleCardholderNameChange} handleCardChange={handleCardChange} editPayment={editPayment} grabEditPayment={grabEditPayment} collectCVV={collectCVV} grabCollectCVV={grabCollectCVV} showModal={showModal} grabShowModal={grabShowModal} />
+                {/* Show any error that happens when processing the payment. Do not show the error when we are creating a payment method in modal. */}
+                {(showModal && error) && (<div className="card-error" role="alert">{error}</div>)}
     
                 {/* Show Save card checkbox if user is logged in and does not have an already default, saved or last used, saved card to display as indicated by paymentMethodID state OR does have an already default/last used saved card but want to add a new card as indicated by redisplayCardElement state. Do not show the checkbox for guests (as indicated by customer state). */}
                 {(customer && !paymentMethod.paymentMethodID && !paymentLoading) ? (
