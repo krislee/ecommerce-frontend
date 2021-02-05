@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react';
 import '../../styles/UserProfile/AddressContainer.css'
 import Modal from 'react-modal';
 
-function AddressContainer ({ index, address, backend, grabAddressData, handleAddressChange }) {
+function AddressContainer ({ index, address, backend, grabAddressData }) {
 
     const [editModalIsOpen,setIsEditModalOpen] = useState(false);
+    const [editAddress, setEditAddress] = useState(address)
     let subtitle;
 
     useEffect(() => {
@@ -43,6 +44,13 @@ function AddressContainer ({ index, address, backend, grabAddressData, handleAdd
 
     const closeModal = () => {
         setIsEditModalOpen(false);
+    }
+
+    const handleEditAddressChange = (e) => {
+        const { name, value } = e.target
+        setEditAddress((prevAddress) => ({
+            ...prevAddress, [name] : value
+        }))
     }
 
     // const handleEditSubmitAddress = async (event) => {
@@ -107,23 +115,23 @@ function AddressContainer ({ index, address, backend, grabAddressData, handleAdd
             >
             <form className="form">
             <h2 ref={_subtitle => (subtitle = _subtitle)}>Edit Your Address</h2>
-            <input value={address.firstName || ""} name="firstName" placeholder="First Name" onChange={handleAddressChange}/>
-            <input value={address.lastName || ""} name="lastName" placeholder="Last Name" onChange={handleAddressChange}/>
-            <input value={address.addressLineOne || ""} name="addressLineOne" placeholder="Address Line One"
-            onChange={handleAddressChange}/>
-            <input value={address.addressLineTwo || ""} name="addressLineTwo" placeholder="Address Line Two"
-            onChange={handleAddressChange}/>
-            <input value={address.city || ""} name="city" placeholder="City"
-            onChange={handleAddressChange}/>
-            <input value={address.state|| ""} name="state" placeholder="State"
-            onChange={handleAddressChange}/>
-            <input value={address.zipcode || ""} name="zipcode" placeholder="Zipcode"
-            onChange={handleAddressChange}/>
+            <input value={editAddress.Address || ""} name="address" placeholder="First Name" onChange={handleEditAddressChange}/>
+            <input value={editAddress.Name || ""} name="name" placeholder="Last Name" onChange={handleEditAddressChange}/>
+            {/* <input value={editAddress.Address || ""} name="addressLineOne" placeholder="Address Line One"
+            onChange={handleEditAddressChange}/>
+            <input value={editAddress.Address || ""} name="addressLineTwo" placeholder="Address Line Two"
+            onChange={handleEditAddressChange}/>
+            <input value={editAddress.Address || ""} name="city" placeholder="City"
+            onChange={handleEditAddressChange}/>
+            <input value={editAddress.Address|| ""} name="state" placeholder="State"
+            onChange={handleEditAddressChange}/>
+            <input value={editAddress.Address || ""} name="zipcode" placeholder="Zipcode"
+            onChange={handleEditAddressChange}/> */}
             <div className="default-container">
                 <label htmlFor="addressDefault">Save as default</label>
                 <input name="addressDefault" type="checkbox" id="address-default"/>
             </div>
-            <button onClick={handleEditSubmitAddress}>Submit</button>
+            <button>Submit</button>
             </form>
             </Modal>
             </>

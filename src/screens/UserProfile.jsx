@@ -67,13 +67,6 @@ function UserProfile ({backend}) {
         }))
     }
 
-    const handleEditAddressChange = (e) => {
-        const { name, value } = e.target
-        setAddress((prevAddress) => ({
-            ...prevAddress, [name] : value
-        }))
-    }
-
     // const handleCheckInput = (event) => {
     //     event.preventDefault();
     //     console.log('Address:', addressInput);
@@ -135,8 +128,7 @@ function UserProfile ({backend}) {
                 address={address} 
                 backend={backend}
                 addressData={addressData}
-                grabAddressData={grabAddressData}
-                handleEditAddressChange={handleEditAddressChange}/>
+                grabAddressData={grabAddressData}/>
             )
         }
     })
