@@ -1,0 +1,36 @@
+.one-address-container {
+    height: 12em;
+    width: 20em;
+    background-color: #e8e8e8;
+    color: #000;
+    display: flex;
+    /* justify-content: center; */
+    /* align-items: center; */
+    padding: 1rem 0rem 0rem 1rem;
+    flex-direction: column;
+    cursor: pointer;
+    border-radius: 1rem;
+}
+
+.one-address-container:hover {
+    background-color: #c8c8c8;
+}
+
+.person-name {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.address {
+    font-size: 14px;
+    color: #888;
+}
+
+.default-indicator{
+    margin-top: 1rem;
+    border-radius: 1rem;
+    background-color: #61e053;
+    width: 5rem;
+    text-align: center;
+    font-size: 14px;
+}
