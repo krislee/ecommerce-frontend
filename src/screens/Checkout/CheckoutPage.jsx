@@ -311,9 +311,7 @@ function Checkout ({backend, paymentIntentInfo}) {
                 ) : <></>
                 }
                 
-            </div>
-               
-            
+            </div>         
             </>
         )
     }

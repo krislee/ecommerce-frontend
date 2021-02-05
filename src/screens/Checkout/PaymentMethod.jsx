@@ -41,9 +41,9 @@ function PaymentMethod ({ backend, token, error, disabled, grabDisabled, grabErr
             }
             fetchPaymentMethod();
         } else if (localStorage.getItem('cartItems') === 'false'){
-            
-            grabPaymentMethod(null) // also applies to guest
-            grabCollectCVV("false") // also applies to guest
+            grabPaymentMethod(null) 
+            grabCollectCVV("false") 
+            grabPaymentLoading(false)
         }
     }, [])
 
@@ -53,6 +53,7 @@ function PaymentMethod ({ backend, token, error, disabled, grabDisabled, grabErr
         if (localStorage.getItem('token')) {
 
             grabEditPayment(false)
+            setShowModal(false)
             const updatePaymentMethodReponse = await fetch(`${backend}/order/update/payment/${paymentMethod.paymentMethodID}?checkout=true`, {
                 method: 'PUT',
                 headers: {
@@ -79,8 +80,7 @@ function PaymentMethod ({ backend, token, error, disabled, grabDisabled, grabErr
             console.log(updatePaymentMethodData);
 
             grabPaymentMethod(updatePaymentMethodData)
-            grabCollectCVV('true')
-            // grabCollectCVV(updatePaymentMethodData.recollectCVV)
+            grabCollectCVV('true') // cannot do grabCollectCVV(updatePaymentMethodData.recollectCVV)
         } else {
             return (
                 <div>Uh oh! It looks like you are logged out. Please log back in.</div>
@@ -111,13 +111,9 @@ function PaymentMethod ({ backend, token, error, disabled, grabDisabled, grabErr
             setShowModal(false)
             grabDisabled(true)
         }
-        
-        
-        // Update billing
-        // await grabBilling(newSavedPaymentMethod.billingDetails)
     }
 
-    const closeModal = async () => {
+    const closeAddNewModal = async () => {
         console.log(paymentMethod.recollectCVV)
         if(paymentMethod.recollectCVV === "true") {
             await grabCollectCVV("true") 
@@ -128,6 +124,11 @@ function PaymentMethod ({ backend, token, error, disabled, grabDisabled, grabErr
         grabDisabled(true)
         console.log("close")
         console.log("immediately after closing", "redisplay: ", redisplayCardElement, "collect CVV: ", collectCVV, "show modal: ", showModal)
+    }
+
+    const closeEditModal = () => {
+        grabEditPayment(false)
+        setShowModal(false)
     }
 
     const showAllSavedCards = async(event) => {
@@ -162,7 +163,7 @@ function PaymentMethod ({ backend, token, error, disabled, grabDisabled, grabErr
             grabPaymentMethod(showSavedCardData)
             setShowModal(false)
             // grabPaymentMethodID(showSavedCardData.paymentMethodID)
-            grabBilling(showSavedCardData.billingDetails)
+            // grabBilling(showSavedCardData.billingDetails)
             grabCollectCVV(showSavedCardData.recollectCVV)
         }
     }
@@ -182,7 +183,7 @@ function PaymentMethod ({ backend, token, error, disabled, grabDisabled, grabErr
                 )}
 
                  {/* Close button is displayed if the div with Card Element and inputs are REdisplayed, which happens when Add new button is clicked to change redisplayCardElement to true. When Close button is clicked, we grab the Card Element displayed and destroy it to allow for the old CVV element to be shown. */}
-                {(showModal && collectCVV==='false' && redisplayCardElement) && <Modal isOpen={showModal} ariaHideApp={false} contentLabel="Saved Cards" onRequestClose={closeModal}>
+                {(collectCVV==='false' && redisplayCardElement) && <Modal isOpen={showModal} ariaHideApp={false} contentLabel="Add New Card" onRequestClose={closeAddNewModal}>
                     <h1>Payment</h1>
                      <input value={cardholderName || ""} name="name" placeholder="Name on card" onChange={handleCardholderNameChange}/>
                     <CollectCard handleCardChange={handleCardChange} collectCVV={collectCVV} redisplayCardElement={redisplayCardElement} editPayment={editPayment}/>
@@ -190,7 +191,7 @@ function PaymentMethod ({ backend, token, error, disabled, grabDisabled, grabErr
                     <h2>Billing Address</h2>
                     <BillingInput handleBillingChange={handleBillingChange} billing={billing} editPayment={editPayment}/>
                     <button disabled = {error || disabled} onClick={saveNewCard}>Save</button>
-                    <button onClick={closeModal}>Close</button>
+                    <button onClick={closeAddNewModal}>Close</button>
                 </Modal>}
                 
                 {(!showModal && collectCVV !== 'true' && !redisplayCardElement) && (
@@ -232,6 +233,7 @@ function PaymentMethod ({ backend, token, error, disabled, grabDisabled, grabErr
                     // setEditPayment(true) 
                     console.log("Edit")
                     grabEditPayment(true)
+                    setShowModal(true)
                 }}>Edit</button>
 
                 {/* Click Add New to add a new payment method */}
@@ -255,7 +257,7 @@ function PaymentMethod ({ backend, token, error, disabled, grabDisabled, grabErr
     } else if(paymentMethod.paymentMethodID && editPayment) {
         console.log(213)
         return (
-            <>
+            <Modal isOpen={showModal} onRequestClose={closeEditModal} ariaHideApp={false} contentLabel="Edit Card">
                 <div>
                     <h2>Payment</h2>
                     <p><b>{paymentMethod.cardholderName}</b></p>
@@ -270,9 +272,9 @@ function PaymentMethod ({ backend, token, error, disabled, grabDisabled, grabErr
                 <div>
                     <BillingInput billing={billing} handleBillingChange={handleBillingChange} editPayment={editPayment} />
                     <button onClick={handleUpdatePayment}>Save</button>
-                    <button onClick={() => grabEditPayment(false)}>Close</button>
+                    <button onClick={closeEditModal}>Close</button>
                 </div>
-            </>
+            </Modal>
         )
     } 
 }
