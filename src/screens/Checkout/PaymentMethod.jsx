@@ -48,8 +48,7 @@ function PaymentMethod ({ backend, token, paymentLoading, grabPaymentLoading, ha
         
         if (localStorage.getItem('token')) {
 
-            console.log(redisplayCardElement)
-
+            grabEditPayment(false)
             const updatePaymentMethodReponse = await fetch(`${backend}/order/update/payment/${paymentMethod.paymentMethodID}?checkout=true`, {
                 method: 'PUT',
                 headers: {
@@ -75,10 +74,9 @@ function PaymentMethod ({ backend, token, paymentLoading, grabPaymentLoading, ha
             const updatePaymentMethodData = await updatePaymentMethodReponse.json()
             console.log(updatePaymentMethodData);
 
-            grabEditPayment(false)
             grabPaymentMethod(updatePaymentMethodData)
-            // grabCollectCVV('true')
-            grabCollectCVV(updatePaymentMethodData.recollectCVV)
+            grabCollectCVV('true')
+            // grabCollectCVV(updatePaymentMethodData.recollectCVV)
         } else {
             return (
                 <div>Uh oh! It looks like you are logged out. Please log back in.</div>
@@ -95,7 +93,6 @@ function PaymentMethod ({ backend, token, paymentLoading, grabPaymentLoading, ha
 
     const closeModal = async () => {
         const card = elements.getElement(CardElement)
-        card.unmount()
         await grabRedisplayCardElement(false)
         await grabCollectCVV("true")
         setShowModal(false)
@@ -146,10 +143,10 @@ function PaymentMethod ({ backend, token, paymentLoading, grabPaymentLoading, ha
         return <h1>Loading...</h1>
     } else if((!paymentMethod.paymentMethodID && !editPayment) || (paymentMethod.paymentMethodID && redisplayCardElement)) {
 
-        console.log(143, "collect cvv: ", collectCVV, "redisplay card: ", redisplayCardElement)
+        console.log(143, "collect cvv: ", collectCVV, "redisplay card: ", redisplayCardElement, "show modal: ", showModal)
         return (
             <div>
-                {(!showModal && collectCVV==='false' && !redisplayCardElement) && (
+                {(!showModal && collectCVV !== 'true' && !redisplayCardElement) && (
                     <div>
                         <h2>Payment</h2>
                         <input value={cardholderName || ""} name="name" placeholder="Name on card" onChange={handleCardholderNameChange}/>
@@ -158,18 +155,20 @@ function PaymentMethod ({ backend, token, paymentLoading, grabPaymentLoading, ha
 
                  {/* Close button is displayed if the div with Card Element and inputs are REdisplayed, which happens when Add new button is clicked to change redisplayCardElement to true. When Close button is clicked, we grab the Card Element displayed and destroy it to allow for the old CVV element to be shown. */}
                 {(showModal && collectCVV==='false' && redisplayCardElement) && <Modal isOpen={showModal} ariaHideApp={false} contentLabel="Saved Cards" onRequestClose={closeModal}>
-                    {(collectCVV==='false' && redisplayCardElement) && <CardElement handleCardChange={handleCardChange} collectCVV={collectCVV} redisplayCardElement={redisplayCardElement} editPayment={editPayment}/>}
+                    <CollectCard handleCardChange={handleCardChange} collectCVV={collectCVV} redisplayCardElement={redisplayCardElement} editPayment={editPayment}/>
                     <h2>Billing Address</h2>
                     <BillingInput handleBillingChange={handleBillingChange} billing={billing}/>
                     <button onClick={closeModal}>Close</button>
                 </Modal>}
                 
-                {(!showModal && collectCVV==='false' && !redisplayCardElement) && <div>
-                    {(!showModal && collectCVV==='false' && !redisplayCardElement) && <CardElement handleCardChange={handleCardChange} collectCVV={collectCVV} redisplayCardElement={redisplayCardElement} editPayment={editPayment}/>}
-                    
-                    <h2>Billing Address</h2>
-                    <BillingInput handleBillingChange={handleBillingChange} billing={billing}/>
-                </div>}
+                {(!showModal && collectCVV !=='true' && !redisplayCardElement) && (
+                    <div>
+                        {/* {(!showModal && collectCVV==='false' && !redisplayCardElement) && <CollectCard handleCardChange={handleCardChange} collectCVV={collectCVV} redisplayCardElement={redisplayCardElement} editPayment={editPayment}/>} */}
+                        <CollectCard handleCardChange={handleCardChange} collectCVV={collectCVV} redisplayCardElement={redisplayCardElement} editPayment={editPayment}/>
+                        <h2>Billing Address</h2>
+                        <BillingInput handleBillingChange={handleBillingChange} billing={billing}/>
+                    </div>
+                )}
                 
             </div>
         )
@@ -179,13 +178,14 @@ function PaymentMethod ({ backend, token, paymentLoading, grabPaymentLoading, ha
         return (
             <div>
                 <h2>Payment</h2>
+                <p><b>{paymentMethod.cardholderName}</b></p>
                 <p><b>{paymentMethod.brand}</b></p>
                 <p>Ending in <b>{paymentMethod.last4}</b></p>
                 <p>Expires <b>{paymentMethod.expDate}</b></p>
-                <p><b>{paymentMethod.cardholderName}</b></p>
+                
 
-                {/* {(collectCVV === "true" && !redisplayCardElement) && <CollectCard collectCVV={collectCVV} redisplayCardElement={redisplayCardElement} handleCardChange={handleCardChange} />} */}
-                {(!showModal && collectCVV==='true' && !redisplayCardElement) && <CardCvcElement collectCVV={collectCVV} redisplayCardElement={redisplayCardElement} handleCardChange={handleCardChange} />}
+                {(collectCVV === "true" && !redisplayCardElement) && <CollectCard collectCVV={collectCVV} redisplayCardElement={redisplayCardElement} handleCardChange={handleCardChange} />}
+                {/* {(collectCVV==='true' && !redisplayCardElement) && <CardCvcElement collectCVV={collectCVV} redisplayCardElement={redisplayCardElement} handleCardChange={handleCardChange} />} */}
 
                 <h2>Billing Address</h2>
                 <p>{paymentMethod.billingDetails.name}</p>
@@ -206,15 +206,15 @@ function PaymentMethod ({ backend, token, paymentLoading, grabPaymentLoading, ha
                 <button id={paymentMethod.paymentMethodID} onClick={showAllSavedCards}>Saved Cards</button>
 
                 <Modal isOpen={showModal} onRequestClose={() => setShowModal(false)} ariaHideApp={false} contentLabel="Saved Cards">
-                    {savedCards.map(savedCard => {
-                    return <div>
-                        <h1>{savedCard.brand}</h1>
-                        <p>Ending in <b>{savedCard.last4}</b></p>
-                        <p>Expires <b>{savedCard.expDate}</b></p>
-                        <p><b>{savedCard.cardholderName}</b></p>
-                        <button id={savedCard.paymentMethodID} onClick={showOneSavedCard}>Select</button>
-                    </div>
-                    })}
+                    {savedCards.map((savedCard, index) => { return (
+                        <div key={index}>
+                            <h1>{savedCard.brand}</h1>
+                            <p>Ending in <b>{savedCard.last4}</b></p>
+                            <p>Expires <b>{savedCard.expDate}</b></p>
+                            <p><b>{savedCard.cardholderName}</b></p>
+                            <button id={savedCard.paymentMethodID} onClick={showOneSavedCard}>Select</button>
+                        </div>
+                    )})}
                     <button onClick={() => setShowModal(false)}>Close</button>
                 </Modal>
             </div>
@@ -225,10 +225,11 @@ function PaymentMethod ({ backend, token, paymentLoading, grabPaymentLoading, ha
             <>
                 <div>
                     <h2>Payment</h2>
+                    <p><b>{paymentMethod.cardholderName}</b></p>
                     <p><b>{paymentMethod.brand}</b></p>
                     <p>Ending in <b>{paymentMethod.last4}</b></p>
                     <p>Expires <b>{paymentMethod.expDate}</b></p>
-                    <p><b>{paymentMethod.cardholderName}</b></p>
+                    
                 </div>
 
                 <input value={cardholderName || ""} name="name" placeholder="Name on card" onChange={handleCardholderNameChange}/>

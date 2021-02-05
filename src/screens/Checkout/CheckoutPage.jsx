@@ -56,22 +56,36 @@ function Checkout ({backend, paymentIntentInfo}) {
         // If the logged in user has neither or if user is a guest, then paymementMethodID is updated to null. If paymentMethodID is falsy, then we need to run saveCardForFuture() helper in case the user wants to save the card. 
         grabBilling(paymentMethod.billingDetails)
         setCollectCVV(paymentMethod.recollectCVV)
+        setCardholderName(paymentMethod.cardholderName)
     }
 
     // We need to prefill the billing details input when user wants to edit the displayed, saved card. So we pass the grabBilling function as prop to Checkout/PaymentMethod to update the billing state IF the payment data that comes back from fetching the server for either default, saved or last used, saved, or no, saved cards is default, saved or last used, saved card. 
     // By updating the billing state, and sending the billing state as prop down to Checkout/PaymentMethod and then further down to Component/BillingInput, the Component/BillingInput inputs value property can now use the billing state.
     const grabBilling = (billing) => {
         console.log(billing)
-        const name = billing.name.split(" ")
-        setBilling({
-            firstName: name[0],
-            lastName: name[1],
-            line1: billing.address.line1,
-            line2: billing.address.line2,
-            city: billing.address.city,
-            state: billing.address.state,
-            postalCode: billing.address.postalCode
-        })
+
+        if(billing) {
+            const name = billing.name.split(" ")
+            setBilling({
+                firstName: name[0],
+                lastName: name[1],
+                line1: billing.address.line1,
+                line2: billing.address.line2,
+                city: billing.address.city,
+                state: billing.address.state,
+                postalCode: billing.address.postalCode
+            })
+        } 
+    
+        // setBilling({
+        //     firstName: name[0] ? name[0] : "",
+        //     lastName: name[1] ? name[1] : "",
+        //     line1: billing.address.line1 ? billing.address.line1 : "",
+        //     line2: billing.address.line2 ? billing.address.line2 : "",
+        //     city: billing.address.city ? billing.address.city : "",
+        //     state: billing.address.state ? billing.address.state : "",
+        //     postalCode: billing.address.postalCode ? billing.address.postalCode : ""
+        // })
     }
 
     // Update editPayment state by sending grabEditPayment() down as prop to Checkout/PaymentMethod, which gets updated to true if the Edit button in Checkout/PaymentMethod component is clicked. If editPayment is true, then we do not show Confirm Card Payment button.
@@ -314,10 +328,12 @@ function Checkout ({backend, paymentIntentInfo}) {
                 {error && (<div className="card-error" role="alert">{error}</div>)}
     
                 {/* Show Save card checkbox if user is logged in and does not have an already default, saved or last used, saved card to display as indicated by paymentMethodID state OR does have an already default/last used saved card but want to add a new card as indicated by redisplayCardElement state. Do not show the checkbox for guests (as indicated by customer state). */}
-                {(customer && !paymentMethod && !paymentLoading) || (customer && !paymentMethod.paymentMethodID && !paymentLoading) || (customer && redisplayCardElement && !paymentLoading) ? (
+                {(customer && !paymentMethod.paymentMethodID && !paymentLoading) ? (
                     <div>
-                        <input type="checkbox" id="saveCard" name="saveCard" />
-                        <label htmlFor="saveCard">Save card for future purchases</label>
+                        <label htmlFor="saveCard">
+                            Save card for future purchases
+                            <input type="checkbox" id="saveCard" name="saveCard" />
+                        </label>
                     </div>
                 ): <div></div>}
                 {(!editPayment && !paymentLoading) || (customer && !paymentMethod && !paymentLoading) ? (
