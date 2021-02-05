@@ -36,13 +36,13 @@ function NavBar () {
             <Link to="/cart">
                 <FontAwesomeIcon className="cart-icon" icon={faShoppingCart}/>
             </Link>
-            {localStorage.getItem('loggedIn') ? <button className="logout-button" onClick={() => handleLogout()}>Logout</button> : 
+            {localStorage.getItem('loggedIn') ? <div className="logout-button" onClick={() => handleLogout()}>Logout</div> : 
             <div className="login-button-container">
                 <Link to='/buyer'>
-                <button className="login-button">Buyer</button>
+                <div className="login-button">Buyer</div>
                 </Link>
                 <Link to='/seller'>
-                <button className="login-button">Seller</button>
+                <div className="login-button">Seller</div>
                 </Link>
             </div>}
             </div>

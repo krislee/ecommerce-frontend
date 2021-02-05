@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from 'react'
 import {Link} from 'react-router-dom';
-import Button from '../components/Button';
 import Item from '../components/Item';
 import '../styles/Homepage.css'
 import NavBar from '../components/NavigationBar'

@@ -4,7 +4,6 @@ import '../styles/UserProfile.css'
 import Navbar from '../components/NavigationBar'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
-import ReactDOM from 'react-dom';
 import Modal from 'react-modal';
 
 function UserProfile ({backend}) {
@@ -42,7 +41,7 @@ function UserProfile ({backend}) {
             setAddressData(data);
         }
         fetchAddressData();
-    }, []);
+    }, [backend]);
 
     const openModal = () => {
         setIsOpen(true);
@@ -63,10 +62,10 @@ function UserProfile ({backend}) {
         }))
     }
 
-    const handleCheckInput = (event) => {
-        event.preventDefault();
-        console.log('Address:', addressInput);
-    }
+    // const handleCheckInput = (event) => {
+    //     event.preventDefault();
+    //     console.log('Address:', addressInput);
+    // }
 
     const handleSubmitAddress = async (event) => {
         event.preventDefault();
