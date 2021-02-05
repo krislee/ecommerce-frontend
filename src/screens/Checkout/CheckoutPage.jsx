@@ -77,16 +77,6 @@ function Checkout ({backend, paymentIntentInfo}) {
                 postalCode: billing.address.postalCode
             })
         } 
-    
-        // setBilling({
-        //     firstName: name[0] ? name[0] : "",
-        //     lastName: name[1] ? name[1] : "",
-        //     line1: billing.address.line1 ? billing.address.line1 : "",
-        //     line2: billing.address.line2 ? billing.address.line2 : "",
-        //     city: billing.address.city ? billing.address.city : "",
-        //     state: billing.address.state ? billing.address.state : "",
-        //     postalCode: billing.address.postalCode ? billing.address.postalCode : ""
-        // })
     }
 
     // Update editPayment state by sending grabEditPayment() down as prop to Checkout/PaymentMethod, which gets updated to true if the Edit button in Checkout/PaymentMethod component is clicked. If editPayment is true, then we do not show Confirm Card Payment button.
@@ -271,8 +261,14 @@ function Checkout ({backend, paymentIntentInfo}) {
         console.log(checkbox, checkbox.checked)
 
         // If user is logged in, user is also a Stripe customer. If logged in user checks the Save Card box, create the payment method with stripe.createPaymentMethod(), and on the server-side, check if the newly created payment method is a duplicate of already saved payment methods attached to Stripe customer before attaching to the Stripe customer. If duplicate card number, detach old one and attach the new one to Stripe customer. The server will send back the new payment method ID that was created by stripe.createPaymentMethod().
+        const cardElement = elements.getElement(CardElement)
+        // const newBilling = billing
+        // const newCardholderName = cardholderName
+        // const URL = backend
+        // Attach payment method to Stripe customer. Returns back the payment method's ID.
+
         if(checkbox && checkbox.checked) {
-            return createPaymentMethod(billing, cardholderName, backend)
+            return await createPaymentMethod(stripe, cardElement, billing, cardholderName, backend)
         }
         // Return null for payment method ID if guest or if logged in user did not check Save Card 
         return {paymentMethodID: null}
