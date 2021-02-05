@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-// import CollectCard from "../../components/Card"
+import CollectCard from "../../components/Card"
 import BillingInput from "../../components/BillingInput"
 import Modal from 'react-modal';
 import { useStripe, CardElement, useElements } from "@stripe/react-stripe-js"; 
