@@ -2,13 +2,17 @@ import React, { useEffect, useState } from 'react';
 import CollectCard from "../../components/Card"
 import BillingInput from "../../components/BillingInput"
 import Modal from 'react-modal';
-import {CardCvcElement, CardElement, useElements} from "@stripe/react-stripe-js"; 
+import { useStripe, CardElement, useElements } from "@stripe/react-stripe-js"; 
+import createPaymentMethod from './CreatePayment'
+
 // import Button from 'react-bootstrap/Button';
 // import Modal from 'react-bootstrap/Modal'
 
 function PaymentMethod ({ backend, token, paymentLoading, grabPaymentLoading, handleCardChange, billing, grabBilling, handleBillingChange, cardholderName, handleCardholderNameChange, paymentMethod, grabPaymentMethod, editPayment, grabEditPayment, collectCVV, grabCollectCVV, redisplayCardElement, grabRedisplayCardElement}) {
 
     const elements = useElements()
+    const stripe = useStripe()
+
     /* ------- SAVED CARDS RELATED STATE------- */
     const [savedCards, setSavedCards] = useState([])
     const [showModal, setShowModal] = useState(false)
@@ -91,6 +95,20 @@ function PaymentMethod ({ backend, token, paymentLoading, grabPaymentLoading, ha
         console.log(91, "add new")
     }
 
+    const saveNewCard = async() => {
+        const cardElement = elements.getElement(CardElement)
+        const newBilling = billing
+        const newCardholderName = cardholderName
+        const URL = backend
+        // Attach payment method to Stripe customer. Returns back the payment method's ID.
+        const newSavedPaymentMethod = await createPaymentMethod(stripe, cardElement, newBilling, newCardholderName, URL)
+        // Update the payment method state to re-render the checkout payment method component
+        await grabPaymentMethod(newSavedPaymentMethod)
+        await grabRedisplayCardElement(false)
+        setShowModal(false)
+        grabBilling(newSavedPaymentMethod.billingDetails)
+    }
+
     const closeModal = async () => {
         const card = elements.getElement(CardElement)
         await grabRedisplayCardElement(false)
@@ -98,8 +116,6 @@ function PaymentMethod ({ backend, token, paymentLoading, grabPaymentLoading, ha
         setShowModal(false)
         console.log("close")
         console.log("immediately after closing", "redisplay: ", redisplayCardElement, "collect CVV: ", collectCVV, "show modal: ", showModal)
- 
-        
     }
 
     const showAllSavedCards = async(event) => {
@@ -158,10 +174,11 @@ function PaymentMethod ({ backend, token, paymentLoading, grabPaymentLoading, ha
                     <CollectCard handleCardChange={handleCardChange} collectCVV={collectCVV} redisplayCardElement={redisplayCardElement} editPayment={editPayment}/>
                     <h2>Billing Address</h2>
                     <BillingInput handleBillingChange={handleBillingChange} billing={billing}/>
+                    <button onClick={saveNewCard}>Save</button>
                     <button onClick={closeModal}>Close</button>
                 </Modal>}
                 
-                {(!showModal && collectCVV !=='true' && !redisplayCardElement) && (
+                {(!showModal && collectCVV !== 'true' && !redisplayCardElement) && (
                     <div>
                         {/* {(!showModal && collectCVV==='false' && !redisplayCardElement) && <CollectCard handleCardChange={handleCardChange} collectCVV={collectCVV} redisplayCardElement={redisplayCardElement} editPayment={editPayment}/>} */}
                         <CollectCard handleCardChange={handleCardChange} collectCVV={collectCVV} redisplayCardElement={redisplayCardElement} editPayment={editPayment}/>

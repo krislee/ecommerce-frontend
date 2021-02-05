@@ -4,6 +4,7 @@ import PaymentMethod from './PaymentMethod'
 import {useStripe, useElements, CardElement, CardCvcElement} from '@stripe/react-stripe-js';
 import NavBar from '../../components/NavigationBar';
 import '../../styles/CheckoutPage.css';
+import createPaymentMethod from './CreatePayment'
 
 function Checkout ({backend, paymentIntentInfo}) {
     const token = localStorage.getItem('token')
@@ -199,8 +200,9 @@ function Checkout ({backend, paymentIntentInfo}) {
         // If there is no already saved card, and therefore, no card details displayed by PaymentMethod component, then we need to only display the Card Element that is also via the PaymentMethod component, but if the user is logged in then we need to also give the option of saving the card details from the Card Element. So let's run saveCardForFuture helper function. If user did not click save card, then saveCardForFuture will just return null.
         let newSavedCheckoutPaymentMethod
         console.log(newSavedCheckoutPaymentMethod)
-        if(!paymentMethod.paymentMethodID || redisplayCardElement){
-            newSavedCheckoutPaymentMethod = await saveCardForFuture()
+        if(!paymentMethod.paymentMethodID && customer){
+            const cardElement = elements.getElement(CardElement)
+            newSavedCheckoutPaymentMethod = await saveCardForFuture(stripe, cardElement, billing, cardholderName, backend)
             console.log(newSavedCheckoutPaymentMethod)
         }
         console.log("collect CVV: ", collectCVV)
@@ -270,48 +272,13 @@ function Checkout ({backend, paymentIntentInfo}) {
 
         // If user is logged in, user is also a Stripe customer. If logged in user checks the Save Card box, create the payment method with stripe.createPaymentMethod(), and on the server-side, check if the newly created payment method is a duplicate of already saved payment methods attached to Stripe customer before attaching to the Stripe customer. If duplicate card number, detach old one and attach the new one to Stripe customer. The server will send back the new payment method ID that was created by stripe.createPaymentMethod().
         if(checkbox && checkbox.checked) {
-            const createPaymentMethodResponse = await stripe.createPaymentMethod({
-                type: 'card',
-                card: elements.getElement(CardElement),
-                billing_details: {
-                    name: `${billing.firstName} ${billing.lastName}`,
-                    address: {
-                        line1: `${billing.line1}`,
-                        line2: `${billing.line2}`,
-                        city: `${billing.city}`,
-                        state: `${billing.state}`,
-                        postal_code: `${billing.postalCode}`,
-                        country: 'US'
-                    }
-                },
-                metadata: {
-                    cardholder_name: `${cardholderName}`,
-                    recollect_cvv: false
-                }
-            })
-
-            console.log(createPaymentMethodResponse)
-
-            const savePaymentMethodToCustomerResponse = await fetch(`${backend}/order/payment?checkout=true`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': localStorage.getItem('token')
-                },
-                body: JSON.stringify({
-                    paymentMethodID: createPaymentMethodResponse.paymentMethod.id,
-                    default: false
-                })
-            })
-            const savePaymentMethodToCustomerData = await savePaymentMethodToCustomerResponse.json()
-
-            console.log(savePaymentMethodToCustomerData.billing_details)
-
-            return savePaymentMethodToCustomerData
+            return createPaymentMethod(billing, cardholderName, backend)
         }
         // Return null for payment method ID if guest or if logged in user did not check Save Card 
         return {paymentMethodID: null}
     }
+
+
     if(loading) {
         return <></>
     }else if (redirect === true) {
