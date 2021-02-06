@@ -8,8 +8,9 @@ import createPaymentMethod from './CreatePayment'
 // import Button from 'react-bootstrap/Button';
 // import Modal from 'react-bootstrap/Modal'
 
-function PaymentMethod ({ backend, token, error, disabled, grabDisabled, grabError, paymentLoading, grabPaymentLoading, handleCardChange, billing, grabBilling, handleBillingChange, cardholderName, handleCardholderNameChange, paymentMethod, grabPaymentMethod, editPayment, grabEditPayment, collectCVV, grabCollectCVV, redisplayCardElement, grabRedisplayCardElement}) {
+function PaymentMethod ({ backend, loggedIn, error, disabled, grabDisabled, grabError, paymentLoading, grabPaymentLoading, handleCardChange, billing, grabBilling, handleBillingChange, cardholderName, handleCardholderNameChange, paymentMethod, grabPaymentMethod, editPayment, grabEditPayment, collectCVV, grabCollectCVV, redisplayCardElement, grabRedisplayCardElement}) {
 
+     /* ------- STRIPE VARIABLES ------ */
     const elements = useElements()
     const stripe = useStripe()
 
@@ -17,17 +18,18 @@ function PaymentMethod ({ backend, token, error, disabled, grabDisabled, grabErr
     const [savedCards, setSavedCards] = useState([])
     const [showModal, setShowModal] = useState(false)
 
+
     useEffect(() => {
         console.log("CVV state payment: ", collectCVV)
         console.log("redisplay card element payment", redisplayCardElement)
-        if(localStorage.getItem('cartItems') !== 'false' && token){
+        if(loggedIn() && localStorage.getItem('cartItems') === 'true'){
             // Get either a 1) default, saved card or 2) last used, saved (but not default) card info back (will be an object response), OR 3) no saved cards (will be null response)
             const fetchPaymentMethod = async () => {
                 const paymentMethodResponse = await fetch(`${backend}/order/checkout/payment`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': token
+                        'Authorization': loggedIn()
                     }
                 })
                 const paymentMethodData = await paymentMethodResponse.json()
@@ -40,7 +42,7 @@ function PaymentMethod ({ backend, token, error, disabled, grabDisabled, grabErr
         
             }
             fetchPaymentMethod();
-        } else if (localStorage.getItem('guestCartItems') === 'true'){
+        } else if (!loggedIn() && localStorage.getItem('guestCartItems') === 'true'){
             grabPaymentMethod({}) 
             grabCollectCVV("false") 
             grabPaymentLoading(false)
@@ -50,7 +52,7 @@ function PaymentMethod ({ backend, token, error, disabled, grabDisabled, grabErr
     const handleUpdatePayment = async(event) => {
         console.log("Update payment")
         
-        if (localStorage.getItem('token')) {
+        if (loggedIn()) {
 
             grabEditPayment(false)
             setShowModal(false)
@@ -58,7 +60,7 @@ function PaymentMethod ({ backend, token, error, disabled, grabDisabled, grabErr
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': localStorage.getItem('token')
+                    'Authorization': loggedIn()
                 }, 
                 body: JSON.stringify({
                     billingDetails: {
@@ -132,13 +134,13 @@ function PaymentMethod ({ backend, token, error, disabled, grabDisabled, grabErr
     }
 
     const showAllSavedCards = async(event) => {
-        if(localStorage.getItem('token')) {
+        if(loggedIn()) {
             console.log(event.target.id)
             const savedCardsResponse = await fetch(`${backend}/order/index/payment?save=true&id=${event.target.id}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': localStorage.getItem('token')
+                    'Authorization': loggedIn()
                 }
             })
             const savedCardsData = await savedCardsResponse.json()
@@ -150,12 +152,12 @@ function PaymentMethod ({ backend, token, error, disabled, grabDisabled, grabErr
     }
     
     const showOneSavedCard = async(event) => {
-        if(localStorage.getItem('token')) {
+        if(loggedIn()) {
             const showSavedCardResponse = await fetch(`${backend}/order/show/payment/${event.target.id}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': localStorage.getItem('token')
+                    'Authorization': loggedIn()
                 }
             })
             const showSavedCardData = await showSavedCardResponse.json()
