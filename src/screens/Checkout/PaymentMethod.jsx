@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import CollectCard from "../../components/Card"
 import BillingInput from "../../components/BillingInput"
 import Modal from 'react-modal';
-import { useStripe, CardElement, useElements } from "@stripe/react-stripe-js"; 
+import { useStripe, CardElement, useElements, CardCvcElement } from "@stripe/react-stripe-js"; 
 import createPaymentMethod from './CreatePayment'
 import { Redirect } from 'react-router-dom';
 
@@ -23,6 +23,7 @@ function PaymentMethod ({ backend, loggedIn, error, disabled, grabDisabled, grab
     useEffect(() => {
         if(loggedIn() && localStorage.getItem('cartItems') === 'true'){
             // Get either a 1) default, saved card or 2) last used, saved (but not default) card info back (will be an object response), OR 3) no saved cards (will be null response)
+            let paymentMethodData
             const fetchPaymentMethod = async () => {
                 const paymentMethodResponse = await fetch(`${backend}/order/checkout/payment`, {
                     method: 'GET',
@@ -31,13 +32,38 @@ function PaymentMethod ({ backend, loggedIn, error, disabled, grabDisabled, grab
                         'Authorization': loggedIn()
                     }
                 })
-                const paymentMethodData = await paymentMethodResponse.json()
+                paymentMethodData = await paymentMethodResponse.json()
                 console.log(paymentMethodData);
                 // After getting the card info, update paymentMethod state in Checkout Page. The value is either an object or null if there is no payment method saved for the logged in user. 
                 grabPaymentMethod(paymentMethodData)
                 grabPaymentLoading(false)
             }
+
+            // const showAllSavedCards = async(event) => {
+            //     if(loggedIn()) {
+            //         // grabShowSavedCards(true)
+            //         const savedCardsResponse = await fetch(`${backend}/order/index/payment?save=true&id=${paymentMethodData.paymentMethodID}`, {
+            //             method: 'GET',
+            //             headers: {
+            //                 'Content-Type': 'application/json',
+            //                 'Authorization': loggedIn()
+            //             }
+            //         })
+            //         const savedCardsData = await savedCardsResponse.json()
+            //         console.log("all saved cards: ", savedCardsData.paymentMethods)
+                
+            //         setSavedCards(savedCardsData.paymentMethods)
+            //         // setShowModal(true);
+            //     } else {
+            //         return (
+            //             // <div>Uh oh! It looks like you are logged out. Please log back in.</div>
+            //             <Redirect to="/"/>
+            //         )
+            //     }
+            // }
+
             fetchPaymentMethod();
+            // showAllSavedCards()
         } else if (!loggedIn() && localStorage.getItem('guestCartItems') === 'true'){
             grabPaymentMethod({}) 
             // grabCollectCVV("false") 
@@ -108,6 +134,7 @@ function PaymentMethod ({ backend, loggedIn, error, disabled, grabDisabled, grab
             const newSavedPaymentMethod = await createPaymentMethod(stripe, cardElement, newBilling, cardholderName, backend)
             if(typeof newSavedPaymentMethod === "string") {
                 grabError(newSavedPaymentMethod)
+                // Do not close the modal yet (do not do setShowModal(false)), so that the user has a chance to fix the card details.
             } else {
                 // Update the payment method state to re-render the checkout payment method component with the new payment method info
                 await grabPaymentMethod(newSavedPaymentMethod)
@@ -127,9 +154,8 @@ function PaymentMethod ({ backend, loggedIn, error, disabled, grabDisabled, grab
 
     const closeAddNewModal = async () => {
         console.log("ADD NEW MODAL RECOLLECT CVV: ", paymentMethod.recollectCVV)
-        // if(paymentMethod.recollectCVV === "true" || paymentMethod.recollectCVV === true) {
-        //     await grabCollectCVV("true") 
-        // }
+    
+        await grabCollectCVV(paymentMethod.recollectCVV) // Since we updated the collectCVV state to "false" when we click Add New Card button, we need to update the collectCVV state back to what the payment method's recollectCVV property was if we are redisplaying what the current payment method was. 
         await grabRedisplayCardElement(false) // Update the redisplayCardElement to false to represent we are not adding a card at the moment since we hit Close button
         grabBilling(paymentMethod.billingDetails) // If user began editing the billing details input, handleBillingChange() runs. This means billing state is updated. If user just closes the edit modal, and reopens the edit modal, the billing details input will have the updated billing state. In other words, the billing details input will have the previously edited but unsubmitted input values. So when we run grabBilling() with the current paymentMethod state (reminder: paymentMethod state did not get updated since grabPaymentMethod() does not run unless Save button is clicked), it will reset the billing state back to the current paymentMethod's billing details.
         setShowModal(false) // close the Add New Card modal by setting showModal state to false
@@ -243,6 +269,9 @@ function PaymentMethod ({ backend, loggedIn, error, disabled, grabDisabled, grab
                 {(collectCVV === "true" && !redisplayCardElement) && <CollectCard collectCVV={collectCVV} redisplayCardElement={redisplayCardElement} handleCardChange={handleCardChange} />}
                 {/* {(collectCVV==='true' && !redisplayCardElement) && <CardCvcElement collectCVV={collectCVV} redisplayCardElement={redisplayCardElement} handleCardChange={handleCardChange} />} */}
 
+                {/* Show any error that happens when processing the payment */}
+                {( error) && (<div className="card-error" role="alert">{error}</div>)}
+
                 <h2>Billing Address</h2>
                 <p>{paymentMethod.billingDetails.name.split(", ")[0]} {paymentMethod.billingDetails.name.split(", ")[1]}</p>
                 <p>{paymentMethod.billingDetails.address.line1}</p>
@@ -258,7 +287,7 @@ function PaymentMethod ({ backend, loggedIn, error, disabled, grabDisabled, grab
 
                 {/* Click Add New to add a new payment method */}
                 <button id={paymentMethod.paymentMethodID} onClick={handleAddNew}>Add New</button>
-                <button id={paymentMethod.paymentMethodID} onClick={showAllSavedCards}>Saved Cards</button>
+                 <button id={paymentMethod.paymentMethodID} onClick={showAllSavedCards}>Saved Cards</button>
 
                 <Modal isOpen={showModal} onRequestClose={() => setShowModal(false)} ariaHideApp={false} contentLabel="Saved Cards">
                     {savedCards.map((savedCard, index) => { return (
@@ -272,6 +301,7 @@ function PaymentMethod ({ backend, loggedIn, error, disabled, grabDisabled, grab
                     )})}
                     <button onClick={() => setShowModal(false)}>Close</button>
                 </Modal>
+                
             </div>
         )
     } else if(paymentMethod.paymentMethodID && editPayment) {

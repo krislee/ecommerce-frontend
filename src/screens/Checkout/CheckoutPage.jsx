@@ -98,7 +98,7 @@ function Checkout ({backend}) {
         } 
     }
 
-    // Update collectCVV states when 1) load or refresh /checkout URL 2) update card 3) select card 4) add card 
+    // Update collectCVV states when 1) load or refresh /checkout URL 2) update card 3) select card 4) add card. Updated collectCVV states will let us know if we need to show a CVV Element.
     const grabCollectCVV = (collectCVV) => {
         console.log("checkout collect cvv", collectCVV)
         setCollectCVV(collectCVV)
@@ -118,9 +118,14 @@ function Checkout ({backend}) {
         setShowSavedCards(showSavedCards)
     }
 
+    // Show Errors in the div when Saving new card or Confirming card payment. If there is an error, disable Save or Confirm Payment button.
     const grabError = (error) => {
         setError(error)
     }
+
+    // When we are typing in the Card Element, handleCardChange() runs, making the grabDisabled() to run. This update the disable state to false, enabling the Confirm Payment or Save (in the Add New Card) button. 
+    // When we do click Save or Close in the Add New Card modal, grabDisabled() runs to update disable state to true. This disables the button so that when we reopen the Add New Card modal, the Save button is disabled until we start typing in the Card Element without any error, enabling the Save button again. If there is an error after clicking Save for adding new card, we do not need to run grabDisabled() to disable Save button because grabError() updates the error state from null to an error value, and Save button disables when there is an error value.
+    // grabDisabled() runs to update disable state to true when we hit Confirm Payment button - but if there is an error when confirming payment, update disable state back to false
     const grabDisabled = (disabled) => {
         setDisabled(disabled)
     }
@@ -141,11 +146,11 @@ function Checkout ({backend}) {
         setCardholderName(value)
     }   
 
-     // Listen to changes on the Card Element to immediately display card errors (e.g. expiry date in the past) and disable the button if the Card Element is empty.
+     // Listen to changes on the Card Element to immediately display card errors (e.g. expiry date in the past, missing fields) and disable the button if the Card Element is empty.
     const handleCardChange = async (event) => {
         console.log("listening for card changes")
-        setDisabled(event.empty);
-        setError(event.error ? event.error.message : "");
+        grabDisabled(event.empty);
+        grabError(event.error ? event.error.message : "");
     };
 
     /* ------- CREATE NEW OR UPDATE EXISTING PAYMENT INTENT AFTER RENDERING DOM ------- */
@@ -227,14 +232,13 @@ function Checkout ({backend}) {
     */
     const handleSubmit = async (event) => {
         // Disable Confirm Payment button
-        setDisabled(true)
+        grabDisabled(true)
         setProcessing(true)
         // We don't want to let default form submission happen here, which would refresh the page.
         event.preventDefault();
 
         // Check if Stripe.js has loaded yet.
         if (!stripe || !elements) {
-            setDisabled(true)
             setProcessing(false)
             return; // return when Stripe.js is not loaded
         }
@@ -304,8 +308,8 @@ function Checkout ({backend}) {
 
         if (confirmCardResult.error) {
             // Show error to your customer (e.g., insufficient funds)
-            setError(`Payment failed. ${confirmCardResult.error.message}`);
-            setDisabled(false);
+            grabError(`Payment failed. ${confirmCardResult.error.message}`);
+            grabDisabled(false);
             setProcessing(false)
         } else if(confirmCardResult.paymentIntent.status === 'succeeded'){
             // The payment has been processed!
@@ -313,7 +317,6 @@ function Checkout ({backend}) {
             if(localStorage.getItem('cartItems')) localStorage.setItem('cartItems', false);
             if(localStorage.getItem('guestCartItems')) localStorage.setItem('guestCartItems', false)
             // Need to put these updating state functions in the Order Complete component??
-            setDisabled(true)
             setProcessing(false)
             setRedisplayCardElement(false)
             setCollectCVV("false")
@@ -323,23 +326,6 @@ function Checkout ({backend}) {
         }
     }
         
-
-    // const saveCardForFuture = async() => {
-    //     const checkbox = document.getElementById('saveCard')
-        
-    //     console.log(checkbox, checkbox.checked)
-
-    //     // If user is logged in, user is also a Stripe customer. If logged in user checks the Save Card box, create the payment method with stripe.createPaymentMethod(), and on the server-side, check if the newly created payment method is a duplicate of already saved payment methods attached to Stripe customer before attaching to the Stripe customer. If duplicate card number, detach old one and attach the new one to Stripe customer. The server will send back the new payment method ID that was created by stripe.createPaymentMethod().
-    //     const cardElement = elements.getElement(CardElement)
- 
-    //     if(checkbox && checkbox.checked) {
-    //         return await createPaymentMethod(stripe, cardElement, billing, cardholderName, backend)
-    //     }
-    //     // Return null for payment method ID if user did not check Save Card 
-    //     return {paymentMethodID: null}
-    // }
-
-
     if(loading) {
         return <></>
     }else if (redirect === true) {
@@ -352,10 +338,10 @@ function Checkout ({backend}) {
             <NavBar />
             <div id="payment-form">
                 <PaymentMethod backend={backend} loggedIn={loggedIn} error={error} grabError={grabError} disabled={disabled} grabDisabled={grabDisabled} paymentLoading={paymentLoading} grabPaymentLoading={grabPaymentLoading} billing={billing} handleBillingChange={handleBillingChange} grabBilling={grabBilling} paymentMethod={paymentMethod} grabPaymentMethod={grabPaymentMethod} cardholderName={cardholderName} handleCardholderNameChange={handleCardholderNameChange} handleCardChange={handleCardChange} collectCVV={collectCVV} grabCollectCVV={grabCollectCVV} editPayment={editPayment} grabEditPayment={grabEditPayment} redisplayCardElement={redisplayCardElement} grabRedisplayCardElement={grabRedisplayCardElement} grabShowSavedCards={grabShowSavedCards}/>
-                {/* Show any error that happens when processing the payment */}
-                {( error) && (<div className="card-error" role="alert">{error}</div>)}
     
-                {/* Show Save card checkbox if user is logged in and does not have an already default, saved or last used, saved card to display as indicated by paymentMethodID state OR does have an already default/last used saved card but want to add a new card as indicated by redisplayCardElement state. Do not show the checkbox for guests (as indicated by customer state). */}
+                {/* Show Save card checkbox if user is logged in and does not have an already default, saved or last used, saved card to display as indicated by paymentMethod state. Do not show the checkbox for guests (as indicated by customer state). */}
+
+                {/* We want both Save Card checkbox & Confirm Payment button to be displayed at the same time was other payment method component stuff are loaded in. So we want to make sure paymentLoading state is false, or else both the checkbox and button will be displayed before the other payment method component stuff are displayed, and instead they are loaded when it says Loading... on the page */}
                 {(customer && !paymentMethod.paymentMethodID && !paymentLoading) ? (
                     <div>
                         <label htmlFor="saveCard">
@@ -368,10 +354,14 @@ function Checkout ({backend}) {
                 {/* Do not show the Confirm Payment button when Saved Cards modal, Edit modal, and Add New Card modal are open & when payment method component is still loading (indicated by default true "paymentLoading" state - the "paymentLoading" state does not change to false until Checkout/PaymentMethod component render*/}
 
                 {((!editPayment && !paymentLoading) || (!redisplayCardElement && !paymentLoading) || (!showSavedCards && !paymentLoading)) ? (
-                    // Disable Confirm Payment button when either there is an error, 
-                    // OR when the user does not have a saved payment method to display and needs to fill out the checkout form but has not filled out the Card Element on the form yet. BUT We do NOT want to disable the button when logged in user has a saved payment method.
-                    // To know if user has a saved payment method or not, check the value of paymentMethod.paymentMethodID. 
-                    <button disabled={ (disabled && !paymentMethod.paymentMethodID) || error }  id="submit" onClick={handleSubmit}>
+                    /* Disable Confirm Payment button when: 
+                    1) There is an empty Card/CVV Element 
+                    - We can tell if the Element is empty or not when handleCardChange() runs, handleCardChange() runs when there is typing/backspacing in the input. When handleCardChange() runs, the disabled state is updated to false when there is typing/backspacing or something written in Card Element
+                    - A Card Element is only displayed if user does not have any saved cards. Saved card is indicated by a truthy value of paymentMethod.paymentMethodID (recall paymentMethod state was updated upon Checkout/PaymentMethod's useEffect() running, which fetches for either a default-saved, last-used-saved, last-saved, or no saved card - server sends back {paymentMethodID: null} for no saved card, so paymentMethod state equals to {paymentMethodID: null})
+                    - A CVC Element is only displayed if there is a saved card with a "true" recollectCVV property) 
+                    2) error when typing in the Card/CVV Element
+                    */
+                    <button disabled={ (disabled && !paymentMethod.paymentMethodID) || (disabled && paymentMethod.recollectCVV === "true") || error }  id="submit" onClick={handleSubmit}>
                         <span id="button-text">
                             {processing ? (<div className="spinner" id="spinner"></div>) : ("Confirm Payment")}
                         </span>
@@ -384,4 +374,8 @@ function Checkout ({backend}) {
     }
 }
 export default Checkout
-// 4000 0027 6000 3184 (auth card)
+/* 
+
+
+
+*/
