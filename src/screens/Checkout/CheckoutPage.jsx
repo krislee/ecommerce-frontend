@@ -7,6 +7,8 @@ import '../../styles/CheckoutPage.css';
 import createPaymentMethod from './CreatePayment'
 
 function Checkout ({backend}) {
+    // Helper to check if user is logged in
+    const loggedIn = () => localStorage.getItem('token')
 
     /* ------- LOADING STATES ------- */
     // The loading states determine what you will see when you hit the "/checkout" route the first time
@@ -34,12 +36,12 @@ function Checkout ({backend}) {
     // Update paymentMethod state by sending grabPaymentMethod function as prop down to Checkout/PaymentMethod. The grabPaymentMethod function will run in Checkout/PaymentMethod right after fetching the server for are any default, saved OR last used, saved, or no, saved cards (look down for more details on the grabPaymentMethod function)
     const [paymentMethod, setPaymentMethod] = useState({})
     
-    // Update editPayment, redisplayCardElement, showSavedCards state at Checkout/PaymentMethod by sending grabEditPayment, grabRedisplayCard, grabShowSavedCards functions as prop down to Checkout/PaymentMethod. When the functions are called at Checkout/PaymentMethod, the states would be respectively be updated. The Confirm Payment Button will show or not show depending on either one of these states.
+    // editPayment, redisplayCardElement, showSavedCards states represent if we are currently editing, adding new card, or showing all saved cards. Update editPayment, redisplayCardElement, showSavedCards state at Checkout/PaymentMethod by sending grabEditPayment, grabRedisplayCard, grabShowSavedCards functions as prop down to Checkout/PaymentMethod. 
     const[editPayment, setEditPayment] = useState(false)
     const [redisplayCardElement, setRedisplayCardElement] = useState(false)
     const [showSavedCards, setShowSavedCards] = useState(false)
 
-    // collectCVV state gets updated to "true" string value whenever the Save button in Edit modal is clicked. When the Save button in Edit modal is clicked, grabCollectCVV function, which is sent as a prop down to Checkout/PaymentMethod, runs. If the collectCVV is "true" string value, the CVV Element is shown.
+    // collectCVV state gets updated to "true" string value whenever the Save button in Edit modal is clicked. When the Save button in Edit modal is clicked, grabCollectCVV function, which is sent as a prop down to Checkout/PaymentMethod, runs. If the collectCVV is "true" string value, the CVV Element is shown. If collectCVV state is "false" string value, the CVV Element is not shown.
     const [collectCVV, setCollectCVV] = useState('false')
     
     /* ------- SET UP STRIPE ------- */
@@ -47,26 +49,37 @@ function Checkout ({backend}) {
     const elements = useElements(); // need elements to grab the CVV or Card Element
 
 
-    /* ------- FUNCTIONS TO UPDATE PAYMENT-RELATED STATES ------- */
+    /* ------- FUNCTIONS TO UPDATE PAYMENT METHOD-RELATED STATES ------- */
 
     // paymentLoading default state is true, so when you hit /checkout, you see an empty div. But in useEffect, paymentLoading state is updated to false so that the user can see the cart page if there are no items in the cart OR see the payment method component and not just an empty div 
     const grabPaymentLoading = (paymentLoading) => {
         setPaymentLoading(paymentLoading)
     }
 
-    // Update paymentMethod state by sending grabPaymentMethod function as prop down to Checkout/PaymentMethod. We want to update the paymentMethod state default value {} to some object when we either 1) first load or refresh /checkout route, 2) add new card, 3) update card. We want to update the paymentMethod state because it contains an object with saved card information that we want to display in the Payment Method component. If there is no saved card, then the paymentMethod state will just get updated to {paymentMethodID: null} - even though the paymentMethod state does not contain information to display, it tells us to display a checkout form instead.
-    const grabPaymentMethod = (paymentMethod) => {
-        
+    /* 
+    1) collectCVV state & grabPaymentMethod() function passed as props from CheckoutPage to Checkout/PaymentMethod  
+    2) Checkout/PaymentMethod's useEffect() runs: fetch server for default-saved or last-used-saved card or last-created-saved card or no saved card (null) 
+    3) grabPaymentMethod(<fetch_returned_response>) runs  
+    4) paymentMethod, billingDetails, and recollectCVV states are updated at CheckoutPage from default empty objects and 'false', respectively, to the object and recollectCVV property values retrieved from the fetch returned response, respectively  
+        > paymentMethod & billing State:
+            - Their objects will contain either card and billing details information(paymentMethod state) or just billing details information(billingDetails state) that from the server 
+        > collectCVV State:
+            - recollectCVV property value is either "true" or "false", so collectCVV state is either "true" or "false"
+            - updating the card will tell the server to set recollectCVV property to "true", so when grabPaymentMethod() runs after a response from fetching the server is returned, collectCVV state will be "true"
+            - adding the card will tell the server to set recollectCVV property to "true", so when grabPaymentMethod() runs after a response from fetching the server is returned, collectCVV state will be "false"
+    5) CheckoutPage re-renders & Checkout/PaymentMethod re-renders since Checkout/PaymentMethod is in CheckoutPage component displaying the information from paymentMethod, billingDetails, recollectCVV updated states 
+    
+    grabPaymentMethod() runs again when we add new card, update card, select card, and steps 4 & 5 are followed again
+    */
+    const grabPaymentMethod = (paymentMethod) => {   
         setPaymentMethod(paymentMethod)      
-
-        grabBilling(paymentMethod.billingDetails) // Update the billing state with the billing details 
-        setCollectCVV(paymentMethod.recollectCVV) // When we load /checkout route, each card's info sent from the server includes a recollectCVV property that indicates "true" or "false" string values. So the card that is auto loaded or selected or when an Add New Card modal is closed will either show a CVV element or not by the collectCVV state. When we update the card, grabPaymentMethod() runs , collectCVV state is updated to "true" string value. Since grabPaymentMethod() runs when we add a new card, we need to show the new card but it does not need the CVV Element, which is indicated by the "false" string value of recollectCVV property sent from the server. Since collectCVV state is passed as a prop, Checkout/PaymentMethod component can use collectCVV state's value to know if it should show CVV Element. CVV Element is shown if collectCVV is "true"
+        grabBilling(paymentMethod.billingDetails) 
+        grabCollectCVV(paymentMethod.recollectCVV) 
         setCardholderName(paymentMethod.cardholderName)
-        
     }
 
-    // We need to prefill the billing details input when user wants to edit the displayed, saved card. So we pass the grabBilling function as prop to Checkout/PaymentMethod to update the billing state IF the payment data that comes back from fetching the server for either default, saved or last used, saved, or no, saved cards is default, saved or last used, saved card. 
-    // By updating the billing state, and sending the billing state as prop down to Checkout/PaymentMethod and then further down to Component/BillingInput, the Component/BillingInput inputs value property can now use the billing state.
+    // We need to prefill the billing details input when user wants to edit the displayed, saved card's billing details or add a new card's billing details. To do this, we pass down billing state as prop down to Checkout/PaymentMethod and then further down to Component/BillingInput. Each Component/BillingInput inputs' value attribute will now equal to each billing state keys. The billing state keys' values have been set by running grabBilling(<payment_method_billing_details>).
+    // grabBilling(<payment_method_billing_details>) runs at Checkout/PaymentMethod's useEffect(), updating the card, adding new card, and selecting a card since grabPaymentMethod() runs during any of the 3 actions
     const grabBilling = (billing) => {
         console.log(billing)
 
@@ -85,6 +98,12 @@ function Checkout ({backend}) {
         } 
     }
 
+    // Update collectCVV states when 1) load or refresh /checkout URL 2) update card 3) select card 4) add card 
+    const grabCollectCVV = (collectCVV) => {
+        console.log("checkout collect cvv", collectCVV)
+        setCollectCVV(collectCVV)
+    }
+
     // Update editPayment, grabRedisplayCardElement, grabShowSavedCards states by sending grabEditPayment() down as prop to Checkout/PaymentMethod, which gets updated to true if the Edit, or Add New Card, or Saved Cards button is clicked in Checkout/PaymentMethod component. If editPayment, or redisplayCardElement, or showSavedCards state is true, then we do not show Confirm Card Payment button.
     const grabEditPayment = (edit) => {
         setEditPayment(edit)
@@ -99,19 +118,15 @@ function Checkout ({backend}) {
         setShowSavedCards(showSavedCards)
     }
 
-    const grabCollectCVV = (collectCVV) => {
-        console.log("checkout collect cvv", collectCVV)
-        setCollectCVV(collectCVV)
-    }
-
-    
-
     const grabError = (error) => {
         setError(error)
     }
     const grabDisabled = (disabled) => {
         setDisabled(disabled)
     }
+
+    /* ------- LISTEN TO INPUT CHANGES TO UPDATE STATES ------- */  
+
     // handleBillingChange() gets passed down as prop to Checkout/PaymentMethod, and then to Component/BillingInput
     const handleBillingChange = (event) => {
         const { name, value } = event.target
@@ -132,9 +147,6 @@ function Checkout ({backend}) {
         setDisabled(event.empty);
         setError(event.error ? event.error.message : "");
     };
-
-    // Helper to check if user is logged in
-    const loggedIn = () => localStorage.getItem('token')
 
     /* ------- CREATE NEW OR UPDATE EXISTING PAYMENT INTENT AFTER RENDERING DOM ------- */
     useEffect(() => {

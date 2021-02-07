@@ -40,7 +40,7 @@ function PaymentMethod ({ backend, loggedIn, error, disabled, grabDisabled, grab
             fetchPaymentMethod();
         } else if (!loggedIn() && localStorage.getItem('guestCartItems') === 'true'){
             grabPaymentMethod({}) 
-            grabCollectCVV("false") 
+            // grabCollectCVV("false") 
             grabPaymentLoading(false)
         }
     }, [])
@@ -126,20 +126,24 @@ function PaymentMethod ({ backend, loggedIn, error, disabled, grabDisabled, grab
     }
 
     const closeAddNewModal = async () => {
-        console.log(paymentMethod.recollectCVV)
-        if(paymentMethod.recollectCVV === "true" || paymentMethod.recollectCVV === true) {
-            await grabCollectCVV("true") 
-        }
-        await grabRedisplayCardElement(false)
-        setShowModal(false)
-        grabError(null)
-        grabDisabled(true)
+        console.log("ADD NEW MODAL RECOLLECT CVV: ", paymentMethod.recollectCVV)
+        // if(paymentMethod.recollectCVV === "true" || paymentMethod.recollectCVV === true) {
+        //     await grabCollectCVV("true") 
+        // }
+        await grabRedisplayCardElement(false) // Update the redisplayCardElement to false to represent we are not adding a card at the moment since we hit Close button
+        grabBilling(paymentMethod.billingDetails) // If user began editing the billing details input, handleBillingChange() runs. This means billing state is updated. If user just closes the edit modal, and reopens the edit modal, the billing details input will have the updated billing state. In other words, the billing details input will have the previously edited but unsubmitted input values. So when we run grabBilling() with the current paymentMethod state (reminder: paymentMethod state did not get updated since grabPaymentMethod() does not run unless Save button is clicked), it will reset the billing state back to the current paymentMethod's billing details.
+        setShowModal(false) // close the Add New Card modal by setting showModal state to false
+        grabError(null) // We want to reset the error state to its default value, null, so that when we open back up the Add Mew Card modal, it will not show the error still. 
+        grabDisabled(true) // When you first open the Add New Card modal, disabled state is true so Save new card button is disabled. When we start typing on the Card Element, disabled state is false since disabled state is updated only when it is e.empty so you can click on Save new card button. We want to reset the disable state to true, so the button is disabled upon reopening the Add New Card modal. 
     }
 
     const closeEditModal = () => {
         console.log("closing editing")
-        grabEditPayment(false)
-        setShowModal(false)
+        grabEditPayment(false) // editPayment state is updated to false since user closed editing modal
+        grabBilling(paymentMethod.billingDetails) // If user began editing the billing details input, handleBillingChange() runs. This means billing state is updated. If user just closes the edit modal, and reopens the edit modal, the billing details input will have the updated billing state. In other words, the billing details input will have the previously edited but unsubmitted input values. So when we run grabBilling() with the current paymentMethod state (reminder: paymentMethod state did not get updated since grabPaymentMethod() does not run unless Save button is clicked), it will reset the billing state back to the current paymentMethod's billing details.
+        setShowModal(false) // close the Edit Card modal by setting showModal state to false
+
+        // We do not need to update the collectCVV state when we close the edit modal because we did not update the collectCVV state when we opened the edit modal
     }
 
     const showAllSavedCards = async(event) => {
