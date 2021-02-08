@@ -48,10 +48,12 @@ function Checkout ({backend}) {
     // collectCVV state gets updated to "true" string value whenever the Save button in Edit modal is clicked. When the Save button in Edit modal is clicked, grabCollectCVV function, which is sent as a prop down to Checkout/PaymentMethod, runs. If the collectCVV is "true" string value, the CVV Element is shown. If collectCVV state is "false" string value, the CVV Element is not shown.
     const [collectCVV, setCollectCVV] = useState('false')
     
+
+    const [isCollapseOpen, setisCollapseOpen] = useState(false)
+
     /* ------- SET UP STRIPE ------- */
     const stripe = useStripe(); // need stripe instance to confirm card payment: stripe.confirmCardPayment()
     const elements = useElements(); // need elements to grab the CVV or Card Element
-
 
     /* ------- FUNCTIONS TO UPDATE PAYMENT METHOD-RELATED STATES ------- */
 
@@ -135,6 +137,10 @@ function Checkout ({backend}) {
     // grabDisabled() runs to update disable state to true when we hit Confirm Payment button - but if there is an error when confirming payment, update disable state back to false
     const grabDisabled = (disabled) => {
         setDisabled(disabled)
+    }
+
+    const grabIsCollapseOpen = (isCollapseOpen) => {
+        setIsCollapseOpen(isCollapseOpen)
     }
 
     /* ------- LISTEN TO INPUT CHANGES TO UPDATE STATES ------- */  
@@ -335,8 +341,8 @@ function Checkout ({backend}) {
             <>
             <NavBar />
             <div id="payment-form" >
-                <Shipping backend={backend} loggedIn={loggedIn}/>
-                <PaymentMethod backend={backend} customer={customer} loggedIn={loggedIn} error={error} grabError={grabError} disabled={disabled} grabDisabled={grabDisabled} paymentLoading={paymentLoading} grabPaymentLoading={grabPaymentLoading} billing={billing} handleBillingChange={handleBillingChange} grabBilling={grabBilling} paymentMethod={paymentMethod} grabPaymentMethod={grabPaymentMethod} cardholderName={cardholderName} grabCardholderName={grabCardholderName}handleCardholderNameChange={handleCardholderNameChange} handleCardChange={handleCardChange} collectCVV={collectCVV} grabCollectCVV={grabCollectCVV} editPayment={editPayment} grabEditPayment={grabEditPayment} redisplayCardElement={redisplayCardElement} grabRedisplayCardElement={grabRedisplayCardElement} grabShowSavedCards={grabShowSavedCards} handleConfirmPayment={handleConfirmPayment} showSavedCards={showSavedCards}/>
+                <Shipping backend={backend} loggedIn={loggedIn} grabIsCollapseOpen={grabIsCollapseOpen}/>
+                <PaymentMethod backend={backend} customer={customer} loggedIn={loggedIn} error={error} grabError={grabError} disabled={disabled} grabDisabled={grabDisabled} paymentLoading={paymentLoading} grabPaymentLoading={grabPaymentLoading} billing={billing} handleBillingChange={handleBillingChange} grabBilling={grabBilling} paymentMethod={paymentMethod} grabPaymentMethod={grabPaymentMethod} cardholderName={cardholderName} grabCardholderName={grabCardholderName}handleCardholderNameChange={handleCardholderNameChange} handleCardChange={handleCardChange} collectCVV={collectCVV} grabCollectCVV={grabCollectCVV} editPayment={editPayment} grabEditPayment={grabEditPayment} redisplayCardElement={redisplayCardElement} grabRedisplayCardElement={grabRedisplayCardElement} grabShowSavedCards={grabShowSavedCards} handleConfirmPayment={handleConfirmPayment} showSavedCards={showSavedCards} isCollapseOpen={isCollapseOpen}/>
     
                 {/* Show Save card checkbox if user is logged in and does not have an already default, saved or last used, saved card to display as indicated by paymentMethod state. Do not show the checkbox for guests (as indicated by customer state). */}
 

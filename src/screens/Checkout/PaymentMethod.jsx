@@ -9,7 +9,7 @@ import CardForm from './CardForm'
 // import Button from 'react-bootstrap/Button';
 // import Modal from 'react-bootstrap/Modal'
 
-function PaymentMethod ({ backend, customer, processing, loggedIn, error, grabError, disabled, grabDisabled,  paymentLoading, grabPaymentLoading, billing, grabBilling, handleBillingChange, paymentMethod, grabPaymentMethod, cardholderName, grabCardholderName, handleCardholderNameChange, handleCardChange, collectCVV, grabCollectCVV, editPayment, grabEditPayment, redisplayCardElement, grabRedisplayCardElement, grabShowSavedCards, handleConfirmPayment, showSavedCards}) {
+function PaymentMethod ({ backend, customer, processing, loggedIn, error, grabError, disabled, grabDisabled,  paymentLoading, grabPaymentLoading, billing, grabBilling, handleBillingChange, paymentMethod, grabPaymentMethod, cardholderName, grabCardholderName, handleCardholderNameChange, handleCardChange, collectCVV, grabCollectCVV, editPayment, grabEditPayment, redisplayCardElement, grabRedisplayCardElement, grabShowSavedCards, handleConfirmPayment, showSavedCards, isCollapseOpen}) {
 
     /* ------- STRIPE VARIABLES ------ */
     const elements = useElements()
@@ -243,7 +243,9 @@ function PaymentMethod ({ backend, customer, processing, loggedIn, error, grabEr
             handleSubmitCardForm = handleConfirmPayment
             console.log(223)
         }
-        return collectCVV !== 'true' && <CardForm customer={customer} paymentMethod={paymentMethod} paymentLoading={paymentLoading} editPayment={editPayment} processing={processing} showSavedCards={showSavedCards} handleSubmitCardForm={handleSubmitCardForm} handleCardChange={handleCardChange} handleBillingChange={handleBillingChange} handleCardholderNameChange={handleCardholderNameChange} cardholderName={cardholderName} billing={billing} collectCVV={collectCVV} redisplayCardElement={redisplayCardElement} closeAddNewModal={closeAddNewModal} disabled={disabled} error={error} />    
+        return (collectCVV !== 'true' && isCollapseOpen) && (
+            <CardForm customer={customer} paymentMethod={paymentMethod} paymentLoading={paymentLoading} editPayment={editPayment} processing={processing} showSavedCards={showSavedCards} handleSubmitCardForm={handleSubmitCardForm} handleCardChange={handleCardChange} handleBillingChange={handleBillingChange} handleCardholderNameChange={handleCardholderNameChange} cardholderName={cardholderName} billing={billing} collectCVV={collectCVV} redisplayCardElement={redisplayCardElement} closeAddNewModal={closeAddNewModal} disabled={disabled} error={error} />
+        )    
           
     } else if(paymentMethod.paymentMethodID && !editPayment) {
         console.log(paymentMethod)
