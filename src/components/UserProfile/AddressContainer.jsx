@@ -5,12 +5,8 @@ import Modal from 'react-modal';
 function AddressContainer ({ index, address, backend, grabAddressData }) {
 
     const [editModalIsOpen,setIsEditModalOpen] = useState(false);
-    const [editAddress, setEditAddress] = useState(address)
+    const [editAddress, setEditAddress] = useState({})
     let subtitle;
-
-    useEffect(() => {
-        console.log(address);
-    })
 
     const customStyles = {
         content : {
@@ -25,7 +21,7 @@ function AddressContainer ({ index, address, backend, grabAddressData }) {
 
     Modal.setAppElement('#root')
 
-    const openModal = async (e) => {
+    const openEditModal = async (e) => {
         const oneAddressResponse = await fetch(`${backend}/shipping/address/${e.target.id}`, {
             method: 'GET',
             headers: {
@@ -33,8 +29,19 @@ function AddressContainer ({ index, address, backend, grabAddressData }) {
                 'Authorization': localStorage.getItem('token')
             }
         })
-        const oneAddressData = oneAddressResponse.json();
-
+        const oneAddressData = await oneAddressResponse.json();
+        console.log(37, oneAddressData)
+        const name = oneAddressData.address.Name.split(", ")
+        const address = oneAddressData.address.Address.split(", ")
+        setEditAddress({
+            firstName: name[0],
+            lastName: name[1],
+            addressLineOne: address[0],
+            addressLineTwo: address[1],
+            city: address[2],
+            state: address[3],
+            zipcode: address[4]
+        })
         setIsEditModalOpen(true);
     }
 
@@ -53,22 +60,24 @@ function AddressContainer ({ index, address, backend, grabAddressData }) {
         }))
     }
 
-    // const handleEditSubmitAddress = async (event) => {
-    //     event.preventDefault();
-    //     const checkbox = document.getElementById('address-default');
-    //     const check = checkbox.checked
-    //     const newAddressResponse = await fetch(`${backend}/shipping/address?lastUse=false&default=${check}`, {
-    //         method: 'POST',
-    //         headers: {
-    //             'Content-Type': 'application/json',
-    //             'Authorization': localStorage.getItem('token')
-    //         },
-    //         body: JSON.stringify({
-    //             name: `${addressInput.firstName}, ${addressInput.lastName}`,
-    //             address: `${addressInput.addressLineOne}, ${addressInput.addressLineTwo}, ${addressInput.city}, ${addressInput.state}, ${addressInput.zipcode}`
-    //         })
-    //     })
-    // }
+    const handleEditAddress = async(e) => {
+        e.preventDefault()
+        const editAddressResponse = await fetch(`${backend}/shipping/address/${e.target.id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': localStorage.getItem('token')
+            },
+            body: JSON.stringify({
+                address: `${editAddress.addressLineOne}, ${editAddress.addressLineTwo}, ${editAddress.city}, ${editAddress.state}, ${editAddress.zipcode}`,
+                name: `${editAddress.firstName}, ${editAddress.lastName}`
+            })
+        })
+        const editAddressData = await editAddressResponse.json()
+        // Update the addressData state in user profile
+        grabAddressData(editAddressData)
+        setIsEditModalOpen(false)
+    }
 
     const handleDeleteAddress = async (e) => {
         e.preventDefault();
@@ -102,7 +111,7 @@ function AddressContainer ({ index, address, backend, grabAddressData }) {
                     <div className="address">{secondAddressLine}</div>
                     {defaultAddress && <div className="default-indicator">Default</div>}
                     <div className="update-address">
-                        <div id={address._id} onClick={openModal}>Edit</div>
+                        <div id={address._id} onClick={openEditModal}>Edit</div>
                         <div id={address._id} onClick={handleDeleteAddress}>Delete</div>
                     </div>
             </div>
@@ -115,23 +124,23 @@ function AddressContainer ({ index, address, backend, grabAddressData }) {
             >
             <form className="form">
             <h2 ref={_subtitle => (subtitle = _subtitle)}>Edit Your Address</h2>
-            <input value={editAddress.Address || ""} name="address" placeholder="First Name" onChange={handleEditAddressChange}/>
-            <input value={editAddress.Name || ""} name="name" placeholder="Last Name" onChange={handleEditAddressChange}/>
-            {/* <input value={editAddress.Address || ""} name="addressLineOne" placeholder="Address Line One"
+            <input value={editAddress.firstName || ""} name="firstName" placeholder="First Name" onChange={handleEditAddressChange}/>
+            <input value={editAddress.lastName || ""} name="lastName" placeholder="Last Name" onChange={handleEditAddressChange}/>
+            <input value={editAddress.addressLineOne || ""} name="addressLineOne" placeholder="Address Line One"
             onChange={handleEditAddressChange}/>
-            <input value={editAddress.Address || ""} name="addressLineTwo" placeholder="Address Line Two"
+            <input value={editAddress.addressLineTwo || ""} name="addressLineTwo" placeholder="Address Line Two"
             onChange={handleEditAddressChange}/>
-            <input value={editAddress.Address || ""} name="city" placeholder="City"
+            <input value={editAddress.city || ""} name="city" placeholder="City"
             onChange={handleEditAddressChange}/>
-            <input value={editAddress.Address|| ""} name="state" placeholder="State"
+            <input value={editAddress.state|| ""} name="state" placeholder="State"
             onChange={handleEditAddressChange}/>
-            <input value={editAddress.Address || ""} name="zipcode" placeholder="Zipcode"
-            onChange={handleEditAddressChange}/> */}
+            <input value={editAddress.zipcode || ""} name="zipcode" placeholder="Zipcode"
+            onChange={handleEditAddressChange}/>
             <div className="default-container">
                 <label htmlFor="addressDefault">Save as default</label>
                 <input name="addressDefault" type="checkbox" id="address-default"/>
             </div>
-            <button>Submit</button>
+            <button id={address._id} onClick={handleEditAddress}>Submit</button>
             </form>
             </Modal>
             </>
