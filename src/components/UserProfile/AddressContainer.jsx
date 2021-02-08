@@ -95,6 +95,23 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
         setIsEditModalOpen(false)
     }
 
+    const handleDefaultEdit = async(e) => {
+        e.preventDefault();
+        console.log(defaultAddress);
+        const editDefaultResponse = await fetch(`${backend}/shipping/default/address/${e.target.id}?default=${!defaultAddress}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': localStorage.getItem('token')
+            }
+        })
+        const editDefaultData = await editDefaultResponse.json();
+        console.log(editDefaultData)
+        defaultFirst(editDefaultData);
+        grabAddressData(editDefaultData);
+        setIsEditModalOpen(false);
+    }
+
     const handleDeleteAddress = async (e) => {
         e.preventDefault();
         if (localStorage.getItem('token')) {
@@ -196,9 +213,11 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
             onChange={handleEditAddressChange}/>
             <input value={editAddress.zipcode || ""} name="zipcode" placeholder="Zipcode"
             onChange={handleEditAddressChange}/>
-            {!defaultAddress && <div className="default-container">
-                <label htmlFor="addressDefault">Save as default</label>
-                <input name="addressDefault" type="checkbox" id="address-default"/>
+            {!defaultAddress ? <div className="default-container">
+                <button id={address._id} onClick={handleDefaultEdit}>Make Default</button>
+                </div> :
+                <div>
+                <button id={address._id} onClick={handleDefaultEdit}>Remove Default</button>
             </div>}
             <button id={address._id} 
             onClick={handleEditAddress}
