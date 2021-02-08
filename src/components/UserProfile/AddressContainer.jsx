@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import '../../styles/UserProfile/AddressContainer.css'
 import Modal from 'react-modal';
 
-function AddressContainer ({ index, address, backend, grabAddressData }) {
+function AddressContainer ({ index, address, backend, grabAddressData, defaultFirst }) {
 
     const [editModalIsOpen,setIsEditModalOpen] = useState(false);
     const [editAddress, setEditAddress] = useState({})
@@ -74,8 +74,8 @@ function AddressContainer ({ index, address, backend, grabAddressData }) {
             })
         })
         const editAddressData = await editAddressResponse.json()
-        // Update the addressData state in user profile
-        grabAddressData(editAddressData)
+        defaultFirst(editAddressData);
+        grabAddressData(editAddressData) // Update the addressData state in user profile
         setIsEditModalOpen(false)
     }
 
@@ -89,14 +89,48 @@ function AddressContainer ({ index, address, backend, grabAddressData }) {
                     'Authorization': localStorage.getItem('token')
                 }
             })
-            const data = deleteResponse.json();
-            grabAddressData(data);
+            const data = await deleteResponse.json();
+            console.log(data);
+            if (data.findIndex(address => address.DefaultAddress === true) === -1 && data.length !== 0) {
+                const oldestAddress = data[0];
+                console.log(oldestAddress);
+                // We grab the last element in the address array, and make it default
+                // We pass it through the handle submit again
+                // We delete the old one and create a new one
+                const oldestAddressCheckedResponse = await fetch(`${backend}/shipping/address?lastUse=false&default=true`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': localStorage.getItem('token')
+                    },
+                    body: JSON.stringify({
+                        name: oldestAddress.Name,
+                        address: oldestAddress.Address
+                    })
+                })
+                const oldestAddressCheckedData = await oldestAddressCheckedResponse.json()
+                console.log(oldestAddressCheckedData);
+                const deleteDuplicateResponse = await fetch(`${backend}/shipping/address/${oldestAddress._id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': localStorage.getItem('token')
+                    }
+                })
+                const finalDeleteData = await deleteDuplicateResponse.json();
+                defaultFirst(finalDeleteData);
+                grabAddressData(finalDeleteData);
+            } else {
+                console.log('there is a default');
+                defaultFirst(data);
+                grabAddressData(data);
+            }
         }
     }
 
     const name = address.Name.replace(/,/g, '');
-    const firstName = address.Name.split(',')[0]
-    const lastName = address.Name.split(',')[1]
+    // const firstName = address.Name.split(',')[0]
+    // const lastName = address.Name.split(',')[1]
     const newAddress = address.Address.split(',')
     const addressLine = `${newAddress[0]} ${newAddress[1]}`
     const secondAddressLine = `${newAddress[2]}, ${newAddress[3]} ${newAddress[4]}`
@@ -110,7 +144,9 @@ function AddressContainer ({ index, address, backend, grabAddressData }) {
                     <div className="address">{addressLine}</div>
                     <div className="address">{secondAddressLine}</div>
                     {defaultAddress && <div className="default-indicator">Default</div>}
-                    <div className="update-address">
+                    <div 
+                    className={defaultAddress ? 
+                    "update-address-default" : "update-address"}>
                         <div id={address._id} onClick={openEditModal}>Edit</div>
                         <div id={address._id} onClick={handleDeleteAddress}>Delete</div>
                     </div>

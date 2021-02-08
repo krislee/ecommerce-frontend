@@ -29,7 +29,7 @@
 }
 
 .default-indicator{
-    position: absolute;
+    /* position: absolute; */
     margin-top: 1rem;
     border-radius: 1rem;
     background-color: #61e053;
@@ -48,7 +48,15 @@
     justify-content: space-between;
 }
 
-.update-address > div:hover {
+.update-address-default {
+    position: relative;
+    top: 19%;
+    display: flex;
+    width: 30%;
+    justify-content: space-between;
+}
+
+.update-address > div:hover, .update-address-default > div:hover {
     text-decoration: underline;
     cursor: pointer;
 }

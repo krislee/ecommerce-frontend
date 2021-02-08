@@ -72,6 +72,12 @@ function UserProfile ({backend}) {
     //     console.log('Address:', addressInput);
     // }
 
+    const defaultFirst = (data) => {
+        const index = data.findIndex(address => address.DefaultAddress === true)
+        const defaultFirstAddress = data.splice(index, 1)[0];
+        data.unshift(defaultFirstAddress);
+    }
+
     const handleSubmitAddress = async (event) => {
         event.preventDefault();
         const checkbox = document.getElementById('address-default');
@@ -88,10 +94,7 @@ function UserProfile ({backend}) {
             })
         })
         const newAddressData = await newAddressResponse.json();
-        const index = newAddressData.findIndex(address => address.DefaultAddress === true)
-        console.log(index);
-        const defaultFirstAddress = newAddressData.splice(index, 1)[0];
-        newAddressData.unshift(defaultFirstAddress);
+        defaultFirst(newAddressData);
         setAddressData(newAddressData);
         setIsOpen(false);
     }
@@ -128,7 +131,8 @@ function UserProfile ({backend}) {
                 address={address} 
                 backend={backend}
                 addressData={addressData}
-                grabAddressData={grabAddressData}/>
+                grabAddressData={grabAddressData}
+                defaultFirst={defaultFirst}/>
             )
         }
     })
