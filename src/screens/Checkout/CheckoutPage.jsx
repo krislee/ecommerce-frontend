@@ -1,10 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { Redirect } from 'react-router-dom';
-import PaymentMethod from './PaymentMethod'
 import {useStripe, useElements, CardElement, CardCvcElement} from '@stripe/react-stripe-js';
+
 import NavBar from '../../components/NavigationBar';
-import '../../styles/CheckoutPage.css';
+import PaymentMethod from './PaymentMethod'
+import Shipping from './Shipping'
 import createPaymentMethod from './CreatePayment'
+
+import '../../styles/CheckoutPage.css';
+
 
 function Checkout ({backend}) {
     // Helper to check if user is logged in
@@ -331,6 +335,7 @@ function Checkout ({backend}) {
             <>
             <NavBar />
             <div id="payment-form" >
+                <Shipping backend={backend} loggedIn={loggedIn}/>
                 <PaymentMethod backend={backend} customer={customer} loggedIn={loggedIn} error={error} grabError={grabError} disabled={disabled} grabDisabled={grabDisabled} paymentLoading={paymentLoading} grabPaymentLoading={grabPaymentLoading} billing={billing} handleBillingChange={handleBillingChange} grabBilling={grabBilling} paymentMethod={paymentMethod} grabPaymentMethod={grabPaymentMethod} cardholderName={cardholderName} grabCardholderName={grabCardholderName}handleCardholderNameChange={handleCardholderNameChange} handleCardChange={handleCardChange} collectCVV={collectCVV} grabCollectCVV={grabCollectCVV} editPayment={editPayment} grabEditPayment={grabEditPayment} redisplayCardElement={redisplayCardElement} grabRedisplayCardElement={grabRedisplayCardElement} grabShowSavedCards={grabShowSavedCards} handleConfirmPayment={handleConfirmPayment} showSavedCards={showSavedCards}/>
     
                 {/* Show Save card checkbox if user is logged in and does not have an already default, saved or last used, saved card to display as indicated by paymentMethod state. Do not show the checkbox for guests (as indicated by customer state). */}

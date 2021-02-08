@@ -24,12 +24,12 @@ export default function CardForm ({ customer, paymentMethod, paymentLoading, edi
                 <>
                  {/* Do not show the checkbox for guests (as indicated by customer state. */}
                 {customer ? (
-                    <div>
-                        <label htmlFor="saveCard">
-                            Save card for future purchases
-                            <input type="checkbox" id="saveCard" name="saveCard" />
-                        </label>
-                    </div>
+                   <>
+                    <label htmlFor="saveCard">
+                        Save card for future purchases
+                        <input type="checkbox" id="saveCard" name="saveCard" />
+                    </label>
+                    </>
                 ): <></>}
                  
                 {/* Disable Confirm Payment button when: 

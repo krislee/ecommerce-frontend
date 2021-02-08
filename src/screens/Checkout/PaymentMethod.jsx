@@ -232,7 +232,7 @@ function PaymentMethod ({ backend, customer, processing, loggedIn, error, grabEr
     }
 
     if(paymentLoading) {
-        return <h1>Loading...</h1>
+        return <></>
     } else if(!paymentMethod.paymentMethodID || (paymentMethod.paymentMethodID && redisplayCardElement)) {
         // If there is no saved payment methods (indicated by !paymentMethod.paymentMethodID) OR if there is a saved payment method (indicated by paymentMethod.paymentMethodID) and Add New Card button is clicked (indicated by redisplayCardElement state to true), then the same form that collects cards details is displayed. But for the form's onSubmit, the functions would be different.
         let handleSubmitCardForm
