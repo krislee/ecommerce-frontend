@@ -31,18 +31,16 @@ function ItemPage ({ url, backend }) {
             async function fetchData() {
                 let resp = await fetch(`${backend}/buyer/electronic/${id}`,{
                     method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     credentials: 'include'
                 });
                 let data = await resp.json();
-                // console.log(data)
+                console.log(data)
                 setItemInfo(data.electronicItem);
             }
             fetchData();
         }
-    }, [currentURL, id, url, backend])
+    }, [])
 
     const handleChangeQuantity = e => {
         setQuantity(e.target.value)

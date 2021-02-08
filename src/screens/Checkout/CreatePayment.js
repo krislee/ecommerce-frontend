@@ -30,6 +30,7 @@ const createPaymentMethod = async (stripe,cardElement, billing, cardholderName, 
         return createPaymentMethodResponse.error.message
     }
 
+    // Before attaching (aka saving) the newly created payment method to the Stripe customer, send to the server to ensure it is not a duplicate Card number
     const savePaymentMethodToCustomerResponse = await fetch(`${backend}/order/payment?checkout=true`, {
         method: 'POST',
         headers: {

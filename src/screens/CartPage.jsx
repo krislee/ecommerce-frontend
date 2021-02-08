@@ -33,9 +33,8 @@ function CartPage ({ backend }) {
             } else {
                 let resp = await fetch(`${backend}/buyer/cart`, {
                     method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include'
                 });
                 const data = await resp.json();
                 if (!data.message)  {
@@ -48,7 +47,7 @@ function CartPage ({ backend }) {
             }
         };
         getCartItems();
-    },[backend, cartID, items])
+    },[])
 
     return (
         <>
