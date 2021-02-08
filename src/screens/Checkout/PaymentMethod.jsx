@@ -189,6 +189,9 @@ function PaymentMethod ({ backend, customer, processing, loggedIn, error, grabEr
             grabShowSavedCards(true) // showSavedCards state represents if we are currently showing all cards; update showSavedCards state to true; if the showSavedCards state is true, then a Confirm Payment button won't be shown
             setShowModal(true); // open the modal
             grabError(null) // If there are errors from CVC Element before clicking Saved Cards button, we clear the errors. That way, when we close the Saved Cards modal if there were previous errors, there won't be any errors.
+            const cvv = elements.getElement(CardCvcElement)
+            console.log(cvv)
+            if(cvv) cvv.clear()
         } else {
             return (
                 // <div>Uh oh! It looks like you are logged out. Please log back in.</div>
@@ -254,6 +257,7 @@ function PaymentMethod ({ backend, customer, processing, loggedIn, error, grabEr
                 <p>Ending in <b>{paymentMethod.last4}</b></p>
                 <p>Expires <b>{paymentMethod.expDate}</b></p>
                 
+                {/* Need the conditions in order for the CVC Element to render properly */}
                 {(collectCVV === "true" && !redisplayCardElement) && <CollectCard collectCVV={collectCVV} redisplayCardElement={redisplayCardElement} handleCardChange={handleCardChange} />}
 
                 {/* Show any error that happens when processing the payment */}
