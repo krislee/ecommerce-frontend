@@ -94,10 +94,16 @@ function UserProfile ({backend}) {
             })
         })
         const newAddressData = await newAddressResponse.json();
-        defaultFirst(newAddressData);
-        setAddressData(newAddressData);
-        setAddressInput({});
-        setIsOpen(false);
+        if (newAddressData.findIndex(address => address.DefaultAddress === true) === -1 && newAddressData.length !== 0) {
+            defaultFirst(newAddressData);
+            setAddressData(newAddressData);
+            setAddressInput({});
+            setIsOpen(false);
+        } else {
+            setAddressData(newAddressData);
+            setAddressInput({});
+            setIsOpen(false);
+        }
     }
 
     const grabAddressData = (addressData) => {

@@ -90,9 +90,14 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
             })
         })
         const editAddressData = await editAddressResponse.json()
-        defaultFirst(editAddressData);
-        grabAddressData(editAddressData) // Update the addressData state in user profile
-        setIsEditModalOpen(false)
+        if (editAddressData.findIndex(address => address.DefaultAddress === true) !== -1 && editAddressData.length !== 0) {
+            defaultFirst(editAddressData);
+            grabAddressData(editAddressData) // Update the addressData state in user profile
+            setIsEditModalOpen(false)
+        } else {
+            grabAddressData(editAddressData) // Update the addressData state in user profile
+            setIsEditModalOpen(false)
+        }
     }
 
     const handleDefaultEdit = async(e) => {
@@ -107,9 +112,14 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
         })
         const editDefaultData = await editDefaultResponse.json();
         console.log(editDefaultData)
-        defaultFirst(editDefaultData);
-        grabAddressData(editDefaultData);
-        setIsEditModalOpen(false);
+        if (editDefaultData.findIndex(address => address.DefaultAddress === true) !== -1 && editDefaultData.length !== 0) {
+            defaultFirst(editDefaultData);
+            grabAddressData(editDefaultData);
+            setIsEditModalOpen(false);
+        } else {
+            grabAddressData(editDefaultData);
+            setIsEditModalOpen(false);
+        }
     }
 
     const handleDeleteAddress = async (e) => {
@@ -151,12 +161,20 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
                     }
                 })
                 const finalDeleteData = await deleteDuplicateResponse.json();
-                defaultFirst(finalDeleteData);
-                grabAddressData(finalDeleteData);
+                if (finalDeleteData.findIndex(address => address.DefaultAddress === true) !== -1 && finalDeleteData.length !== 0){
+                    defaultFirst(finalDeleteData);
+                    grabAddressData(finalDeleteData);
+                } else {
+                    grabAddressData(finalDeleteData)
+                }
             } else {
                 console.log('there is a default');
-                defaultFirst(data);
-                grabAddressData(data);
+                if (data.findIndex(address => address.DefaultAddress === true) !== -1 && data.length !== 0){
+                    defaultFirst(data);
+                    grabAddressData(data);
+                } else {
+                    grabAddressData(data);
+                }
             }
         }
     }
