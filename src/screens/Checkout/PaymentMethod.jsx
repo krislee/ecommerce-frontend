@@ -190,8 +190,7 @@ function PaymentMethod ({ backend, customer, processing, loggedIn, error, grabEr
             setShowModal(true); // open the modal
             grabError(null) // If there are errors from CVC Element before clicking Saved Cards button, we clear the errors. That way, when we close the Saved Cards modal if there were previous errors, there won't be any errors.
             const cvv = elements.getElement(CardCvcElement)
-            console.log(cvv)
-            if(cvv) cvv.clear()
+            if(cvv) cvv.clear() // Since for some reason the CVV contents remain if something was written in it and we clicked Saved Cards, we want to clear the CVV field 
         } else {
             return (
                 // <div>Uh oh! It looks like you are logged out. Please log back in.</div>
