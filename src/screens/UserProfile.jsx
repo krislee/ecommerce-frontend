@@ -73,9 +73,11 @@ function UserProfile ({backend}) {
     // }
 
     const defaultFirst = (data) => {
-        const index = data.findIndex(address => address.DefaultAddress === true)
-        const defaultFirstAddress = data.splice(index, 1)[0];
-        data.unshift(defaultFirstAddress);
+        if (data.findIndex(address => address.DefaultAddress === true) !== -1 && data.length !== 0) {
+            const index = data.findIndex(address => address.DefaultAddress === true)
+            const defaultFirstAddress = data.splice(index, 1)[0];
+            data.unshift(defaultFirstAddress);
+        }
     }
 
     const handleSubmitAddress = async (event) => {
