@@ -96,6 +96,7 @@ function UserProfile ({backend}) {
         const newAddressData = await newAddressResponse.json();
         defaultFirst(newAddressData);
         setAddressData(newAddressData);
+        setAddressInput({});
         setIsOpen(false);
     }
 
@@ -202,7 +203,10 @@ function UserProfile ({backend}) {
                     <label htmlFor="addressDefault">Save as default</label>
                     <input name="addressDefault" type="checkbox" id="address-default"/>
                 </div>
-                <button onClick={handleSubmitAddress}>Submit</button>
+                <button onClick={handleSubmitAddress} 
+                disabled={!addressInput.firstName || !addressInput.addressLineOne || !addressInput.city || !addressInput.state || !addressInput.zipcode}>
+                    Submit
+                </button>
                 </form>
                 </Modal>
             </>

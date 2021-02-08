@@ -33,15 +33,31 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
         console.log(37, oneAddressData)
         const name = oneAddressData.address.Name.split(", ")
         const address = oneAddressData.address.Address.split(", ")
-        setEditAddress({
-            firstName: name[0],
-            lastName: name[1],
-            addressLineOne: address[0],
-            addressLineTwo: address[1],
-            city: address[2],
-            state: address[3],
-            zipcode: address[4]
-        })
+        console.log(address);
+        const checkForAddressLineTwo = () => {
+            if (address[1] === "undefined"){
+                setEditAddress({
+                    firstName: name[0],
+                    lastName: name[1],
+                    addressLineOne: address[0],
+                    addressLineTwo: "",
+                    city: address[2],
+                    state: address[3],
+                    zipcode: address[4]
+                })
+            } else {
+                setEditAddress({
+                    firstName: name[0],
+                    lastName: name[1],
+                    addressLineOne: address[0],
+                    addressLineTwo: address[1],
+                    city: address[2],
+                    state: address[3],
+                    zipcode: address[4]
+                })
+            }
+        }
+        checkForAddressLineTwo();
         setIsEditModalOpen(true);
     }
 
@@ -92,7 +108,7 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
             const data = await deleteResponse.json();
             console.log(data);
             if (data.findIndex(address => address.DefaultAddress === true) === -1 && data.length !== 0) {
-                const oldestAddress = data[0];
+                const oldestAddress = data[data.length - 1];
                 console.log(oldestAddress);
                 // We grab the last element in the address array, and make it default
                 // We pass it through the handle submit again
@@ -129,11 +145,11 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
     }
 
     const name = address.Name.replace(/,/g, '');
-    // const firstName = address.Name.split(',')[0]
-    // const lastName = address.Name.split(',')[1]
     const newAddress = address.Address.split(',')
-    const addressLine = `${newAddress[0]} ${newAddress[1]}`
-    const secondAddressLine = `${newAddress[2]}, ${newAddress[3]} ${newAddress[4]}`
+    const addressLineWithSecondAddress = `${newAddress[0]} ${newAddress[1]}`
+    const secondAddressLineWithSecondAddress = `${newAddress[2]}, ${newAddress[3]} ${newAddress[4]}`
+    const addressLineWithoutSecondAddress = `${newAddress[0]}`
+    const secondAddressLineWithoutSecondAddress = `${newAddress[2]}, ${newAddress[3]} ${newAddress[4]}`
     const defaultAddress = address.DefaultAddress
 
     if (address) {
@@ -141,8 +157,16 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
             <>
             <div key={index} className="one-address-container">
                     <div className="person-name">{name}</div>
-                    <div className="address">{addressLine}</div>
-                    <div className="address">{secondAddressLine}</div>
+                    <div 
+                    className="address">
+                        {newAddress[1] !== ' undefined' 
+                        ? addressLineWithSecondAddress : addressLineWithoutSecondAddress }
+                    </div>
+                    <div 
+                    className="address">
+                        {newAddress[1] !== ' undefined'  
+                        ? secondAddressLineWithSecondAddress : secondAddressLineWithoutSecondAddress }
+                    </div>
                     {defaultAddress && <div className="default-indicator">Default</div>}
                     <div 
                     className={defaultAddress ? 
@@ -172,11 +196,14 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
             onChange={handleEditAddressChange}/>
             <input value={editAddress.zipcode || ""} name="zipcode" placeholder="Zipcode"
             onChange={handleEditAddressChange}/>
-            <div className="default-container">
+            {!defaultAddress && <div className="default-container">
                 <label htmlFor="addressDefault">Save as default</label>
                 <input name="addressDefault" type="checkbox" id="address-default"/>
-            </div>
-            <button id={address._id} onClick={handleEditAddress}>Submit</button>
+            </div>}
+            <button id={address._id} 
+            onClick={handleEditAddress}
+            disabled={!editAddress.firstName || !editAddress.addressLineOne || !editAddress.city || !editAddress.state || !editAddress.zipcode}>
+            Submit</button>
             </form>
             </Modal>
             </>
