@@ -5,11 +5,11 @@ import Modal from 'react-modal';
 import { useStripe, CardElement, useElements, CardCvcElement } from "@stripe/react-stripe-js"; 
 import createPaymentMethod from './CreatePayment'
 import { Redirect } from 'react-router-dom';
-
+import CardForm from './CardForm'
 // import Button from 'react-bootstrap/Button';
 // import Modal from 'react-bootstrap/Modal'
 
-function PaymentMethod ({ backend, loggedIn, error, grabError, disabled, grabDisabled,  paymentLoading, grabPaymentLoading, billing, grabBilling, handleBillingChange, paymentMethod, grabPaymentMethod, cardholderName, grabCardholderName, handleCardholderNameChange, handleCardChange, collectCVV, grabCollectCVV, editPayment, grabEditPayment, redisplayCardElement, grabRedisplayCardElement, grabShowSavedCards, handleSubmit}) {
+function PaymentMethod ({ backend, customer, processing, loggedIn, error, grabError, disabled, grabDisabled,  paymentLoading, grabPaymentLoading, billing, grabBilling, handleBillingChange, paymentMethod, grabPaymentMethod, cardholderName, grabCardholderName, handleCardholderNameChange, handleCardChange, collectCVV, grabCollectCVV, editPayment, grabEditPayment, redisplayCardElement, grabRedisplayCardElement, grabShowSavedCards, handleConfirmPayment, showSavedCards}) {
 
     /* ------- STRIPE VARIABLES ------ */
     const elements = useElements()
@@ -50,7 +50,13 @@ function PaymentMethod ({ backend, loggedIn, error, grabError, disabled, grabDis
 
     /* ------- EDIT PAYMENT METHOD FUNCTIONS ------ */
 
-    // When Edit button and Save are clicked, handleUpdatePayment() runs
+    const handleEdit = () => {
+        grabEditPayment(true) // The editPayment state get changed to true depending if the Edit button is clicked or when the Close button is clicked. If Edit button is clicked, the Confirm Payment button in Checkout will be shown.
+        setShowModal(true) //show modal
+        grabError(null) // Clear any errors (i.e. an incomplete security code from CVV Element) before opening the edit modal
+    }
+
+    // When Save is clicked, handleUpdatePayment() runs
     const handleUpdatePayment = async(event) => {
         // Make sure user is logged in in order to update
         if (loggedIn()) {
@@ -82,6 +88,7 @@ function PaymentMethod ({ backend, loggedIn, error, grabError, disabled, grabDis
             grabPaymentMethod(updatePaymentMethodData) // update the paymentMethod, billingDetails, collectCVV states with the server response
             grabEditPayment(false) // editPayment state represents we are editing; after clicking Save button, we are no longer editing, so update the editPayment state to false 
             setShowModal(false) // close the modal
+            // grabError(null) 
         } else {
             return (
                 // <div>Uh oh! It looks like you are logged out. Please log back in.</div>
@@ -97,18 +104,18 @@ function PaymentMethod ({ backend, loggedIn, error, grabError, disabled, grabDis
         grabBilling(paymentMethod.billingDetails) // If user began editing the billing details input, handleBillingChange() runs. This means billing state is updated. If user just closes the edit modal, and reopens the edit modal, the billing details input will have the updated billing state. In other words, the billing details input will have the previously edited but unsubmitted input values. So when we run grabBilling() with the current paymentMethod state (reminder: paymentMethod state did not get updated since grabPaymentMethod() does not run unless Save button is clicked), it will reset the billing state back to the current paymentMethod's billing details.
         grabCardholderName(paymentMethod.cardholderName) // Also reset the cardholder's name if user began editing the cardholder's name details input but only closes the Edit modal without clicking Save (for more detailed info, look at grabBilling() above)
         setShowModal(false) // close the Edit Card modal by setting showModal state to false
-
+        // grabError(null)
         // We do not need to update the collectCVV state when we close the edit modal because we did not update the collectCVV state when we opened the edit modal
     }
 
      /* ------- ADD PAYMENT METHOD FUNCTIONS ------ */
 
     // When Add New Card button is clicked, handleAddNew() runs
-    const handleAddNew = () => {
+    const handleAddNew = async () => {
         if (loggedIn()) {
-            grabError(null) // If there are errors from CVC Element before clicking Add New Cards button (i.e. incomplete security code), then the error will be displayed the moment we click Add New Cards button. So we want to clear the error when the Add New Cards button is clicked and the Add New Cards modal would not show the error. (We do not need to do this to opening Edit modal because there is no div to display the error in the Edit modal.)
-            grabRedisplayCardElement(true) // redisplayCardElement state represents if we are currently adding a new card, so update the redisplayCardElement state from default false to true; what we render depends on the redisplayCardElement state 
-            grabCollectCVV("false") // need to update the collectCVV state to "false" so that the CVV Element won't be displayed but a Card Element would be displayed 
+            await grabError(null) // If there are errors from CVC Element before clicking Add New Cards button (i.e. incomplete security code), then the error will be displayed the moment we click Add New Cards button. So we want to clear the error when the Add New Cards button is clicked and the Add New Cards modal would not show the error. (We do not need to do this to opening Edit modal because there is no div to display the error in the Edit modal.)
+            grabRedisplayCardElement(true) // redisplayCardElement state represents if we are currently adding a new card, so update the redisplayCardElement state from default false to true; what we render in the Checkout/PaymentMethod component depends on the redisplayCardElement state (look at the conditional statements below); the Confirm Payment button won't be displayed if redisplayCardElement state is true
+            await grabCollectCVV("false") // need to update the collectCVV state to "false" so that the CVV Element won't be displayed but a Card Element would be displayed 
             setShowModal(true) // open the modal
             console.log("add new")
         } else {
@@ -123,6 +130,7 @@ function PaymentMethod ({ backend, loggedIn, error, grabError, disabled, grabDis
     const saveNewCard = async(event) => {
         if (loggedIn()) {
             event.preventDefault()
+            console.log("NEW CARD")
             const cardElement = elements.getElement(CardElement)
             // createPaymentMethod() will create a new payment method by calling stripe.createPaymentMethod() and a fetch to server that makes sure there are no duplicate cards being added
             const newSavedPaymentMethod = await createPaymentMethod(stripe, cardElement, billing, cardholderName, backend)
@@ -130,12 +138,15 @@ function PaymentMethod ({ backend, loggedIn, error, grabError, disabled, grabDis
             if(typeof newSavedPaymentMethod === "string") {
                 grabError(newSavedPaymentMethod)
                 // Do not close the modal yet (do not do setShowModal(false)), so that the user has a chance to fix the card details.
+                console.log("ERROR ADDING NEW CARD")
             } else {
                 // If there is no error from creating a payment method, then update the payment method state to re-render the CheckoutPage and Checkout/PaymentMethod components with the new payment method, billing details, recollectCVV info
                 await grabPaymentMethod(newSavedPaymentMethod)
                 await grabRedisplayCardElement(false) // update the redisplayCardElement state back to false
                 setShowModal(false) // Close modal
-                grabDisabled(true) // disable state is set to false when there are card changes; After saving a new payment method, disable the Save button again, so that when we reopen the Add New Card modal again it will be disabled
+                await grabDisabled(true) // disable state is set to false when there are card changes; After saving a new payment method, disable the Save button again, so that when we reopen the Add New Card modal again it will be disabled
+                // await grabError(null)
+                console.log("NO ERROR ADDING NEW CARD")
             }
         } else {
             return (
@@ -163,7 +174,6 @@ function PaymentMethod ({ backend, loggedIn, error, grabError, disabled, grabDis
     // When Saved Cards modal is clicked, showAllSavedCards() runs
     const showAllSavedCards = async(event) => {
         if(loggedIn()) {
-            grabShowSavedCards(true) // showSavedCards state represents if we are currently showing all cards; update showSavedCards state to true
             const savedCardsResponse = await fetch(`${backend}/order/index/payment?save=true&id=${event.target.id}`, {
                 method: 'GET',
                 headers: {
@@ -173,9 +183,10 @@ function PaymentMethod ({ backend, loggedIn, error, grabError, disabled, grabDis
             })
             const savedCardsData = await savedCardsResponse.json()
             console.log("all saved cards: ", savedCardsData.paymentMethods)
-        
             setSavedCards(savedCardsData.paymentMethods) // Update the savedCards state from empty array to an array containing all the payment methods (indicated by savedCardsData.paymentMethods). After the savedCards state is updated, we can loop through the savedCards array state to display all the payment methods 
+            grabShowSavedCards(true) // showSavedCards state represents if we are currently showing all cards; update showSavedCards state to true; if the showSavedCards state is true, then a Confirm Payment button won't be shown
             setShowModal(true); // open the modal
+            grabError(null) // If there are errors from CVC Element before clicking Saved Cards button, we clear the errors. That way, when we close the Saved Cards modal if there were previous errors, there won't be any errors.
         } else {
             return (
                 // <div>Uh oh! It looks like you are logged out. Please log back in.</div>
@@ -200,7 +211,6 @@ function PaymentMethod ({ backend, loggedIn, error, grabError, disabled, grabDis
             grabPaymentMethod(showSavedCardData) // Update the paymentMethod, billing, cardholderName, and collectCVV states, so that when CheckoutPage and Checkout/PaymentMethod components are re-rendered it will show the updated info from the updated states.
             grabShowSavedCards(false)
             setShowModal(false)
-
         } else {
             return (
                 // <div>Uh oh! It looks like you are logged out. Please log back in.</div>
@@ -209,59 +219,38 @@ function PaymentMethod ({ backend, loggedIn, error, grabError, disabled, grabDis
         }
     }
 
+    // When Close button is clicked in the Saved Cards modal, closeSavedCards() runs
+    const closeSavedCards = () => {
+        grabShowSavedCards(false) // showSavedCards state represents if we are currently showing all cards; update showSavedCards state to false; if the showSavedCards state is false, then a Confirm Payment button will be shown
+        setShowModal(false) // close the modal
+    }
+
     if(paymentLoading) {
         return <h1>Loading...</h1>
     } else if(!paymentMethod.paymentMethodID || (paymentMethod.paymentMethodID && redisplayCardElement)) {
-        return (
-            <div>
-                {(!showModal && collectCVV !== 'true' && !redisplayCardElement) && (
-                    <div>
-                        <h2>Payment</h2>
-                        <input value={cardholderName || ""} name="name" placeholder="Name on card" onChange={handleCardholderNameChange} required/>
-                    </div>
-                )}
-
-                 {/* Close button is displayed if the div with Card Element and inputs are REdisplayed, which happens when Add new button is clicked to change redisplayCardElement to true. When Close button is clicked, we grab the Card Element displayed and destroy it to allow for the old CVV element to be shown. */}
-                {(collectCVV==='false' && redisplayCardElement) && (
-                
-                <Modal isOpen={showModal} ariaHideApp={false} contentLabel="Add New Card" onRequestClose={closeAddNewModal}>
-                    <form onSubmit={saveNewCard}>
-                        <h1>Payment</h1>
-                        <input value={cardholderName || ""} name="name" placeholder="Name on card" onChange={handleCardholderNameChange} required/>
-                        <CollectCard handleCardChange={handleCardChange} collectCVV={collectCVV} redisplayCardElement={redisplayCardElement} editPayment={editPayment}/>
-                        {error && <div className="card-error" role="alert">{error}</div>}
-                        <h2>Billing Address</h2>
-                        <BillingInput handleBillingChange={handleBillingChange} billing={billing} editPayment={editPayment}/>
-                        <input type="submit" disabled = {error || disabled} />
-                        <button onClick={closeAddNewModal}>Close</button>
-                    </form>
-                </Modal>)}
-                
-                {(!showModal && collectCVV !== 'true' && !redisplayCardElement) && (
-                    <div>
-                        {/* {(!showModal && collectCVV==='false' && !redisplayCardElement) && <CollectCard handleCardChange={handleCardChange} collectCVV={collectCVV} redisplayCardElement={redisplayCardElement} editPayment={editPayment}/>} */}
-                        <CollectCard handleCardChange={handleCardChange} collectCVV={collectCVV} redisplayCardElement={redisplayCardElement} editPayment={editPayment}/>
-                        {error && <div className="card-error" role="alert">{error}</div>}
-                        <h2>Billing Address</h2>
-                        <BillingInput handleBillingChange={handleBillingChange} billing={billing}/>
-                    </div>
-                )}
-            </div>
-        )
+        // If there is no saved payment methods (indicated by !paymentMethod.paymentMethodID) OR if there is a saved payment method (indicated by paymentMethod.paymentMethodID) and Add New Card button is clicked (indicated by redisplayCardElement state to true), then the same form that collects cards details is displayed. But for the form's onSubmit, the functions would be different.
+        let handleSubmitCardForm
+        if(redisplayCardElement) {
+            handleSubmitCardForm = saveNewCard
+            console.log(220)
+        } else {
+            handleSubmitCardForm = handleConfirmPayment
+            console.log(223)
+        }
+        return collectCVV !== 'true' && <CardForm customer={customer} paymentMethod={paymentMethod} paymentLoading={paymentLoading} editPayment={editPayment} processing={processing} showSavedCards={showSavedCards} handleSubmitCardForm={handleSubmitCardForm} handleCardChange={handleCardChange} handleBillingChange={handleBillingChange} handleCardholderNameChange={handleCardholderNameChange} cardholderName={cardholderName} billing={billing} collectCVV={collectCVV} redisplayCardElement={redisplayCardElement} closeAddNewModal={closeAddNewModal} disabled={disabled} error={error} />    
+          
     } else if(paymentMethod.paymentMethodID && !editPayment) {
         console.log(paymentMethod)
 
         return (
-            <div>
+            <form onSubmit = {handleConfirmPayment}>
                 <h2>Payment</h2>
                 <p><b>{paymentMethod.cardholderName}</b></p>
                 <p><b>{paymentMethod.brand}</b></p>
                 <p>Ending in <b>{paymentMethod.last4}</b></p>
                 <p>Expires <b>{paymentMethod.expDate}</b></p>
                 
-
                 {(collectCVV === "true" && !redisplayCardElement) && <CollectCard collectCVV={collectCVV} redisplayCardElement={redisplayCardElement} handleCardChange={handleCardChange} />}
-                {/* {(collectCVV==='true' && !redisplayCardElement) && <CardCvcElement collectCVV={collectCVV} redisplayCardElement={redisplayCardElement} handleCardChange={handleCardChange} />} */}
 
                 {/* Show any error that happens when processing the payment */}
                 {( error) && (<div className="card-error" role="alert">{error}</div>)}
@@ -273,32 +262,40 @@ function PaymentMethod ({ backend, loggedIn, error, grabError, disabled, grabDis
                 <p>{paymentMethod.billingDetails.address.city}, {paymentMethod.billingDetails.address.state} {paymentMethod.billingDetails.address.postalCode}</p>
 
                 {/* Click Edit to update payment method */}
-                <button id={paymentMethod.paymentMethodID} onClick={() => { 
-                    // The editPayment state get changed to true depending if the Edit button is clicked or when the Close button is clicked. If Edit button is clicked, the value true is passed back down to Checkout via the grabEditPayment() to determine if the Confirm Payment button in Checkout will be shown.
-                    grabEditPayment(true)
-                    setShowModal(true)
-                }}>Edit</button>
+                <button id={paymentMethod.paymentMethodID} onClick={handleEdit}>Edit</button>
 
                 {/* Click Add New to add a new payment method */}
-                <button id={paymentMethod.paymentMethodID} onClick={handleAddNew}>Add New</button>
-                 <button id={paymentMethod.paymentMethodID} onClick={showAllSavedCards}>Saved Cards</button>
+                <button type="button" id={paymentMethod.paymentMethodID} onClick={handleAddNew}>Add New</button>
+                {/* Click Saved Cards to see all the other cards the logged in user has saved. */}
+                <button type="button" id={paymentMethod.paymentMethodID} onClick={showAllSavedCards}>Saved Cards</button>
 
-                <Modal isOpen={showModal} onRequestClose={() => setShowModal(false)} ariaHideApp={false} contentLabel="Saved Cards">
+                {/* Do not show the Confirm Payment button when Saved Cards modal, Edit modal, and Add New Card modal are open & when payment method component is still loading (indicated by default true "paymentLoading" state - the "paymentLoading" state does not change to false until Checkout/PaymentMethod component render*/}
+                {(!editPayment && !redisplayCardElement && !showSavedCards && !paymentLoading) ? (
+                    <button disabled={ (disabled && !paymentMethod.paymentMethodID) || (disabled && paymentMethod.recollectCVV === "true") || error }  id="submit" >
+                        <span id="button-text">
+                            {processing ? (<div className="spinner" id="spinner"></div>) : ("Confirm Payment")}
+                        </span>
+                    </button>
+                ):<></>}
+             
+                {/* Modal with the list of saved cards appear when Saved Cards button is clicked and updates the state of showModal to true. Since redisplayCardElement and editPayment states are false, this part gets returned. */}
+                <Modal isOpen={showModal} onRequestClose={ closeSavedCards } ariaHideApp={false} contentLabel="Saved Cards">
                     {savedCards.map((savedCard, index) => { return (
                         <div key={index}>
                             <h1>{savedCard.brand}</h1>
                             <p>Ending in <b>{savedCard.last4}</b></p>
                             <p>Expires <b>{savedCard.expDate}</b></p>
                             <p><b>{savedCard.cardholderName}</b></p>
-                            <button id={savedCard.paymentMethodID} onClick={showOneSavedCard}>Select</button>
+                            <button id={savedCard.paymentMethodID} onClick={ showOneSavedCard }>Select</button>
                         </div>
                     )})}
-                    <button onClick={() => setShowModal(false)}>Close</button>
+                    <button onClick={ closeSavedCards }>Close</button>
                 </Modal>
                 
-            </div>
+            </form>
         )
     } else if(paymentMethod.paymentMethodID && editPayment) {
+        // When the Edit button is clicked this modal is shown
         return (
             <Modal isOpen={showModal} onRequestClose={closeEditModal} ariaHideApp={false} contentLabel="Edit Card">
                 <div>

@@ -2,7 +2,7 @@ import React from 'react';
 import {CardCvcElement, CardElement, useElements} from "@stripe/react-stripe-js";
 import '../styles/Card.css'
 
-function CollectCard({ handleCardChange, collectCVV, redisplayCardElement }) {
+function CollectCard({ handleCardChange, collectCVV, handleCardholderNameChange, cardholderName }) {
     const elements = useElements()
     const cardStyle = {
         base: {
@@ -25,7 +25,12 @@ function CollectCard({ handleCardChange, collectCVV, redisplayCardElement }) {
     if (collectCVV !== "true") {
         console.log(elements.getElement(CardCvcElement))
         console.log(elements.getElement(CardElement))
-        return <CardElement options={cardStyle} onChange={(event) => handleCardChange(event)}/>
+        return (
+            <>
+            <input value={cardholderName || ""} name="name" placeholder="Name on card" onChange={handleCardholderNameChange} required/>
+            <CardElement options={cardStyle} onChange={(event) => handleCardChange(event)}/>
+            </>
+        )
     } else {
         console.log(elements.getElement(CardElement))
         console.log(elements.getElement(CardCvcElement))
