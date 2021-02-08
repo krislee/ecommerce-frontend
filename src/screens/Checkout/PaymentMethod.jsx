@@ -213,7 +213,7 @@ function PaymentMethod ({ backend, customer, processing, loggedIn, error, grabEr
             grabPaymentMethod(showSavedCardData) // Update the paymentMethod, billing, cardholderName, and collectCVV states, so that when CheckoutPage and Checkout/PaymentMethod components are re-rendered it will show the updated info from the updated states.
             grabShowSavedCards(false)
             setShowModal(false)
-            grabDisabled(true)
+            grabDisabled(true) // In case user was typing in the CVV element which would update the disabled state to false, we want to change the disabled state to true again, so that after the Saved Cards modal closes the Confirm Payment button is disabled until user enters CVV element
         } else {
             return (
                 // <div>Uh oh! It looks like you are logged out. Please log back in.</div>
@@ -226,7 +226,7 @@ function PaymentMethod ({ backend, customer, processing, loggedIn, error, grabEr
     const closeSavedCards = () => {
         grabShowSavedCards(false) // showSavedCards state represents if we are currently showing all cards; update showSavedCards state to false; if the showSavedCards state is false, then a Confirm Payment button will be shown
         setShowModal(false) // close the modal
-        grabDisabled(true)
+        grabDisabled(true) // In case user was typing in the CVV element which would update the disabled state to false, we want to change the disabled state to true again, so that after the Saved Cards modal closes the Confirm Payment button is disabled until user enters CVV element
     }
 
     if(paymentLoading) {
