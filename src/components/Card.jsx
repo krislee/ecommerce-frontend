@@ -25,12 +25,7 @@ function CollectCard({ handleCardChange, collectCVV, redisplayCardElement }) {
     if (collectCVV !== "true") {
         console.log(elements.getElement(CardCvcElement))
         console.log(elements.getElement(CardElement))
-        return (
-            <label>
-                Card details
-                <CardElement options={cardStyle} onChange={(event) => handleCardChange(event)}/>
-            </label>
-        )
+        return <CardElement options={cardStyle} onChange={(event) => handleCardChange(event)}/>
     } else {
         console.log(elements.getElement(CardElement))
         console.log(elements.getElement(CardCvcElement))

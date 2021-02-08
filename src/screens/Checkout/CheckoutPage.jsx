@@ -75,33 +75,36 @@ function Checkout ({backend}) {
         setPaymentMethod(paymentMethod)      
         grabBilling(paymentMethod.billingDetails) 
         grabCollectCVV(paymentMethod.recollectCVV) 
-        setCardholderName(paymentMethod.cardholderName)
+        if(paymentMethod.cardholderName)setCardholderName(paymentMethod.cardholderName)
     }
 
     // We need to prefill the billing details input when user wants to edit the displayed, saved card's billing details or add a new card's billing details. To do this, we pass down billing state as prop down to Checkout/PaymentMethod and then further down to Component/BillingInput. Each Component/BillingInput inputs' value attribute will now equal to each billing state keys. The billing state keys' values have been set by running grabBilling(<payment_method_billing_details>).
     // grabBilling(<payment_method_billing_details>) runs at Checkout/PaymentMethod's useEffect(), updating the card, adding new card, and selecting a card since grabPaymentMethod() runs during any of the 3 actions
     const grabBilling = (billing) => {
         console.log(billing)
-
-        if(billing) {
+        if (billing) {
             const name = billing.name.split(", ")
             console.log("name after splitting: ", name)
             setBilling({
                 firstName: name[0],
                 lastName: name[1],
                 line1: billing.address.line1,
-                line2: billing.address.line2,
+                line2: billing.address.line2 ? billing.address.line2 : "",
                 city: billing.address.city,
                 state: billing.address.state,
                 postalCode: billing.address.postalCode
             })
-        } 
+        }  
     }
 
     // Update collectCVV states when 1) load or refresh /checkout URL 2) update card 3) select card 4) add card. Updated collectCVV states will let us know if we need to show a CVV Element.
     const grabCollectCVV = (collectCVV) => {
         console.log("checkout collect cvv", collectCVV)
-        setCollectCVV(collectCVV)
+        if(collectCVV) setCollectCVV(collectCVV)
+    }
+
+    const grabCardholderName = (cardholderName) => {
+        setCardholderName(cardholderName)
     }
 
     // Update editPayment, grabRedisplayCardElement, grabShowSavedCards states by sending grabEditPayment() down as prop to Checkout/PaymentMethod, which gets updated to true if the Edit, or Add New Card, or Saved Cards button is clicked in Checkout/PaymentMethod component. If editPayment, or redisplayCardElement, or showSavedCards state is true, then we do not show Confirm Card Payment button.
@@ -170,14 +173,12 @@ function Checkout ({backend}) {
                 console.log(cartResponseData);
                 // If there are no cart items, then redirect user to cart page. Also update loading state to false or else if loading state is still true, then it will return <></>.
                 if(cartResponseData.cart === "No cart available") {
-                    localStorage.setItem("cartItems", false);
                     setRedirect(true);
                     setLoading(false)
                     return;
                 }
                 // If there are cart items, then create/update a payment intent. 
                 if(typeof cartResponseData.cart !== 'string'){
-                    localStorage.setItem('cartItems', true)
                     const paymentIntentResponse = await fetch(`${backend}/order/payment-intent`, {
                         method: 'POST',
                         headers: {
@@ -203,13 +204,11 @@ function Checkout ({backend}) {
                 const cartResponseData = await cartResponse.json()
                 console.log(cartResponseData);
                 if(cartResponseData.message) {
-                    localStorage.setItem('guestCartItems', false)
                     setRedirect(true)
                     setLoading(false)
                     return
                 } else if(cartResponseData.sessionID){
                     console.log("cookie checkout: ", document.cookie)
-                    localStorage.setItem('guestCartItems', true)
                     const paymentIntentResponse = await fetch(`${backend}/order/payment-intent`, {
                         method: 'POST',
                         headers: {
@@ -241,7 +240,7 @@ function Checkout ({backend}) {
             return; // return when Stripe.js is not loaded
         }
 
-        // If user is a guest, check if guest cleared cookies, which stores the session ID that we send to the server. The session ID is used to look up a session which contains the cart items. If guest cleared cookies, then there is no session ID to send to the server, so we cannot retrieve back the session containing the cart items. If guest cleared cookies, we cannot proceed payment so we will redirect to Cart page by updating redirect state from default false to true.
+        // If user is a guest because either 1) user was always going through the website as guest, or 2) logged in user cleared local storage before clicking Confirm Payment, then check if guest has cookies, which stores the session ID that we send to the server. The session ID is used to look up a session which contains the cart items. If guest cleared cookies before clicking Confirm Payment or if logged in user logged cleared local storage before clicking Confirm Payment, then there is no session ID to send to the server, so we cannot retrieve the session containing the cart items. If there are no cart items, then we cannot proceed payment so we will redirect to Cart page by updating redirect state from default false to true.
         if(!loggedIn()) {
             const cartResponse = await fetch(`${backend}/buyer/cart`, {
                 method: 'GET',
@@ -315,12 +314,7 @@ function Checkout ({backend}) {
         } else if(confirmCardResult.paymentIntent.status === 'succeeded'){
             // The payment has been processed!
             console.log('succeeded')
-            // If payment has succeeded, then there should be no more items in the cart, so reset the local storage.
-            if(localStorage.getItem('cartItems')) localStorage.setItem('cartItems', false);
-            if(localStorage.getItem('guestCartItems')) localStorage.setItem('guestCartItems', false)
             setProcessing(false) // Stop the spinner
-            // setCollectCVV("false")
-            // setPaymentMethod({})
 
             // Redirect to Order Complete component
         }
@@ -336,8 +330,8 @@ function Checkout ({backend}) {
         return (
             <>
             <NavBar />
-            <div id="payment-form">
-                <PaymentMethod backend={backend} loggedIn={loggedIn} error={error} grabError={grabError} disabled={disabled} grabDisabled={grabDisabled} paymentLoading={paymentLoading} grabPaymentLoading={grabPaymentLoading} billing={billing} handleBillingChange={handleBillingChange} grabBilling={grabBilling} paymentMethod={paymentMethod} grabPaymentMethod={grabPaymentMethod} cardholderName={cardholderName} handleCardholderNameChange={handleCardholderNameChange} handleCardChange={handleCardChange} collectCVV={collectCVV} grabCollectCVV={grabCollectCVV} editPayment={editPayment} grabEditPayment={grabEditPayment} redisplayCardElement={redisplayCardElement} grabRedisplayCardElement={grabRedisplayCardElement} grabShowSavedCards={grabShowSavedCards}/>
+            <div id="payment-form" >
+                <PaymentMethod backend={backend} loggedIn={loggedIn} error={error} grabError={grabError} disabled={disabled} grabDisabled={grabDisabled} paymentLoading={paymentLoading} grabPaymentLoading={grabPaymentLoading} billing={billing} handleBillingChange={handleBillingChange} grabBilling={grabBilling} paymentMethod={paymentMethod} grabPaymentMethod={grabPaymentMethod} cardholderName={cardholderName} grabCardholderName={grabCardholderName}handleCardholderNameChange={handleCardholderNameChange} handleCardChange={handleCardChange} collectCVV={collectCVV} grabCollectCVV={grabCollectCVV} editPayment={editPayment} grabEditPayment={grabEditPayment} redisplayCardElement={redisplayCardElement} grabRedisplayCardElement={grabRedisplayCardElement} grabShowSavedCards={grabShowSavedCards}/>
     
                 {/* Show Save card checkbox if user is logged in and does not have an already default, saved or last used, saved card to display as indicated by paymentMethod state. Do not show the checkbox for guests (as indicated by customer state). */}
 
