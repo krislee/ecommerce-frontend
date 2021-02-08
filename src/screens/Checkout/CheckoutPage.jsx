@@ -226,7 +226,7 @@ function Checkout ({backend}) {
             }
         }    
         handleCheckout();
-    },[backend, token]);
+    },[]);
 
     const handleConfirmPayment = async (event) => {
         

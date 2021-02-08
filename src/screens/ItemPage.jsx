@@ -40,7 +40,7 @@ function ItemPage ({ url, backend }) {
             }
             fetchData();
         }
-    }, [currentURL, id, url, backend])
+    }, [])
 
     const handleChangeQuantity = e => {
         setQuantity(e.target.value)

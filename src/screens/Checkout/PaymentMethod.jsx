@@ -46,7 +46,7 @@ function PaymentMethod ({ backend, customer, processing, loggedIn, error, grabEr
             grabPaymentMethod({}) // if guest user, then paymentMethod state would remain an empty obj, billing details state would remain empty obj, and collectCVV state would remain "false"
             grabPaymentLoading(false) // update paymentLoading state to false so it will not render Loading... when we re-render CheckoutPage and Checkout/PaymentMethod components
         }
-    }, [backend, collectCVV, grabBilling, grabCollectCVV, grabPaymentMethod, redisplayCardElement, token, grabPaymentLoading])
+    }, [])
 
     /* ------- EDIT PAYMENT METHOD FUNCTIONS ------ */
 

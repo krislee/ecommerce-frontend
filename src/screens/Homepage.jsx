@@ -22,7 +22,7 @@ function Homepage ({ grabURL, backend }) {
             // setIsLoaded(true)
         };
         fetchItems();
-    },[electronicURL, backend])
+    },[])
 
 
 
