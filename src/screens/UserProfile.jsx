@@ -150,12 +150,13 @@ function UserProfile ({backend}) {
                 <Navbar />
                 <div className="user-profile-container">
                     <div className='side-bar'>
-                        <Button name={'Addresses'} onClick={handleClickAddresses}/>
-                        <Button name={'Payments'} onClick={handleClickPayments}/>
+                        <div onClick={handleClickAddresses}>Addresses</div>
+                        <div onClick={handleClickPayments}>Payments</div>
+                        <div>Orders</div>
                     </div>
                     {addresses && 
                         <>
-                            <div className="container addresses-container">
+                            <div className="addresses-container">
                                 <div className="header-container">
                                     <div className="header">Saved Addresses</div>
                                     <div className="add-address" 
@@ -175,7 +176,7 @@ function UserProfile ({backend}) {
                         </>
                     }
                     {payments &&
-                        <div className="container">
+                        <div className="payments-container">
                             <div className="header">Saved Payments</div>
                         </div>
                     }

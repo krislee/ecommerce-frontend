@@ -1,17 +1,45 @@
-.side-bar {
-    position: fixed;
-    left: 0;
-    top: 12vh;
+.user-profile-container {
+    width: 100%;
     display: flex;
 }
 
-.container {
-    margin-top: 20vh;
+.side-bar {
+    position: fixed;
+    left: 0;
+    top: 10vh;
+    width: 8rem;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
-.addresses-container {
-    height: 100vh;
-    width: 90vw;
+/* .hello {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+} */
+
+.side-bar > div {
+    cursor: pointer;
+    width: 100%;
+    height: 10%;
+    background-color: #e8e8e8;
+    color: #000;
+    border-bottom: 1px solid #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.side-bar > div:hover {
+    background-color: #c8c8c8;
+}
+
+.addresses-container, .payments-container {
+    margin-top: 10rem;
+    height: 100%;
+    width: 70vw;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -21,8 +49,9 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    width: 80vw;
-    margin: 3rem;
+    width: 100%;
+    margin-bottom: 1rem;
+    /* margin: 3rem; */
 }
 
 .header {
@@ -52,10 +81,10 @@
 
 .all-address-container {
     display: flex;
-    align-items: center;
-    width: 70vw;
+    /* align-items: center; */
+    /* width: 70vw;
     height: 100%;
-    justify-content: space-between;
+    justify-content: space-between; */
     flex-wrap: wrap;
 }
 
@@ -63,8 +92,9 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    width: 100%;
-    height: 100%;
+    /* justify-content: center; */
+    /* width: 100%; */
+    /* height: 100%; */
     justify-content: space-between;
     flex-wrap: wrap;
 }
