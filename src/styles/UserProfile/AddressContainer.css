@@ -1,0 +1,59 @@
+.one-address-container {
+    height: 12em;
+    width: 20em;
+    background-color: #e8e8e8;
+    color: #000;
+    display: flex;
+    /* justify-content: center; */
+    /* align-items: center; */
+    padding: 1rem 0rem 0rem 1rem;
+    flex-direction: column;
+    margin: 0.5rem;
+    /* cursor: pointer; */
+    border-radius: 1rem;
+}
+
+.person-name {
+    font-size: 16px;
+    font-weight: bold;
+    cursor: default;
+}
+
+.address {
+    font-size: 14px;
+    color: rgb(57, 57, 57);
+    cursor: default;
+}
+
+.default-indicator{
+    /* position: absolute; */
+    margin-top: 1rem;
+    border-radius: 1rem;
+    background-color: #61e053;
+    width: 5rem;
+    text-align: center;
+    font-size: 14px;
+    cursor: default;
+    top: 60%;
+}
+
+.update-address {
+    position: relative;
+    top: 40%;
+    display: flex;
+    width: 30%;
+    justify-content: space-between;
+}
+
+.update-address-default {
+    position: relative;
+    top: 19%;
+    display: flex;
+    width: 30%;
+    justify-content: space-between;
+}
+
+.update-address > div:hover, .update-address-default > div:hover {
+    text-decoration: underline;
+    cursor: pointer;
+}
