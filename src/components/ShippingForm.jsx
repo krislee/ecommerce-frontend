@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import Button from './Button'
 
-export default function ShippingForm( { backend, loggedIn, shipping, addShipping, shippingInput, grabShippingInput, grabPaymentLoading, RGBA, grabRGBA, cartID, updateShippingState, updateShippingInputState, grabAddNewShipping, showSavedShipping }) {
+export default function ShippingForm( { backend, loggedIn, shipping, addShipping, shippingInput, grabShippingInput, grabPaymentLoading, RGBA, grabRGBA, cartID, updateShippingState, updateShippingInputState, grabAddNewShipping, editShipping, handleEditShipping, closeModal }) {
     
-    const [readOnly, setReadOnly] = useState(false)
-    // const [displayAddEditButton, setDisplayAddEditButton] = useState({display: 'none'})
+    const [readOnly, setReadOnly] = useState(false) // disable the inputs after clicking Next
 
     const handleShippingChange = (event) => {
         const { name, value} = event.target
@@ -21,12 +20,15 @@ export default function ShippingForm( { backend, loggedIn, shipping, addShipping
         setReadOnly(true)
     }
 
+    // Depending on if we are adding a shipping (indicated by addShipping state), editing a shipping (indicated by editShipping state), or saving our first address/guest user, different onSubmit form functions will run.
     const handleNext = async (event) => {
         event.preventDefault()
-        console.log(shippingInput)
+        console.log("shipping input: ", shippingInput)
         if(addShipping) {
             addAdditionalSaveShipping()
-        } else {
+        } if(editShipping) {
+            handleEditShipping()
+        } else if(!loggedIn()){
             addNewShipping()
             collapse()
         }
@@ -34,12 +36,8 @@ export default function ShippingForm( { backend, loggedIn, shipping, addShipping
 
     const addNewShipping = async() => {
         const checkbox = document.querySelector('input[name=saveAddress]')
-        // If logged in user does not have any saved shipping addresses, fetch to this route:
+        // If logged in user is saving his/her first shipping address, fetch to this route:
         if(loggedIn()) {
-            console.log("cart ID: ", cartID)
-            console.log(shipping)
-            console.log(shipping.address)
-            console.log(shippingInput)
             const updatePaymentIntentWithShippingResponse = await fetch(`${backend}/order/payment-intent`, {
                 method: 'POST',
                 headers: {
@@ -63,6 +61,7 @@ export default function ShippingForm( { backend, loggedIn, shipping, addShipping
             const updatePaymentIntentWithShippingData = await updatePaymentIntentWithShippingResponse.json()
             console.log(updatePaymentIntentWithShippingData)
         } else {
+            // Guest user fetches to this route:
             const updatePaymentIntentWithShippingResponse = await fetch(`${backend}/order/payment-intent`, {
                 method: 'POST',
                 headers: {
@@ -101,13 +100,7 @@ export default function ShippingForm( { backend, loggedIn, shipping, addShipping
         console.log(saveNewShippingData)
         updateShippingState(saveNewShippingData.address)
         updateShippingInputState(saveNewShippingData.address)
-        grabAddNewShipping(false)
-    }
-
-    const closeAddAdditionalSaveShipping = () => {
-        grabAddNewShipping(false)
-        grabShippingInput(shipping.address)
-        grabPaymentLoading(false)
+        closeModal()
     }
 
     const reEnableEdit = () => {
@@ -120,18 +113,19 @@ export default function ShippingForm( { backend, loggedIn, shipping, addShipping
         <>
         <form className="form" style={RGBA} onSubmit={handleNext}>
             <h2>Shipping Address</h2>
-            <input value={shippingInput.firstName || ""} name="firstName" placeholder="First Name" onChange={handleShippingChange} readOnly={readOnly} required/>
-            <input value={shippingInput.lastName || ""} name="lastName" placeholder="Last Name" onChange={handleShippingChange} readOnly={readOnly} required/>
-            <input value={shippingInput.addressLineOne || ""} name="addressLineOne" placeholder="Address Line One"
-            onChange={handleShippingChange} readOnly={readOnly} required/>
-            <input value={shippingInput.addressLineTwo || ""} name="addressLineTwo" placeholder="Address Line Two"
-            onChange={handleShippingChange} readOnly={readOnly} />
-            <input value={shippingInput.city || ""} name="city" placeholder="City"
-            onChange={handleShippingChange} readOnly={readOnly} required/>
-            <input value={shippingInput.state|| ""} name="state" placeholder="State"
-            onChange={handleShippingChange} readOnly={readOnly} required />
-            <input value={shippingInput.zipcode || ""} name="zipcode" placeholder="Zipcode"
-            onChange={handleShippingChange} readOnly={readOnly} required />
+            <input value={!addShipping ? shippingInput.firstName : ""} name="firstName" placeholder="First Name" onChange={handleShippingChange} readOnly={readOnly} required/>
+
+            <input value={!addShipping ? shippingInput.lastName : ""} name="lastName" placeholder="Last Name" onChange={handleShippingChange} readOnly={readOnly} required/>
+
+            <input value={!addShipping ? shippingInput.addressLineOne : ""} name="addressLineOne" placeholder="Address Line One" onChange={handleShippingChange} readOnly={readOnly} required/>
+
+            <input value={!addShipping ? shippingInput.addressLineTwo : ""} name="addressLineTwo" placeholder="Address Line Two" onChange={handleShippingChange} readOnly={readOnly} />
+
+            <input value={!addShipping ? shippingInput.city : ""} name="city" placeholder="City" onChange={handleShippingChange} readOnly={readOnly} required/>
+            
+            <input value={!addShipping ? shippingInput.state : ""} name="state" placeholder="State" onChange={handleShippingChange} readOnly={readOnly} required />
+            
+            <input value={!addShipping ? shippingInput.zipcode : ""} name="zipcode" placeholder="Zipcode" onChange={handleShippingChange} readOnly={readOnly} required />
 
             {(loggedIn() && !shipping.address) && (
                 <>
@@ -142,7 +136,7 @@ export default function ShippingForm( { backend, loggedIn, shipping, addShipping
             {shipping.address ? (
             <>
             <Button name={"Save"} type={"button"} /> 
-            <Button type={"button"} name={"Close"} onClick={closeAddAdditionalSaveShipping}/>
+            <Button type={"button"} name={"Cancel"} onClick={closeModal}/>
             </>) : (
             <>
             <button style={RGBA} disabled={readOnly}>Next</button> 
