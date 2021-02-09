@@ -211,22 +211,28 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
     // This returns a boolean on whether or not address is default
     const defaultAddress = address.DefaultAddress
 
+    // Returning only if the address is not blank
     if (address) {
         return (
             <>
             <div key={index} className="one-address-container">
+                {/* We find the person's name on top of the card */}
                     <div className="person-name">{name}</div>
-                    <div 
-                    className="address">
+                    {/* Next we put the address line one */}
+                    <div className="address">
+                        {/* We wrap it around curly braces so that the information that renders is based off of whether or not there is a second line to the address */}
                         {newAddress[1] !== ' undefined' 
                         ? addressLineWithSecondAddress : addressLineWithoutSecondAddress }
                     </div>
                     <div 
                     className="address">
+                        {/* We wrap it around curly braces so that the information that renders is based off of whether or not there is a second line to the address */}
                         {newAddress[1] !== ' undefined'  
                         ? secondAddressLineWithSecondAddress : secondAddressLineWithoutSecondAddress }
                     </div>
+                    {/* This badge labeled Default only appears if the address is the default address based off the condition defaultAddress, which is a boolean */}
                     {defaultAddress && <div className="default-indicator">Default</div>}
+                    {/* Styles had to be rendered differently based on whether or not the address is the default because the badge would push the edit and delete buttons down */}
                     <div 
                     className={defaultAddress ? 
                     "update-address-default" : "update-address"}>
@@ -234,6 +240,7 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
                         <div id={address._id} onClick={openDeleteModal}>Delete</div>
                     </div>
             </div>
+            {/* Modal that is used to edit the address */}
             <Modal
             isOpen={isEditModalIsOpen}
             // onAfterOpen={afterOpenModal}
@@ -256,6 +263,7 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
             <input value={editAddress.zipcode || ""} name="zipcode" placeholder="Zipcode"
             onChange={handleEditAddressChange} type="text" maxLength="5" pattern="\d*"/>
             <div className="submit-default-button-container">
+            {/* Based off whether or not defaultAddress is true or false, we display the button that allows users to remove default if the address is the default, or the button to make the address a default if it is not currently the default address */}
             {!defaultAddress ? <div className="update-default-container">
                 <button id={address._id} onClick={handleDefaultEdit}>Make Default</button>
                 </div> :
@@ -264,14 +272,14 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
             </div>}
             <button id={address._id}
             type="submit"
-            // form="edit-address-form"
             value="Submit"
-            // onClick={handleEditAddress}
+            // Disabled based off whether or not inputs were filled to prevent blank answers
             disabled={!editAddress.firstName || !editAddress.addressLineOne || !editAddress.city || !editAddress.state || !editAddress.zipcode}>
             Submit</button>
             </div>
             </form>
             </Modal>
+            {/* Modal used to delete the address */}
             <Modal
             isOpen={isDeleteModalIsOpen}
             // onAfterOpen={afterOpenModal}
