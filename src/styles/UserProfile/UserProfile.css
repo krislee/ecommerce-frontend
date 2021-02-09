@@ -111,19 +111,9 @@
     margin-bottom: 1rem;
 }
 
-.default-container {
-    width: 100%;
+.submit-default-button-container {
     display: flex;
-    justify-content: flex-start;
+    flex-direction: row-reverse;
+    justify-content: space-between;
     align-items: center;
-    margin-bottom: 0.5rem;
-}
-
-.default-container > label {
-    margin-bottom: 0px !important;
-}
-
-input[type=checkbox] {
-    width: initial;
-    margin: 0vh 2vw;
 }

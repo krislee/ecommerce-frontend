@@ -234,6 +234,7 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
             onChange={handleEditAddressChange}/>
             <input value={editAddress.zipcode || ""} name="zipcode" placeholder="Zipcode"
             onChange={handleEditAddressChange} type="text" maxLength="5" pattern="\d*"/>
+            <div className="submit-default-button-container">
             {!defaultAddress ? <div className="default-container">
                 <button id={address._id} onClick={handleDefaultEdit}>Make Default</button>
                 </div> :
@@ -247,6 +248,7 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
             onClick={handleEditAddress}
             disabled={!editAddress.firstName || !editAddress.addressLineOne || !editAddress.city || !editAddress.state || !editAddress.zipcode}>
             Submit</button>
+            </div>
             </form>
             </Modal>
             </>
