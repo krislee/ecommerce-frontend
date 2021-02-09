@@ -9,7 +9,7 @@ import CardForm from './CardForm'
 // import Button from 'react-bootstrap/Button';
 // import Modal from 'react-bootstrap/Modal'
 
-function PaymentMethod ({ backend, customer, processing, loggedIn, error, grabError, disabled, grabDisabled,  paymentLoading, grabPaymentLoading, billing, grabBilling, handleBillingChange, paymentMethod, grabPaymentMethod, cardholderName, grabCardholderName, handleCardholderNameChange, handleCardChange, collectCVV, grabCollectCVV, editPayment, grabEditPayment, redisplayCardElement, grabRedisplayCardElement, grabShowSavedCards, handleConfirmPayment, showSavedCards, isCollapseOpen}) {
+function PaymentMethod ({ backend, customer, processing, loggedIn, error, grabError, disabled, grabDisabled,  paymentLoading, grabPaymentLoading, billing, grabBilling, handleBillingChange, paymentMethod, grabPaymentMethod, cardholderName, grabCardholderName, handleCardholderNameChange, handleCardChange, collectCVV, grabCollectCVV, editPayment, grabEditPayment, redisplayCardElement, grabRedisplayCardElement, grabShowSavedCards, handleConfirmPayment, showSavedCards }) {
 
     /* ------- STRIPE VARIABLES ------ */
     const elements = useElements()
@@ -37,14 +37,14 @@ function PaymentMethod ({ backend, customer, processing, loggedIn, error, grabEr
                 console.log(paymentMethodData);
                 // After getting the card info, call grabPaymentMethod() which was passed as a prop from CheckoutPage. The grabPaymentMethod() will update paymentMethod state, billing state, and collectCVV state in Checkout Page. The value is either an object of info or object with just {paymentMethodID:null} if there is no payment method saved for the logged in user. 
                 grabPaymentMethod(paymentMethodData)
-                grabPaymentLoading(false) // update paymentLoading state to false so it will not render Loading... when we re-render CheckoutPage and Checkout/PaymentMethod components
+                // grabPaymentLoading(false) // update paymentLoading state to false so it will not render Loading... when we re-render CheckoutPage and Checkout/PaymentMethod components
             }
 
             fetchPaymentMethod();
            
         } else if (!loggedIn()){
             grabPaymentMethod({}) // if guest user, then paymentMethod state would remain an empty obj, billing details state would remain empty obj, and collectCVV state would remain "false"
-            grabPaymentLoading(false) // update paymentLoading state to false so it will not render Loading... when we re-render CheckoutPage and Checkout/PaymentMethod components
+            // grabPaymentLoading(false) // update paymentLoading state to false so it will not render Loading... when we re-render CheckoutPage and Checkout/PaymentMethod components
         }
     }, [])
 
@@ -243,10 +243,10 @@ function PaymentMethod ({ backend, customer, processing, loggedIn, error, grabEr
             handleSubmitCardForm = handleConfirmPayment
             console.log(223)
         }
-        return (collectCVV !== 'true' && isCollapseOpen) && (
-            <CardForm customer={customer} paymentMethod={paymentMethod} paymentLoading={paymentLoading} editPayment={editPayment} processing={processing} showSavedCards={showSavedCards} handleSubmitCardForm={handleSubmitCardForm} handleCardChange={handleCardChange} handleBillingChange={handleBillingChange} handleCardholderNameChange={handleCardholderNameChange} cardholderName={cardholderName} billing={billing} collectCVV={collectCVV} redisplayCardElement={redisplayCardElement} closeAddNewModal={closeAddNewModal} disabled={disabled} error={error} />
-        )    
-          
+        return collectCVV !== 'true' && (
+            <CardForm customer={customer} paymentMethod={paymentMethod} handleSubmitCardForm={handleSubmitCardForm} handleCardChange={handleCardChange} handleBillingChange={handleBillingChange} handleCardholderNameChange={handleCardholderNameChange} cardholderName={cardholderName} billing={billing} collectCVV={collectCVV} redisplayCardElement={redisplayCardElement} closeAddNewModal={closeAddNewModal} disabled={disabled} error={error} />
+        )      
+
     } else if(paymentMethod.paymentMethodID && !editPayment) {
         console.log(paymentMethod)
 
