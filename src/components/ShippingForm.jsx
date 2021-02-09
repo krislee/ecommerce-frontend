@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import Button from './Button'
 
-export default function ShippingForm( { backend, loggedIn, shipping, addShipping, shippingInput, grabShippingInput, grabPaymentLoading, RGBA, grabRGBA, cartID, updateShippingStateAndInputState }) {
+export default function ShippingForm( { backend, loggedIn, shipping, addShipping, shippingInput, grabShippingInput, grabPaymentLoading, RGBA, grabRGBA, cartID, updateShippingState, updateShippingInputState, grabAddNewShipping, showSavedShipping }) {
     
     const [readOnly, setReadOnly] = useState(false)
     // const [displayAddEditButton, setDisplayAddEditButton] = useState({display: 'none'})
@@ -27,12 +27,12 @@ export default function ShippingForm( { backend, loggedIn, shipping, addShipping
         if(addShipping) {
             addAdditionalSaveShipping()
         } else {
-            addNewSaveShipping()
+            addNewShipping()
             collapse()
         }
     }
 
-    const addNewSaveShipping = async() => {
+    const addNewShipping = async() => {
         const checkbox = document.querySelector('input[name=saveAddress]')
         // If logged in user does not have any saved shipping addresses, fetch to this route:
         if(loggedIn()) {
@@ -63,7 +63,7 @@ export default function ShippingForm( { backend, loggedIn, shipping, addShipping
             const updatePaymentIntentWithShippingData = await updatePaymentIntentWithShippingResponse.json()
             console.log(updatePaymentIntentWithShippingData)
         } else {
-            const updatePaymentIntent = await fetch(`${backend}/order/payment-intent`, {
+            const updatePaymentIntentWithShippingResponse = await fetch(`${backend}/order/payment-intent`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -80,26 +80,41 @@ export default function ShippingForm( { backend, loggedIn, shipping, addShipping
                     }
                 })
             })
+            const updatePaymentIntentWithShippingData = await updatePaymentIntentWithShippingResponse.json()
+            console.log(updatePaymentIntentWithShippingData)
         }
     }
 
     const addAdditionalSaveShipping = async() => {
-        const saveNewShippingResponse = await fetch(`${backend}/shipping/address?lastUsed=false&default=false`, {
+        const saveNewShippingResponse = await fetch(`${backend}/shipping/address?lastUsed=false&default=false&checkout=true`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': loggedIn()
-            }
+            }, 
+            body: JSON.stringify({
+                name: `${shippingInput.firstName}, ${shippingInput.lastName}`,
+                address: `${shippingInput.addressLineOne}, ${shippingInput.addressLineTwo}, ${shippingInput.city}, ${shippingInput.state}, ${shippingInput.zipcode}`
+            })
         })
-        const saveNewShippingData = saveNewShippingResponse.json()
+        const saveNewShippingData = await saveNewShippingResponse.json()
         console.log(saveNewShippingData)
-        updateShippingStateAndInputState(saveNewShippingData)
+        updateShippingState(saveNewShippingData.address)
+        updateShippingInputState(saveNewShippingData.address)
+        grabAddNewShipping(false)
+    }
+
+    const closeAddAdditionalSaveShipping = () => {
+        grabAddNewShipping(false)
+        grabShippingInput(shipping.address)
+        grabPaymentLoading(false)
     }
 
     const reEnableEdit = () => {
         grabRGBA({backgroundColor: "rgba(192,192,192,1.0)"})
         setReadOnly(false)
     }
+
 
     return (
         <>
@@ -124,7 +139,11 @@ export default function ShippingForm( { backend, loggedIn, shipping, addShipping
                 <input name="saveAddress" type="checkbox" disabled={readOnly} />
                 </>
             )}
-            {shipping.address ? <Button name={"Submit"} /> : (
+            {shipping.address ? (
+            <>
+            <Button name={"Save"} type={"button"} /> 
+            <Button type={"button"} name={"Close"} onClick={closeAddAdditionalSaveShipping}/>
+            </>) : (
             <>
             <button style={RGBA} disabled={readOnly}>Next</button> 
             {readOnly && <button style={{backgroundColor: "rgba(192,192,192,1.0)"}} onClick={reEnableEdit}>Edit</button> }
