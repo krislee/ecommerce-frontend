@@ -5,7 +5,8 @@ import Modal from 'react-modal';
 function AddressContainer ({ index, address, backend, grabAddressData, defaultFirst }) {
 
     // Creating a setter and getter function to open and close the modal
-    const [editModalIsOpen,setIsEditModalOpen] = useState(false);
+    const [isEditModalIsOpen,setIsEditModalOpen] = useState(false);
+    const [isDeleteModalIsOpen,setIsDeleteModalOpen] = useState(false);
     // Creating a setter and getter function for the input fields
     const [editAddress, setEditAddress] = useState({});
 
@@ -69,9 +70,14 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
         setIsEditModalOpen(true);
     }
 
+    const openDeleteModal = () => {
+        setIsDeleteModalOpen(true);
+    }
+
     // Function used to close the modal by setting the edit modal condition to false
     const closeModal = () => {
         setIsEditModalOpen(false);
+        setIsDeleteModalOpen(false);
     }
 
     // Function that allows us to change the value of the input dynamically and display it on the page
@@ -137,6 +143,7 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
             console.log(data);
             defaultFirst(data);
             grabAddressData(data);
+            setIsDeleteModalOpen(false);
             // if (data.findIndex(address => address.DefaultAddress === true) === -1 && data.length !== 0) {
             //     const oldestAddress = data[data.length - 1];
             //     console.log(oldestAddress);
@@ -210,11 +217,11 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
                     className={defaultAddress ? 
                     "update-address-default" : "update-address"}>
                         <div id={address._id} onClick={openEditModal}>Edit</div>
-                        <div id={address._id} onClick={handleDeleteAddress}>Delete</div>
+                        <div id={address._id} onClick={openDeleteModal}>Delete</div>
                     </div>
             </div>
             <Modal
-            isOpen={editModalIsOpen}
+            isOpen={isEditModalIsOpen}
             // onAfterOpen={afterOpenModal}
             onRequestClose={closeModal}
             style={customStyles}
@@ -235,7 +242,7 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
             <input value={editAddress.zipcode || ""} name="zipcode" placeholder="Zipcode"
             onChange={handleEditAddressChange} type="text" maxLength="5" pattern="\d*"/>
             <div className="submit-default-button-container">
-            {!defaultAddress ? <div className="default-container">
+            {!defaultAddress ? <div className="update-default-container">
                 <button id={address._id} onClick={handleDefaultEdit}>Make Default</button>
                 </div> :
                 <div>
@@ -248,6 +255,26 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
             onClick={handleEditAddress}
             disabled={!editAddress.firstName || !editAddress.addressLineOne || !editAddress.city || !editAddress.state || !editAddress.zipcode}>
             Submit</button>
+            </div>
+            </form>
+            </Modal>
+            <Modal
+            isOpen={isDeleteModalIsOpen}
+            // onAfterOpen={afterOpenModal}
+            onRequestClose={closeModal}
+            style={customStyles}
+            contentLabel="Edit Your Address"
+            >
+            <form className="form" id="delete-address-form">
+            <h2>Delete Your Address</h2>
+            <div style={{'marginBottom':'1rem'}}>Are you sure you want to delete this address?</div>
+            <div className="submit-default-button-container">
+            <button id={address._id} 
+            type="submit"
+            form="delete-address-form"
+            value="Submit"
+            onClick={handleDeleteAddress}>
+            Delete</button>
             </div>
             </form>
             </Modal>
