@@ -1,35 +1,34 @@
 .user-profile-container {
-    width: 100%;
+    width: 100vw;
     display: flex;
 }
 
-.side-bar {
+.top-bar {
     position: fixed;
-    left: 0;
+    /* left: 0; */
     top: 10vh;
-    width: 8rem;
-    height: 100%;
+    width: 100%;
+    height: 5vh;
     display: flex;
-    flex-direction: column;
+    /* flex-direction: column; */
 }
 
-/* .hello {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-} */
+.highlighted-tab {
+    background-color: #000 !important;
+    color: #fff !important; 
+}
 
-.side-bar > div {
+.top-bar > div {
     cursor: pointer;
     width: 100%;
-    height: 10%;
     background-color: #e8e8e8;
     color: #000;
-    border-bottom: 1px solid #fff;
+    border-bottom: 1px solid #000;
+    border-right: 1px solid #000;
     display: flex;
     justify-content: center;
     align-items: center;
+    font-size: 1rem;
 }
 
 .side-bar > div:hover {
@@ -39,7 +38,7 @@
 .addresses-container, .payments-container {
     margin-top: 10rem;
     height: 100%;
-    width: 70vw;
+    width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -49,7 +48,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    width: 100%;
+    width: 50%;
     margin-bottom: 1rem;
     /* margin: 3rem; */
 }
@@ -86,6 +85,7 @@
     height: 100%;
     justify-content: space-between; */
     flex-wrap: wrap;
+    width: 70%;
 }
 
 .all-addresses-container {

@@ -8,8 +8,8 @@ import AddressContainer from '../components/UserProfile/AddressContainer'
 
 function UserProfile ({backend}) {
 
-    const [addresses, setAddresses] = useState(true);
-    const [payments, setPayments] = useState(false);
+    const [addressesTabOpen, setAddressesTabOpen] = useState(true);
+    const [paymentsTabOpen, setPaymentsTabOpen] = useState(false);
     const [addressData, setAddressData] = useState([]);
     const [modalIsOpen,setIsOpen] = useState(false);
     const [addressInput, setAddressInput] = useState({});
@@ -107,20 +107,20 @@ function UserProfile ({backend}) {
     }
 
     const handleClickAddresses = () => {
-        if (addresses) {
-            setAddresses(false);
-        } else if (!addresses) {
-            setAddresses(true);
-            setPayments(false);
+        if (addressesTabOpen) {
+            setAddressesTabOpen(false);
+        } else if (!addressesTabOpen) {
+            setAddressesTabOpen(true);
+            setPaymentsTabOpen(false);
         }
     }
 
     const handleClickPayments = () => {
-        if (payments) {
-            setPayments(false);
-        } else if (!payments) {
-            setAddresses(false);
-            setPayments(true);
+        if (paymentsTabOpen) {
+            setPaymentsTabOpen(false);
+        } else if (!paymentsTabOpen) {
+            setAddressesTabOpen(false);
+            setPaymentsTabOpen(true);
         }
     }
 
@@ -149,12 +149,18 @@ function UserProfile ({backend}) {
             <>
                 <Navbar />
                 <div className="user-profile-container">
-                    <div className='side-bar'>
-                        <div onClick={handleClickAddresses}>Addresses</div>
-                        <div onClick={handleClickPayments}>Payments</div>
+                    <div className='top-bar'>
+                        <div onClick={handleClickAddresses} 
+                        className={addressesTabOpen === true ? "highlighted-tab" : null}>
+                            Addresses
+                        </div>
+                        <div onClick={handleClickPayments} 
+                        className={paymentsTabOpen === true ? "highlighted-tab" : null}>
+                            Payments
+                        </div>
                         <div>Orders</div>
                     </div>
-                    {addresses && 
+                    {addressesTabOpen && 
                         <>
                             <div className="addresses-container">
                                 <div className="header-container">
@@ -175,7 +181,7 @@ function UserProfile ({backend}) {
                             </div>
                         </>
                     }
-                    {payments &&
+                    {paymentsTabOpen &&
                         <div className="payments-container">
                             <div className="header">Saved Payments</div>
                         </div>

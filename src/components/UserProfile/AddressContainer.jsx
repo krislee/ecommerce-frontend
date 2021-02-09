@@ -34,12 +34,10 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
             }
         })
         const oneAddressData = await oneAddressResponse.json();
-        console.log(37, oneAddressData)
         // Splitting the name with the comma so we get an array back
         const name = oneAddressData.address.Name.split(", ")
         // Splitting the address with the comma so we get an array back
         const address = oneAddressData.address.Address.split(", ")
-        console.log(address);
         // Function that sets the input values equal to the data recieved back
         const checkForAddressLineTwo = () => {
             // Our condition is make sure that we display data in the input based off whether or not there is an addressLineTwo, since it is not required
@@ -90,6 +88,7 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
 
     // Function that handles the editing of the addresses (not the default part)
     const handleEditAddress = async(e) => {
+        // Prevents the page from refreshing
         e.preventDefault()
         // Creating a variable that tells the server we are EDITING the information for a specific address, which is identified from the e.target.id
         const editAddressResponse = await fetch(`${backend}/shipping/address/${e.target.id}`, {
@@ -105,16 +104,19 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
             })
         })
         const editAddressData = await editAddressResponse.json()
-        // defaultFirst(editAddressData);
-        console.log(editAddressData);
+        // Being passed down as a prop from the parent component of UserProfile, we are able to reorder the data so it will display the default address first on the list followed by the newest
         defaultFirst(editAddressData);
-        grabAddressData(editAddressData) // Update the addressData state in user profile
+        // Being passed down as a prop from the parent component of UserProfile, we are able to the set the data that we recieved back from the response of the server to the variable AddressData, so we can reuse that data to map through and display the different AddressContainer components
+        grabAddressData(editAddressData)
+        // Close the modal after all of this function is finished so user will end up back on the regular screen
         setIsEditModalOpen(false)
     }
 
+    // Function that handles the editing of the default status (and not the contents of the address)
     const handleDefaultEdit = async(e) => {
+        // Prevents the page from refreshing
         e.preventDefault();
-        console.log(defaultAddress);
+        // Fetching to a server to make a request to update the default status based off of the current default status. If the default status is true, then it will turn into false, and vice versa.
         const editDefaultResponse = await fetch(`${backend}/shipping/default/address/${e.target.id}?default=${!defaultAddress}`, {
             method: 'PUT',
             headers: {
@@ -123,14 +125,19 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
             }
         })
         const editDefaultData = await editDefaultResponse.json();
-        console.log(editDefaultData)
+        // Being passed down as a prop from the parent component of UserProfile, we are able to reorder the data so it will display the default address first on the list followed by the newest
         defaultFirst(editDefaultData);
+        // Being passed down as a prop from the parent component of UserProfile, we are able to the set the data that we recieved back from the response of the server to the variable AddressData, so we can reuse that data to map through and display the different AddressContainer components
         grabAddressData(editDefaultData);
+        // Close the modal after all of this function is finished so user will end up back on the regular screen
         setIsEditModalOpen(false);
     }
 
+    // Function that handles the deleting of addresses
     const handleDeleteAddress = async (e) => {
+        // Prevents the page from refreshing
         e.preventDefault();
+        // Fetching to a server to make a request to delete an address
         if (localStorage.getItem('token')) {
             const deleteResponse = await fetch(`${backend}/shipping/address/${e.target.id}`, {
                 method: 'DELETE',
@@ -140,10 +147,12 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
                 }
             })
             const data = await deleteResponse.json();
-            console.log(data);
+            // Being passed down as a prop from the parent component of UserProfile, we are able to reorder the data so it will display the default address first on the list followed by the newest
             defaultFirst(data);
-            grabAddressData(data);
+            // Being passed down as a prop from the parent component of UserProfile, we are able to the set the data that we recieved back from the response of the server to the variable AddressData, so we can reuse that data to map through and display the different AddressContainer components
             setIsDeleteModalOpen(false);
+            // Close the modal after all of this function is finished so user will end up back on the regular screen
+            grabAddressData(data);
             // if (data.findIndex(address => address.DefaultAddress === true) === -1 && data.length !== 0) {
             //     const oldestAddress = data[data.length - 1];
             //     console.log(oldestAddress);
@@ -189,12 +198,17 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
         }
     }
 
+    // We create the name by grabbing the Name property in the Object returned by the prop that was passed down, and then replacing it by removing the commas in between.
     const name = address.Name.replace(/,/g, '');
+    // Split the address up by the comma, since the information is seperated by commas and creating an array where each information is its own seperate element
     const newAddress = address.Address.split(',')
+    // Using the elements in the array newAddress, we are able to create new strings by interpolating the information
     const addressLineWithSecondAddress = `${newAddress[0]} ${newAddress[1]}`
     const secondAddressLineWithSecondAddress = `${newAddress[2]}, ${newAddress[3]} ${newAddress[4]}`
+    // These variables are created in case users did not use a second line
     const addressLineWithoutSecondAddress = `${newAddress[0]}`
     const secondAddressLineWithoutSecondAddress = `${newAddress[2]}, ${newAddress[3]} ${newAddress[4]}`
+    // This returns a boolean on whether or not address is default
     const defaultAddress = address.DefaultAddress
 
     if (address) {
@@ -227,7 +241,7 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
             style={customStyles}
             contentLabel="Edit Your Address"
             >
-            <form className="form" id="edit-address-form">
+            <form className="form" id={address._id} onSubmit={handleEditAddress}>
             <h2>Edit Your Address</h2>
             <input value={editAddress.firstName || ""} name="firstName" placeholder="First Name" onChange={handleEditAddressChange}/>
             <input value={editAddress.lastName || ""} name="lastName" placeholder="Last Name" onChange={handleEditAddressChange}/>
@@ -248,11 +262,11 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
                 <div>
                 <button id={address._id} onClick={handleDefaultEdit}>Remove Default</button>
             </div>}
-            <button id={address._id} 
+            <button id={address._id}
             type="submit"
-            form="edit-address-form"
+            // form="edit-address-form"
             value="Submit"
-            onClick={handleEditAddress}
+            // onClick={handleEditAddress}
             disabled={!editAddress.firstName || !editAddress.addressLineOne || !editAddress.city || !editAddress.state || !editAddress.zipcode}>
             Submit</button>
             </div>
@@ -266,7 +280,7 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
             contentLabel="Edit Your Address"
             >
             <form className="form" id="delete-address-form">
-            <h2>Delete Your Address</h2>
+            {/* <h2>Delete Your Address</h2> */}
             <div style={{'marginBottom':'1rem'}}>Are you sure you want to delete this address?</div>
             <div className="submit-default-button-container">
             <button id={address._id} 
@@ -275,6 +289,7 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
             value="Submit"
             onClick={handleDeleteAddress}>
             Delete</button>
+            <button onClick={closeModal}>Cancel</button>
             </div>
             </form>
             </Modal>
