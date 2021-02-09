@@ -39,10 +39,7 @@ function UserProfile ({backend}) {
             });
             const data = await resp.json();
             console.log(data);
-            const index = data.findIndex(address => address.DefaultAddress === true)
-            console.log(index);
-            const defaultFirstAddress = data.splice(index, 1)[0];
-            data.unshift(defaultFirstAddress);
+            defaultFirst(data);
             setAddressData(data);
         }
         fetchAddressData();
@@ -73,10 +70,13 @@ function UserProfile ({backend}) {
     // }
 
     const defaultFirst = (data) => {
+        data.reverse();
         if (data.findIndex(address => address.DefaultAddress === true) !== -1 && data.length !== 0) {
             const index = data.findIndex(address => address.DefaultAddress === true)
             const defaultFirstAddress = data.splice(index, 1)[0];
             data.unshift(defaultFirstAddress);
+        } else {
+            console.log(data);
         }
     }
 
@@ -96,16 +96,10 @@ function UserProfile ({backend}) {
             })
         })
         const newAddressData = await newAddressResponse.json();
-        if (newAddressData.findIndex(address => address.DefaultAddress === true) === -1 && newAddressData.length !== 0) {
-            defaultFirst(newAddressData);
-            setAddressData(newAddressData);
-            setAddressInput({});
-            setIsOpen(false);
-        } else {
-            setAddressData(newAddressData);
-            setAddressInput({});
-            setIsOpen(false);
-        }
+        defaultFirst(newAddressData);
+        setAddressData(newAddressData);
+        setAddressInput({});
+        setIsOpen(false);
     }
 
     const grabAddressData = (addressData) => {

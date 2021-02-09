@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import '../../styles/UserProfile/AddressContainer.css'
 import Modal from 'react-modal';
 
@@ -99,6 +99,8 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
             })
         })
         const editAddressData = await editAddressResponse.json()
+        // defaultFirst(editAddressData);
+        console.log(editAddressData);
         defaultFirst(editAddressData);
         grabAddressData(editAddressData) // Update the addressData state in user profile
         setIsEditModalOpen(false)
@@ -133,48 +135,50 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
             })
             const data = await deleteResponse.json();
             console.log(data);
-            if (data.findIndex(address => address.DefaultAddress === true) === -1 && data.length !== 0) {
-                const oldestAddress = data[data.length - 1];
-                console.log(oldestAddress);
-                // We grab the last element in the address array, and make it default
-                // We pass it through the handle submit again
-                // We delete the old one and create a new one
-                const oldestAddressCheckedResponse = await fetch(`${backend}/shipping/address?lastUse=false&default=true`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': localStorage.getItem('token')
-                    },
-                    body: JSON.stringify({
-                        name: oldestAddress.Name,
-                        address: oldestAddress.Address
-                    })
-                })
-                const oldestAddressCheckedData = await oldestAddressCheckedResponse.json()
-                console.log(oldestAddressCheckedData);
-                const deleteDuplicateResponse = await fetch(`${backend}/shipping/address/${oldestAddress._id}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': localStorage.getItem('token')
-                    }
-                })
-                const finalDeleteData = await deleteDuplicateResponse.json();
-                if (finalDeleteData.findIndex(address => address.DefaultAddress === true) !== -1 && finalDeleteData.length !== 0){
-                    defaultFirst(finalDeleteData);
-                    grabAddressData(finalDeleteData);
-                } else {
-                    grabAddressData(finalDeleteData)
-                }
-            } else {
-                console.log('there is a default');
-                if (data.findIndex(address => address.DefaultAddress === true) !== -1 && data.length !== 0){
-                    defaultFirst(data);
-                    grabAddressData(data);
-                } else {
-                    grabAddressData(data);
-                }
-            }
+            defaultFirst(data);
+            grabAddressData(data);
+            // if (data.findIndex(address => address.DefaultAddress === true) === -1 && data.length !== 0) {
+            //     const oldestAddress = data[data.length - 1];
+            //     console.log(oldestAddress);
+            //     // We grab the last element in the address array, and make it default
+            //     // We pass it through the handle submit again
+            //     // We delete the old one and create a new one
+            //     const oldestAddressCheckedResponse = await fetch(`${backend}/shipping/address?lastUse=false&default=true`, {
+            //         method: 'POST',
+            //         headers: {
+            //             'Content-Type': 'application/json',
+            //             'Authorization': localStorage.getItem('token')
+            //         },
+            //         body: JSON.stringify({
+            //             name: oldestAddress.Name,
+            //             address: oldestAddress.Address
+            //         })
+            //     })
+            //     const oldestAddressCheckedData = await oldestAddressCheckedResponse.json()
+            //     console.log(oldestAddressCheckedData);
+            //     const deleteDuplicateResponse = await fetch(`${backend}/shipping/address/${oldestAddress._id}`, {
+            //         method: 'DELETE',
+            //         headers: {
+            //             'Content-Type': 'application/json',
+            //             'Authorization': localStorage.getItem('token')
+            //         }
+            //     })
+            //     const finalDeleteData = await deleteDuplicateResponse.json();
+            //     if (finalDeleteData.findIndex(address => address.DefaultAddress === true) !== -1 && finalDeleteData.length !== 0){
+            //         defaultFirst(finalDeleteData);
+            //         grabAddressData(finalDeleteData);
+            //     } else {
+            //         grabAddressData(finalDeleteData)
+            //     }
+            // } else {
+            //     console.log('there is a default');
+            //     if (data.findIndex(address => address.DefaultAddress === true) !== -1 && data.length !== 0){
+            //         defaultFirst(data);
+            //         grabAddressData(data);
+            //     } else {
+            //         grabAddressData(data);
+            //     }
+            // }
         }
     }
 
@@ -216,7 +220,7 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
             style={customStyles}
             contentLabel="Edit Your Address"
             >
-            <form className="form">
+            <form className="form" id="edit-address-form">
             <h2>Edit Your Address</h2>
             <input value={editAddress.firstName || ""} name="firstName" placeholder="First Name" onChange={handleEditAddressChange}/>
             <input value={editAddress.lastName || ""} name="lastName" placeholder="Last Name" onChange={handleEditAddressChange}/>
@@ -229,7 +233,7 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
             <input value={editAddress.state|| ""} name="state" placeholder="State"
             onChange={handleEditAddressChange}/>
             <input value={editAddress.zipcode || ""} name="zipcode" placeholder="Zipcode"
-            onChange={handleEditAddressChange}/>
+            onChange={handleEditAddressChange} type="text" maxLength="5" pattern="\d*"/>
             {!defaultAddress ? <div className="default-container">
                 <button id={address._id} onClick={handleDefaultEdit}>Make Default</button>
                 </div> :
@@ -237,6 +241,9 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
                 <button id={address._id} onClick={handleDefaultEdit}>Remove Default</button>
             </div>}
             <button id={address._id} 
+            type="submit"
+            form="edit-address-form"
+            value="Submit"
             onClick={handleEditAddress}
             disabled={!editAddress.firstName || !editAddress.addressLineOne || !editAddress.city || !editAddress.state || !editAddress.zipcode}>
             Submit</button>
