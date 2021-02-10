@@ -1,7 +1,6 @@
 import React, {useState} from 'react'
 import {Redirect} from 'react-router-dom';
 import '../styles/Login.css'
-import '../styles/BuyerLogin.css'
 
 function Login ({backend, grabLoginInfo}) {
 

@@ -3,6 +3,7 @@ import {Link} from 'react-router-dom';
 import Item from '../components/Item';
 import '../styles/Homepage.css'
 import NavBar from '../components/NavigationBar'
+import Footer from '../components/Footer'
 
 function Homepage ({ grabURL, backend }) {
 
@@ -46,13 +47,15 @@ function Homepage ({ grabURL, backend }) {
     )
 
     return (
-        <React.Fragment>
+        <div className="homepage-container">
             <NavBar />
-            {<div className={localStorage.getItem('token') ? 'itemContainerLoggedIn' : 'itemContainer'}>
-                {itemList}
-            </div>}
-            {/* {isItemSelected && } */}
-        </React.Fragment>
+            <div className="display-item-container">
+                {<div className={localStorage.getItem('token') ? 'itemContainerLoggedIn' : 'itemContainer'}>
+                    {itemList}
+                </div>}
+            </div>
+            <Footer />
+        </div>
     )
 }
 
