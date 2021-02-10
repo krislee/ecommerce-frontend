@@ -10,7 +10,7 @@ import createPaymentMethod from './CreatePayment'
 import '../../styles/CheckoutPage.css';
 
 
-function Checkout ({backend}) {
+function Checkout ({ backend, loggedOut, grabLoggedOut }) {
     // Helper to check if user is logged in
     const loggedIn = () => localStorage.getItem('token')
 
@@ -31,6 +31,9 @@ function Checkout ({backend}) {
 
     /* ------- PAYMENT-RELATED STATES ------- */
 
+    // Update the cartID state after fetching for the cart items in to store the logged in or guest session cart's ID
+    const [cartID, setCartID] = useState("")
+
     // Update cardholder's name state by sending handleCardholderNameChange function as a prop down to Checkout/PaymentMethod
     const [cardholderName, setCardholderName] = useState('')
 
@@ -48,6 +51,7 @@ function Checkout ({backend}) {
     // collectCVV state gets updated to "true" string value whenever the Save button in Edit modal is clicked. When the Save button in Edit modal is clicked, grabCollectCVV function, which is sent as a prop down to Checkout/PaymentMethod, runs. If the collectCVV is "true" string value, the CVV Element is shown. If collectCVV state is "false" string value, the CVV Element is not shown.
     const [collectCVV, setCollectCVV] = useState('false')
     
+    const [editExpiration, setEditExpiration] = useState({})
 
     /* ------- SET UP STRIPE ------- */
     const stripe = useStripe(); // need stripe instance to confirm card payment: stripe.confirmCardPayment()
@@ -80,6 +84,7 @@ function Checkout ({backend}) {
         grabBilling(paymentMethod.billingDetails) 
         grabCollectCVV(paymentMethod.recollectCVV) 
         if(paymentMethod.cardholderName)setCardholderName(paymentMethod.cardholderName)
+        setEditExpiration({month: paymentMethod.expDate.split("/")[0], year: paymentMethod.expDate.split("/")[1]})
     }
 
     // We need to prefill the billing details input when user wants to edit the displayed, saved card's billing details or add a new card's billing details. To do this, we pass down billing state as prop down to Checkout/PaymentMethod and then further down to Component/BillingInput. Each Component/BillingInput inputs' value attribute will now equal to each billing state keys. The billing state keys' values have been set by running grabBilling(<payment_method_billing_details>).
@@ -125,6 +130,11 @@ function Checkout ({backend}) {
         setShowSavedCards(showSavedCards)
     }
 
+    // Update editExpiration state to edit Payment Expiration Dates
+    const grabEditExpiration = (editExpiration) => {
+        setEditExpiration(editExpiration)
+    }
+
     // Show Errors in the div when Saving new card or Confirming card payment. If there is an error, disable Save or Confirm Payment button.
     const grabError = (error) => {
         setError(error)
@@ -137,7 +147,6 @@ function Checkout ({backend}) {
         setDisabled(disabled)
     }
 
-    const [cartID, setCartID] = useState("")
 
     /* ------- LISTEN TO INPUT CHANGES TO UPDATE STATES ------- */  
 
@@ -161,6 +170,8 @@ function Checkout ({backend}) {
         grabDisabled(event.empty);
         grabError(event.error ? event.error.message : "");
     };
+
+    
 
     /* ------- CREATE NEW OR UPDATE EXISTING PAYMENT INTENT AFTER RENDERING DOM ------- */
     useEffect(() => {
@@ -341,7 +352,7 @@ function Checkout ({backend}) {
             <NavBar />
             <div id="payment-form" >
                 <Shipping backend={backend} loggedIn={loggedIn} grabPaymentLoading={grabPaymentLoading} cartID={cartID}/>
-                <PaymentMethod backend={backend} customer={customer} loggedIn={loggedIn} error={error} grabError={grabError} disabled={disabled} grabDisabled={grabDisabled} paymentLoading={paymentLoading} billing={billing} handleBillingChange={handleBillingChange} grabBilling={grabBilling} paymentMethod={paymentMethod} grabPaymentMethod={grabPaymentMethod} cardholderName={cardholderName} grabCardholderName={grabCardholderName}handleCardholderNameChange={handleCardholderNameChange} handleCardChange={handleCardChange} collectCVV={collectCVV} grabCollectCVV={grabCollectCVV} editPayment={editPayment} grabEditPayment={grabEditPayment} redisplayCardElement={redisplayCardElement} grabRedisplayCardElement={grabRedisplayCardElement} grabShowSavedCards={grabShowSavedCards} handleConfirmPayment={handleConfirmPayment} showSavedCards={showSavedCards} />
+                <PaymentMethod backend={backend} customer={customer} loggedIn={loggedIn} error={error} grabError={grabError} disabled={disabled} grabDisabled={grabDisabled} paymentLoading={paymentLoading} billing={billing} handleBillingChange={handleBillingChange} grabBilling={grabBilling} paymentMethod={paymentMethod} grabPaymentMethod={grabPaymentMethod} cardholderName={cardholderName} grabCardholderName={grabCardholderName}handleCardholderNameChange={handleCardholderNameChange} handleCardChange={handleCardChange} collectCVV={collectCVV} grabCollectCVV={grabCollectCVV} editPayment={editPayment} grabEditPayment={grabEditPayment} redisplayCardElement={redisplayCardElement} grabRedisplayCardElement={grabRedisplayCardElement} grabShowSavedCards={grabShowSavedCards} handleConfirmPayment={handleConfirmPayment} showSavedCards={showSavedCards} editExpiration={editExpiration} grabEditExpiration={grabEditExpiration} loggedOut={loggedOut} grabLoggedOut={grabLoggedOut}/>
     
                 {/* Show Save card checkbox if user is logged in and does not have an already default, saved or last used, saved card to display as indicated by paymentMethod state. Do not show the checkbox for guests (as indicated by customer state). */}
 

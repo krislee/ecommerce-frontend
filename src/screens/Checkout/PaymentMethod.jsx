@@ -8,8 +8,11 @@ import { Redirect } from 'react-router-dom';
 import CardForm from './CardForm'
 // import Button from 'react-bootstrap/Button';
 // import Modal from 'react-bootstrap/Modal'
+import FormGroup from 'react-bootstrap/FormGroup'
+import '../../styles/Payment.css'
+import LoggedOutAlert from '../../components/LoggedOutAlert'
 
-function PaymentMethod ({ backend, customer, processing, loggedIn, error, grabError, disabled, grabDisabled,  paymentLoading, grabPaymentLoading, billing, grabBilling, handleBillingChange, paymentMethod, grabPaymentMethod, cardholderName, grabCardholderName, handleCardholderNameChange, handleCardChange, collectCVV, grabCollectCVV, editPayment, grabEditPayment, redisplayCardElement, grabRedisplayCardElement, grabShowSavedCards, handleConfirmPayment, showSavedCards }) {
+function PaymentMethod ({ backend, customer, processing, loggedIn, error, grabError, disabled, grabDisabled,  paymentLoading, grabPaymentLoading, billing, grabBilling, handleBillingChange, paymentMethod, grabPaymentMethod, cardholderName, grabCardholderName, handleCardholderNameChange, handleCardChange, collectCVV, grabCollectCVV, editPayment, grabEditPayment, redisplayCardElement, grabRedisplayCardElement, grabShowSavedCards, handleConfirmPayment, showSavedCards, editExpiration, grabEditExpiration, loggedOut, grabLoggedOut }) {
 
     /* ------- STRIPE VARIABLES ------ */
     const elements = useElements()
@@ -18,7 +21,8 @@ function PaymentMethod ({ backend, customer, processing, loggedIn, error, grabEr
 
     const [savedCards, setSavedCards] = useState([])
     const [showModal, setShowModal] = useState(false)
-
+    
+    // const [loggedOut, setLoggedOut] = useState(false)
 
     useEffect(() => {
         // Check if user is logged in or not since different headers for routes depend if user is logged in or not
@@ -51,15 +55,30 @@ function PaymentMethod ({ backend, customer, processing, loggedIn, error, grabEr
     /* ------- EDIT PAYMENT METHOD FUNCTIONS ------ */
 
     const handleEdit = () => {
-        grabEditPayment(true) // The editPayment state get changed to true depending if the Edit button is clicked or when the Close button is clicked. If Edit button is clicked, the Confirm Payment button in Checkout will be shown.
-        setShowModal(true) //show modal
-        grabError(null) // Clear any errors (i.e. an incomplete security code from CVV Element) before opening the edit modal
+        if(loggedIn()) {
+            console.log("edit Expiration: ", editExpiration)
+            grabEditPayment(true) // The editPayment state get changed to true depending if the Edit button is clicked or when the Close button is clicked. If Edit button is clicked, the Confirm Payment button in Checkout will be shown.
+            setShowModal(true) //show modal
+            grabError(null) // Clear any errors (i.e. an incomplete security code from CVV Element) before opening the edit modal
+        } else {
+            grabLoggedOut(true)
+        }
+     
+    }
+
+    // Listen to the month and year input changes
+    const handleEditExpiration = (event) => {
+        const { name, value } = event.target
+        grabEditExpiration((prevEditExpiration) => ({...prevEditExpiration, [name]: value }))
     }
 
     // When Save is clicked, handleUpdatePayment() runs
     const handleUpdatePayment = async(event) => {
+        console.log(editExpiration.month, typeof editExpiration.month)
         // Make sure user is logged in in order to update
+        event.preventDefault()
         if (loggedIn()) {
+            console.log("updating")
             const updatePaymentMethodReponse = await fetch(`${backend}/order/update/payment/${paymentMethod.paymentMethodID}?checkout=true`, {
                 method: 'PUT',
                 headers: {
@@ -76,7 +95,8 @@ function PaymentMethod ({ backend, customer, processing, loggedIn, error, grabEr
                         postalCode: billing.postalCode,
                         country: 'US'
                     },
-                    expMonth: 11,
+                    expMonth: parseInt(editExpiration.month),
+                    expYear: parseInt(editExpiration.year),
                     recollectCVV: true,
                     name: cardholderName
                 })
@@ -90,10 +110,7 @@ function PaymentMethod ({ backend, customer, processing, loggedIn, error, grabEr
             setShowModal(false) // close the modal
             grabDisabled(true) // In case user was typing in the CVV element which would update the disabled state to false, we want to change the disabled state to true again, so that after the Edit modal closes the Confirm Payment button is disabled until user enters CVV element.
         } else {
-            return (
-                // <div>Uh oh! It looks like you are logged out. Please log back in.</div>
-                <Redirect to="/"/>
-            )
+            grabLoggedOut(true)
         }
     }
 
@@ -114,17 +131,15 @@ function PaymentMethod ({ backend, customer, processing, loggedIn, error, grabEr
     // When Add New Card button is clicked, handleAddNew() runs
     const handleAddNew = async () => {
         if (loggedIn()) {
-            await grabError(null) // If there are errors from CVC Element before clicking Add New Cards button (i.e. incomplete security code), then the error will be displayed the moment we click Add New Cards button. So we want to clear the error when the Add New Cards button is clicked and the Add New Cards modal would not show the error. (We do not need to do this to opening Edit modal because there is no div to display the error in the Edit modal.)
+            grabError(null) // If there are errors from CVC Element before clicking Add New Cards button (i.e. incomplete security code), then the error will be displayed the moment we click Add New Cards button. So we want to clear the error when the Add New Cards button is clicked and the Add New Cards modal would not show the error. (We do not need to do this to opening Edit modal because there is no div to display the error in the Edit modal.)
             grabDisabled(true) // Disable the Save button in the Add New Card modal again, in case disabled state was false because something was written in the CVV Element if we were recollecting the CVV again
             grabRedisplayCardElement(true) // redisplayCardElement state represents if we are currently adding a new card, so update the redisplayCardElement state from default false to true; what we render in the Checkout/PaymentMethod component depends on the redisplayCardElement state (look at the conditional statements below); the Confirm Payment button won't be displayed if redisplayCardElement state is true
-            await grabCollectCVV("false") // need to update the collectCVV state to "false" so that the CVV Element won't be displayed but a Card Element would be displayed 
+            grabCollectCVV("false") // need to update the collectCVV state to "false" so that the CVV Element won't be displayed but a Card Element would be displayed 
             setShowModal(true) // open the modal
             console.log("add new")
+            console.log(editPayment, "edit payment")
         } else {
-            return (
-                // <div>Uh oh! It looks like you are logged out. Please log back in.</div>
-                <Redirect to="/"/>
-            )
+            grabLoggedOut(true)
         }
     }
 
@@ -151,10 +166,7 @@ function PaymentMethod ({ backend, customer, processing, loggedIn, error, grabEr
                 console.log("NO ERROR ADDING NEW CARD")
             }
         } else {
-            return (
-                // <div>Uh oh! It looks like you are logged out. Please log back in.</div>
-                <Redirect to="/"/>
-            )
+            grabLoggedOut(true)
         }
     }
 
@@ -192,10 +204,7 @@ function PaymentMethod ({ backend, customer, processing, loggedIn, error, grabEr
             const cvv = elements.getElement(CardCvcElement)
             if(cvv) cvv.clear() // Since for some reason the CVV contents remain if something was written in it and we clicked Saved Cards, we want to clear the CVV field 
         } else {
-            return (
-                // <div>Uh oh! It looks like you are logged out. Please log back in.</div>
-                <Redirect to="/"/>
-            )
+            return grabLoggedOut(true)
         }
     }
     
@@ -217,10 +226,7 @@ function PaymentMethod ({ backend, customer, processing, loggedIn, error, grabEr
             setShowModal(false)
             grabDisabled(true) // In case user was typing in the CVV element which would update the disabled state to false, we want to change the disabled state to true again, so that after the Saved Cards modal closes the Confirm Payment button is disabled until user enters CVV element
         } else {
-            return (
-                // <div>Uh oh! It looks like you are logged out. Please log back in.</div>
-                <Redirect to="/"/>
-            )
+            grabLoggedOut(true)
         }
     }
 
@@ -231,20 +237,24 @@ function PaymentMethod ({ backend, customer, processing, loggedIn, error, grabEr
         grabDisabled(true) // In case user was typing in the CVV element which would update the disabled state to false, we want to change the disabled state to true again, so that after the Saved Cards modal closes the Confirm Payment button is disabled until user enters CVV element
     }
 
-    if(paymentLoading) {
+
+    if(loggedOut) {
+        return <Redirect to="/buyer" />     
+    } else if(paymentLoading) {
         return <></>
-    } else if(!paymentMethod.paymentMethodID || (paymentMethod.paymentMethodID && redisplayCardElement)) {
+    } else if(!paymentMethod.paymentMethodID) {
         // If there is no saved payment methods (indicated by !paymentMethod.paymentMethodID) OR if there is a saved payment method (indicated by paymentMethod.paymentMethodID) and Add New Card button is clicked (indicated by redisplayCardElement state to true), then the same form that collects cards details is displayed. But for the form's onSubmit, the functions would be different.
-        let handleSubmitCardForm
-        if(redisplayCardElement) {
-            handleSubmitCardForm = saveNewCard
-        } else {
-            handleSubmitCardForm = handleConfirmPayment
-        }
         return collectCVV !== 'true' && (
-            <CardForm customer={customer} paymentMethod={paymentMethod} handleSubmitCardForm={handleSubmitCardForm} handleCardChange={handleCardChange} handleBillingChange={handleBillingChange} handleCardholderNameChange={handleCardholderNameChange} cardholderName={cardholderName} billing={billing} collectCVV={collectCVV} redisplayCardElement={redisplayCardElement} closeAddNewModal={closeAddNewModal} disabled={disabled} error={error} />
+            <CardForm customer={customer} paymentMethod={paymentMethod} handleSubmitCardForm={handleConfirmPayment} handleCardChange={handleCardChange} handleBillingChange={handleBillingChange} handleCardholderNameChange={handleCardholderNameChange} cardholderName={cardholderName} billing={billing} collectCVV={collectCVV} redisplayCardElement={redisplayCardElement} closeAddNewModal={closeAddNewModal} disabled={disabled} error={error} />
         )      
 
+    } else if (paymentMethod.paymentMethodID && redisplayCardElement) {
+        // When Add New Card button is clicked
+        return collectCVV !== 'true' && (
+            <Modal isOpen={showModal} onRequestClose={closeAddNewModal} ariaHideApp={false} contentLabel="Add Card">
+                <CardForm customer={customer} paymentMethod={paymentMethod} handleSubmitCardForm={saveNewCard} handleCardChange={handleCardChange} handleBillingChange={handleBillingChange} handleCardholderNameChange={handleCardholderNameChange} cardholderName={cardholderName} billing={billing} collectCVV={collectCVV} redisplayCardElement={redisplayCardElement} closeAddNewModal={closeAddNewModal} disabled={disabled} error={error} />
+            </Modal>
+        )  
     } else if(paymentMethod.paymentMethodID && !editPayment) {
         console.log(paymentMethod)
 
@@ -275,20 +285,6 @@ function PaymentMethod ({ backend, customer, processing, loggedIn, error, grabEr
                 <button type="button" id={paymentMethod.paymentMethodID} onClick={handleAddNew}>Add New</button>
                 {/* Click Saved Cards to see all the other cards the logged in user has saved. */}
                 <button type="button" id={paymentMethod.paymentMethodID} onClick={showAllSavedCards}>Saved Cards</button>
-
-                {/* Do not show the Confirm Payment button when Saved Cards modal, Edit modal, and Add New Card modal are open */}
-                {/* Disable Confirm Payment button when: 
-                1) There is an empty CVV Element 
-                - We can tell if the Element is empty or not when handleCardChange() runs, handleCardChange() runs when there is typing/backspacing in the input. When handleCardChange() runs, the disabled state is updated to false when there is typing/backspacing or something written in CVV Element
-                - A CVC Element is only displayed if there is a saved card with a "true" recollectCVV property) 
-                2) error when typing in the Card/CVV Element */}
-                {(!editPayment && !redisplayCardElement && !showSavedCards) ? (
-                    <button disabled={ (disabled && paymentMethod.recollectCVV === "true") || error }  id="submit" onClick={handleConfirmPayment} >
-                        <span id="button-text">
-                            {processing ? (<div className="spinner" id="spinner"></div>) : ("Confirm Payment")}
-                        </span>
-                    </button>
-                ):<></>}
              
                 {/* Modal with the list of saved cards appear when Saved Cards button is clicked and updates the state of showModal to true. Since redisplayCardElement and editPayment states are false, this part gets returned. */}
                 <Modal isOpen={showModal} onRequestClose={ closeSavedCards } ariaHideApp={false} contentLabel="Saved Cards">
@@ -304,12 +300,27 @@ function PaymentMethod ({ backend, customer, processing, loggedIn, error, grabEr
                     <button onClick={ closeSavedCards }>Close</button>
                 </Modal>
                 
+                {/* Do not show the Confirm Payment button when Saved Cards modal, Edit modal, and Add New Card modal are open */}
+                {/* Disable Confirm Payment button when: 
+                1) There is an empty CVV Element 
+                - We can tell if the Element is empty or not when handleCardChange() runs, handleCardChange() runs when there is typing/backspacing in the input. When handleCardChange() runs, the disabled state is updated to false when there is typing/backspacing or something written in CVV Element
+                - A CVC Element is only displayed if there is a saved card with a "true" recollectCVV property) 
+                2) error when typing in the Card/CVV Element */}
+                {(!editPayment && !redisplayCardElement && !showSavedCards) ? (
+                    <button disabled={ (disabled && paymentMethod.recollectCVV === "true") || error }  id="submit" onClick={handleConfirmPayment} >
+                        <span id="button-text">
+                            {processing ? (<div className="spinner" id="spinner"></div>) : ("Confirm Payment")}
+                        </span>
+                    </button>
+                ):<></>}
+
             </div>
         )
     } else if(paymentMethod.paymentMethodID && editPayment) {
         // When the Edit button is clicked this modal is shown
         return (
             <Modal isOpen={showModal} onRequestClose={closeEditModal} ariaHideApp={false} contentLabel="Edit Card">
+                <form onSubmit={handleUpdatePayment}>
                 <div>
                     <h2>Payment</h2>
                     <p><b>{paymentMethod.cardholderName}</b></p>
@@ -321,11 +332,18 @@ function PaymentMethod ({ backend, customer, processing, loggedIn, error, grabEr
 
                 <input value={cardholderName || ""} name="name" placeholder="Name on card" onChange={handleCardholderNameChange}/>
 
+                <span className="expiration" >
+                    <input value = {editExpiration.month} type="number" name="month" placeholder="MM" min="01" max="12" maxLength="2" size="2" required={true} onChange={handleEditExpiration}/>
+                    <span>/</span>
+                    <input value = {editExpiration.year} type="number" name="year" placeholder="YY" min="2021" max="2031"  maxLength="4" size="3" required={true} onChange={handleEditExpiration}/>
+                </span>
+
                 <div>
                     <BillingInput billing={billing} handleBillingChange={handleBillingChange} editPayment={editPayment} />
-                    <button onClick={handleUpdatePayment}>Save</button>
+                    <button>Save</button>
                     <button onClick={closeEditModal}>Close</button>
                 </div>
+                </form>
             </Modal>
         )
     } 

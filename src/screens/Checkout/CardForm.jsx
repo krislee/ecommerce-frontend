@@ -38,11 +38,11 @@ export default function CardForm ({ customer, paymentMethod, processing, handleS
                 - A Card Element is only displayed if user does not have any saved cards. Saved card is indicated by a truthy value of paymentMethod.paymentMethodID (recall paymentMethod state was updated upon Checkout/PaymentMethod's useEffect() running, which fetches for either a default-saved, last-used-saved, last-saved, or no saved card - server sends back {paymentMethodID: null} for no saved card, so paymentMethod state equals to {paymentMethodID: null})
                 2) error when typing in the Card/CVV Element */}
                 
-                <button disabled={ (disabled && !paymentMethod.paymentMethodID) || error }  id="submit" >
-                    <span id="button-text">
-                        {processing ? (<div className="spinner" id="spinner"></div>) : ("Confirm Payment")}
-                    </span>
-                </button>
+            <button disabled={ (disabled && !paymentMethod.paymentMethodID) || error }  id="submit" >
+                <span id="button-text">
+                    {processing ? (<div className="spinner" id="spinner"></div>) : ("Confirm Payment")}
+                </span>
+            </button>
 
                 </>
             )}
