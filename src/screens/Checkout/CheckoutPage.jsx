@@ -230,7 +230,7 @@ function Checkout ({backend}) {
                     setLoading(false)
                     setCustomer(paymentIntentData.customer)
                     setClientSecret(paymentIntentData.clientSecret)
-                    setCartID(cartResponseData._id)
+                    setCartID(cartResponseData.sessionID)
                 }
             }
         }    
