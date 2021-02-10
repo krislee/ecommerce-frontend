@@ -4,7 +4,7 @@ import Button from '../../components/Button'
 import Modal from 'react-modal';
 import { Accordion, Card } from 'react-bootstrap'
 
-function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, openCollapse, grabOpenCollapse, loggedOut, grabLoggedOut  }) {
+function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, openCollapse, grabOpenCollapse, loggedOut, grabLoggedOut, shipping, grabShipping }) {
     // shippingLoading state is initially set to true to render <></> before updating it to false in useEffect()
     const [shippingLoading, setShippingLoading] = useState(true)
     const [showModal, setShowModal] = useState(false)
@@ -12,7 +12,8 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, openCollapse,
     // shipping state is to store ONE saved shipping address (either default, last used, or last created) that we wil display or no saved shipping address
     // Aside from useEffect(), whenever we select an address, update an address, or add a new address, shipping state is updated to store that current, saved shipping address to redisplay it
     // If shipping state stores an object of saved shipping address, then we would always use it 
-    const [shipping, setShipping] = useState({})
+    // const [shipping, setShipping] = useState({})
+
     // addShipping state to represent if we are currently adding a new shipping address to addresses logged in user has already saved
     const [addShipping, setAddShipping] = useState(false)
     // shippingInput state that contains the address values for the input value
@@ -130,8 +131,6 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, openCollapse,
         // grabPaymentLoading(true) // we do not want to show the payment info when we are adding/editing/showing all addresses; by updating paymentLoading state to false, the PaymentMethod component will return <></>
     }
 
-    const grabAddShipping = (addShipping) => setAddShipping(addShipping)
-
     const openAllAddressesModal = () => {
         setShowModal(true) // open modal
         // grabPaymentLoading(true) // we do not want to show the payment info when we are adding/editing/showing all addresses; by updating paymentLoading state to false, the PaymentMethod component will return <></>
@@ -171,7 +170,7 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, openCollapse,
         if(shippingAddress) {
             const splitShippingAddress = shippingAddress.split(", ")
             const splitShippingName = checkoutSavedShippingAddressData.Name.split(", ")
-            setShipping({
+            grabShipping({
                 
                     firstName: splitShippingName[0],
                     lastName: splitShippingName[1],

@@ -13,7 +13,7 @@ import Collapse from 'react-bootstrap/Collapse'
 import '../../styles/Payment.css'
 import { Accordion, Card, Button } from 'react-bootstrap';
 
-function PaymentMethod ({ backend, customer, processing, loggedIn, error, grabError, disabled, grabDisabled,  paymentLoading, grabPaymentLoading, billing, grabBilling, handleBillingChange, paymentMethod, grabPaymentMethod, cardholderName, grabCardholderName, handleCardholderNameChange, handleCardChange, collectCVV, grabCollectCVV, editPayment, grabEditPayment, redisplayCardElement, grabRedisplayCardElement, grabShowSavedCards, handleConfirmPayment, showSavedCards, loggedOut, grabLoggedOut, editExpiration, grabEditExpiration, openCollapse, grabOpenCollapse }) {
+function PaymentMethod ({ backend, customer, processing, loggedIn, error, grabError, disabled, grabDisabled,  paymentLoading, grabPaymentLoading, billing, grabBilling, handleBillingChange, paymentMethod, grabPaymentMethod, cardholderName, grabCardholderName, handleCardholderNameChange, handleCardChange, collectCVV, grabCollectCVV, editPayment, grabEditPayment, redisplayCardElement, grabRedisplayCardElement, grabShowSavedCards, handleConfirmPayment, showSavedCards, loggedOut, grabLoggedOut, editExpiration, grabEditExpiration, openCollapse, sameAsShipping, handleSameAsShipping, shipping, grabBillingWithShipping }) {
 
     /* ------- STRIPE VARIABLES ------ */
     const elements = useElements()
@@ -22,7 +22,7 @@ function PaymentMethod ({ backend, customer, processing, loggedIn, error, grabEr
 
     const [savedCards, setSavedCards] = useState([])
     const [showModal, setShowModal] = useState(false)
-    
+
 
     useEffect(() => {
         // Check if user is logged in or not since different headers for routes depend if user is logged in or not
@@ -131,6 +131,8 @@ function PaymentMethod ({ backend, customer, processing, loggedIn, error, grabEr
     // When Add New Card button is clicked, handleAddNew() runs
     const handleAddNew = async () => {
         if (loggedIn()) {
+            grabBillingWithShipping(shipping)
+            grabCardholderName("")
             grabError(null) // If there are errors from CVC Element before clicking Add New Cards button (i.e. incomplete security code), then the error will be displayed the moment we click Add New Cards button. So we want to clear the error when the Add New Cards button is clicked and the Add New Cards modal would not show the error. (We do not need to do this to opening Edit modal because there is no div to display the error in the Edit modal.)
             grabDisabled(true) // Disable the Save button in the Add New Card modal again, in case disabled state was false because something was written in the CVV Element if we were recollecting the CVV again
             grabRedisplayCardElement(true) // redisplayCardElement state represents if we are currently adding a new card, so update the redisplayCardElement state from default false to true; what we render in the Checkout/PaymentMethod component depends on the redisplayCardElement state (look at the conditional statements below); the Confirm Payment button won't be displayed if redisplayCardElement state is true
@@ -248,7 +250,7 @@ function PaymentMethod ({ backend, customer, processing, loggedIn, error, grabEr
         return collectCVV !== 'true' && (
             <>
             <div><h2>Payment Method</h2></div>
-            {openCollapse && <CardForm customer={customer} paymentMethod={paymentMethod} handleSubmitCardForm={handleConfirmPayment} handleCardChange={handleCardChange} handleBillingChange={handleBillingChange} handleCardholderNameChange={handleCardholderNameChange} cardholderName={cardholderName} billing={billing} collectCVV={collectCVV} redisplayCardElement={redisplayCardElement} closeAddNewModal={closeAddNewModal} disabled={disabled} error={error} />}
+            {openCollapse && <CardForm customer={customer} paymentMethod={paymentMethod} handleSubmitCardForm={handleConfirmPayment} handleCardChange={handleCardChange} handleBillingChange={handleBillingChange} handleCardholderNameChange={handleCardholderNameChange} cardholderName={cardholderName} billing={billing} grabBilling={grabBilling} collectCVV={collectCVV} redisplayCardElement={redisplayCardElement} closeAddNewModal={closeAddNewModal} disabled={disabled} error={error} sameAsShipping={sameAsShipping} handleSameAsShipping={handleSameAsShipping}/>}
             </>
         )      
 
@@ -256,7 +258,7 @@ function PaymentMethod ({ backend, customer, processing, loggedIn, error, grabEr
         // When Add New Card button is clicked
         return collectCVV !== 'true' && (
             <Modal isOpen={showModal} onRequestClose={closeAddNewModal} ariaHideApp={false} contentLabel="Add Card">
-                <CardForm customer={customer} paymentMethod={paymentMethod} handleSubmitCardForm={saveNewCard} handleCardChange={handleCardChange} handleBillingChange={handleBillingChange} handleCardholderNameChange={handleCardholderNameChange} cardholderName={cardholderName} billing={billing} collectCVV={collectCVV} redisplayCardElement={redisplayCardElement} closeAddNewModal={closeAddNewModal} disabled={disabled} error={error} />
+                <CardForm customer={customer} paymentMethod={paymentMethod} handleSubmitCardForm={saveNewCard} handleCardChange={handleCardChange} handleBillingChange={handleBillingChange} handleCardholderNameChange={handleCardholderNameChange} cardholderName={cardholderName} billing={billing} collectCVV={collectCVV} redisplayCardElement={redisplayCardElement} closeAddNewModal={closeAddNewModal} disabled={disabled} error={error} sameAsShipping={sameAsShipping} handleSameAsShipping={handleSameAsShipping} />
             </Modal>
         )  
     } else if(paymentMethod.paymentMethodID && !editPayment) {
