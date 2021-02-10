@@ -8,7 +8,7 @@ import SellerLogin from './screens/SellerLogin'
 import ItemPage from './screens/ItemPage';
 import CartPage from './screens/CartPage';
 import Checkout from './screens/Checkout/CheckoutPage'
-import UserProfile from './screens/UserProfile'
+import UserProfile from './screens/UserProfile/UserProfile'
 // STRIPE
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";

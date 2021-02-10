@@ -1,24 +1,17 @@
 import React, { useEffect, useState } from 'react'
-import '../styles/UserProfile/UserProfile.css'
-import Navbar from '../components/NavigationBar'
 import Modal from 'react-modal';
-import { Redirect } from 'react-router-dom';
-import AddressContainer from '../components/UserProfile/AddressContainer'
-import Footer from '../components/Footer'
+import AddressContainer from '../../components/UserProfile/AddressContainer'
+import '../../styles/UserProfile/UserProfile.css'
 
-function UserProfile ({backend}) {
+function UserProfileAddress ({ backend }) {
 
-    // Getter and Setter to display the address component or not
-    const [addressesTabOpen, setAddressesTabOpen] = useState(true);
-    // Getter and Setter to display the payments component or not
-    const [paymentsTabOpen, setPaymentsTabOpen] = useState(false);
     // Getter and Setter to store the information recieved back when fetching address data
     const [addressData, setAddressData] = useState([]);
     // Getter and Setter to display modal based off a boolean value
     const [modalIsOpen,setIsOpen] = useState(false);
     // Getter and Setter to store an object that will later be used to determine what users put into inputs specifically regarding the adding address function
     const [addressInput, setAddressInput] = useState({});
-    
+
     const customStyles = {
         content : {
           top: '50%',
@@ -29,7 +22,7 @@ function UserProfile ({backend}) {
         }
       };
 
-    Modal.setAppElement('#root')
+    Modal.setAppElement('#root');
 
     useEffect(() => {
         // When the page renders in, we want to grab the address data from the backend server and use that data to display different AddressContainer components
@@ -54,10 +47,12 @@ function UserProfile ({backend}) {
     const openModal = () => {
         setIsOpen(true);
     }
+
     // Function that is used to close the modal when the user either leaves or submits a address
     const closeModal = () => {
         setIsOpen(false);
     }
+
     // Function that is used to make sure the inputs that are being put in by the user is saved to the addressInput object so we can use the object when creating a new address
     const handleAddressChange = (e) => {
         const { name, value } = e.target
@@ -65,6 +60,7 @@ function UserProfile ({backend}) {
             ...prevAddress, [name] : value
         }))
     }
+
     // Function that is used to reorder the data so that default is first and to also make the newest data come first on the list
     const defaultFirst = (data) => {
         // Reverses the order of the data so the newest data will be first and the oldest will be last
@@ -117,26 +113,6 @@ function UserProfile ({backend}) {
         setAddressData(addressData);
     }
 
-    // Function that will handle whether the address component is open or not so 
-    const handleClickAddresses = () => {
-        if (addressesTabOpen) {
-            setAddressesTabOpen(false);
-        } else if (!addressesTabOpen) {
-            setAddressesTabOpen(true);
-            setPaymentsTabOpen(false);
-        }
-    }
-
-    // Function that will handle whether the payment component is open or not so 
-    const handleClickPayments = () => {
-        if (paymentsTabOpen) {
-            setPaymentsTabOpen(false);
-        } else if (!paymentsTabOpen) {
-            setAddressesTabOpen(false);
-            setPaymentsTabOpen(true);
-        }
-    }
-
     // Function that creates AddressContainer components based off the array set in addressData
     // We map through the array and grab the address (so we have the data of each individual address) and the index (so we can assign them as keys for React's virtual DOM)
     const allAddresses = addressData.map((address, index) => {
@@ -155,62 +131,27 @@ function UserProfile ({backend}) {
         }
     })
 
-    // If the user does not have a token (or logged in), users will automatically render onto the homepage because the user profile page is on accessible to users that are logged in
-    if (!localStorage.getItem('token')) {
-        return (
-            <Redirect to="/"/>
-        )
-    } else {
-        return (
-            <>
-                <Navbar />
-                <div className="user-profile-container">
-                    {/* This bar represents the sections that users can click on to switch between the address, payments, and order components (screens) */}
-                    <div className='top-bar'>
-                        <div style={{borderLeft: '1px solid #000'}} onClick={handleClickAddresses} 
-                        className={addressesTabOpen === true ? "highlighted-tab" : null}>
-                            Addresses
-                        </div>
-                        <div onClick={handleClickPayments} 
-                        className={paymentsTabOpen === true ? "highlighted-tab" : null}>
-                            Payments
-                        </div>
-                        <div>Orders</div>
-                    </div>
-                    {/* This component renders only when the addressesTab is open */}
-                    {addressesTabOpen && 
-                        <>
-                            <div className="addresses-container">
-                                <div className="header-container">
-                                    <div className="header">Saved Addresses</div>
-                                    {/* The button that opens the modal that users can use to create new addresses */}
-                                    <div className="add-address" 
-                                    onClick={openModal}>
-                                        <div>Add Address</div> 
-                                    </div>
-                                </div>
-                                {/* If there are no addresses, then return a statement that tells users to add an address, otherwise the user will see all the addresses they have decided to save */}
-                                {addressData[0] === undefined ? 
-                                    <div>Add Your Address Above</div> : 
-                                <>
-                                    <div className="all-address-container">
-                                        <div className="all-addresses-container">{addressData.length !== 0 && allAddresses}
-                                        </div>
-                                    </div>
-                                </>}
-                            </div>
-                        </>
-                    }
-                    {/* This component renders only when the paymentsTab is open  */}
-                    {paymentsTabOpen &&
-                        <div className="payments-container">
-                            <div className="header">Saved Payments</div>
-                        </div>
-                    }
-                    <Footer />
+    return (
+        <div className="addresses-container">
+            <div className="header-container">
+                <div className="header">Saved Addresses</div>
+                {/* The button that opens the modal that users can use to create new addresses */}
+                <div className="add-address" 
+                onClick={openModal}>
+                    <div>Add Address</div> 
                 </div>
-                {/* Modal that specifically pertains to the adding new addresses */}
-                <Modal
+            </div>
+            {/* If there are no addresses, then return a statement that tells users to add an address, otherwise the user will see all the addresses they have decided to save */}
+            {addressData[0] === undefined ? 
+                <div>Add Your Address Above</div> : 
+            <>
+                <div className="all-address-container">
+                    <div className="all-addresses-container">{addressData.length !== 0 && allAddresses}
+                    </div>
+                </div>
+            </>}
+            {/* Modal that specifically pertains to the adding new addresses */}
+            <Modal
                 isOpen={modalIsOpen}
                 onRequestClose={closeModal}
                 style={customStyles}
@@ -242,10 +183,8 @@ function UserProfile ({backend}) {
                 </button>
                 </form>
                 </Modal>
-            </>
-        )
-    }
-
+        </div>
+    )
 }
 
-export default UserProfile
+export default UserProfileAddress
