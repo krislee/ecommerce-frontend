@@ -39,7 +39,7 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, openCollapse,
         grabOpenCollapse(true)
         setReadOnly(true)
         setShowButtons(false)
-        handleNext()
+        addNewShipping()
     }
 
     const back = () => {
@@ -124,12 +124,13 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, openCollapse,
         // grabPaymentLoading(true) // we do not want to show the payment info when we are adding/editing/showing all addresses; by updating paymentLoading state to false, the PaymentMethod component will return <></>
     }
 
-
     const openEditModal = () => {
         setEditShipping(true) // update the editShipping state to true to represent we are currently edditing a shipping
         setShowModal(true) // open modal
         // grabPaymentLoading(true) // we do not want to show the payment info when we are adding/editing/showing all addresses; by updating paymentLoading state to false, the PaymentMethod component will return <></>
     }
+
+    const grabAddShipping = (addShipping) => setAddShipping(addShipping)
 
     const openAllAddressesModal = () => {
         setShowModal(true) // open modal
@@ -166,6 +167,7 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, openCollapse,
     const updateShippingState = (checkoutSavedShippingAddressData) => {
         const shippingAddress = checkoutSavedShippingAddressData.Address
         console.log(checkoutSavedShippingAddressData)
+        console.log(shippingAddress[1], typeof shippingAddress[1])
         if(shippingAddress) {
             const splitShippingAddress = shippingAddress.split(", ")
             const splitShippingName = checkoutSavedShippingAddressData.Name.split(", ")
@@ -174,7 +176,7 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, openCollapse,
                     firstName: splitShippingName[0],
                     lastName: splitShippingName[1],
                     addressLineOne: splitShippingAddress[0],
-                    addressLineTwo: splitShippingAddress[1] === "null" || splitShippingAddress[1] === "undefined" ? "" : splitShippingAddress[1],
+                    addressLineTwo: (splitShippingAddress[1] === "null" || splitShippingAddress[1] === "undefined") ? "" : splitShippingAddress[1],
                     city: splitShippingAddress[2],
                     state: splitShippingAddress[3],
                     zipcode: splitShippingAddress[4],
@@ -206,7 +208,7 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, openCollapse,
         } 
     }
 
-    /* ------- ADD NEW SHIPPING/NEXT BUTTON FUNCTION ------ */
+    /* ------- NEXT BUTTON FUNCTION ------ */
 
     const addNewShipping = async() => {
         const checkbox = document.querySelector('input[name=saveAddress]')
@@ -265,47 +267,9 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, openCollapse,
         }
     }
 
-    const addAdditionalSaveShipping = async() => {
-        console.log("adding additional address")
-        const saveNewShippingResponse = await fetch(`${backend}/shipping/address?lastUsed=false&default=false&checkout=true`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': loggedIn()
-            }, 
-            body: JSON.stringify({
-                name: `${shippingInput.firstName}, ${shippingInput.lastName}`,
-                address: `${shippingInput.addressLineOne}, ${shippingInput.addressLineTwo}, ${shippingInput.city}, ${shippingInput.state}, ${shippingInput.zipcode}`
-            })
-        })
-        const saveNewShippingData = await saveNewShippingResponse.json()
-        console.log(saveNewShippingData)
-        updateShippingState(saveNewShippingData.address)
-        updateShippingInputState(saveNewShippingData.address)
-        closeModal()
-    }
+   
 
-    // Depending on if we are adding a shipping (indicated by addShipping state), editing a shipping (indicated by editShipping state), or saving our first address/guest user, different onSubmit form functions will run.
-    const handleNext = async (event) => {
-        console.log("submitting form")
-        console.log("event: ", event)
-        
-        console.log("shipping input: ", shippingInput)
-        if(addShipping) {
-            console.log("adding")
-            addAdditionalSaveShipping()
-        } if(editShipping) {
-            console.log("editing")
-            handleEditShipping()
-        } else if(!loggedIn() || !shipping.firstName){
-            console.log("guest/first time saving next")
-            addNewShipping()
-            collapse()
-        } else if(loggedIn() && shipping.firstName) {
-            console.log("logged in next")
-            addNewShipping()
-        }
-    }
+ 
 
     /* --------------------- USE EFFECT -------------------- */
 
@@ -346,7 +310,7 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, openCollapse,
         return (
             <>
             {!openCollapse ? (
-                <ShippingForm backend={backend} loggedIn={loggedIn} shipping={shipping} shippingInput={shippingInput} grabShippingInput={grabShippingInput} grabPaymentLoading={grabPaymentLoading} addShipping={addShipping} grabAddNewShipping={grabAddNewShipping} cartID={cartID} updateShippingState={updateShippingState} updateShippingInputState={updateShippingInputState} editShipping={editShipping} handleEditShipping={handleEditShipping} closeModal={closeModal} collapse={collapse} back={back} handleNext={handleNext}/> 
+                <ShippingForm backend={backend} loggedIn={loggedIn} shipping={shipping} shippingInput={shippingInput} grabShippingInput={grabShippingInput} grabPaymentLoading={grabPaymentLoading} addShipping={addShipping} grabAddNewShipping={grabAddNewShipping} cartID={cartID} updateShippingState={updateShippingState} updateShippingInputState={updateShippingInputState} editShipping={editShipping} handleEditShipping={handleEditShipping} closeModal={closeModal} collapse={collapse} back={back} addNewShipping={addNewShipping} /> 
             ): (
             <div>
                 <h2>Shipping Address</h2>
@@ -367,7 +331,7 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, openCollapse,
                     <div key={index}>
                         <p id="name"><b>{savedShipping.Name.split(", ")[0]} {savedShipping.Name.split(", ")[1]}</b></p>
                         <p id="line1">{savedShipping.Address.split(", ")[0]}</p>
-                        <p id="line2">{savedShipping.Address.split(", ")[1]}</p>
+                        <p id="line2">{savedShipping.Address.split(", ")[1] === "null" || savedShipping.Address.split(", ")[1] === "undefined" ? "" : savedShipping.Address.split(", ")[1]}</p>
                         <p id="cityStateZipcode">{savedShipping.Address.split(", ")[2]}, {savedShipping.Address.split(", ")[3]} {savedShipping.Address.split(", ")[4]}</p>
                         <button id={savedShipping._id} onClick={handleSelectedShipping}>Select</button>
                     </div>

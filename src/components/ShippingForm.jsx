@@ -1,7 +1,7 @@
 import React from 'react'
 import Button from './Button'
 
-export default function ShippingForm( { backend, loggedIn, readOnly, shipping, addShipping, shippingInput, grabShippingInput, grabPaymentLoading, cartID, updateShippingState, updateShippingInputState, editShipping, handleEditShipping, closeModal, collapse, back, handleNext }) {
+export default function ShippingForm( { backend, loggedIn, readOnly, shipping, addShipping, shippingInput, grabShippingInput, cartID, updateShippingState, updateShippingInputState, editShipping, handleEditShipping, closeModal, collapse, back, addNewShipping, grabAddNewShipping }) {
     
 
     const handleShippingChange = (event) => {
@@ -11,8 +11,44 @@ export default function ShippingForm( { backend, loggedIn, readOnly, shipping, a
         }))
     }
 
+    // Depending on if we are adding a shipping (indicated by addShipping state), editing a shipping (indicated by editShipping state), or saving our first address/guest user, different onSubmit form functions will run.
+    const handleNext = async (event) => {
+        console.log("submitting form")
+        console.log("event: ", event)
+        event.preventDefault()
+        console.log("shipping input: ", shippingInput)
+        if(addShipping) {
+            console.log("adding")
+            addAdditionalSaveShipping()
+        } if(editShipping) {
+            console.log("editing")
+            handleEditShipping()
+        } else if(!loggedIn() || !shipping.firstName) {
+            console.log("guest/first time saving next")
+            addNewShipping()
+            collapse()
+        }
+    }
 
-
+    const addAdditionalSaveShipping = async() => {
+        console.log("adding additional address")
+        const saveNewShippingResponse = await fetch(`${backend}/shipping/address?lastUsed=false&default=false&checkout=true`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': loggedIn()
+            }, 
+            body: JSON.stringify({
+                name: `${shippingInput.firstName}, ${shippingInput.lastName}`,
+                address: `${shippingInput.addressLineOne}, ${shippingInput.addressLineTwo}, ${shippingInput.city}, ${shippingInput.state}, ${shippingInput.zipcode}`
+            })
+        })
+        const saveNewShippingData = await saveNewShippingResponse.json()
+        console.log(saveNewShippingData)
+        updateShippingState(saveNewShippingData.address)
+        updateShippingInputState(saveNewShippingData.address)
+        grabAddNewShipping(false)
+    }
 
     return (
         <>
