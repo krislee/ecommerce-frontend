@@ -1,9 +1,10 @@
-import React, { useState } from 'react'
-import Navbar from '../../components/NavigationBar'
+import React, { useState } from 'react';
+import Navbar from '../../components/NavigationBar';
 import { Redirect } from 'react-router-dom';
-import Footer from '../../components/Footer'
-import Address from './Address'
-import '../../styles/UserProfile/UserProfile.css'
+import Footer from '../../components/Footer';
+import Address from './Address';
+import Payment from './Payment'
+import '../../styles/UserProfile/UserProfile.css';
 
 function UserProfile ({ backend }) {
 
@@ -60,9 +61,7 @@ function UserProfile ({ backend }) {
                     }
                     {/* This component renders only when the paymentsTab is open  */}
                     {paymentsTabOpen &&
-                        <div className="payments-container">
-                            <div className="header">Saved Payments</div>
-                        </div>
+                        <Payment backend={backend}/>
                     }
                     <Footer />
                 </div>

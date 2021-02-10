@@ -1,0 +1,16 @@
+.one-payment-container {
+    height: 12em;
+    width: 100%;
+    background-color: #e8e8e8;
+    color: #000;
+    display: flex;
+    flex-direction: column;
+    padding: 1rem 0rem 0rem 1rem;
+    margin: 0.5rem;
+    border-radius: 1rem;
+}
+
+.card-info-container, .billing-info-container {
+    width: 50%;
+}
+

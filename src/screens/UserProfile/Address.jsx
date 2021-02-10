@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react';
 import Modal from 'react-modal';
-import AddressContainer from '../../components/UserProfile/AddressContainer'
-import '../../styles/UserProfile/UserProfile.css'
+import AddressContainer from '../../components/UserProfile/AddressContainer';
 
 function UserProfileAddress ({ backend }) {
 
@@ -136,9 +135,10 @@ function UserProfileAddress ({ backend }) {
             <div className="header-container">
                 <div className="header">Saved Addresses</div>
                 {/* The button that opens the modal that users can use to create new addresses */}
-                <div className="add-address" 
+                <div 
+                className="add-address" 
                 onClick={openModal}>
-                    <div>Add Address</div> 
+                    Add Address
                 </div>
             </div>
             {/* If there are no addresses, then return a statement that tells users to add an address, otherwise the user will see all the addresses they have decided to save */}
