@@ -8,13 +8,16 @@ import Footer from '../components/Footer'
 
 function UserProfile ({backend}) {
 
-    // Getter and Setters 
+    // Getter and Setter to display the address component or not
     const [addressesTabOpen, setAddressesTabOpen] = useState(true);
+    // Getter and Setter to display the payments component or not
     const [paymentsTabOpen, setPaymentsTabOpen] = useState(false);
+    // Getter and Setter to store the information recieved back when fetching address data
     const [addressData, setAddressData] = useState([]);
+    // Getter and Setter to display modal based off a boolean value
     const [modalIsOpen,setIsOpen] = useState(false);
+    // Getter and Setter to store an object that will later be used to determine what users put into inputs specifically regarding the adding address function
     const [addressInput, setAddressInput] = useState({});
-    let subtitle;
     
     const customStyles = {
         content : {
@@ -22,7 +25,6 @@ function UserProfile ({backend}) {
           left: '50%',
           right: 'auto',
           bottom: 'auto',
-        //   marginRight: '-50%',
           transform: 'translate(-50%, -50%)'
         }
       };
@@ -30,6 +32,7 @@ function UserProfile ({backend}) {
     Modal.setAppElement('#root')
 
     useEffect(() => {
+        // When the page renders in, we want to grab the address data from the backend server and use that data to display different AddressContainer components
         async function fetchAddressData() {
             let resp = await fetch(`${backend}/shipping/address`, {
                 method: 'GET',
@@ -39,74 +42,82 @@ function UserProfile ({backend}) {
                 }
             });
             const data = await resp.json();
-            console.log(data);
+            // The data recieved back will be reordered to make sure the default address appears first followed by the newest address on the list
             defaultFirst(data);
+            // Use that data recieved back and set it to the variable addressData
             setAddressData(data);
         }
         fetchAddressData();
     }, [backend]);
 
+    // Function that is used to open the modal when users plan to create
     const openModal = () => {
         setIsOpen(true);
     }
-
-    const afterOpenModal = () => {
-    subtitle.style.color = '#000';
-    }
-
+    // Function that is used to close the modal when the user either leaves or submits a address
     const closeModal = () => {
         setIsOpen(false);
     }
-
+    // Function that is used to make sure the inputs that are being put in by the user is saved to the addressInput object so we can use the object when creating a new address
     const handleAddressChange = (e) => {
         const { name, value } = e.target
         setAddressInput((prevAddress) => ({
             ...prevAddress, [name] : value
         }))
     }
-
-    // const handleCheckInput = (event) => {
-    //     event.preventDefault();
-    //     console.log('Address:', addressInput);
-    // }
-
+    // Function that is used to reorder the data so that default is first and to also make the newest data come first on the list
     const defaultFirst = (data) => {
+        // Reverses the order of the data so the newest data will be first and the oldest will be last
         data.reverse();
+        // If the data that is returned has a object with the property of defaultAddress being true, then run 
         if (data.findIndex(address => address.DefaultAddress === true) !== -1 && data.length !== 0) {
+            // Find the index of the object that has the default address information
             const index = data.findIndex(address => address.DefaultAddress === true)
+            // Splice it so we can grab it and remove it from the array
             const defaultFirstAddress = data.splice(index, 1)[0];
+            // Push it to the top of the list so it would be index zero (first element)
             data.unshift(defaultFirstAddress);
-        } else {
-            console.log(data);
         }
     }
 
+    // Function that is used to handle the event when a user submits the request to make a new address
     const handleSubmitAddress = async (event) => {
+        // Prevents the page from refreshing
         event.preventDefault();
+        // Grabbing the DOM element with the ID of address-default (which is the checkbox that is used by users to indicate whether or not they want said address to be default or not)
         const checkbox = document.getElementById('address-default');
+        // We check if the checkbox is checked or not, and this will return a boolean
         const check = checkbox.checked
+        // Fetching to the backend server to make a request to create a new address and using string interopolation to dynamically set the address to request whether or not the address will be a default address or not
         const newAddressResponse = await fetch(`${backend}/shipping/address?lastUse=false&default=${check}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': localStorage.getItem('token')
             },
+            // Using the addressInput object, we are able to grab the values and use these values to generate what user wants for the name and address of the address they are trying to create
             body: JSON.stringify({
                 name: `${addressInput.firstName}, ${addressInput.lastName}`,
                 address: `${addressInput.addressLineOne}, ${addressInput.addressLineTwo}, ${addressInput.city}, ${addressInput.state}, ${addressInput.zipcode}`
             })
         })
         const newAddressData = await newAddressResponse.json();
+        // Make sure that data we recieve back is ordered so that the default will be first followed by newest address added
         defaultFirst(newAddressData);
+        // Assigning the data we recieve back to the variable addressData so we can use that variable which stores an array and map through it to display different AddressContainer components
         setAddressData(newAddressData);
+        // Clearing out the object used to store the information that users put in the input fields so it's blank when users want to create a new one
         setAddressInput({});
+        // Close the modal
         setIsOpen(false);
     }
 
+    // Function that is used to set the addressData (specifically passed down to child components)
     const grabAddressData = (addressData) => {
         setAddressData(addressData);
     }
 
+    // Function that will handle whether the address component is open or not so 
     const handleClickAddresses = () => {
         if (addressesTabOpen) {
             setAddressesTabOpen(false);
@@ -116,6 +127,7 @@ function UserProfile ({backend}) {
         }
     }
 
+    // Function that will handle whether the payment component is open or not so 
     const handleClickPayments = () => {
         if (paymentsTabOpen) {
             setPaymentsTabOpen(false);
@@ -125,6 +137,8 @@ function UserProfile ({backend}) {
         }
     }
 
+    // Function that creates AddressContainer components based off the array set in addressData
+    // We map through the array and grab the address (so we have the data of each individual address) and the index (so we can assign them as keys for React's virtual DOM)
     const allAddresses = addressData.map((address, index) => {
         if (addressData === undefined) {
             return null;
@@ -141,6 +155,7 @@ function UserProfile ({backend}) {
         }
     })
 
+    // If the user does not have a token (or logged in), users will automatically render onto the homepage because the user profile page is on accessible to users that are logged in
     if (!localStorage.getItem('token')) {
         return (
             <Redirect to="/"/>
@@ -150,6 +165,7 @@ function UserProfile ({backend}) {
             <>
                 <Navbar />
                 <div className="user-profile-container">
+                    {/* This bar represents the sections that users can click on to switch between the address, payments, and order components (screens) */}
                     <div className='top-bar'>
                         <div style={{borderLeft: '1px solid #000'}} onClick={handleClickAddresses} 
                         className={addressesTabOpen === true ? "highlighted-tab" : null}>
@@ -161,16 +177,19 @@ function UserProfile ({backend}) {
                         </div>
                         <div>Orders</div>
                     </div>
+                    {/* This component renders only when the addressesTab is open */}
                     {addressesTabOpen && 
                         <>
                             <div className="addresses-container">
                                 <div className="header-container">
                                     <div className="header">Saved Addresses</div>
+                                    {/* The button that opens the modal that users can use to create new addresses */}
                                     <div className="add-address" 
                                     onClick={openModal}>
                                         <div>Add Address</div> 
                                     </div>
                                 </div>
+                                {/* If there are no addresses, then return a statement that tells users to add an address, otherwise the user will see all the addresses they have decided to save */}
                                 {addressData[0] === undefined ? 
                                     <div>Add Your Address Above</div> : 
                                 <>
@@ -182,6 +201,7 @@ function UserProfile ({backend}) {
                             </div>
                         </>
                     }
+                    {/* This component renders only when the paymentsTab is open  */}
                     {paymentsTabOpen &&
                         <div className="payments-container">
                             <div className="header">Saved Payments</div>
@@ -189,15 +209,15 @@ function UserProfile ({backend}) {
                     }
                     <Footer />
                 </div>
+                {/* Modal that specifically pertains to the adding new addresses */}
                 <Modal
                 isOpen={modalIsOpen}
-                onAfterOpen={afterOpenModal}
                 onRequestClose={closeModal}
                 style={customStyles}
                 contentLabel="Example Modal"
                 >
                 <form className="form">
-                <h2 ref={_subtitle => (subtitle = _subtitle)}>Add Your Address</h2>
+                <h2>Add Your Address</h2>
                 <input value={addressInput.firstName || ""} name="firstName" placeholder="First Name" onChange={handleAddressChange}/>
                 <input value={addressInput.lastName || ""} name="lastName" placeholder="Last Name" onChange={handleAddressChange}/>
                 <input value={addressInput.addressLineOne || ""} name="addressLineOne" placeholder="Address Line One"
@@ -210,10 +230,12 @@ function UserProfile ({backend}) {
                 onChange={handleAddressChange}/>
                 <input value={addressInput.zipcode || ""} name="zipcode" placeholder="Zipcode"
                 onChange={handleAddressChange}/>
+                {/* Section where users can check off whether or not they want the address being created to become the default address */}
                 <div className="default-container">
                     <label htmlFor="addressDefault">Save as default</label>
                     <input name="addressDefault" type="checkbox" id="address-default"/>
                 </div>
+                {/* Button will be disabled if the input fields are not filled in (except for the address line two input field) */}
                 <button onClick={handleSubmitAddress} 
                 disabled={!addressInput.firstName || !addressInput.addressLineOne || !addressInput.city || !addressInput.state || !addressInput.zipcode}>
                     Submit
