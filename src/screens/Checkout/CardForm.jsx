@@ -5,7 +5,7 @@ import BillingInput from "../../components/BillingInput"
 export default function CardForm ({ customer, paymentMethod, processing, handleSubmitCardForm, handleCardChange, handleBillingChange, handleCardholderNameChange, cardholderName, billing, collectCVV, redisplayCardElement, closeAddNewModal, error, disabled }) {
     return(
         <form onSubmit={handleSubmitCardForm}>
-            <h2>Payment</h2>
+            <h2>Credit Card</h2>
             {/* Show Card Element */}
             <CollectCard handleCardChange={handleCardChange} collectCVV={collectCVV} redisplayCardElement={redisplayCardElement} cardholderName={cardholderName} handleCardholderNameChange={handleCardholderNameChange} />
 

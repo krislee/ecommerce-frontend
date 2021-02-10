@@ -52,6 +52,7 @@ function Checkout ({ backend, loggedOut, grabLoggedOut }) {
     const [collectCVV, setCollectCVV] = useState('false')
     
     const [editExpiration, setEditExpiration] = useState({})
+    const [openCollapse, setOpenCollapse] = useState(false)
 
     /* ------- SET UP STRIPE ------- */
     const stripe = useStripe(); // need stripe instance to confirm card payment: stripe.confirmCardPayment()
@@ -79,12 +80,12 @@ function Checkout ({ backend, loggedOut, grabLoggedOut }) {
     
     grabPaymentMethod() runs again when we add new card, update card, select card, and steps 4 & 5 are followed again
     */
-    const grabPaymentMethod = (paymentMethod) => {   
+    const grabPaymentMethod = (paymentMethod) => {
         setPaymentMethod(paymentMethod)      
         grabBilling(paymentMethod.billingDetails) 
         grabCollectCVV(paymentMethod.recollectCVV) 
         if(paymentMethod.cardholderName)setCardholderName(paymentMethod.cardholderName)
-        setEditExpiration({month: paymentMethod.expDate.split("/")[0], year: paymentMethod.expDate.split("/")[1]})
+        if(paymentMethod.paymentMethodID) setEditExpiration({month: paymentMethod.expDate.split("/")[0], year: paymentMethod.expDate.split("/")[1]})
     }
 
     // We need to prefill the billing details input when user wants to edit the displayed, saved card's billing details or add a new card's billing details. To do this, we pass down billing state as prop down to Checkout/PaymentMethod and then further down to Component/BillingInput. Each Component/BillingInput inputs' value attribute will now equal to each billing state keys. The billing state keys' values have been set by running grabBilling(<payment_method_billing_details>).
@@ -131,9 +132,9 @@ function Checkout ({ backend, loggedOut, grabLoggedOut }) {
     }
 
     // Update editExpiration state to edit Payment Expiration Dates
-    const grabEditExpiration = (editExpiration) => {
-        setEditExpiration(editExpiration)
-    }
+    const grabEditExpiration = (editExpiration) => setEditExpiration(editExpiration)
+
+    const grabOpenCollapse = (openCollapse) => setOpenCollapse(openCollapse)
 
     // Show Errors in the div when Saving new card or Confirming card payment. If there is an error, disable Save or Confirm Payment button.
     const grabError = (error) => {
@@ -351,8 +352,8 @@ function Checkout ({ backend, loggedOut, grabLoggedOut }) {
             <>
             <NavBar />
             <div id="payment-form" >
-                <Shipping backend={backend} loggedIn={loggedIn} grabPaymentLoading={grabPaymentLoading} cartID={cartID}/>
-                <PaymentMethod backend={backend} customer={customer} loggedIn={loggedIn} error={error} grabError={grabError} disabled={disabled} grabDisabled={grabDisabled} paymentLoading={paymentLoading} billing={billing} handleBillingChange={handleBillingChange} grabBilling={grabBilling} paymentMethod={paymentMethod} grabPaymentMethod={grabPaymentMethod} cardholderName={cardholderName} grabCardholderName={grabCardholderName}handleCardholderNameChange={handleCardholderNameChange} handleCardChange={handleCardChange} collectCVV={collectCVV} grabCollectCVV={grabCollectCVV} editPayment={editPayment} grabEditPayment={grabEditPayment} redisplayCardElement={redisplayCardElement} grabRedisplayCardElement={grabRedisplayCardElement} grabShowSavedCards={grabShowSavedCards} handleConfirmPayment={handleConfirmPayment} showSavedCards={showSavedCards} editExpiration={editExpiration} grabEditExpiration={grabEditExpiration} loggedOut={loggedOut} grabLoggedOut={grabLoggedOut}/>
+                <Shipping backend={backend} loggedIn={loggedIn} grabPaymentLoading={grabPaymentLoading} cartID={cartID} openCollapse={openCollapse} grabOpenCollapse={grabOpenCollapse}/>
+                <PaymentMethod backend={backend} customer={customer} loggedIn={loggedIn} error={error} grabError={grabError} disabled={disabled} grabDisabled={grabDisabled} paymentLoading={paymentLoading} grabPaymentLoading={grabPaymentLoading} billing={billing} handleBillingChange={handleBillingChange} grabBilling={grabBilling} paymentMethod={paymentMethod} grabPaymentMethod={grabPaymentMethod} cardholderName={cardholderName} grabCardholderName={grabCardholderName}handleCardholderNameChange={handleCardholderNameChange} handleCardChange={handleCardChange} collectCVV={collectCVV} grabCollectCVV={grabCollectCVV} editPayment={editPayment} grabEditPayment={grabEditPayment} redisplayCardElement={redisplayCardElement} grabRedisplayCardElement={grabRedisplayCardElement} grabShowSavedCards={grabShowSavedCards} handleConfirmPayment={handleConfirmPayment} showSavedCards={showSavedCards} editExpiration={editExpiration} grabEditExpiration={grabEditExpiration} loggedOut={loggedOut} grabLoggedOut={grabLoggedOut} openCollapse={openCollapse} grabOpenCollapse={grabOpenCollapse}/>
     
                 {/* Show Save card checkbox if user is logged in and does not have an already default, saved or last used, saved card to display as indicated by paymentMethod state. Do not show the checkbox for guests (as indicated by customer state). */}
 
