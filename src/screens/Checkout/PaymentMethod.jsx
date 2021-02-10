@@ -238,10 +238,8 @@ function PaymentMethod ({ backend, customer, processing, loggedIn, error, grabEr
         let handleSubmitCardForm
         if(redisplayCardElement) {
             handleSubmitCardForm = saveNewCard
-            console.log(220)
         } else {
             handleSubmitCardForm = handleConfirmPayment
-            console.log(223)
         }
         return collectCVV !== 'true' && (
             <CardForm customer={customer} paymentMethod={paymentMethod} handleSubmitCardForm={handleSubmitCardForm} handleCardChange={handleCardChange} handleBillingChange={handleBillingChange} handleCardholderNameChange={handleCardholderNameChange} cardholderName={cardholderName} billing={billing} collectCVV={collectCVV} redisplayCardElement={redisplayCardElement} closeAddNewModal={closeAddNewModal} disabled={disabled} error={error} />
@@ -251,7 +249,7 @@ function PaymentMethod ({ backend, customer, processing, loggedIn, error, grabEr
         console.log(paymentMethod)
 
         return (
-            <form onSubmit = {handleConfirmPayment}>
+            <div>
                 <h2>Payment</h2>
                 <p><b>{paymentMethod.cardholderName}</b></p>
                 <p><b>{paymentMethod.brand}</b></p>
@@ -285,7 +283,7 @@ function PaymentMethod ({ backend, customer, processing, loggedIn, error, grabEr
                 - A CVC Element is only displayed if there is a saved card with a "true" recollectCVV property) 
                 2) error when typing in the Card/CVV Element */}
                 {(!editPayment && !redisplayCardElement && !showSavedCards) ? (
-                    <button disabled={ (disabled && paymentMethod.recollectCVV === "true") || error }  id="submit" >
+                    <button disabled={ (disabled && paymentMethod.recollectCVV === "true") || error }  id="submit" onClick={handleConfirmPayment} >
                         <span id="button-text">
                             {processing ? (<div className="spinner" id="spinner"></div>) : ("Confirm Payment")}
                         </span>
@@ -306,7 +304,7 @@ function PaymentMethod ({ backend, customer, processing, loggedIn, error, grabEr
                     <button onClick={ closeSavedCards }>Close</button>
                 </Modal>
                 
-            </form>
+            </div>
         )
     } else if(paymentMethod.paymentMethodID && editPayment) {
         // When the Edit button is clicked this modal is shown

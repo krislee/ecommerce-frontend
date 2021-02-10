@@ -260,3 +260,7 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID  }) {
 }
 
 export default Shipping
+
+// Click edit --> show edit button & Add new and saved addresses buttons & 'Save and Continue' buttons -->
+// Will show edit button again for shipping 
+// Shows Payment method --> "" --> Click Pay now 
