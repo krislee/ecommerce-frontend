@@ -56,7 +56,10 @@ function Checkout ({ backend, loggedOut, grabLoggedOut }) {
     // openCollapse state is passed to both PaymentMethod and Shipping components, and is updated in the Shipping Component when we click Next or Edit button
     const [openCollapse, setOpenCollapse] = useState(false)
     const [sameAsShipping, setSameAsShipping] = useState(true) // checkbox state 
- 
+    // shipping state is to store ONE saved shipping address (either default, last used, or last created) that we wil display or no saved shipping address. Aside from useEffect(), whenever we select an address, update an address, or add a new address, shipping state is updated to store that current, saved shipping address to redisplay it. If shipping state stores an object of saved shipping address, then we would always use it 
+    const [shipping, setShipping] = useState({})
+    // shippingInput state that contains the address values for the input value
+    const [shippingInput, setShippingInput] = useState({})
 
     /* ------- SET UP STRIPE ------- */
     const stripe = useStripe(); // need stripe instance to confirm card payment: stripe.confirmCardPayment()
@@ -108,7 +111,7 @@ function Checkout ({ backend, loggedOut, grabLoggedOut }) {
                 state: billing.address.state,
                 postalCode: billing.address.postalCode
             })
-        }  
+        } 
     }
 
 
@@ -166,12 +169,10 @@ function Checkout ({ backend, loggedOut, grabLoggedOut }) {
     }
 
     const grabOpenCollapse = (openCollapse) => setOpenCollapse(openCollapse)
-
-    // shipping state is to store ONE saved shipping address (either default, last used, or last created) that we wil display or no saved shipping address
-    // Aside from useEffect(), whenever we select an address, update an address, or add a new address, shipping state is updated to store that current, saved shipping address to redisplay it
-    // If shipping state stores an object of saved shipping address, then we would always use it 
-    const [shipping, setShipping] = useState({})
+    
     const grabShipping = (shipping) => setShipping(shipping)
+    const grabShippingInput = (shippingInput) => setShippingInput(shippingInput)
+
     const grabBillingWithShipping = (shipping) => setBilling({
         firstName: shipping.firstName,
         lastName: shipping.lastName,
@@ -181,21 +182,42 @@ function Checkout ({ backend, loggedOut, grabLoggedOut }) {
         state: shipping.state,
         postalCode: shipping.zipcode,
     })
+
     const handleSameAsShipping = () =>{
         setSameAsShipping(!sameAsShipping)
-        if(!sameAsShipping) {
-            setBilling({
-                firstName: shipping.firstName,
-                lastName: shipping.lastName,
-                line1: shipping.addressLineOne,
-                line2: shipping.addressLineTwo,
-                city: shipping.city,
-                state: shipping.state,
-                postalCode: shipping.zipcode,
-            })
+        console.log(shipping)
+        if(shipping.firstName){
+            console.log(190)
+            if(!sameAsShipping) {
+                setBilling({
+                    firstName: shipping.firstName,
+                    lastName: shipping.lastName,
+                    line1: shipping.addressLineOne,
+                    line2: shipping.addressLineTwo,
+                    city: shipping.city,
+                    state: shipping.state,
+                    postalCode: shipping.zipcode,
+                })
+            } else {
+                setBilling({})
+            }
         } else {
-            setBilling({})
+            console.log(205)
+            if(!sameAsShipping) {
+                setBilling({
+                    firstName: shippingInput.firstName,
+                    lastName: shippingInput.lastName,
+                    line1: shippingInput.addressLineOne,
+                    line2: shippingInput.addressLineTwo,
+                    city: shippingInput.city,
+                    state: shippingInput.state,
+                    postalCode: shippingInput.zipcode,
+                })
+            } else {
+                setBilling({})
+            }
         }
+        
     }
 
     // Listen to changes on cardholder name's input. handleCardholderNameChange() is passed as a prop to Checkout/PaymentMethod
@@ -391,7 +413,8 @@ function Checkout ({ backend, loggedOut, grabLoggedOut }) {
             <>
             <NavBar />
             <div id="payment-form" >
-                <Shipping backend={backend} loggedIn={loggedIn} grabPaymentLoading={grabPaymentLoading} cartID={cartID} openCollapse={openCollapse} grabOpenCollapse={grabOpenCollapse} shipping={shipping} grabShipping={grabShipping} />
+                <Shipping backend={backend} loggedIn={loggedIn} grabPaymentLoading={grabPaymentLoading} cartID={cartID} openCollapse={openCollapse} grabOpenCollapse={grabOpenCollapse} shipping={shipping} grabShipping={grabShipping} grabBillingWithShipping={grabBillingWithShipping} shippingInput={shippingInput} grabShippingInput={grabShippingInput} />
+
                 <PaymentMethod backend={backend} customer={customer} loggedIn={loggedIn} error={error} grabError={grabError} disabled={disabled} grabDisabled={grabDisabled} paymentLoading={paymentLoading} grabPaymentLoading={grabPaymentLoading} billing={billing} handleBillingChange={handleBillingChange} grabBilling={grabBilling} paymentMethod={paymentMethod} grabPaymentMethod={grabPaymentMethod} cardholderName={cardholderName} grabCardholderName={grabCardholderName}handleCardholderNameChange={handleCardholderNameChange} handleCardChange={handleCardChange} collectCVV={collectCVV} grabCollectCVV={grabCollectCVV} editPayment={editPayment} grabEditPayment={grabEditPayment} redisplayCardElement={redisplayCardElement} grabRedisplayCardElement={grabRedisplayCardElement} grabShowSavedCards={grabShowSavedCards} handleConfirmPayment={handleConfirmPayment} showSavedCards={showSavedCards} editExpiration={editExpiration} grabEditExpiration={grabEditExpiration} loggedOut={loggedOut} grabLoggedOut={grabLoggedOut} openCollapse={openCollapse} sameAsShipping={sameAsShipping} handleSameAsShipping={handleSameAsShipping} shipping={shipping} grabBillingWithShipping={grabBillingWithShipping} />
     
                 {/* Show Save card checkbox if user is logged in and does not have an already default, saved or last used, saved card to display as indicated by paymentMethod state. Do not show the checkbox for guests (as indicated by customer state). */}
