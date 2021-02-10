@@ -10,7 +10,6 @@ import CardForm from './CardForm'
 // import Modal from 'react-bootstrap/Modal'
 import FormGroup from 'react-bootstrap/FormGroup'
 import '../../styles/Payment.css'
-import LoggedOutAlert from '../../components/LoggedOutAlert'
 
 function PaymentMethod ({ backend, customer, processing, loggedIn, error, grabError, disabled, grabDisabled,  paymentLoading, grabPaymentLoading, billing, grabBilling, handleBillingChange, paymentMethod, grabPaymentMethod, cardholderName, grabCardholderName, handleCardholderNameChange, handleCardChange, collectCVV, grabCollectCVV, editPayment, grabEditPayment, redisplayCardElement, grabRedisplayCardElement, grabShowSavedCards, handleConfirmPayment, showSavedCards, editExpiration, grabEditExpiration, loggedOut, grabLoggedOut }) {
 

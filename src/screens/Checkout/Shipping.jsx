@@ -6,7 +6,6 @@ import Modal from 'react-modal';;
 function Shipping({ backend, loggedIn, grabPaymentLoading, cartID  }) {
     // shippingLoading state is initially set to true to render <></> before updating it to false in useEffect()
     const [shippingLoading, setShippingLoading] = useState(true)
-    const [RGBA, setRGBA] = useState({backgroundColor: "rgba(192,192,192,1.0)"})
     const [showModal, setShowModal] = useState(false)
 
     // shipping state is to store ONE saved shipping address (either default, last used, or last created) that we wil display or no saved shipping address
@@ -28,8 +27,6 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID  }) {
 
     /* ------- MISCELLANEOUS FUNCTIONS ------ */
 
-    const grabRGBA = (rgba) => setRGBA(rgba)
-
     const grabShippingInput = (shippingInput) => setShippingInput(shippingInput)
 
     const grabAddNewShipping = (addShipping) => setAddShipping(addShipping)
@@ -37,13 +34,11 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID  }) {
     // Fade out the Shipping component and show the Payment Method component when Next button is clicked
     const collapse = () => {
         console.log("collapse")
-        grabRGBA({backgroundColor: "transparent"})
         grabPaymentLoading(false) // paymentLoading state is currently true UNTIL Next button in ShippingForm component is clicked. By clicking the button, paymentLoading state is updated to false so it can render stuff from the Checkout/PaymentMethod components rather than render <></>
         setReadOnly(true)
     }
 
     const back = () => {
-        grabRGBA({backgroundColor: "rgba(192,192,192,1.0)"})
         setReadOnly(false)
         grabPaymentLoading(true)
     }
@@ -220,7 +215,7 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID  }) {
     } else if(!shipping.firstName || !loggedIn() || addShipping || editShipping ) {
         // If user is guest (as indicated by !loggedIn()), or logged in user does not have a shipping address (indicated by !shipping.address), or logged in user clicked Add New Shipping (as indicated by addShipping state), or logged in user clicked Edit Shipping show Shipping Input form
         return (
-            <ShippingForm backend={backend} loggedIn={loggedIn} shipping={shipping} shippingInput={shippingInput} grabShippingInput={grabShippingInput} grabPaymentLoading={grabPaymentLoading} grabRGBA={grabRGBA} RGBA={RGBA} addShipping={addShipping} grabAddNewShipping={grabAddNewShipping} cartID={cartID} updateShippingState={updateShippingState} updateShippingInputState={updateShippingInputState} editShipping={editShipping} handleEditShipping={handleEditShipping} closeModal={closeModal} collapse={collapse} back={back}/>
+            <ShippingForm backend={backend} loggedIn={loggedIn} shipping={shipping} shippingInput={shippingInput} grabShippingInput={grabShippingInput} grabPaymentLoading={grabPaymentLoading} addShipping={addShipping} grabAddNewShipping={grabAddNewShipping} cartID={cartID} updateShippingState={updateShippingState} updateShippingInputState={updateShippingInputState} editShipping={editShipping} handleEditShipping={handleEditShipping} closeModal={closeModal} collapse={collapse} back={back}/>
         )
     } else if(showSavedShipping) {
         return(
@@ -241,7 +236,7 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID  }) {
     } else if(shipping.firstName) {
         return (
             <>
-            <div style={RGBA}>
+            <div >
                 {/* If user has a saved address (indicated by shipping.address), display the address: */}
                 <h2>Shipping Address</h2>
                 <p id="name">{shipping.firstName} {shipping.lastName}</p>
