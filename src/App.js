@@ -27,15 +27,19 @@ function App() {
   // const [password, setPassword] = useState('')
   const [token, setToken] = useState('')
   const [paymenIntentInfo, setPaymenIntentInfo] = useState('')
+  
+  const [loggedOut, setLoggedOut] = useState(false)
+
+  const grabLoggedOut = (loggedOut) => setLoggedOut(loggedOut)
 
   const grabURL = (url) => {
     setURL(url);
   }
 
-  const grabPaymenIntentInfo = (paymenIntentInfo) => {
-    setPaymenIntentInfo(paymenIntentInfo);
-    console.log(paymenIntentInfo);
-  }
+  // const grabPaymenIntentInfo = (paymenIntentInfo) => {
+  //   setPaymenIntentInfo(paymenIntentInfo);
+  //   console.log(paymenIntentInfo);
+  // }
 
   const grabLoginInfo = async (username, loggedIn, token) => {
     // setUsername(username);
@@ -66,7 +70,7 @@ function App() {
         <Switch>
           <Route path="/checkout">
             <Elements stripe={stripePromise}>
-              <Checkout backend={backend} grabPaymenIntentInfo={grabPaymenIntentInfo} paymenIntentInfo={paymenIntentInfo}/>
+              <Checkout backend={backend} loggedOut={loggedOut} grabLoggedOut={grabLoggedOut}/>
             </Elements>
           </Route>
           <Route path="/buyer">
