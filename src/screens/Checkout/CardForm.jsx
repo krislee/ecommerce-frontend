@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import CollectCard from "../../components/Card"
 import BillingInput from "../../components/BillingInput"
 
-export default function CardForm ({ customer, paymentMethod, processing, handleSubmitCardForm, handleCardChange, handleBillingChange, handleCardholderNameChange, cardholderName, billing, collectCVV, redisplayCardElement, closeAddNewModal, error, disabled }) {
+export default function CardForm ({ customer, paymentMethod, processing, handleSubmitCardForm, handleCardChange, handleBillingChange, handleCardholderNameChange, cardholderName, billing, collectCVV, redisplayCardElement, closeAddNewModal, error, disabled, sameAsShipping, handleSameAsShipping }) {
+
+
     return(
         <form onSubmit={handleSubmitCardForm}>
             <h2>Credit Card</h2>
@@ -13,6 +15,8 @@ export default function CardForm ({ customer, paymentMethod, processing, handleS
             {error && <div className="card-error" role="alert">{error}</div>}
 
             <h2>Billing Address</h2>
+            <label>Same as Shipping Address </label>
+            <input id="sameAsShipping" type="checkbox" defaultChecked={sameAsShipping} onChange={handleSameAsShipping}/>
             <BillingInput handleBillingChange={handleBillingChange} billing={billing}/>
 
             {redisplayCardElement ? (

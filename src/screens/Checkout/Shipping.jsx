@@ -4,7 +4,7 @@ import Button from '../../components/Button'
 import Modal from 'react-modal';
 import { Accordion, Card } from 'react-bootstrap'
 
-function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, openCollapse, grabOpenCollapse, loggedOut, grabLoggedOut  }) {
+function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, openCollapse, grabOpenCollapse, loggedOut, grabLoggedOut, shipping, grabShipping, grabBillingWithShipping, shippingInput, grabShippingInput }) {
     // shippingLoading state is initially set to true to render <></> before updating it to false in useEffect()
     const [shippingLoading, setShippingLoading] = useState(true)
     const [showModal, setShowModal] = useState(false)
@@ -12,11 +12,12 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, openCollapse,
     // shipping state is to store ONE saved shipping address (either default, last used, or last created) that we wil display or no saved shipping address
     // Aside from useEffect(), whenever we select an address, update an address, or add a new address, shipping state is updated to store that current, saved shipping address to redisplay it
     // If shipping state stores an object of saved shipping address, then we would always use it 
-    const [shipping, setShipping] = useState({})
+    // const [shipping, setShipping] = useState({})
+
     // addShipping state to represent if we are currently adding a new shipping address to addresses logged in user has already saved
     const [addShipping, setAddShipping] = useState(false)
     // shippingInput state that contains the address values for the input value
-    const [shippingInput, setShippingInput] = useState({})
+    // const [shippingInput, setShippingInput] = useState({})
     // allSavedShipping state contains the array of all the shipping addresses that would be mapped over to display each address in the modal
     const [allSavedShipping, setAllSavedShipping] = useState([])
     // showingAllSavedShipping state represents if we are currently showing saved cards
@@ -28,18 +29,20 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, openCollapse,
 
     /* ------- MISCELLANEOUS FUNCTIONS ------ */
 
-    const grabShippingInput = (shippingInput) => setShippingInput(shippingInput)
+    // const grabShippingInput = (shippingInput) => setShippingInput(shippingInput)
 
     const grabAddNewShipping = (addShipping) => setAddShipping(addShipping)
 
     // Fade out the Shipping component and show the Payment Method component when Next button is clicked
-    const collapse = () => {
+    const collapse = async () => {
         console.log("collapse")
         // grabPaymentLoading(false) // paymentLoading state is currently true UNTIL Next button in ShippingForm component is clicked. By clicking the button, paymentLoading state is updated to false so it can render stuff from the Checkout/PaymentMethod components rather than render <></>
         grabOpenCollapse(true)
         setReadOnly(true)
         setShowButtons(false)
         addNewShipping()
+        console.log(44, shippingInput)
+        grabBillingWithShipping(shippingInput)
     }
 
     const back = () => {
@@ -90,7 +93,7 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, openCollapse,
         } else if(addShipping) {
             setAddShipping(false) // update the addShipping state to false to represent we are not adding a shipping
             // Since we updated the shippingInput state to be an empty object when we first clicked Add New to open modal, we need to reset back the input fields if user did not add a new card and just closes the modal
-            setShippingInput({ 
+            grabShippingInput({ 
                 firstName: shipping.firstName,
                 lastName: shipping.lastName,
                 addressLineOne: shipping.addressLineOne,
@@ -102,7 +105,7 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, openCollapse,
         } else if(editShipping) {
             setEditShipping(false) // update the editShipping state to false to represent we are not edditing a shipping
             // In case the user starts editing and then closes the Edit modal, and then immediately click Edit again, the input fields need to be reset with the populated fields.
-            setShippingInput({ 
+            grabShippingInput({ 
                 firstName: shipping.firstName,
                 lastName: shipping.lastName,
                 addressLineOne: shipping.addressLineOne,
@@ -119,7 +122,7 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, openCollapse,
     const openAddNewModal = () => {
         console.log(shipping)
         setAddShipping(true) // update the addShipping state to true to represent we are currently adding a shipping
-        setShippingInput({}) // clear out the pre-filled input fields by updating shippingInput state to be an empty obj
+        grabShippingInput({}) // clear out the pre-filled input fields by updating shippingInput state to be an empty obj
         setShowModal(true) // open modal
         // grabPaymentLoading(true) // we do not want to show the payment info when we are adding/editing/showing all addresses; by updating paymentLoading state to false, the PaymentMethod component will return <></>
     }
@@ -129,8 +132,6 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, openCollapse,
         setShowModal(true) // open modal
         // grabPaymentLoading(true) // we do not want to show the payment info when we are adding/editing/showing all addresses; by updating paymentLoading state to false, the PaymentMethod component will return <></>
     }
-
-    const grabAddShipping = (addShipping) => setAddShipping(addShipping)
 
     const openAllAddressesModal = () => {
         setShowModal(true) // open modal
@@ -171,7 +172,7 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, openCollapse,
         if(shippingAddress) {
             const splitShippingAddress = shippingAddress.split(", ")
             const splitShippingName = checkoutSavedShippingAddressData.Name.split(", ")
-            setShipping({
+            grabShipping({
                 
                     firstName: splitShippingName[0],
                     lastName: splitShippingName[1],
@@ -194,7 +195,7 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, openCollapse,
             const splitShippingAddress = shippingAddress.split(", ")
             const splitShippingName = checkoutSavedShippingAddressData.Name.split(", ")
 
-            setShippingInput({
+            grabShippingInput({
                 
                     firstName: splitShippingName[0],
                     lastName: splitShippingName[1],
