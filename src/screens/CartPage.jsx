@@ -1,8 +1,8 @@
 import React, {useEffect, useState} from 'react'
 import {Link} from 'react-router-dom';
-import '../styles/BuyerLogin.css'
 import '../styles/CartPage.css'
 import NavBar from '../components/NavigationBar'
+import Footer from '../components/Footer'
 
 
 function CartPage ({ backend }) {
@@ -50,7 +50,7 @@ function CartPage ({ backend }) {
     },[])
 
     return (
-        <>
+        <div className="cart-page-container">
             <NavBar />
             <div className="cart">
                 {typeof data.cart === 'string' || items.length === 0? <div className="noItems">No Items...</div>: 
@@ -68,8 +68,9 @@ function CartPage ({ backend }) {
                 </Link>
                 </>}
             </div>
+            <Footer />
             {/* <button onClick={checkout}>Checkout</button> */}
-        </>
+        </div>
     )
 }
 

@@ -1,15 +1,19 @@
 .user-profile-container {
     width: 100vw;
     display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 .top-bar {
-    position: fixed;
+    /* position: fixed; */
     /* left: 0; */
-    top: 10vh;
-    width: 100%;
-    height: 5vh;
+    margin-top: 8rem;
+    width: 60%;
+    height: 2rem;
     display: flex;
+    justify-content: center;
     /* flex-direction: column; */
 }
 
@@ -20,11 +24,12 @@
 
 .top-bar > div {
     cursor: pointer;
-    width: 100%;
+    width: 20%;
     background-color: #e8e8e8;
     color: #000;
     border-bottom: 1px solid #000;
     border-right: 1px solid #000;
+    border-top: 1px solid #000;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -36,7 +41,7 @@
 }
 
 .addresses-container, .payments-container {
-    margin-top: 10rem;
+    margin-top: 5rem;
     height: 100%;
     width: 100%;
     display: flex;
@@ -48,7 +53,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    width: 50%;
+    width: 65rem;
     margin-bottom: 1rem;
     /* margin: 3rem; */
 }
@@ -86,16 +91,15 @@
     justify-content: space-between; */
     flex-wrap: wrap;
     width: 70%;
+    justify-content: space-between;
 }
 
 .all-addresses-container {
     display: flex;
     flex-direction: row;
     align-items: center;
-    /* justify-content: center; */
-    /* width: 100%; */
-    /* height: 100%; */
-    justify-content: space-between;
+    width: 70rem;
+    /* justify-content: space-between; */
     flex-wrap: wrap;
 }
 

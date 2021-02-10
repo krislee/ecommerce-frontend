@@ -1,7 +1,6 @@
 import React from 'react'
 import {Link} from 'react-router-dom';
 // import Button from '../components/Button'
-// import '../styles/BuyerLogin.css'
 import '../styles/NavigationBar.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faHome, faShoppingCart, faUser } from '@fortawesome/free-solid-svg-icons'

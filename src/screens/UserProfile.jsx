@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react'
-import Button from '../components/Button'
 import '../styles/UserProfile/UserProfile.css'
 import Navbar from '../components/NavigationBar'
 import Modal from 'react-modal';
 import { Redirect } from 'react-router-dom';
 import AddressContainer from '../components/UserProfile/AddressContainer'
+import Footer from '../components/Footer'
 
 function UserProfile ({backend}) {
 
+    // Getter and Setters 
     const [addressesTabOpen, setAddressesTabOpen] = useState(true);
     const [paymentsTabOpen, setPaymentsTabOpen] = useState(false);
     const [addressData, setAddressData] = useState([]);
@@ -150,7 +151,7 @@ function UserProfile ({backend}) {
                 <Navbar />
                 <div className="user-profile-container">
                     <div className='top-bar'>
-                        <div onClick={handleClickAddresses} 
+                        <div style={{borderLeft: '1px solid #000'}} onClick={handleClickAddresses} 
                         className={addressesTabOpen === true ? "highlighted-tab" : null}>
                             Addresses
                         </div>
@@ -186,6 +187,7 @@ function UserProfile ({backend}) {
                             <div className="header">Saved Payments</div>
                         </div>
                     }
+                    <Footer />
                 </div>
                 <Modal
                 isOpen={modalIsOpen}

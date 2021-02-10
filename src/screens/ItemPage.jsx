@@ -3,6 +3,7 @@ import React, {useEffect, useState} from 'react'
 import '../styles/ItemPage.css'
 import AddCartButton from '../components/AddCartButton';
 import NavBar from '../components/NavigationBar';
+import Footer from '../components/Footer'
 
 function ItemPage ({ url, backend }) {
 
@@ -69,6 +70,7 @@ function ItemPage ({ url, backend }) {
                     </div>
                 </div>
             </div>
+            <Footer />
         </div>
     )
 }
