@@ -19,6 +19,7 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, openCollapse,
     const [editShipping, setEditShipping] = useState(false)
     const [readOnly, setReadOnly] = useState(false) // disable the inputs after clicking Next
     const [showButtons, setShowButtons] = useState(false) //when we click Next button an Edit (sort of like a back button) appears. When the Edit button is clicked, showButtons state gets updated to true to display 3 other buttons: Add New, Edit, and Saved Shipping
+    const [multipleShipping, setMultipleShipping] = useState(false) //multipleShipping state is initially false but will update to true in UseEffect if there is more than 1 saved address coming back from the server or after adding a new address at checkout
 
     /* ------- MISCELLANEOUS FUNCTIONS ------ */
 
@@ -234,6 +235,8 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, openCollapse,
         }
     }
  
+    /* ------- UPDATE MULTIPLESHIPPING STATE AFTER ADDING AN ADDRESS ------ */
+    const grabMultipleShipping = (multipleShipping) => setMultipleShipping(multipleShipping)
 
     /* --------------------- USE EFFECT -------------------- */
 
@@ -258,10 +261,26 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, openCollapse,
                 setShippingLoading(false) // update shippingLoading state to false so we can render the shipping info and not <></>
                 // grabPaymentLoading(true)
             } 
+
+            const retrieveAllAddresses = async() => {
+                const allSavedShippingResponse = await fetch(`${backend}/shipping/address`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': loggedIn()
+                    }
+                })
+        
+                const allSavedShippingData = await allSavedShippingResponse.json()
+                console.log(allSavedShippingData)
+                if(allSavedShippingData.length > 1) setMultipleShipping(true)
+            }
     
             getCheckoutShippingAddress()
+            retrieveAllAddresses()
+
         } else {
-            setShippingLoading(false)
+            // setShippingLoading(false)
            
         }
     }, [])
@@ -306,7 +325,7 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, openCollapse,
     } else if(addShipping || editShipping ) {
         return (
             <Modal isOpen={showModal} onRequestClose={ closeModal } ariaHideApp={false} contentLabel="Saved Shipping">
-                <ShippingForm backend={backend} loggedIn={loggedIn} shipping={shipping} shippingInput={shippingInput} grabShippingInput={grabShippingInput} grabPaymentLoading={grabPaymentLoading} addShipping={addShipping} grabAddNewShipping={grabAddNewShipping} cartID={cartID} updateShippingState={updateShippingState} updateShippingInputState={updateShippingInputState} editShipping={editShipping} handleEditShipping={handleEditShipping} closeModal={closeModal} collapse={collapse} back={back}/> 
+                <ShippingForm backend={backend} loggedIn={loggedIn} shipping={shipping} shippingInput={shippingInput} grabShippingInput={grabShippingInput} grabPaymentLoading={grabPaymentLoading} addShipping={addShipping} grabAddNewShipping={grabAddNewShipping} cartID={cartID} updateShippingState={updateShippingState} updateShippingInputState={updateShippingInputState} editShipping={editShipping} handleEditShipping={handleEditShipping} closeModal={closeModal} collapse={collapse} back={back} grabMultipleShipping={grabMultipleShipping}/> 
             </Modal>
         )
     } else if(shipping.firstName) {
@@ -324,7 +343,7 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, openCollapse,
                 <>
                 <button disabled={readOnly} id="addNewAddress" onClick={openAddNewModal}>Add New</button>
                 <button disabled={readOnly} id="editAddress" onClick={openEditModal}>Edit</button>
-                <button disabled={readOnly} id="allAddresses" onClick={openAllAddressesModal}>All Addresses</button> 
+                {multipleShipping && <button disabled={readOnly} id="allAddresses" onClick={openAllAddressesModal}>All Addresses</button>}
                 </>
                 )}
                 
