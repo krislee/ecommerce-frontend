@@ -13,7 +13,7 @@ import Collapse from 'react-bootstrap/Collapse'
 import '../../styles/Payment.css'
 import { Accordion, Card, Button } from 'react-bootstrap';
 
-function PaymentMethod ({ backend, customer, processing, loggedIn, error, grabError, disabled, grabDisabled,  paymentLoading, grabPaymentLoading, billing, grabBilling, handleBillingChange, paymentMethod, grabPaymentMethod, cardholderName, grabCardholderName, handleCardholderNameChange, handleCardChange, collectCVV, grabCollectCVV, editPayment, grabEditPayment, redisplayCardElement, grabRedisplayCardElement, grabShowSavedCards, handleConfirmPayment, showSavedCards, loggedOut, grabLoggedOut, editExpiration, grabEditExpiration, openCollapse, sameAsShipping, handleSameAsShipping, shipping, grabBillingWithShipping }) {
+function PaymentMethod ({ backend, customer, processing, loggedIn, error, grabError, disabled, grabDisabled,  paymentLoading, grabPaymentLoading, billing, grabBilling, handleBillingChange, paymentMethod, grabPaymentMethod, cardholderName, grabCardholderName, handleCardholderNameChange, handleCardChange, collectCVV, grabCollectCVV, editPayment, grabEditPayment, redisplayCardElement, grabRedisplayCardElement, grabShowSavedCards, handleConfirmPayment, showSavedCards, grabLoggedOut, editExpiration, grabEditExpiration, openCollapse, sameAsShipping, handleSameAsShipping, shipping, shippingInput, grabBillingWithShipping }) {
 
     /* ------- STRIPE VARIABLES ------ */
     const elements = useElements()
@@ -29,7 +29,10 @@ function PaymentMethod ({ backend, customer, processing, loggedIn, error, grabEr
         if(loggedIn()){
             // Get either a 1) default, saved card or 2) last used, saved card info, or 3) last created, saved card, or 4) no saved cards 
             let paymentMethodData
+            
             const fetchPaymentMethod = async () => {
+                grabPaymentLoading(false) // update paymentLoading state to false so it will not render Loading... when we re-render CheckoutPage and Checkout/PaymentMethod components
+                
                 const paymentMethodResponse = await fetch(`${backend}/order/checkout/payment`, {
                     method: 'GET',
                     headers: {
@@ -41,7 +44,7 @@ function PaymentMethod ({ backend, customer, processing, loggedIn, error, grabEr
                 console.log(paymentMethodData);
                 // After getting the card info, call grabPaymentMethod() which was passed as a prop from CheckoutPage. The grabPaymentMethod() will update paymentMethod state, billing state, and collectCVV state in Checkout Page. The value is either an object of info or object with just {paymentMethodID:null} if there is no payment method saved for the logged in user. 
                 grabPaymentMethod(paymentMethodData)
-                grabPaymentLoading(false) // update paymentLoading state to false so it will not render Loading... when we re-render CheckoutPage and Checkout/PaymentMethod components
+                
             }
 
             fetchPaymentMethod();
@@ -131,15 +134,12 @@ function PaymentMethod ({ backend, customer, processing, loggedIn, error, grabEr
     // When Add New Card button is clicked, handleAddNew() runs
     const handleAddNew = async () => {
         if (loggedIn()) {
-            grabBillingWithShipping(shipping)
-            grabCardholderName("")
+            grabBillingWithShipping(shippingInput) // the billing input values depend on billing state; if we want the billing input values to prefilled with shipping input values when we click Add New Card because the checkbox Same as Shipping Address is checked (which is checked by default), then we need to update the billing state to have the same value as shipping input state because currently the billing state is whatever we get back from the server 
             grabError(null) // If there are errors from CVC Element before clicking Add New Cards button (i.e. incomplete security code), then the error will be displayed the moment we click Add New Cards button. So we want to clear the error when the Add New Cards button is clicked and the Add New Cards modal would not show the error. (We do not need to do this to opening Edit modal because there is no div to display the error in the Edit modal.)
             grabDisabled(true) // Disable the Save button in the Add New Card modal again, in case disabled state was false because something was written in the CVV Element if we were recollecting the CVV again
             grabRedisplayCardElement(true) // redisplayCardElement state represents if we are currently adding a new card, so update the redisplayCardElement state from default false to true; what we render in the Checkout/PaymentMethod component depends on the redisplayCardElement state (look at the conditional statements below); the Confirm Payment button won't be displayed if redisplayCardElement state is true
             grabCollectCVV("false") // need to update the collectCVV state to "false" so that the CVV Element won't be displayed but a Card Element would be displayed 
             setShowModal(true) // open the modal
-            console.log("add new")
-            console.log(editPayment, "edit payment")
         } else {
             grabLoggedOut(true)
         }
@@ -241,9 +241,7 @@ function PaymentMethod ({ backend, customer, processing, loggedIn, error, grabEr
 
  
 
-    if(loggedOut) {
-        return <Redirect to="/buyer" />     
-    } else if(paymentLoading) {
+    if(paymentLoading) {
         return <></>
     } else if(!paymentMethod.paymentMethodID) {
         // If there is no saved payment methods (indicated by !paymentMethod.paymentMethodID) OR if there is a saved payment method (indicated by paymentMethod.paymentMethodID) and Add New Card button is clicked (indicated by redisplayCardElement state to true), then the same form that collects cards details is displayed. But for the form's onSubmit, the functions would be different.
