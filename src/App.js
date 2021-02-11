@@ -8,11 +8,13 @@ import SellerLogin from './screens/SellerLogin'
 import ItemPage from './screens/ItemPage';
 import CartPage from './screens/CartPage';
 import Checkout from './screens/Checkout/CheckoutPage'
-import UserProfile from './screens/UserProfile'
+import UserProfile from './screens/UserProfile/UserProfile'
 // STRIPE
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
 import 'bootstrap/dist/css/bootstrap.min.css';
+// Font for Roboto
+import 'fontsource-roboto';
 
 function App() {
 
@@ -86,7 +88,9 @@ function App() {
             <CartPage backend={backend} loggedIn={loggedIn} />
           </Route>
           <Route path="/profile">
-            <UserProfile backend={backend} loggedIn={loggedIn}/>
+            <Elements stripe={stripePromise}>
+              <UserProfile backend={backend} loggedIn={loggedIn}/>
+            </Elements>
           </Route>
           <Route path="">
             <Homepage grabURL={grabURL} backend={backend} loggedIn={token}/>
