@@ -1,7 +1,7 @@
 import React from 'react'
 import Button from './Button'
 
-export default function ShippingForm( { backend, loggedIn, readOnly, shipping, addShipping, shippingInput, grabShippingInput, cartID, updateShippingState, updateShippingInputState, editShipping, handleEditShipping, closeModal, collapse, back, addNewShipping, grabAddNewShipping }) {
+export default function ShippingForm( { backend, loggedIn, readOnly, shipping, addShipping, shippingInput, grabShippingInput, cartID, updateShippingState, updateShippingInputState, editShipping, handleEditShipping, closeModal, collapse, back, addNewShipping, grabAddNewShipping, }) {
     
 
     const handleShippingChange = (event) => {
@@ -77,12 +77,9 @@ export default function ShippingForm( { backend, loggedIn, readOnly, shipping, a
             <>
             <button form="form">Save</button> 
             <Button type={"button"} name={"Cancel"} onClick={closeModal}/>
-            </>) : (
-            <>
-            <button form="form" disabled={readOnly}>Next</button> 
-            {/* {readOnly && <button onClick={back}>Edit</button> } */}
             </>
-        )}
+        ) : <button form="form" disabled={readOnly}>Next</button>   
+        }
         </>      
     )
 }

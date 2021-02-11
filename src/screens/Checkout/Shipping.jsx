@@ -4,7 +4,7 @@ import Button from '../../components/Button'
 import Modal from 'react-modal';
 import { Accordion, Card } from 'react-bootstrap'
 
-function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, openCollapse, grabOpenCollapse, loggedOut, grabLoggedOut, shipping, grabShipping, grabBillingWithShipping, shippingInput, grabShippingInput, paymentMethod }) {
+function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, openCollapse, grabOpenCollapse, loggedOut, grabLoggedOut, shipping, grabShipping, grabBillingWithShipping, shippingInput, grabShippingInput, paymentMethod, grabCardholderName }) {
     // shippingLoading state is initially set to true to render <></> before updating it to false in useEffect()
     const [shippingLoading, setShippingLoading] = useState(true)
     const [showModal, setShowModal] = useState(false)
@@ -40,6 +40,7 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, openCollapse,
         setReadOnly(false)
         grabOpenCollapse(false) // close the payment method info/form
         setShowButtons(true) // show the Add New, Edit, and All Addresses buttons
+        if(!paymentMethod.paymentMethodID)grabCardholderName("") // When we click Edit while filling out the Payment method form we want to clear the cardholder's name input if user started typing in it
     }
 
      /* ------- HELPERS FOR UPDATING SHIPPING STATE/UPDATE SHIPPING INPUT STATE------ */

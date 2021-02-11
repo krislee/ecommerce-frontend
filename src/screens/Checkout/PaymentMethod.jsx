@@ -9,7 +9,6 @@ import CardForm from './CardForm'
 // import Button from 'react-bootstrap/Button';
 // import Modal from 'react-bootstrap/Modal'
 import FormGroup from 'react-bootstrap/FormGroup'
-import Collapse from 'react-bootstrap/Collapse'
 import '../../styles/Payment.css'
 import { Accordion, Card, Button } from 'react-bootstrap';
 
@@ -22,7 +21,7 @@ function PaymentMethod ({ backend, customer, processing, loggedIn, error, grabEr
 
     const [savedCards, setSavedCards] = useState([])
     const [showModal, setShowModal] = useState(false)
-
+    const [multipleSavedCards, setMultipleSavedCards] = useState(false)
 
     useEffect(() => {
         // Check if user is logged in or not since different headers for routes depend if user is logged in or not
@@ -32,7 +31,7 @@ function PaymentMethod ({ backend, customer, processing, loggedIn, error, grabEr
             
             const fetchPaymentMethod = async () => {
                 grabPaymentLoading(false) // update paymentLoading state to false so it will not render Loading... when we re-render CheckoutPage and Checkout/PaymentMethod components
-                
+
                 const paymentMethodResponse = await fetch(`${backend}/order/checkout/payment`, {
                     method: 'GET',
                     headers: {
@@ -44,10 +43,26 @@ function PaymentMethod ({ backend, customer, processing, loggedIn, error, grabEr
                 console.log(paymentMethodData);
                 // After getting the card info, call grabPaymentMethod() which was passed as a prop from CheckoutPage. The grabPaymentMethod() will update paymentMethod state, billing state, and collectCVV state in Checkout Page. The value is either an object of info or object with just {paymentMethodID:null} if there is no payment method saved for the logged in user. 
                 grabPaymentMethod(paymentMethodData)
+
+
                 
             }
+            const retrievingSavedCards = async() => {
+                const savedCardsResponse = await fetch(`${backend}/order/index/payment?save=false`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': loggedIn()
+                    }
+                })
+                const savedCardsData = await savedCardsResponse.json()
+                console.log(savedCardsData.paymentMethods)
+                if(savedCardsData.paymentMethods.length > 1) setMultipleSavedCards(true)
+            }
+            
 
             fetchPaymentMethod();
+            retrievingSavedCards()
            
         } else if (!loggedIn()){
             grabPaymentMethod({}) // if guest user, then paymentMethod state would remain an empty obj, billing details state would remain empty obj, and collectCVV state would remain "false"
@@ -135,6 +150,7 @@ function PaymentMethod ({ backend, customer, processing, loggedIn, error, grabEr
     const handleAddNew = async () => {
         if (loggedIn()) {
             grabBillingWithShipping(shippingInput) // the billing input values depend on billing state; if we want the billing input values to prefilled with shipping input values when we click Add New Card because the checkbox Same as Shipping Address is checked (which is checked by default), then we need to update the billing state to have the same value as shipping input state because currently the billing state is whatever we get back from the server 
+            grabCardholderName("") // Make sure the cardholder name input is empty when we click add new (even though we clear the cardholder's name when we hit close for Add New modal, this assumes user has clicked on the Add New Card already; so if user is clicking Add New Card for the first time, the cardholder's name input should be cleared)
             grabError(null) // If there are errors from CVC Element before clicking Add New Cards button (i.e. incomplete security code), then the error will be displayed the moment we click Add New Cards button. So we want to clear the error when the Add New Cards button is clicked and the Add New Cards modal would not show the error. (We do not need to do this to opening Edit modal because there is no div to display the error in the Edit modal.)
             grabDisabled(true) // Disable the Save button in the Add New Card modal again, in case disabled state was false because something was written in the CVV Element if we were recollecting the CVV again
             grabRedisplayCardElement(true) // redisplayCardElement state represents if we are currently adding a new card, so update the redisplayCardElement state from default false to true; what we render in the Checkout/PaymentMethod component depends on the redisplayCardElement state (look at the conditional statements below); the Confirm Payment button won't be displayed if redisplayCardElement state is true
@@ -162,6 +178,7 @@ function PaymentMethod ({ backend, customer, processing, loggedIn, error, grabEr
                 // If there is no error from creating a payment method, then update the payment method state to re-render the CheckoutPage and Checkout/PaymentMethod components with the new payment method, billing details, recollectCVV info
                 await grabPaymentMethod(newSavedPaymentMethod)
                 await grabRedisplayCardElement(false) // update the redisplayCardElement state back to false
+                setMultipleSavedCards(true)
                 setShowModal(false) // Close modal
                 await grabDisabled(true) // disable state is set to false when there are card changes; After saving a new payment method, disable the Save button again, so that when we reopen the Add New Card modal again it will be disabled
                 // await grabError(null)
@@ -179,7 +196,7 @@ function PaymentMethod ({ backend, customer, processing, loggedIn, error, grabEr
         await grabCollectCVV(paymentMethod.recollectCVV) // Since we updated the collectCVV state to "false" when we click Add New Card button, we need to update the collectCVV state back to what the payment method's recollectCVV property was if we are redisplaying what the current payment method was. 
         await grabRedisplayCardElement(false) // Update the redisplayCardElement to false to represent we are not adding a card at the moment since we hit Close button
         grabBilling(paymentMethod.billingDetails) // If user began editing the billing details input, handleBillingChange() runs. This means billing state is updated. If user just closes the edit modal, and reopens the edit modal, the billing details input will have the updated billing state. In other words, the billing details input will have the previously edited but unsubmitted input values. So when we run grabBilling() with the current paymentMethod state (reminder: paymentMethod state did not get updated since grabPaymentMethod() does not run unless Save button is clicked), it will reset the billing state back to the current paymentMethod's billing details.
-        grabCardholderName(paymentMethod.cardholderName) // Also reset the cardholder's name if user began editing the cardholder's name details input but only closes the Add New Card modal without clicking Save (for more detailed info, look at grabBilling() above)
+        grabCardholderName(paymentMethod.cardholderName)  // Also reset the cardholder's name input to what the cardholder's name was if user began editing the cardholder's name details input but only closes the Add New Card modal without clicking Save (for more detailed info, look at grabBilling() above)
         setShowModal(false) // close the Add New Card modal by setting showModal state to false
         grabError(null) // We want to reset the error state to its default value, null, so that when we open back up the Add Mew Card modal, it will not show the error still. 
         grabDisabled(true) // When you first open the Add New Card modal, disabled state is true so Save new card button is disabled. When we start typing on the Card Element, disabled state is false since disabled state is updated only when it is e.empty so you can click on Save new card button. We want to reset the disable state to true, so the button is disabled upon reopening the Add New Card modal. 
@@ -290,7 +307,7 @@ function PaymentMethod ({ backend, customer, processing, loggedIn, error, grabEr
                 {/* Click Add New to add a new payment method */}
                 <button type="button" id={paymentMethod.paymentMethodID} onClick={handleAddNew}>Add New</button>
                 {/* Click Saved Cards to see all the other cards the logged in user has saved. */}
-                <button type="button" id={paymentMethod.paymentMethodID} onClick={showAllSavedCards}>Saved Cards</button>
+                {multipleSavedCards && <button type="button" id={paymentMethod.paymentMethodID} onClick={showAllSavedCards}>Saved Cards</button>}
              
                 {/* Modal with the list of saved cards appear when Saved Cards button is clicked and updates the state of showModal to true. Since redisplayCardElement and editPayment states are false, this part gets returned. */}
                 <Modal isOpen={showModal} onRequestClose={ closeSavedCards } ariaHideApp={false} contentLabel="Saved Cards">
