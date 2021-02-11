@@ -13,6 +13,8 @@ import UserProfile from './screens/UserProfile/UserProfile'
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
 import 'bootstrap/dist/css/bootstrap.min.css';
+// Font for Roboto
+import 'fontsource-roboto';
 
 function App() {
 
