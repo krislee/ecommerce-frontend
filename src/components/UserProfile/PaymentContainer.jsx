@@ -86,7 +86,7 @@ function PaymentContainer ({ backend, index, payment }) {
           alt="Cartes Bancaires"
           style={backgroundStyling}/>
         )
-      } else if (cardBrand === 'diners_club') {
+      } else if (cardBrand === 'diners') {
         return (
           <img 
           src="https://1000logos.net/wp-content/uploads/2020/04/Diners-Club-International-Logo.png"
@@ -176,29 +176,6 @@ function PaymentContainer ({ backend, index, payment }) {
       </Collapse>
     </Card>
   );
-    
-    
-    // return (
-    //     <div key={index} className="one-payment-container">
-    //         <div className="card-preview">{cardBrand}</div>
-    //         <div className="all-card-info">
-    //             <div className="card-info-container">
-    //                 <div className="brand">{cardBrand}</div>
-    //                 <div className="person-name">{cardHolderName}</div>
-    //                 <div className="expiration-date">
-    //                     {expirationDate.length !== 6 ? expirationDate : `0${expirationDate}`}
-    //                 </div>
-    //                 <div className="last-four-digits">{lastFourDigitsOfCard}</div>
-    //             </div>
-    //             <div className="billing-info-container">
-    //                 <div className="billing-name">{billingName}</div>
-    //                 <div className="billing-name">{billingAddress}</div>
-    //                 <div className="billing-name">{billingAddressTwo}</div>
-    //                 <div className="billing-name">{billingAddressCountry}</div>
-    //             </div>
-    //         </div>
-    //     </div>
-    // )
 
 }
 

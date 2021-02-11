@@ -138,7 +138,7 @@ function UserProfileAddress ({ backend, addressData, defaultFirst, grabAddressDa
                 </div>
                 {/* Button will be disabled if the input fields are not filled in (except for the address line two input field) */}
                 <button onClick={handleSubmitAddress} 
-                disabled={!addressInput.firstName || !addressInput.addressLineOne || !addressInput.city || !addressInput.state || !addressInput.zipcode}>
+                disabled={!addressInput.firstName || !addressInput.lastName || !addressInput.addressLineOne || !addressInput.city || !addressInput.state || !addressInput.zipcode}>
                     Submit
                 </button>
                 </form>
