@@ -1,7 +1,7 @@
 import React from 'react'
 import Button from './Button'
 
-export default function ShippingForm( { backend, loggedIn, readOnly, shipping, addShipping, shippingInput, grabShippingInput, cartID, updateShippingState, updateShippingInputState, editShipping, handleEditShipping, closeModal, collapse, back, addNewShipping, grabAddNewShipping }) {
+export default function ShippingForm( { backend, loggedIn, readOnly, shipping, addShipping, shippingInput, grabShippingInput, cartID, updateShippingState, updateShippingInputState, editShipping, handleEditShipping, closeModal, collapse, back, addNewShipping, grabAddNewShipping, grabMultipleShipping }) {
     
 
     const handleShippingChange = (event) => {
@@ -13,9 +13,7 @@ export default function ShippingForm( { backend, loggedIn, readOnly, shipping, a
 
     // Depending on if we are adding a shipping (indicated by addShipping state), editing a shipping (indicated by editShipping state), or saving our first address/guest user, different onSubmit form functions will run.
     const handleNext = async (event) => {
-        console.log("submitting form")
-        console.log("event: ", event)
-        event.preventDefault()
+        event.preventDefault() // prevent the page from refreshing after form submission
         console.log("shipping input: ", shippingInput)
         if(addShipping) {
             console.log("adding")
@@ -40,7 +38,7 @@ export default function ShippingForm( { backend, loggedIn, readOnly, shipping, a
             }, 
             body: JSON.stringify({
                 name: `${shippingInput.firstName}, ${shippingInput.lastName}`,
-                address: `${shippingInput.addressLineOne}, ${shippingInput.addressLineTwo}, ${shippingInput.city}, ${shippingInput.state}, ${shippingInput.zipcode}`
+                address: `${shippingInput.line1}, ${shippingInput.line2}, ${shippingInput.city}, ${shippingInput.state}, ${shippingInput.postalCode}`
             })
         })
         const saveNewShippingData = await saveNewShippingResponse.json()
@@ -48,6 +46,7 @@ export default function ShippingForm( { backend, loggedIn, readOnly, shipping, a
         updateShippingState(saveNewShippingData.address)
         updateShippingInputState(saveNewShippingData.address)
         grabAddNewShipping(false)
+        grabMultipleShipping(true)
     }
 
     return (
@@ -58,15 +57,15 @@ export default function ShippingForm( { backend, loggedIn, readOnly, shipping, a
 
             <input value={shippingInput.lastName || ""} name="lastName" placeholder="Last Name" onChange={handleShippingChange} readOnly={readOnly} required/>
 
-            <input value={shippingInput.addressLineOne || ""} name="addressLineOne" placeholder="Address Line One" onChange={handleShippingChange} readOnly={readOnly} required/>
+            <input value={shippingInput.line1 || ""} name="line1" placeholder="Address Line One" onChange={handleShippingChange} readOnly={readOnly} required/>
 
-            <input value={shippingInput.addressLineTwo || ""} name="addressLineTwo" placeholder="Address Line Two" onChange={handleShippingChange} readOnly={readOnly} />
+            <input value={shippingInput.line2 || ""} name="line2" placeholder="Address Line Two" onChange={handleShippingChange} readOnly={readOnly} />
 
             <input value={shippingInput.city || ""} name="city" placeholder="City" onChange={handleShippingChange} readOnly={readOnly} required/>
             
             <input value={shippingInput.state || ""} name="state" placeholder="State" onChange={handleShippingChange} readOnly={readOnly} required />
             
-            <input value={shippingInput.zipcode || ""} name="zipcode" placeholder="Zipcode" onChange={handleShippingChange} readOnly={readOnly} required />
+            <input value={shippingInput.postalCode || ""} name="postalCode" placeholder="Zipcode" onChange={handleShippingChange} readOnly={readOnly} required />
 
             {(loggedIn() && !shipping.firstName) && (
                 <>
@@ -79,12 +78,9 @@ export default function ShippingForm( { backend, loggedIn, readOnly, shipping, a
             <>
             <button form="form">Save</button> 
             <Button type={"button"} name={"Cancel"} onClick={closeModal}/>
-            </>) : (
-            <>
-            <button form="form" disabled={readOnly}>Next</button> 
-            {/* {readOnly && <button onClick={back}>Edit</button> } */}
             </>
-        )}
+        ) : <button form="form" disabled={readOnly}>Next</button>   
+        }
         </>      
     )
 }

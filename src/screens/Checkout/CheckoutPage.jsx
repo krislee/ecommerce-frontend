@@ -53,6 +53,8 @@ function Checkout ({ backend, loggedOut, grabLoggedOut }) {
     
     // editExpiration state gets updated when we edit the payment
     const [editExpiration, setEditExpiration] = useState({})
+
+    /* ------- SHIPPING STATES ------- */
     // openCollapse state is passed to both PaymentMethod and Shipping components, and is updated in the Shipping Component when we click Next or Edit button
     const [openCollapse, setOpenCollapse] = useState(false)
     const [sameAsShipping, setSameAsShipping] = useState(true) // checkbox state 
@@ -95,8 +97,8 @@ function Checkout ({ backend, loggedOut, grabLoggedOut }) {
         if(paymentMethod.paymentMethodID) setEditExpiration({month: paymentMethod.expDate.split("/")[0], year: paymentMethod.expDate.split("/")[1]})
     }
 
-    // We need to prefill the billing details input when user wants to edit the displayed, saved card's billing details or add a new card's billing details. To do this, we pass down billing state as prop down to Checkout/PaymentMethod and then further down to Component/BillingInput. Each Component/BillingInput inputs' value attribute will now equal to each billing state keys. The billing state keys' values have been set by running grabBilling(<payment_method_billing_details>).
-    // grabBilling(<payment_method_billing_details>) runs at Checkout/PaymentMethod's useEffect(), updating the card, adding new card, and selecting a card since grabPaymentMethod() runs during any of the 3 actions
+    // We need to prefill the billing details input when user wants to edit the displayed, saved card's billing details and after adding a new card. To do this, we pass down billing state as prop down to Checkout/PaymentMethod and then further down to Component/BillingInput. Each Component/BillingInput inputs' value attribute will now equal to each billing state keys. The billing state keys' values have been set by running grabBilling(<payment_method_billing_details>).
+    // grabBilling(<payment_method_billing_details>) runs at Checkout/PaymentMethod's useEffect(), updating the card, after adding a new card, and selecting a card since grabPaymentMethod() runs during any of the 3 actions
     const grabBilling = (billing) => {
         console.log(billing)
         if (billing) {
@@ -115,16 +117,15 @@ function Checkout ({ backend, loggedOut, grabLoggedOut }) {
     }
 
 
-
     // Update collectCVV states when 1) load or refresh /checkout URL 2) update card 3) select card 4) add card. Updated collectCVV states will let us know if we need to show a CVV Element.
     const grabCollectCVV = (collectCVV) => {
         console.log("checkout collect cvv", collectCVV)
         if(collectCVV) setCollectCVV(collectCVV)
     }
 
-    const grabCardholderName = (cardholderName) => {
-        setCardholderName(cardholderName)
-    }
+    // We need to update the cardholder's name ????
+    const grabCardholderName = (cardholderName) => setCardholderName(cardholderName)
+ 
 
     // Update editPayment, grabRedisplayCardElement, grabShowSavedCards states by sending grabEditPayment() down as prop to Checkout/PaymentMethod, which gets updated to true if the Edit, or Add New Card, or Saved Cards button is clicked in Checkout/PaymentMethod component. If editPayment, or redisplayCardElement, or showSavedCards state is true, then we do not show Confirm Card Payment button.
     const grabEditPayment = (edit) => {
@@ -143,6 +144,7 @@ function Checkout ({ backend, loggedOut, grabLoggedOut }) {
     // Update editExpiration state to edit Payment Expiration Dates
     const grabEditExpiration = (editExpiration) => setEditExpiration(editExpiration)
 
+    /* ------- CONTROL THE SAVE BUTTON OF ADDING NEW CARD AND CONFIRMING PAYMENT BUTTON ------- */  
 
     // Show Errors in the div when Saving new card or Confirming card payment. If there is an error, disable Save or Confirm Payment button.
     const grabError = (error) => {
@@ -156,6 +158,17 @@ function Checkout ({ backend, loggedOut, grabLoggedOut }) {
         setDisabled(disabled)
     }
 
+    /* ------- FUNCTIONS UPDATING SHIPPING-RELATED STATES  ------- */  
+
+    // grabOpenCollapse updates the openCollapse state to true when we hit Next button from the Shipping component; when openCollapse state is true, the payment method details or form is shown
+    const grabOpenCollapse = (openCollapse) => setOpenCollapse(openCollapse)
+    // update the shipping & shippingInput states whenever we Select a shipping, Add a new shipping, edit a shipping 
+    const grabShipping = (shipping) => setShipping(shipping)
+    const grabShippingInput = (shippingInput) => setShippingInput(shippingInput)
+
+    // grabBillingWithShipping is only called on when we are going to display a payment method form for guest user, logged in user who never saved a card before, and logged in user who wants to save more cards; this function will update billing state to have the same values as shipping input state, allowing for the payment method form's billing details input values, which is dependent on billing state, to be the same as shipping input values
+    const grabBillingWithShipping = (shippingInput) => setBilling(shippingInput)
+
 
     /* ------- LISTEN TO INPUT CHANGES TO UPDATE STATES ------- */  
 
@@ -167,57 +180,26 @@ function Checkout ({ backend, loggedOut, grabLoggedOut }) {
             ...prevBilling, [name] : value // need the previous billing state when updating the billing state (hence the ...prevBilling) or else the other input values will be empty
         }))
     }
-
-    const grabOpenCollapse = (openCollapse) => setOpenCollapse(openCollapse)
     
-    const grabShipping = (shipping) => setShipping(shipping)
-    const grabShippingInput = (shippingInput) => setShippingInput(shippingInput)
-
-    const grabBillingWithShipping = (shipping) => setBilling({
-        firstName: shipping.firstName,
-        lastName: shipping.lastName,
-        line1: shipping.addressLineOne,
-        line2: shipping.addressLineTwo,
-        city: shipping.city,
-        state: shipping.state,
-        postalCode: shipping.zipcode,
-    })
-
+    // When we click on the Same as Shipping Address checkbox, handleSameAsShipping serves as the onChange function. The checkbox is only shown in the payment method form displayed if a guest is user, logged in user does not have any saved cards, or when logged in user clicks Add New card to save more cards.
     const handleSameAsShipping = () =>{
-        setSameAsShipping(!sameAsShipping)
+        setSameAsShipping(!sameAsShipping) // changes if the checkbox is checked or not
         console.log(shipping)
-        if(shipping.firstName){
-            console.log(190)
-            if(!sameAsShipping) {
-                setBilling({
-                    firstName: shipping.firstName,
-                    lastName: shipping.lastName,
-                    line1: shipping.addressLineOne,
-                    line2: shipping.addressLineTwo,
-                    city: shipping.city,
-                    state: shipping.state,
-                    postalCode: shipping.zipcode,
-                })
-            } else {
-                setBilling({})
-            }
+        // If the checkbox is checked, we want the billing state to equal to shippingInput state. 
+        if(!sameAsShipping) {
+            setBilling({
+                firstName: shippingInput.firstName,
+                lastName: shippingInput.lastName,
+                line1: shippingInput.addressLineOne,
+                line2: shippingInput.addressLineTwo,
+                city: shippingInput.city,
+                state: shippingInput.state,
+                postalCode: shippingInput.zipcode,
+            })
         } else {
-            console.log(205)
-            if(!sameAsShipping) {
-                setBilling({
-                    firstName: shippingInput.firstName,
-                    lastName: shippingInput.lastName,
-                    line1: shippingInput.addressLineOne,
-                    line2: shippingInput.addressLineTwo,
-                    city: shippingInput.city,
-                    state: shippingInput.state,
-                    postalCode: shippingInput.zipcode,
-                })
-            } else {
-                setBilling({})
-            }
+            // If the checkbox is not checked, then leave the billing input fields empty
+            setBilling({})
         }
-        
     }
 
     // Listen to changes on cardholder name's input. handleCardholderNameChange() is passed as a prop to Checkout/PaymentMethod
@@ -413,9 +395,9 @@ function Checkout ({ backend, loggedOut, grabLoggedOut }) {
             <>
             <NavBar />
             <div id="payment-form" >
-                <Shipping backend={backend} loggedIn={loggedIn} grabPaymentLoading={grabPaymentLoading} cartID={cartID} openCollapse={openCollapse} grabOpenCollapse={grabOpenCollapse} shipping={shipping} grabShipping={grabShipping} grabBillingWithShipping={grabBillingWithShipping} shippingInput={shippingInput} grabShippingInput={grabShippingInput} />
+                <Shipping backend={backend} loggedIn={loggedIn} grabPaymentLoading={grabPaymentLoading} cartID={cartID} openCollapse={openCollapse} grabOpenCollapse={grabOpenCollapse} shipping={shipping} grabShipping={grabShipping} grabBillingWithShipping={grabBillingWithShipping} shippingInput={shippingInput} grabShippingInput={grabShippingInput} paymentMethod={paymentMethod} grabCardholderName={grabCardholderName} />
 
-                <PaymentMethod backend={backend} customer={customer} loggedIn={loggedIn} error={error} grabError={grabError} disabled={disabled} grabDisabled={grabDisabled} paymentLoading={paymentLoading} grabPaymentLoading={grabPaymentLoading} billing={billing} handleBillingChange={handleBillingChange} grabBilling={grabBilling} paymentMethod={paymentMethod} grabPaymentMethod={grabPaymentMethod} cardholderName={cardholderName} grabCardholderName={grabCardholderName}handleCardholderNameChange={handleCardholderNameChange} handleCardChange={handleCardChange} collectCVV={collectCVV} grabCollectCVV={grabCollectCVV} editPayment={editPayment} grabEditPayment={grabEditPayment} redisplayCardElement={redisplayCardElement} grabRedisplayCardElement={grabRedisplayCardElement} grabShowSavedCards={grabShowSavedCards} handleConfirmPayment={handleConfirmPayment} showSavedCards={showSavedCards} editExpiration={editExpiration} grabEditExpiration={grabEditExpiration} loggedOut={loggedOut} grabLoggedOut={grabLoggedOut} openCollapse={openCollapse} sameAsShipping={sameAsShipping} handleSameAsShipping={handleSameAsShipping} shipping={shipping} grabBillingWithShipping={grabBillingWithShipping} />
+                <PaymentMethod backend={backend} customer={customer} loggedIn={loggedIn} error={error} grabError={grabError} disabled={disabled} grabDisabled={grabDisabled} paymentLoading={paymentLoading} grabPaymentLoading={grabPaymentLoading} billing={billing} handleBillingChange={handleBillingChange} grabBilling={grabBilling} paymentMethod={paymentMethod} grabPaymentMethod={grabPaymentMethod} cardholderName={cardholderName} grabCardholderName={grabCardholderName}handleCardholderNameChange={handleCardholderNameChange} handleCardChange={handleCardChange} collectCVV={collectCVV} grabCollectCVV={grabCollectCVV} editPayment={editPayment} grabEditPayment={grabEditPayment} redisplayCardElement={redisplayCardElement} grabRedisplayCardElement={grabRedisplayCardElement} grabShowSavedCards={grabShowSavedCards} handleConfirmPayment={handleConfirmPayment} showSavedCards={showSavedCards} editExpiration={editExpiration} grabEditExpiration={grabEditExpiration} loggedOut={loggedOut} grabLoggedOut={grabLoggedOut} openCollapse={openCollapse} sameAsShipping={sameAsShipping} handleSameAsShipping={handleSameAsShipping} shippingInput={shippingInput} grabBillingWithShipping={grabBillingWithShipping} shipping={shipping} />
     
                 {/* Show Save card checkbox if user is logged in and does not have an already default, saved or last used, saved card to display as indicated by paymentMethod state. Do not show the checkbox for guests (as indicated by customer state). */}
 
