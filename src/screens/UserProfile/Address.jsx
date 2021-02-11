@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import Modal from 'react-modal';
 import AddressContainer from '../../components/UserProfile/AddressContainer';
 
-function UserProfileAddress ({ backend }) {
+function UserProfileAddress ({ backend, addressData, defaultFirst, grabAddressData }) {
 
     // Getter and Setter to store the information recieved back when fetching address data
-    const [addressData, setAddressData] = useState([]);
     // Getter and Setter to display modal based off a boolean value
     const [modalIsOpen,setIsOpen] = useState(false);
     // Getter and Setter to store an object that will later be used to determine what users put into inputs specifically regarding the adding address function
@@ -23,25 +22,6 @@ function UserProfileAddress ({ backend }) {
 
     Modal.setAppElement('#root');
 
-    useEffect(() => {
-        // When the page renders in, we want to grab the address data from the backend server and use that data to display different AddressContainer components
-        async function fetchAddressData() {
-            let resp = await fetch(`${backend}/shipping/address`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': localStorage.getItem('token')
-                }
-            });
-            const data = await resp.json();
-            // The data recieved back will be reordered to make sure the default address appears first followed by the newest address on the list
-            defaultFirst(data);
-            // Use that data recieved back and set it to the variable addressData
-            setAddressData(data);
-        }
-        fetchAddressData();
-    }, [backend]);
-
     // Function that is used to open the modal when users plan to create
     const openModal = () => {
         setIsOpen(true);
@@ -58,21 +38,6 @@ function UserProfileAddress ({ backend }) {
         setAddressInput((prevAddress) => ({
             ...prevAddress, [name] : value
         }))
-    }
-
-    // Function that is used to reorder the data so that default is first and to also make the newest data come first on the list
-    const defaultFirst = (data) => {
-        // Reverses the order of the data so the newest data will be first and the oldest will be last
-        data.reverse();
-        // If the data that is returned has a object with the property of defaultAddress being true, then run 
-        if (data.findIndex(address => address.DefaultAddress === true) !== -1 && data.length !== 0) {
-            // Find the index of the object that has the default address information
-            const index = data.findIndex(address => address.DefaultAddress === true)
-            // Splice it so we can grab it and remove it from the array
-            const defaultFirstAddress = data.splice(index, 1)[0];
-            // Push it to the top of the list so it would be index zero (first element)
-            data.unshift(defaultFirstAddress);
-        }
     }
 
     // Function that is used to handle the event when a user submits the request to make a new address
@@ -100,16 +65,11 @@ function UserProfileAddress ({ backend }) {
         // Make sure that data we recieve back is ordered so that the default will be first followed by newest address added
         defaultFirst(newAddressData);
         // Assigning the data we recieve back to the variable addressData so we can use that variable which stores an array and map through it to display different AddressContainer components
-        setAddressData(newAddressData);
+        grabAddressData(newAddressData);
         // Clearing out the object used to store the information that users put in the input fields so it's blank when users want to create a new one
         setAddressInput({});
         // Close the modal
         setIsOpen(false);
-    }
-
-    // Function that is used to set the addressData (specifically passed down to child components)
-    const grabAddressData = (addressData) => {
-        setAddressData(addressData);
     }
 
     // Function that creates AddressContainer components based off the array set in addressData

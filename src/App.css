@@ -7,7 +7,6 @@
   flex-direction: column;
 }
 
-/* .form {
-  display: flex;
-  flex-direction: column;
-} */
+.ReactModalPortal {
+  z-index: 3;
+}

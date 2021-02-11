@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from '../../components/NavigationBar';
 import { Redirect } from 'react-router-dom';
 import Footer from '../../components/Footer';
@@ -12,6 +12,63 @@ function UserProfile ({ backend }) {
     const [addressesTabOpen, setAddressesTabOpen] = useState(true);
     // Getter and Setter to display the payments component or not
     const [paymentsTabOpen, setPaymentsTabOpen] = useState(false);
+    const [addressData, setAddressData] = useState([]);
+    const [paymentData, setPaymentData] = useState([]);
+
+    useEffect(() => {
+        // When the page renders in, we want to grab the address data from the backend server and use that data to display different AddressContainer components
+        async function fetchAddressData() {
+            let resp = await fetch(`${backend}/shipping/address`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': localStorage.getItem('token')
+                }
+            });
+            const data = await resp.json();
+            // The data recieved back will be reordered to make sure the default address appears first followed by the newest address on the list
+            defaultFirst(data);
+            // Use that data recieved back and set it to the variable addressData
+            setAddressData(data);
+        }
+        async function fetchPaymentData () {
+            let resp = await fetch(`${backend}/order/index/payment`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': localStorage.getItem('token')
+                }
+            });
+            const data = await resp.json();
+            setPaymentData(data.paymentMethods);
+            console.log(data.paymentMethods)
+        }
+        fetchPaymentData();
+        fetchAddressData();
+    }, [backend]);
+
+    // Function that is used to reorder the data so that default is first and to also make the newest data come first on the list
+    const defaultFirst = (data) => {
+        // Reverses the order of the data so the newest data will be first and the oldest will be last
+        data.reverse();
+        // If the data that is returned has a object with the property of defaultAddress being true, then run 
+        if (data.findIndex(address => address.DefaultAddress === true) !== -1 && data.length !== 0) {
+            // Find the index of the object that has the default address information
+            const index = data.findIndex(address => address.DefaultAddress === true)
+            // Splice it so we can grab it and remove it from the array
+            const defaultFirstAddress = data.splice(index, 1)[0];
+            // Push it to the top of the list so it would be index zero (first element)
+            data.unshift(defaultFirstAddress);
+        }
+    }
+
+    const grabAddressData = (data) => {
+        setAddressData(data);
+    }
+
+    const grabPaymentData = (data) => {
+        setPaymentData(data);
+    }
 
     // Function that will handle whether the address component is open or not so 
     const handleClickAddresses = () => {
@@ -57,11 +114,18 @@ function UserProfile ({ backend }) {
                     </div>
                     {/* This component renders only when the addressesTab is open */}
                     {addressesTabOpen && 
-                        <Address backend={backend}/>
+                        <Address 
+                        backend={backend} 
+                        addressData={addressData} 
+                        defaultFirst={defaultFirst}
+                        grabAddressData={grabAddressData}/>
                     }
                     {/* This component renders only when the paymentsTab is open  */}
                     {paymentsTabOpen &&
-                        <Payment backend={backend}/>
+                        <Payment 
+                        backend={backend} 
+                        paymentData={paymentData}
+                        grabPaymentData={grabPaymentData}/>
                     }
                     <Footer />
                 </div>

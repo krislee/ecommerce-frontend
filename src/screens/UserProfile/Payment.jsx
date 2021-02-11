@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import Modal from 'react-modal';
 import PaymentContainer from '../../components/UserProfile/PaymentContainer';
+import {useStripe, useElements, CardElement, CardCvcElement} from '@stripe/react-stripe-js';
 
-function UserProfilePayment ({ backend }) {
+function UserProfilePayment ({ backend, paymentData }) {
 
     const [modalIsOpen,setIsOpen] = useState(false);
-    const [paymentData, setPaymentData] = useState([]);
     const [paymentInput, setPaymentInput] = useState({});
     
     const customStyles = {
@@ -14,7 +14,8 @@ function UserProfilePayment ({ backend }) {
           left: '50%',
           right: 'auto',
           bottom: 'auto',
-          transform: 'translate(-50%, -50%)'
+          transform: 'translate(-50%, -50%)',
+          zIndex: 3
         }
       };
 
@@ -30,21 +31,12 @@ function UserProfilePayment ({ backend }) {
         setIsOpen(false);
     }
 
-    useEffect(() => {
-        async function fetchPaymentData () {
-            let resp = await fetch(`${backend}/order/index/payment`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': localStorage.getItem('token')
-                }
-            });
-            const data = await resp.json();
-            setPaymentData(data.paymentMethods);
-            console.log(data.paymentMethods)
-        }
-        fetchPaymentData();
-    }, [backend])
+    const handlePaymentChange = (e) => {
+        const { name, value } = e.target
+        setPaymentInput((prevPayment) => ({
+            ...prevPayment, [name] : value
+        }))
+    }
 
     const allPayments = paymentData.map((payment, index) => {
         if (paymentData === undefined) {
@@ -78,6 +70,21 @@ function UserProfilePayment ({ backend }) {
                     </div>
                 </div>
             </>}
+            <Modal
+                isOpen={modalIsOpen}
+                onRequestClose={closeModal}
+                style={customStyles}
+                contentLabel="Example Modal"
+                >
+                <form className="form">
+                <h2>Add Your Payment</h2>
+                <input value={paymentInput.cardNumber || ""} name="cardNumber" placeholder="Card Number" onChange={handlePaymentChange}/>
+                <input value={paymentInput.cardName || ""} name="cardName" placeholder="Card Name" onChange={handlePaymentChange}/>
+                <button onClick={closeModal} >
+                    Submit
+                </button>
+                </form>
+                </Modal>
         </div>
     )
 

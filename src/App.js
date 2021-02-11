@@ -84,7 +84,9 @@ function App() {
             <CartPage backend={backend} loggedIn={loggedIn} />
           </Route>
           <Route path="/profile">
-            <UserProfile backend={backend} loggedIn={loggedIn}/>
+            <Elements stripe={stripePromise}>
+              <UserProfile backend={backend} loggedIn={loggedIn}/>
+            </Elements>
           </Route>
           <Route path="">
             <Homepage grabURL={grabURL} backend={backend} loggedIn={token}/>
