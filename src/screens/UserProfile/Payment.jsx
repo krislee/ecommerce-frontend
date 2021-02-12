@@ -3,7 +3,7 @@ import Modal from 'react-modal';
 import PaymentContainer from '../../components/UserProfile/PaymentContainer';
 import {useStripe, useElements, CardElement} from '@stripe/react-stripe-js';
 
-function UserProfilePayment ({ backend, paymentData, grabPaymentData }) {
+function UserProfilePayment ({ backend, paymentData, grabPaymentData, defaultFirstPayment }) {
 
     const [modalIsOpen,setModalIsOpen] = useState(false);
     const [modalTwoIsOpen, setModalTwoIsOpen] = useState(false);
@@ -107,7 +107,10 @@ function UserProfilePayment ({ backend, paymentData, grabPaymentData }) {
         })
         const savePaymentMethodToCustomerData = await savePaymentMethodToCustomerResponse.json();
         console.log(savePaymentMethodToCustomerData);
+        defaultFirstPayment(savePaymentMethodToCustomerData.paymentMethods);
         grabPaymentData(savePaymentMethodToCustomerData.paymentMethods);
+        setCardHolderInput({});
+        setBillingInput({});
         closeModalTwo();
     }
 

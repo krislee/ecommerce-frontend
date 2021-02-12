@@ -69,7 +69,13 @@ function PaymentContainer ({ backend, index, payment }) {
     // Billing information variables
     const billingInfo = payment.billingDetails
     const billingName = billingInfo.name.split(',');
-    const billingAddress = `${billingInfo.address.line1} ${billingInfo.address.line2}`
+    const billingAddress = () => {
+      if (billingInfo.address.line2 === 'undefined') {
+        return `${billingInfo.address.line1}`
+      } else {
+        return `${billingInfo.address.line1} ${billingInfo.address.line2}`
+      }
+    }
     const billingAddressTwo = `${billingInfo.address.city.trim()}, ${billingInfo.address.state} ${billingInfo.address.postalCode}`
     const billingAddressCountry = `${billingInfo.address.country}`
 
@@ -91,7 +97,7 @@ function PaymentContainer ({ backend, index, payment }) {
           <img 
           src="https://1000logos.net/wp-content/uploads/2020/04/Diners-Club-International-Logo.png"
           alt="Diners Club"
-          style={backgroundStyling}/>
+          style={{height: '60%'}}/>
         )
       } else if (cardBrand === 'discover') {
         return (
@@ -126,7 +132,7 @@ function PaymentContainer ({ backend, index, payment }) {
           <img 
           src ="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/UnionPay_logo.svg/1200px-UnionPay_logo.svg.png"
           alt="UnionPay"
-          style={{height: '70%'}}/>
+          style={{height: '50%'}}/>
         )
       }
     }
@@ -164,7 +170,7 @@ function PaymentContainer ({ backend, index, payment }) {
           <Typography paragraph>Billing Address:</Typography>
           <Typography paragraph>
             {billingName} <br/>
-            {billingAddress} <br/>
+            {billingAddress()} <br/>
             {billingAddressTwo} <br/>
             {billingAddressCountry}
           </Typography>
