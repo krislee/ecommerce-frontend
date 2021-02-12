@@ -27,12 +27,12 @@ function CartPage ({ backend, loggedIn }) {
                 });
                 const cartItemsData = await cartItemsResponse.json();
                 console.log(cartItemsData)
-                if(typeof cartItemsData.cart !== 'string') {
-                    setItems(cartItemsData.cart.Items);
-                    setTotalPrice(cartItemsData.totalCartPrice)
-                } else {
+                if(typeof cartItemsData.cart == 'string') {
                     // If there are no items in the cart when we first load the cart page, update data property to store {cart: "No cart available"}
                     setEmptyCart(cartItemsData);
+                } else {
+                    setItems(cartItemsData.cart.Items);
+                    setTotalPrice(cartItemsData.totalCartPrice)
                 }
                 setCartLoading(false)
             } else {
@@ -43,10 +43,12 @@ function CartPage ({ backend, loggedIn }) {
                 });
                 const cartItemsData = await cartItemsResponse.json();
                 console.log(cartItemsData);
-                if (cartItemsData.cart !== "string")  {
+                if (typeof cartItemsData.cart == "string")  {
+                    console.log(48)
                     // If there are no items in the cart when we first load the cart page, update data property to store {cart: 'No items in cart'}
                     setEmptyCart(cartItemsData);
                 } else {
+                    console.log(52)
                     // Update items state to store the list of items
                     setItems(cartItemsData.cart)
                     setTotalPrice(cartItemsData.totalCartPrice)
