@@ -24,15 +24,16 @@ function App() {
   const backend = `https://elecommerce.herokuapp.com`
 
   const [url, setURL] = useState('');
-  const [loggedIn, setLoggedIn] = useState(false);
-  // const [username, setUsername] = useState('')
-  // const [password, setPassword] = useState('')
+  // const [loggedIn, setLoggedIn] = useState(false);
   const [token, setToken] = useState('')
-  const [paymenIntentInfo, setPaymenIntentInfo] = useState('')
-  
-  const [loggedOut, setLoggedOut] = useState(false)
+  // const [paymenIntentInfo, setPaymenIntentInfo] = useState('')
 
+  // Check if user is logged in before running functions
+  const loggedIn = () => localStorage.getItem('token')
+
+  const [loggedOut, setLoggedOut] = useState(false)
   const grabLoggedOut = (loggedOut) => setLoggedOut(loggedOut)
+
 
   const grabURL = (url) => {
     setURL(url);
@@ -43,18 +44,14 @@ function App() {
   //   console.log(paymenIntentInfo);
   // }
 
-  const grabLoginInfo = async (username, loggedIn, token) => {
-    // setUsername(username);
-    localStorage.setItem("username", username);
-    setLoggedIn(loggedIn);
-    localStorage.setItem("loggedIn", loggedIn);
+  const grabLoginInfo = async (token) => {
     setToken(token);
     localStorage.setItem("token", token);
     const cartResponse = await fetch(`${backend}/buyer/cart`, {
       method: 'GET',
       headers: {
           'Content-Type': 'application/json',
-          'Authorization': localStorage.getItem('token')
+          'Authorization': loggedIn()
       }
     })
     const data = await cartResponse.json();
@@ -72,11 +69,11 @@ function App() {
         <Switch>
           <Route path="/checkout">
             <Elements stripe={stripePromise}>
-              <Checkout backend={backend} loggedOut={loggedOut} grabLoggedOut={grabLoggedOut}/>
+              <Checkout backend={backend} loggedIn={loggedIn} loggedOut={loggedOut} grabLoggedOut={grabLoggedOut}/>
             </Elements>
           </Route>
           <Route path="/buyer">
-            <BuyerLogin backend={backend} grabLoginInfo={grabLoginInfo}/>
+            <BuyerLogin backend={backend} loggedIn={loggedIn} grabLoginInfo={grabLoginInfo}/>
           </Route>
           <Route path="/seller">
             <SellerLogin backend={backend}/>

@@ -31,10 +31,10 @@ function NavBar () {
             <Link to="/cart">
                 <FontAwesomeIcon className="cart-icon" icon={faShoppingCart}/>
             </Link>
-            {localStorage.getItem('loggedIn') ? 
+            {localStorage.getItem('token') ? 
             <Dropdown>
             <Dropdown.Toggle>
-            {localStorage.getItem('loggedIn') ? 
+            {localStorage.getItem('token') ? 
                 <FontAwesomeIcon className="user-icon" icon={faUser}/>
             : null}
             </Dropdown.Toggle>

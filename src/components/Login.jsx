@@ -2,11 +2,10 @@ import React, {useState} from 'react'
 import {Redirect} from 'react-router-dom';
 import '../styles/Login.css'
 
-function Login ({backend, grabLoginInfo}) {
+function Login ({backend, loggedIn, grabLoginInfo}) {
 
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    // const [email, setEmail] = useState('');
     const [isLogin, setIsLogin] = useState(false)
 
     const handleLogin = async (e) => {
@@ -25,13 +24,10 @@ function Login ({backend, grabLoginInfo}) {
         const data = await resp.json()
         // console.log(data);
         // console.log(data.success);
-        if (data.success === false) {
-            setIsLogin(false);
-        } else if (data.success === true) {
+        if (data.success === true) {
             // console.log(data)
+            setIsLogin(true)
             console.log(data.token)
-            // await grabLoginInfo(username, password, true, data.token);
-            // setIsLogin(true);
             const resp = await fetch(`${backend}/buyer/sync/cart`, {
                 method: 'POST',
                 headers: {
@@ -43,12 +39,8 @@ function Login ({backend, grabLoginInfo}) {
             })
             const syncData = await resp.json()
             console.log(syncData)
-            await grabLoginInfo(username, true, data.token);
-            setIsLogin(true);
+            await grabLoginInfo(data.token);
         }
-        // e.preventDefault();
-        // grabLoginInfo('Billy', 'rockstar', true, 'd92d900290');
-        // setIsLogin(true);
     }
 
     const handleChangeUsername = e => {
@@ -58,10 +50,6 @@ function Login ({backend, grabLoginInfo}) {
     const handleChangePassword = e => {
         setPassword(e.target.value)
     }
-
-    // const handleChangeEmail = e => {
-    //     setEmail(e.target.value)
-    // }
 
     if (isLogin) {
         return (

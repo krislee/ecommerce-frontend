@@ -3,10 +3,6 @@ import React from 'react';
 
 function Item ({ name, url, grabURL}) {
 
-    // useEffect(() => {
-    //     grabURL(url)
-    // },[])
-
     function grabAndLogURL() {
         console.log(url);
         grabURL(url);
