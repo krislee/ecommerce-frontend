@@ -8,16 +8,10 @@ import { Dropdown } from 'react-bootstrap'
 
 function NavBar () {
 
-    // const [test, setTest] = useState(false);
-
     const handleLogout = () => {
         localStorage.clear();
         window.location.reload();
-        // return false;
     }
-
-    // let username = localStorage.getItem('username');
-    
 
     return (
         <div className="navbar">

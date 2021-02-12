@@ -1,18 +1,15 @@
 import React, {useEffect, useState} from 'react'
 import {Link} from 'react-router-dom';
-import '../styles/CartPage.css'
-import NavBar from '../components/NavigationBar'
-import Footer from '../components/Footer'
+import '../../styles/CartPage.css'
+import NavBar from '../../components/NavigationBar'
+import Footer from '../../components/Footer'
 import CartItemPage from './CartItemPage'
 
 function CartPage ({ backend, loggedIn }) {
 
     const [cartLoading, setCartLoading] = useState(true)
     const [items, setItems] = useState([]);
-    const [updatedItem, setUpdatedItem] = useState(null)
-    const [cartQuantity, setCartQuantity] = useState([])
-    // const [token, setToken] = useState('');
-    const [data, setData] = useState('');
+    const [emptyCart, setEmptyCart] = useState('');
     const [totalPrice, setTotalPrice] = useState(0)
 
     const grabItems = (items) => setItems(items)
@@ -21,7 +18,6 @@ function CartPage ({ backend, loggedIn }) {
     useEffect(() => {
         async function getCartItems() {
             if(loggedIn()){
-                console.log(loggedIn())
                 const cartItemsResponse = await fetch(`${backend}/buyer/cart`, {
                     method: 'GET',
                     headers: {
@@ -35,11 +31,11 @@ function CartPage ({ backend, loggedIn }) {
                     setItems(cartItemsData.cart.Items);
                     setTotalPrice(cartItemsData.totalCartPrice)
                 } else {
-                    setData(cartItemsData);
+                    // If there are no items in the cart when we first load the cart page, update data property to store {cart: "No cart available"}
+                    setEmptyCart(cartItemsData);
                 }
                 setCartLoading(false)
             } else {
-                console.log("guest")
                 const cartItemsResponse = await fetch(`${backend}/buyer/cart`, {
                     method: 'GET',
                     headers: { 'Content-Type': 'application/json' },
@@ -47,16 +43,15 @@ function CartPage ({ backend, loggedIn }) {
                 });
                 const cartItemsData = await cartItemsResponse.json();
                 console.log(cartItemsData);
-                if (cartItemsData.message)  {
-                    console.log(46)
-                    setData(cartItemsData);
-                    setCartLoading(false)
+                if (cartItemsData.cart !== "string")  {
+                    // If there are no items in the cart when we first load the cart page, update data property to store {cart: 'No items in cart'}
+                    setEmptyCart(cartItemsData);
                 } else {
                     // Update items state to store the list of items
                     setItems(cartItemsData.cart)
                     setTotalPrice(cartItemsData.totalCartPrice)
-                    setCartLoading(false)
                 }
+                setCartLoading(false)
             }
         };
         getCartItems();
@@ -68,12 +63,12 @@ function CartPage ({ backend, loggedIn }) {
     if(cartLoading) {
         console.log(123)
         return <></>
-    } else if(data.message || data.cart || items.length === 0) {
+    } else if(emptyCart.cart || items.length === 0) {
         console.log(126)
         return (
             <>
             <NavBar />
-            <div className="noItems">No Items...</div>
+            <h2 className="noItems">No Items...</h2>
             </>
         )
     }

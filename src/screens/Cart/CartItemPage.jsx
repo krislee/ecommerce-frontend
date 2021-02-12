@@ -1,8 +1,8 @@
 import React, {useEffect, useState} from 'react'
 import {Link} from 'react-router-dom';
-import '../styles/CartPage.css'
-import NavBar from '../components/NavigationBar'
-import Footer from '../components/Footer'
+import '../../styles/CartPage.css'
+import NavBar from '../../components/NavigationBar'
+import Footer from '../../components/Footer'
 
 
 export default function CartItemPage ({ backend, loggedIn, index, id, name, quantity, totalPrice, grabItems, grabTotalPrice}) {

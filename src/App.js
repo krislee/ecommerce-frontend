@@ -6,7 +6,7 @@ import Homepage from './screens/Homepage'
 import BuyerLogin from './screens/BuyerLogin'
 import SellerLogin from './screens/SellerLogin'
 import ItemPage from './screens/ItemPage';
-import CartPage from './screens/CartPage';
+import CartPage from './screens/Cart/CartPage';
 import Checkout from './screens/Checkout/CheckoutPage'
 import UserProfile from './screens/UserProfile/UserProfile'
 // STRIPE
@@ -18,34 +18,27 @@ import 'fontsource-roboto';
 
 function App() {
 
+   /* ------- VARIABLES ------- */
   const stripePromise = loadStripe('pk_test_51HnnIMIYuoOQip6pUnsYnuXlHlEZDBIrXMRatY8FOKakcOsFN08ptoIPrHIthMNBo8n58lvQGNoh5bYAfJFmgc6R00ufne9cZV')
-
-  // const backend = 'http://localhost:3001'
   const backend = `https://elecommerce.herokuapp.com`
 
+   /* ------- STATES ------- */
   const [url, setURL] = useState('');
-  // const [loggedIn, setLoggedIn] = useState(false);
-  const [token, setToken] = useState('')
-  // const [paymenIntentInfo, setPaymenIntentInfo] = useState('')
-
-  // Check if user is logged in before running functions
-  const loggedIn = () => localStorage.getItem('token')
-
   const [loggedOut, setLoggedOut] = useState(false)
+
+   /* ------- UPDATE STATES ------- */
+
+  // Update loggedOut state if loggedIn() returns null whenever we call loggedIn function in our useEffects or on<Event> functions
   const grabLoggedOut = (loggedOut) => setLoggedOut(loggedOut)
 
-
+  // grabURL gets passed to Homepage then to Item component. Item component receives both the itemURL and grabURL, and when we click on the item, grabURL is called to update the url state at App component with the itemURL. The url state gets passed to ItemPage component, which will let us fetch using that url. Using the url state to fetch to the server means we are going to the item page THROUGH the homepage.
   const grabURL = (url) => {
     setURL(url);
   }
-
-  // const grabPaymenIntentInfo = (paymenIntentInfo) => {
-  //   setPaymenIntentInfo(paymenIntentInfo);
-  //   console.log(paymenIntentInfo);
-  // }
+   /* ------- CHECK IF USER IS LOGGED IN BEFORE RUNNING FUNCTIONS ------- */
+   const loggedIn = () => localStorage.getItem('token')
 
   const grabLoginInfo = async (token) => {
-    setToken(token);
     localStorage.setItem("token", token);
     const cartResponse = await fetch(`${backend}/buyer/cart`, {
       method: 'GET',
@@ -90,7 +83,7 @@ function App() {
             </Elements>
           </Route>
           <Route path="">
-            <Homepage grabURL={grabURL} backend={backend} loggedIn={token}/>
+            <Homepage grabURL={grabURL} backend={backend} loggedIn={loggedIn}/>
           </Route>
         </Switch>
       </BrowserRouter>

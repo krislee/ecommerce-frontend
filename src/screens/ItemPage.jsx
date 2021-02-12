@@ -15,6 +15,7 @@ function ItemPage ({ loggedIn, url, backend }) {
 
     useEffect(() => {
         console.log(currentURL)
+        // If we are going to the item page through the homepage 
         if (url !== '') {
             async function fetchData() {
                 let resp = await fetch(`${url}`, {
@@ -29,6 +30,7 @@ function ItemPage ({ loggedIn, url, backend }) {
             }
             fetchData();
         } else {
+            // If we are going to the item page not through the homepage
             async function fetchData() {
                 let resp = await fetch(`${backend}/buyer/electronic/${id}`,{
                     method: 'GET',

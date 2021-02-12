@@ -5,17 +5,14 @@ import '../styles/Homepage.css'
 import NavBar from '../components/NavigationBar'
 import Footer from '../components/Footer'
 
-function Homepage ({ grabURL, backend }) {
+function Homepage ({ loggedIn, grabURL, backend }) {
 
     const [items, setItems] = useState([]);
-    // const [isLoaded, setIsLoaded] = useState(false);
-    // const [isItemSelected, setIsItemSelected] = useState(false);
-    const electronicURL = `${backend}/buyer/electronic`
-    // const url = "http://localhost:3001/buyer/electronic/"
+
 
     useEffect(() => {
         async function fetchItems() {
-            const resp = await fetch(electronicURL);
+            const resp = await fetch(`${backend}/buyer/electronic`);
             const data = await resp.json();
             console.log(data.allElectronic);
             setItems(data.allElectronic);
@@ -25,9 +22,6 @@ function Homepage ({ grabURL, backend }) {
         fetchItems();
     },[])
 
-
-
-
     const itemList = items.map((item, index) => 
         <React.Fragment key={index}>
         <Link className="homepage-items" to={{
@@ -36,10 +30,10 @@ function Homepage ({ grabURL, backend }) {
         }
         }>
             <Item 
-            id={item._id}
+            // id={item._id}
             name={item.Name}
-            description={item.Description}
-            url={`${electronicURL}/${item._id}`}
+            // description={item.Description}
+            itemUrl={`${backend}/buyer/electronic/${item._id}`}
             grabURL={grabURL}
             />
         </Link>
@@ -50,7 +44,7 @@ function Homepage ({ grabURL, backend }) {
         <div className="homepage-container">
             <NavBar />
             <div className="display-item-container">
-                {<div className={localStorage.getItem('token') ? 'itemContainerLoggedIn' : 'itemContainer'}>
+                {<div className={loggedIn() ? 'itemContainerLoggedIn' : 'itemContainer'}>
                     {itemList}
                 </div>}
             </div>

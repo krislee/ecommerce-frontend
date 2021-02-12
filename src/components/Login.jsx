@@ -8,38 +8,35 @@ function Login ({backend, loggedIn, grabLoginInfo}) {
     const [password, setPassword] = useState('');
     const [isLogin, setIsLogin] = useState(false)
 
-    const handleLogin = async (e) => {
-        e.preventDefault();
+    const handleLogin = async (event) => {
+        event.preventDefault();
         const loginInfo = {
             username: username,
             password: password,
         }
-        const resp = await fetch(`${backend}/auth/buyer/login`, {
+        const loginResponse = await fetch(`${backend}/auth/buyer/login`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(loginInfo)
         });
-        const data = await resp.json()
-        // console.log(data);
-        // console.log(data.success);
-        if (data.success === true) {
-            // console.log(data)
+        const loginData = await loginResponse.json()
+        if (loginData.success === true) {
+            grabLoginInfo(loginData.token);
             setIsLogin(true)
-            console.log(data.token)
-            const resp = await fetch(`${backend}/buyer/sync/cart`, {
+            const syncCartResponse = await fetch(`${backend}/buyer/sync/cart`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': data.token
+                    'Authorization': loggedIn()
                 },
                 credentials: 'include'
 
             })
-            const syncData = await resp.json()
-            console.log(syncData)
-            await grabLoginInfo(data.token);
+            const syncCartData = await syncCartResponse.json()
+            console.log(syncCartData)
+            
         }
     }
 
