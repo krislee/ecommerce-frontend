@@ -3,7 +3,7 @@ import {Link} from 'react-router-dom';
 import '../styles/CartPage.css'
 import NavBar from '../components/NavigationBar'
 import Footer from '../components/Footer'
-
+import CartItemPage from './CartItemPage'
 
 function CartPage ({ backend, loggedIn }) {
 
@@ -13,26 +13,31 @@ function CartPage ({ backend, loggedIn }) {
     const [cartQuantity, setCartQuantity] = useState([])
     // const [token, setToken] = useState('');
     const [data, setData] = useState('');
-    // const [redirect, setRedirect] = useState(false)
+    const [totalPrice, setTotalPrice] = useState(0)
 
-    
+    const grabItems = (items) => setItems(items)
+    const grabTotalPrice = (totalPrice) => setTotalPrice(totalPrice)
+
     useEffect(() => {
         async function getCartItems() {
             if(loggedIn()){
+                console.log(loggedIn())
                 const cartItemsResponse = await fetch(`${backend}/buyer/cart`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': localStorage.getItem('token')
+                        'Authorization': loggedIn()
                     }
                 });
                 const cartItemsData = await cartItemsResponse.json();
                 console.log(cartItemsData)
                 if(typeof cartItemsData.cart !== 'string') {
                     setItems(cartItemsData.cart.Items);
-                    setCartLoading(false)
-                } 
-                // setData(cartItemsData);
+                    setTotalPrice(cartItemsData.totalCartPrice)
+                } else {
+                    setData(cartItemsData);
+                }
+                setCartLoading(false)
             } else {
                 console.log("guest")
                 const cartItemsResponse = await fetch(`${backend}/buyer/cart`, {
@@ -45,9 +50,11 @@ function CartPage ({ backend, loggedIn }) {
                 if (cartItemsData.message)  {
                     console.log(46)
                     setData(cartItemsData);
+                    setCartLoading(false)
                 } else {
                     // Update items state to store the list of items
-                    setItems(cartItemsData.cart);
+                    setItems(cartItemsData.cart)
+                    setTotalPrice(cartItemsData.totalCartPrice)
                     setCartLoading(false)
                 }
             }
@@ -55,74 +62,13 @@ function CartPage ({ backend, loggedIn }) {
         getCartItems();
     },[])
 
-    const handleCartQuantity = (event) => {
-       const {id, value} = event.target
-       console.log(items)
-       const itemIndex = items.findIndex(item => item.ItemId === id)
+   
 
-       if(itemIndex !== -1) {
-           items[itemIndex].Quantity = value
-           setItems(items)
-       }
-    }
-
-    const handleUpdateCartItem = async(event) => {
-        if(loggedIn()) {
-            const updateCartResponse = await fetch(`${backend}/buyer/electronic/cart/${event.target.id}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': loggedIn()
-                },
-                body: JSON.stringify({
-                    Quantity: cartQuantity
-                })
-            })
-            const updateCartData = await updateCartResponse.json()
-            console.log(updateCartData)
-            setUpdatedItem(updateCartData)
-        } else {
-            const updateCartResponse = await fetch(`${backend}/buyer/electronic/cart/${event.target.id}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                credentials: 'include'
-            })
-            const updateCartData = await updateCartResponse.json()
-            console.log(updateCartData)
-            setUpdatedItem(updateCartData)
-        }
-    }
-
-    const handleDeleteCartItem = async(event) => {
-        if(loggedIn()) {
-            console.log("deleting logged in")
-            const deleteCartResponse = await fetch(`${backend}/buyer/electronic/cart/${event.target.id}`, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': loggedIn()
-                }
-            })
-            const deleteCartData = await deleteCartResponse.json()
-            console.log(deleteCartData)
-            setItems(deleteCartData.Items)
-        } else {
-            console.log("deleting guest")
-            const deleteCartResponse = await fetch(`${backend}/buyer/electronic/cart/${event.target.id}`, {
-                method: 'DELETE',
-                headers: { 'Content-Type': 'application/json' },
-                credentials: 'include'
-            })
-            const deleteCartData = await deleteCartResponse.json()
-            console.log(deleteCartData)
-            setItems(deleteCartData)
-        }
-    }
 
     if(cartLoading) {
         console.log(123)
         return <></>
-    } else if(data.message || items.length === 0) {
+    } else if(data.message || data.cart || items.length === 0) {
         console.log(126)
         return (
             <>
@@ -134,29 +80,28 @@ function CartPage ({ backend, loggedIn }) {
     else if(items.length >0) {
         console.log(135)
         return (
+            <>
             <div className="cart-page-container">
                 <NavBar />
                 <div className="cart">
-                    <div className="cart-items">{items.map((item, index) => [
+                    <div className="cart-items">
+                        {items.map((item, index) => { return <CartItemPage backend={backend} loggedIn={loggedIn} index={index} id={item.ItemId} name={item.Name} quantity={item.Quantity} totalPrice={item.TotalPrice} grabItems={grabItems} grabTotalPrice={grabTotalPrice} /> })}
+                        <p><b>Total Price: ${totalPrice}</b></p>
+                    </div>
                         
-                        <div key={item.ItemId}>
-                            <div>{item.Name}</div>
-                            <input type="number" id={item.ItemId} value={item.Quantity} onChange={handleCartQuantity}/>
-                            <div>{item.TotalPrice}</div>
-                            <button id={item.ItemId} onClick={handleUpdateCartItem}>Update</button>
-                            <button id={item.ItemId} onClick={handleDeleteCartItem}>Delete</button>
-                        </div>
-                    ])}</div>
+                
                     {/* {renderRedirect()} */}
                     <Link to="/checkout">
                     <button>Checkout</button>
                     </Link>
                 </div>
-                <Footer />
                 {/* <button onClick={checkout}>Checkout</button> */}
             </div>
+            <Footer />
+            </>
         )
     }
 }
 
 export default CartPage;
+
