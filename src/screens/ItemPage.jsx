@@ -14,9 +14,10 @@ function ItemPage ({ url, backend }) {
     let id=indexOfEqualSign[indexOfEqualSign.length - 1];
 
     useEffect(() => {
-        console.log(currentURL)
+        // If the url to the backend is not empty because users directly went to the item page going through the homepage first
         if (url !== '') {
             async function fetchData() {
+                // fetch the url provided to go to the server backend and grab the item using a GET request
                 let resp = await fetch(`${url}`, {
                     method: 'GET',
                     headers: {
@@ -29,6 +30,7 @@ function ItemPage ({ url, backend }) {
             }
             fetchData();
         } else {
+            // If the url to the backend is empty, then we need to grab the item using the id which is located in the url params
             async function fetchData() {
                 let resp = await fetch(`${backend}/buyer/electronic/${id}`,{
                     method: 'GET',
@@ -53,7 +55,7 @@ function ItemPage ({ url, backend }) {
             <NavBar />
             <div className="item-info">
                 <div className="left-side-item-page">
-                    <div class="item-image">Image of Item Here</div>
+                    <div className="item-image">Image of Item Here</div>
                 </div>
                 <div className="right-side-item-page">
                     <div className="item-logistics">
@@ -62,8 +64,8 @@ function ItemPage ({ url, backend }) {
                             <div className="price">Price: ${itemInfo.Price}</div>
                             <div className="description">Description: {itemInfo.Description}</div>
                         </div>
-                        <div class="input-info">
-                        <div class="quantity-tag">Quantity</div>
+                        <div className="input-info">
+                        <div className="quantity-tag">Quantity</div>
                         <input  className="quantity-input" type="number" value={quantity} onChange={handleChangeQuantity}></input>
                         <AddCartButton backend={backend} id={itemInfo._id} quantity={quantity} name={'Add To Cart'} />
                         </div>
