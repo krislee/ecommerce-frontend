@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import CollectCard from "../../components/Card"
-import BillingInput from "../../components/BillingInput"
+import CollectCard from "../../components/Checkout/Card"
+import BillingInput from "../../components/Checkout/BillingInput"
 import Modal from 'react-modal';
 import { useStripe, CardElement, useElements, CardCvcElement } from "@stripe/react-stripe-js"; 
 import createPaymentMethod from './CreatePayment'

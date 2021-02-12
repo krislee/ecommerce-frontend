@@ -1,6 +1,6 @@
 import React from 'react';
 import {CardCvcElement, CardElement, useElements} from "@stripe/react-stripe-js";
-import '../styles/Card.css'
+import '../../styles/Card.css'
 
 function CollectCard({ handleCardChange, collectCVV, handleCardholderNameChange, cardholderName }) {
     const elements = useElements()

@@ -1,5 +1,5 @@
 import React from 'react';
-import '../styles/Input.css'
+import '../../styles/Input.css'
 
 function BillingInput({ billing, handleBillingChange, editPayment }) {
     return (
