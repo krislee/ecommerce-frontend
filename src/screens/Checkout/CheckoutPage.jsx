@@ -10,9 +10,8 @@ import createPaymentMethod from './CreatePayment'
 import '../../styles/CheckoutPage.css';
 
 
-function Checkout ({ backend, loggedOut, grabLoggedOut }) {
+function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut }) {
     // Helper to check if user is logged in
-    const loggedIn = () => localStorage.getItem('token')
 
     /* ------- LOADING STATES ------- */
     // The loading states determine what you will see when you hit the "/checkout" route the first time

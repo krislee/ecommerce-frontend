@@ -8,16 +8,10 @@ import { Dropdown } from 'react-bootstrap'
 
 function NavBar () {
 
-    // const [test, setTest] = useState(false);
-
     const handleLogout = () => {
         localStorage.clear();
         window.location.reload();
-        // return false;
     }
-
-    // let username = localStorage.getItem('username');
-    
 
     return (
         <div className="navbar">
@@ -31,10 +25,10 @@ function NavBar () {
             <Link to="/cart">
                 <FontAwesomeIcon className="cart-icon" icon={faShoppingCart}/>
             </Link>
-            {localStorage.getItem('loggedIn') ? 
+            {localStorage.getItem('token') ? 
             <Dropdown>
             <Dropdown.Toggle>
-            {localStorage.getItem('loggedIn') ? 
+            {localStorage.getItem('token') ? 
                 <FontAwesomeIcon className="user-icon" icon={faUser}/>
             : null}
             </Dropdown.Toggle>

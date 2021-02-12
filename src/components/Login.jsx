@@ -2,53 +2,42 @@ import React, {useState} from 'react'
 import {Redirect} from 'react-router-dom';
 import '../styles/Login.css'
 
-function Login ({backend, grabLoginInfo}) {
+function Login ({backend, loggedIn, grabLoginInfo}) {
 
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    // const [email, setEmail] = useState('');
     const [isLogin, setIsLogin] = useState(false)
 
-    const handleLogin = async (e) => {
-        e.preventDefault();
+    const handleLogin = async (event) => {
+        event.preventDefault();
         const loginInfo = {
             username: username,
             password: password,
         }
-        const resp = await fetch(`${backend}/auth/buyer/login`, {
+        const loginResponse = await fetch(`${backend}/auth/buyer/login`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(loginInfo)
         });
-        const data = await resp.json()
-        // console.log(data);
-        // console.log(data.success);
-        if (data.success === false) {
-            setIsLogin(false);
-        } else if (data.success === true) {
-            // console.log(data)
-            console.log(data.token)
-            // await grabLoginInfo(username, password, true, data.token);
-            // setIsLogin(true);
-            const resp = await fetch(`${backend}/buyer/sync/cart`, {
+        const loginData = await loginResponse.json()
+        if (loginData.success === true) {
+            grabLoginInfo(loginData.token);
+            setIsLogin(true)
+            const syncCartResponse = await fetch(`${backend}/buyer/sync/cart`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': data.token
+                    'Authorization': loggedIn()
                 },
                 credentials: 'include'
 
             })
-            const syncData = await resp.json()
-            console.log(syncData)
-            await grabLoginInfo(username, true, data.token);
-            setIsLogin(true);
+            const syncCartData = await syncCartResponse.json()
+            console.log(syncCartData)
+            
         }
-        // e.preventDefault();
-        // grabLoginInfo('Billy', 'rockstar', true, 'd92d900290');
-        // setIsLogin(true);
     }
 
     const handleChangeUsername = e => {
@@ -58,10 +47,6 @@ function Login ({backend, grabLoginInfo}) {
     const handleChangePassword = e => {
         setPassword(e.target.value)
     }
-
-    // const handleChangeEmail = e => {
-    //     setEmail(e.target.value)
-    // }
 
     if (isLogin) {
         return (

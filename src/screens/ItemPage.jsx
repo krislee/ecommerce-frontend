@@ -5,7 +5,7 @@ import AddCartButton from '../components/AddCartButton';
 import NavBar from '../components/NavigationBar';
 import Footer from '../components/Footer'
 
-function ItemPage ({ url, backend }) {
+function ItemPage ({ loggedIn, url, backend }) {
 
     const [itemInfo, setItemInfo] = useState('');
     const [quantity, setQuantity] = useState(1);
@@ -14,7 +14,11 @@ function ItemPage ({ url, backend }) {
     let id=indexOfEqualSign[indexOfEqualSign.length - 1];
 
     useEffect(() => {
+
+        console.log(currentURL)
+
         // If the url to the backend is not empty because users directly went to the item page going through the homepage first
+
         if (url !== '') {
             async function fetchData() {
                 // fetch the url provided to go to the server backend and grab the item using a GET request
@@ -30,6 +34,8 @@ function ItemPage ({ url, backend }) {
             }
             fetchData();
         } else {
+
+            // If we are going to the item page not through the homepage
             // If the url to the backend is empty, then we need to grab the item using the id which is located in the url params
             async function fetchData() {
                 let resp = await fetch(`${backend}/buyer/electronic/${id}`,{
@@ -67,7 +73,7 @@ function ItemPage ({ url, backend }) {
                         <div className="input-info">
                         <div className="quantity-tag">Quantity</div>
                         <input  className="quantity-input" type="number" value={quantity} onChange={handleChangeQuantity}></input>
-                        <AddCartButton backend={backend} id={itemInfo._id} quantity={quantity} name={'Add To Cart'} />
+                        <AddCartButton backend={backend} loggedIn={loggedIn} id={itemInfo._id} quantity={quantity} name={'Add To Cart'} />
                         </div>
                     </div>
                 </div>

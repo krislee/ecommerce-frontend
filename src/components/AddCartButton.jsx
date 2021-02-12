@@ -1,27 +1,23 @@
 import React from 'react';
 import '../styles/Button.css'
-// import Cookies from 'js-cookie'
 
-function AddCartButton ({ name, id, backend, quantity }) {
+function AddCartButton ({ name, id, loggedIn, backend, quantity }) {
 
     const addItem = async () => {
 
-        if(localStorage.getItem('loggedIn')) {
+        if(loggedIn()) {
             const resp = await fetch(`${backend}/buyer/electronic/cart/${id}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': localStorage.getItem('token')
                 },
-                credentials: 'include', // always send the cookies
                 body: JSON.stringify({
                     Quantity: quantity
                 })
             });
             const data = await resp.json()
             console.log(data)
-            console.log(3, document.cookie)
-            // localStorage.setItem("cartItems", true);
         } else{ 
             const resp = await fetch(`${backend}/buyer/electronic/cart/${id}`, {
                 method: 'POST',
@@ -35,8 +31,6 @@ function AddCartButton ({ name, id, backend, quantity }) {
             });
             const data = await resp.json()
             console.log(data)
-            console.log(4, document.cookie)
-            // localStorage.setItem("cartItems", true);
         }
     }
 
