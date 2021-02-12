@@ -5,7 +5,7 @@ import AddCartButton from '../components/AddCartButton';
 import NavBar from '../components/NavigationBar';
 import Footer from '../components/Footer'
 
-function ItemPage ({ url, backend }) {
+function ItemPage ({ loggedIn, url, backend }) {
 
     const [itemInfo, setItemInfo] = useState('');
     const [quantity, setQuantity] = useState(1);
@@ -65,7 +65,7 @@ function ItemPage ({ url, backend }) {
                         <div class="input-info">
                         <div class="quantity-tag">Quantity</div>
                         <input  className="quantity-input" type="number" value={quantity} onChange={handleChangeQuantity}></input>
-                        <AddCartButton backend={backend} id={itemInfo._id} quantity={quantity} name={'Add To Cart'} />
+                        <AddCartButton backend={backend} loggedIn={loggedIn} id={itemInfo._id} quantity={quantity} name={'Add To Cart'} />
                         </div>
                     </div>
                 </div>
