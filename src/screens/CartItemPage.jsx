@@ -72,6 +72,7 @@ export default function CartItemPage ({ backend, loggedIn, index, id, name, quan
             const deleteCartItemData = await deleteCartItemResponse.json()
             console.log(deleteCartItemData)
             grabItems(deleteCartItemData.cart)
+            grabTotalPrice(deleteCartItemData.totalCartPrice)
         }
     }
 
