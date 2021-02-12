@@ -78,6 +78,7 @@ function PaymentContainer ({ backend, index, payment }) {
     }
     const billingAddressTwo = `${billingInfo.address.city.trim()}, ${billingInfo.address.state} ${billingInfo.address.postalCode}`
     const billingAddressCountry = `${billingInfo.address.country}`
+    const defaultCard = payment.default;
 
     const brandImage = () => {
       if (cardBrand === 'amex') {
@@ -161,6 +162,7 @@ function PaymentContainer ({ backend, index, payment }) {
         subheader={lastFourDigitsOfCard}
       />
       <CardContent className={classes.expirationDate} onClick={handleExpandClick}>
+        {defaultCard && <div className="default-payment-indicator">Default </div>}
         <Typography variant="body2" color="textSecondary" component="p">
           {expirationDate.length === 6 ? `Expires: 0${expirationDate}` : `Expires: ${expirationDate}`}
         </Typography>

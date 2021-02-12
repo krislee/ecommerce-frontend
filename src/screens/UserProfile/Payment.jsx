@@ -102,7 +102,7 @@ function UserProfilePayment ({ backend, paymentData, grabPaymentData, defaultFir
             },
             body: JSON.stringify({
                 paymentMethodID: `${newPaymentResponse.paymentMethod.id}`,
-                default: check ? check : !check
+                default: check
             })
         })
         const savePaymentMethodToCustomerData = await savePaymentMethodToCustomerResponse.json();
