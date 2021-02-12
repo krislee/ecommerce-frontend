@@ -150,10 +150,10 @@ function UserProfilePayment ({ backend, paymentData, grabPaymentData, defaultFir
                 isOpen={modalIsOpen}
                 onRequestClose={closeModal}
                 style={customStyles}
-                contentLabel="Example Modal"
+                contentLabel="Create Payment Modal"
                 >
                 <form className="form">
-                <h2>Add Your Payment</h2>
+                <h2>Add Your Card Information</h2>
                 <input value={cardHolderInput.cardName || ""} name="cardName" placeholder="Card Name" onChange={handleCardHolderNameChange}/>
                 <CardElement onChange={handleCardChange}/>
                 <div>{error}</div>
@@ -170,7 +170,7 @@ function UserProfilePayment ({ backend, paymentData, grabPaymentData, defaultFir
                 isOpen={modalTwoIsOpen}
                 onRequestClose={closeModalTwo}
                 style={customStyles}
-                contentLabel="Example Modal"
+                contentLabel="Add Billing Information Modal"
                 >
                 <form className="form">
                 <h2>Add Your Billing Address</h2>
