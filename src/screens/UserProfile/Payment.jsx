@@ -123,6 +123,8 @@ function UserProfilePayment ({ backend, paymentData, grabPaymentData, defaultFir
                 key={index}
                 payment={payment}
                 backend={backend}
+                defaultFirstPayment={defaultFirstPayment}
+                grabPaymentData={grabPaymentData}
                 />
             )
         }

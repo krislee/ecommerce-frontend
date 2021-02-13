@@ -13,7 +13,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Button from '@material-ui/core/Button'
 // import {useStripe, useElements, CardElement} from '@stripe/react-stripe-js';
 
-function PaymentContainer ({ backend, index, payment }) {
+function PaymentContainer ({ backend, index, payment, defaultFirstPayment, grabPaymentData }) {
 
     const [expanded, setExpanded] = useState(false);
     const [editModalIsOpen, setEditModalIsOpen] = useState(false);
@@ -47,6 +47,7 @@ function PaymentContainer ({ backend, index, payment }) {
         }
       });
       const paymentData = await onePaymentResponse.json();
+      console.log(paymentData);
       const name = paymentData.cardholderName;
       const expDate = paymentData.expDate;
       const expDateSplit = expDate.split('/')
@@ -64,8 +65,9 @@ function PaymentContainer ({ backend, index, payment }) {
       })
       const billingDetails = paymentData.billingDetails
       const billingDetailsAddress = billingDetails.address
-      const firstName = billingDetails.name.split(',')[0];
-      const lastName = billingDetails.name.split(',')[1].trim();
+      const billingDetailsName = billingDetails.name.replace (/,/g, "");
+      const firstName = billingDetailsName.split(" ")[0];
+      const lastName = billingDetailsName.split(" ")[1];
       const firstAddressLine = billingDetailsAddress.line1;
       const secondAddressLineCheck = () => {
         if (billingDetailsAddress.line2 === 'undefined') {
@@ -118,7 +120,13 @@ function PaymentContainer ({ backend, index, payment }) {
         })
       })
       const editPaymentData = await editPaymentResponse.json();
-      console.log(editPaymentData);
+      console.log(editPaymentData.paymentMethods);
+      defaultFirstPayment(editPaymentData.paymentMethods);
+      grabPaymentData(editPaymentData.paymentMethods);
+      setEditBillingInput({});
+      setEditCardHolderInput({});
+      handleExpandClick();
+      closeEditModalTwo();
     }
 
     const handleDeletePayment = async (e) => {
@@ -132,7 +140,10 @@ function PaymentContainer ({ backend, index, payment }) {
           }
         })
         const deletePaymentData = await deletePaymentResponse.json();
-        console.log(deletePaymentData);
+        defaultFirstPayment(deletePaymentData.paymentMethods);
+        grabPaymentData(deletePaymentData.paymentMethods);
+        handleExpandClick();
+        closeEditModalTwo();
       }
     }
 
@@ -147,6 +158,7 @@ function PaymentContainer ({ backend, index, payment }) {
 
     const closeEditModalTwo = () => {
       setEditModalTwoIsOpen(false);
+      setEditModalIsOpen(false);
     }
 
     const handleExpandClick = () => {
