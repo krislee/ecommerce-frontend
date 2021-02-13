@@ -6,6 +6,7 @@
 const createPaymentMethod = async (stripe,cardElement, billing, cardholderName, backend) => {
     console.log("from create payment ", billing)
     console.log("from create payment ", billing.postalCode)
+    console.log(9, "line2: ", billing.line2, typeof billing.line2)
     const createPaymentMethodResponse = await stripe.createPaymentMethod({
         type: 'card',
         card: cardElement,

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import ShippingForm from '../../components/Checkout/ShippingForm'
 import Button from '../../components/Button'
 import Modal from 'react-modal';
-import { Accordion, Card } from 'react-bootstrap'
+// import { Accordion, Card } from 'react-bootstrap'
 
 function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, openCollapse, grabOpenCollapse, loggedOut, grabLoggedOut, shipping, grabShipping, grabBillingWithShipping, shippingInput, grabShippingInput, paymentMethod, grabCardholderName }) {
     // shippingLoading state is initially set to true to render <></> before updating it to false in useEffect()
@@ -183,7 +183,7 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, openCollapse,
         const checkbox = document.querySelector('input[name=saveAddress]')
         console.log("adding new address as guest or first saved address")
         console.log("adding new address input: ", shippingInput)
-        console.log(shipping)
+        console.log("used shipping: ", shipping)
         // We want to always update the Payment Intent when we click Next so that it stores the most up to date shipping for both guest and logged in users. For logged in user who has saved shipping addresses or is saving an address for the first time, we also want to highlight it as the last used shipping in our Payment Intent. The payment intent webhook will create a new address with LastUsed property with a true value if saving an address for the first time. The payment webhook will update the saved address with LastUsed property with a true value. If logged in user does not have any saved address, the payment webhook won't do anything to the addresses.
         if(loggedIn()) {
             console.log(49, cartID)
@@ -280,7 +280,7 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, openCollapse,
             retrieveAllAddresses()
 
         } else {
-            // setShippingLoading(false)
+            setShippingLoading(false)
            
         }
     }, [])
