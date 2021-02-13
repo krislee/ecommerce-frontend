@@ -102,25 +102,19 @@ function PaymentContainer ({ backend, index, payment }) {
           'Authorization': localStorage.getItem('token')
         },
         body: JSON.stringify({
-          billing_details: {
-            address: {
-              line1: editBillingInput.editBillingFirstAddressLine,
-              line2: editBillingInput.editBillingSecondAddressLine,
-              city: editBillingInput.editBillingCity,
-              state: editBillingInput.editBillingState,
-              postal_code: editBillingInput.editBillingZipcode,
-              country: 'US'
-            },
+          billingDetails: {
+            line1: editBillingInput.editBillingFirstAddressLine,
+            line2: editBillingInput.editBillingSecondAddressLine,
+            city: editBillingInput.editBillingCity,
+            state: editBillingInput.editBillingState,
+            postal_code: editBillingInput.editBillingZipcode,
+            country: 'US',
             name: `${editBillingInput.editBillingFirstName} ${editBillingInput.editBillingLastName}`
           },
-          metadata: {
-            cardholder_name: editCardHolderInput.cardName,
-            recollect_cvv: false
-          },
-          card: {
-            exp_month: editCardHolderInput.cardMonthExpDate,
-            exp_year: editCardHolderInput.cardYearExpDate
-          }
+          name: editCardHolderInput.cardName,
+          recollectCVV: false,
+          expMonth: editCardHolderInput.cardMonthExpDate,
+          expYear: editCardHolderInput.cardYearExpDate
         })
       })
       const editPaymentData = await editPaymentResponse.json();
