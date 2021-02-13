@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import Modal from 'react-modal';
 import PaymentContainer from '../../components/UserProfile/PaymentContainer';
 import {useStripe, useElements, CardElement} from '@stripe/react-stripe-js';

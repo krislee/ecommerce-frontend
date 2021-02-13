@@ -93,6 +93,55 @@ function PaymentContainer ({ backend, index, payment }) {
       setEditModalIsOpen(true);
     }
 
+    const handleEditPaymentSubmit = async (e) => {
+      e.preventDefault();
+      const editPaymentResponse = await fetch(`${backend}/order/update/payment/${cardID}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': localStorage.getItem('token')
+        },
+        body: JSON.stringify({
+          billing_details: {
+            address: {
+              line1: editBillingInput.editBillingFirstAddressLine,
+              line2: editBillingInput.editBillingSecondAddressLine,
+              city: editBillingInput.editBillingCity,
+              state: editBillingInput.editBillingState,
+              postal_code: editBillingInput.editBillingZipcode,
+              country: 'US'
+            },
+            name: `${editBillingInput.editBillingFirstName} ${editBillingInput.editBillingLastName}`
+          },
+          metadata: {
+            cardholder_name: editCardHolderInput.cardName,
+            recollect_cvv: false
+          },
+          card: {
+            exp_month: editCardHolderInput.cardMonthExpDate,
+            exp_year: editCardHolderInput.cardYearExpDate
+          }
+        })
+      })
+      const editPaymentData = await editPaymentResponse.json();
+      console.log(editPaymentData);
+    }
+
+    const handleDeletePayment = async (e) => {
+      e.preventDefault();
+      if (localStorage.getItem('token')) {
+        const deletePaymentResponse = await fetch(`${backend}/order/payment/${cardID}`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': localStorage.getItem('token')
+          }
+        })
+        const deletePaymentData = await deletePaymentResponse.json();
+        console.log(deletePaymentData);
+      }
+    }
+
     const closeEditModal = () => {
       setEditModalIsOpen(false);
     }
@@ -283,8 +332,8 @@ function PaymentContainer ({ backend, index, payment }) {
               {billingAddressCountry}
             </Typography>
             <div className="update-buttons">
-            <Button variant="contained" id={cardID} onClick={openEditModal}>Edit</Button>
-            <Button variant="contained">Delete</Button>
+            <Button variant="contained" onClick={openEditModal}>Edit</Button>
+            <Button variant="contained" onClick={handleDeletePayment}>Delete</Button>
             </div>
           </CardContent>
         </Collapse>
@@ -330,10 +379,10 @@ function PaymentContainer ({ backend, index, payment }) {
           <input value={editBillingInput.editBillingCity || ""} name="editBillingCity" placeholder="City" onChange={handleEditBillingChange}/>
           <input value={editBillingInput.editBillingState || ""} name="editBillingState" placeholder="State" onChange={handleEditBillingChange}/>
           <input value={editBillingInput.editBillingZipcode || ""} name="editBillingZipcode" placeholder="Zipcode" onChange={handleEditBillingChange}/>
-          {/* <button onClick={handleCreatePayment} 
-          disabled={!billingInput.firstName || !billingInput.lastName || !billingInput.lineOne || !billingInput.city || !billingInput.state || !billingInput.zipcode}>
+          <button onClick={handleEditPaymentSubmit} 
+          disabled={!editBillingInput.editBillingFirstName || !editBillingInput.editBillingLastName || !editBillingInput.editBillingFirstAddressLine || !editBillingInput.editBillingCity || !editBillingInput.editBillingState || !editBillingInput.editBillingZipcode}>
               Submit
-          </button> */}
+          </button>
           </form>
       </Modal>
     </>
