@@ -11,7 +11,7 @@ import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Button from '@material-ui/core/Button'
-// import {useStripe, useElements, CardElement} from '@stripe/react-stripe-js';
+import {useStripe, useElements, CardElement} from '@stripe/react-stripe-js';
 
 function PaymentContainer ({ backend, index, payment, defaultFirstPayment, grabPaymentData }) {
 
@@ -22,6 +22,9 @@ function PaymentContainer ({ backend, index, payment, defaultFirstPayment, grabP
     // const [error, setError] = useState(null);
     const [editCardHolderInput, setEditCardHolderInput] = useState({});
     const [editBillingInput, setEditBillingInput] = useState({});
+
+    const elements = useElements();
+    const stripe = useStripe();
 
     const customStyles = {
       content : {
@@ -144,6 +147,35 @@ function PaymentContainer ({ backend, index, payment, defaultFirstPayment, grabP
         grabPaymentData(deletePaymentData.paymentMethods);
         handleExpandClick();
         closeEditModalTwo();
+      }
+    }
+
+    const handleEditPaymentDefaultStatus = async (e) => {
+      e.preventDefault();
+      if (defaultCard) {
+        const removePaymentDefaultStatusResponse = await fetch(`${backend}/order/default/payment/${cardID}?default=false`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': localStorage.getItem('token')
+          }
+        })
+        const removePaymentDefaultStatusData = await removePaymentDefaultStatusResponse.json();
+        defaultFirstPayment(removePaymentDefaultStatusData.paymentMethods);
+        grabPaymentData(removePaymentDefaultStatusData.paymentMethods);
+        handleExpandClick();
+      } else {
+        const removePaymentDefaultStatusResponse = await fetch(`${backend}/order/default/payment/${cardID}?default=true`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': localStorage.getItem('token')
+          }
+        })
+        const removePaymentDefaultStatusData = await removePaymentDefaultStatusResponse.json();
+        defaultFirstPayment(removePaymentDefaultStatusData.paymentMethods);
+        grabPaymentData(removePaymentDefaultStatusData.paymentMethods);
+        handleExpandClick();
       }
     }
 
@@ -338,8 +370,11 @@ function PaymentContainer ({ backend, index, payment, defaultFirstPayment, grabP
               {billingAddressCountry}
             </Typography>
             <div className="update-buttons">
-            <Button variant="contained" onClick={openEditModal}>Edit</Button>
-            <Button variant="contained" onClick={handleDeletePayment}>Delete</Button>
+              {defaultCard ? 
+              <Button variant="contained" onClick={handleEditPaymentDefaultStatus}>Remove Default</Button> : 
+              <Button variant="contained" onClick={handleEditPaymentDefaultStatus}>Make Default</Button> }
+              <Button variant="contained" onClick={openEditModal}>Edit</Button>
+              <Button variant="contained" onClick={handleDeletePayment}>Delete</Button>
             </div>
           </CardContent>
         </Collapse>
