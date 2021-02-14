@@ -389,7 +389,7 @@ function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCar
         } else if(confirmCardResult.paymentIntent.status === 'succeeded'){
             // The payment has been processed!
             console.log('succeeded')
-            grabSuccessfulPaymentIntent(confirmCardResult.paymentIntent)
+            // grabSuccessfulPaymentIntent(confirmCardResult.paymentIntent)
             setProcessing(false) // Stop the spinner
             setOrderComplete(true) //redirect to OrderComplete component
         }
@@ -408,7 +408,7 @@ function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCar
     )}else {
         return (
             <>
-            <NavBar />
+            {/* <NavBar /> */}
             <div id="payment-form" >
                 <Shipping backend={backend} loggedIn={loggedIn} grabPaymentLoading={grabPaymentLoading} cartID={cartID} openCollapse={openCollapse} grabOpenCollapse={grabOpenCollapse} shipping={shipping} grabShipping={grabShipping} grabBillingWithShipping={grabBillingWithShipping} shippingInput={shippingInput} grabShippingInput={grabShippingInput} paymentMethod={paymentMethod} grabCardholderName={grabCardholderName} />
 

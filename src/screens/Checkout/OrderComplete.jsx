@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-// import { io } from "socket.io-client";
-
+import NavBar from '../../components/NavigationBar';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 export default function OrderComplete({ backend, cartID }) {
  
@@ -15,7 +15,7 @@ export default function OrderComplete({ backend, cartID }) {
     const indexOfEqualSign = currentURL.split('=');
     const id=indexOfEqualSign[indexOfEqualSign.length - 1];
 
-    useEffect(() => setOrderLoading(false))
+    useEffect(() => setTimeout(() => setOrderLoading(false), 3000))
 
     const handleOrderDetails = async() => {
         const orderID = cartID || id
@@ -31,11 +31,20 @@ export default function OrderComplete({ backend, cartID }) {
     }
     
     if(orderLoading && cartID) {
-        return <h1>Please wait while we process your payment</h1>
-    } else {
+        console.log(33)
+        return (
+            <>
+            <h1>Please wait while we process your payment</h1>
+            <CircularProgress />
+            </>
+        )
+    } 
+    else {
+        console.log(41)
         return (
         
             <>
+                <NavBar />
                 <h2>Thank you for your purchase! </h2>
                 <h3>Order #: {cartID || id}</h3>
                 { !showOrderDetails ? <button onClick={handleOrderDetails}>Order Details</button> : <button onClick={()=> setShowOrderDetails(!showOrderDetails)}>Close</button> }

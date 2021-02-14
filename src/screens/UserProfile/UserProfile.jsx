@@ -4,16 +4,21 @@ import { Redirect } from 'react-router-dom';
 import Footer from '../../components/Footer';
 import Address from './Address';
 import Payment from './Payment'
+import Orders from './Orders'
 import '../../styles/UserProfile/UserProfile.css';
 
-function UserProfile ({ backend }) {
+
+function UserProfile ({ backend, loggedIn, orderID, grabOrderID }) {
 
     // Getter and Setter to display the address component or not
     const [addressesTabOpen, setAddressesTabOpen] = useState(true);
     // Getter and Setter to display the payments component or not
     const [paymentsTabOpen, setPaymentsTabOpen] = useState(false);
+    const [ordersTabOpen, setOrdersTabOpen] = useState(false);
+
     const [addressData, setAddressData] = useState([]);
     const [paymentData, setPaymentData] = useState([]);
+    const [orderData, setOrderData] = useState([])
 
     useEffect(() => {
         // When the page renders in, we want to grab the address data from the backend server and use that data to display different AddressContainer components
@@ -43,8 +48,23 @@ function UserProfile ({ backend }) {
             setPaymentData(data.paymentMethods);
             console.log(data.paymentMethods)
         }
+
+        async function fetchOrderData () {
+            const orderResponse = await fetch(`${backend}/complete/list/orders`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': loggedIn()
+                }
+            })
+            const orderData = await orderResponse.json()
+            setOrderData(orderData.orders)
+            console.log(orderData.orders)
+        }
+
         fetchPaymentData();
         fetchAddressData();
+        fetchOrderData();
     }, [backend]);
 
     // Function that is used to reorder the data so that default is first and to also make the newest data come first on the list
@@ -70,24 +90,40 @@ function UserProfile ({ backend }) {
         setPaymentData(data);
     }
 
+    const grabOrderData = (data) => {
+        setOrderData(data)
+    }
+
     // Function that will handle whether the address component is open or not so 
     const handleClickAddresses = () => {
-        if (addressesTabOpen) {
-            setAddressesTabOpen(false);
-        } else if (!addressesTabOpen) {
+        // if (addressesTabOpen) {
+        //     setAddressesTabOpen(false);
+        // } else if (!addressesTabOpen) {
             setAddressesTabOpen(true);
             setPaymentsTabOpen(false);
-        }
+            setOrdersTabOpen(false)
+        // }
     }
 
     // Function that will handle whether the payment component is open or not so 
     const handleClickPayments = () => {
-        if (paymentsTabOpen) {
-            setPaymentsTabOpen(false);
-        } else if (!paymentsTabOpen) {
+        // if (paymentsTabOpen) {
+        //     setPaymentsTabOpen(false);
+        // } else if (!paymentsTabOpen) {
             setAddressesTabOpen(false);
             setPaymentsTabOpen(true);
-        }
+            setOrdersTabOpen(false)
+        // }
+    }
+
+    const handleClickOrders = () => {
+        // if(ordersTabOpen) {
+        //     setOrdersTabOpen(false)
+        // } else if(!ordersTabOpen) {
+            setOrdersTabOpen(true)
+            setAddressesTabOpen(false);
+            setPaymentsTabOpen(false);
+        // }
     }
 
     // If the user does not have a token (or logged in), users will automatically render onto the homepage because the user profile page is on accessible to users that are logged in
@@ -110,7 +146,10 @@ function UserProfile ({ backend }) {
                         className={paymentsTabOpen === true ? "highlighted-tab" : null}>
                             Payments
                         </div>
-                        <div>Orders</div>
+                        <div onClick={handleClickOrders} 
+                        className={ordersTabOpen === true ? "highlighted-tab" : null}>
+                           Orders
+                        </div>
                     </div>
                     {/* This component renders only when the addressesTab is open */}
                     {addressesTabOpen && 
@@ -126,6 +165,14 @@ function UserProfile ({ backend }) {
                         backend={backend} 
                         paymentData={paymentData}
                         grabPaymentData={grabPaymentData}/>
+                    }
+                    {ordersTabOpen &&
+                        <Orders 
+                        backend={backend} 
+                        orderData={orderData}
+                        grabOrderData={grabOrderData}
+                        orderID={orderID}
+                        grabOrderID={grabOrderID} />
                     }
                     <Footer />
                 </div>

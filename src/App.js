@@ -16,6 +16,7 @@ import { Elements } from "@stripe/react-stripe-js";
 import 'bootstrap/dist/css/bootstrap.min.css';
 // Font for Roboto
 import 'fontsource-roboto';
+import IndividualOrder from './screens/UserProfile/IndividualOrder';
 
 function App() {
 
@@ -27,6 +28,8 @@ function App() {
   const [url, setURL] = useState('');
   const [loggedOut, setLoggedOut] = useState(false)
   const [cartID, setCartID] = useState('')
+  const [orderID, setOrderID] = useState("")
+
   const [successfulPaymentIntent, setSuccessfulPaymentIntent] = useState({})
 
    /* ------- UPDATE STATES ------- */
@@ -41,6 +44,8 @@ function App() {
 
   // Update the cartID state after fetching for the cart items in to store the logged in or guest session cart's ID
   const grabCartID = (cartID) => setCartID(cartID)
+
+  const grabOrderID = (orderID) => setOrderID(orderID)
 
    /* ------- CHECK IF USER IS LOGGED IN BEFORE RUNNING FUNCTIONS ------- */
    const loggedIn = () => localStorage.getItem('token')
@@ -87,13 +92,16 @@ function App() {
           </Route>
           <Route path="/profile">
             <Elements stripe={stripePromise}>
-              <UserProfile backend={backend} loggedIn={loggedIn}/>
+              <UserProfile backend={backend} loggedIn={loggedIn} orderID={orderID} grabOrderID={grabOrderID} />
             </Elements>
           </Route>
           <Route path="/order-complete">
       
             <OrderComplete backend={backend} cartID={cartID} />
           
+          </Route>
+          <Route path="/show-order">
+            <IndividualOrder loggedIn={loggedIn} orderID={orderID}/>
           </Route>
           <Route path="">
             <Homepage grabURL={grabURL} backend={backend} loggedIn={loggedIn}/>
