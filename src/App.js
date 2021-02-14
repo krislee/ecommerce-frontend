@@ -91,7 +91,9 @@ function App() {
             </Elements>
           </Route>
           <Route path="/order-complete">
-            <OrderComplete backend={backend} cartID={cartID} loggedIn={loggedIn} successfulPaymentIntent={successfulPaymentIntent}/>
+      
+            <OrderComplete backend={backend} cartID={cartID} />
+          
           </Route>
           <Route path="">
             <Homepage grabURL={grabURL} backend={backend} loggedIn={loggedIn}/>

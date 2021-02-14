@@ -3,9 +3,10 @@ import {Link} from 'react-router-dom';
 import '../../styles/CartPage.css'
 import NavBar from '../../components/NavigationBar'
 import Footer from '../../components/Footer'
+import { faKeyboard } from '@fortawesome/free-solid-svg-icons';
 
 
-export default function CartItemPage ({ backend, loggedIn, index, id, name, quantity, totalPrice, grabItems, grabTotalPrice}) {
+export default function CartItemPage ({ backend, loggedIn, id, name, quantity, totalPrice, grabItems, grabTotalPrice}) {
 
     const [cartQuantity, setCartQuantity] = useState(quantity)
 
@@ -77,7 +78,7 @@ export default function CartItemPage ({ backend, loggedIn, index, id, name, quan
     }
 
     return (
-        <div key={index}>
+        <div>
             <p>{name}</p>
             <input type="number" min="1" value={cartQuantity} onChange={handleQuantity}/>
             <p>${totalPrice}</p>

@@ -401,7 +401,7 @@ function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCar
         return <Redirect to="/cart" />   
     } else if(orderComplete) {
         return (
-        <Redirect to="/order-complete">
+        <Redirect to={`/order-complete?order=${cartID}`}>
             <OrderComplete />
         </Redirect>
 

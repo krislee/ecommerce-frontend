@@ -82,7 +82,7 @@ function CartPage ({ backend, loggedIn }) {
                 <NavBar />
                 <div className="cart">
                     <div className="cart-items">
-                        {items.map((item, index) => { return <CartItemPage backend={backend} loggedIn={loggedIn} index={index} id={item.ItemId} name={item.Name} quantity={item.Quantity} totalPrice={item.TotalPrice} grabItems={grabItems} grabTotalPrice={grabTotalPrice} /> })}
+                        {items.map((item, index) => { return <CartItemPage backend={backend} loggedIn={loggedIn} key={index} id={item.ItemId} name={item.Name} quantity={item.Quantity} totalPrice={item.TotalPrice} grabItems={grabItems} grabTotalPrice={grabTotalPrice} /> })}
                         <p><b>Total Price: ${totalPrice}</b></p>
                     </div>
                         

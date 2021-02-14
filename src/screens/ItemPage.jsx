@@ -72,7 +72,7 @@ function ItemPage ({ loggedIn, url, backend }) {
                         </div>
                         <div className="input-info">
                         <div className="quantity-tag">Quantity</div>
-                        <input  className="quantity-input" type="number" value={quantity} onChange={handleChangeQuantity}></input>
+                        <input className="quantity-input" type="number" min="1" value={quantity} onChange={handleChangeQuantity}></input>
                         <AddCartButton backend={backend} loggedIn={loggedIn} id={itemInfo._id} quantity={quantity} name={'Add To Cart'} />
                         </div>
                     </div>
