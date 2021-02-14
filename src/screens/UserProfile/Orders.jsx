@@ -7,7 +7,7 @@ import IndividualOrder from './IndividualOrder'
 import {Link} from 'react-router-dom';
 import ConvertDate from './ConvertDate'
 
-export default function Orders ({ backend, orderData, grabOrderData, orderID, grabOrderID}) {
+export default function Orders ({ backend, loggedIn, orderData, grabOrderData, orderID, grabOrderID}) {
 
     // var month = dateObj.getUTCMonth() + 1; 
     // var day = dateObj.getUTCDate();
@@ -45,8 +45,8 @@ export default function Orders ({ backend, orderData, grabOrderData, orderID, gr
         )
     } else {
         return (
-            <Link to={`/show-order/${orderID}`}>
-                <IndividualOrder backend={backend} orderID={orderID}/>
+            <Link to={`/show-order/${orderID}`} target="_blank">
+                <IndividualOrder backend={backend} loggedIn={loggedIn} orderID={orderID}/>
             </Link>
         )
     }

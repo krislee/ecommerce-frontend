@@ -14,7 +14,7 @@ const useStyles = makeStyles({
     table: {
       minWidth: 650,
     },
-  });
+});
   
   
 export default function IndividualOrder({ backend, loggedIn, orderID}) {
@@ -54,8 +54,8 @@ export default function IndividualOrder({ backend, loggedIn, orderID}) {
     }else {
         return (
             <>
-            <h3>Order #: {orderID}</h3>
-            <h5>Placed on {ConvertDate(order.OrderDate)}</h5>
+            <h4>Order #: {orderID}</h4>
+            <h6>Placed on {ConvertDate(order.OrderDate)}</h6>
             <div id='items'>
                 <TableContainer component={Paper}>
                 <Table className={classes.table} aria-label="simple table">

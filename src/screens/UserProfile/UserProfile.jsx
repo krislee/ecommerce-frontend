@@ -169,6 +169,7 @@ function UserProfile ({ backend, loggedIn, orderID, grabOrderID }) {
                     {ordersTabOpen &&
                         <Orders 
                         backend={backend} 
+                        loggedIn={loggedIn}
                         orderData={orderData}
                         grabOrderData={grabOrderData}
                         orderID={orderID}
