@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import Modal from 'react-modal';
 import PaymentContainer from '../../components/UserProfile/PaymentContainer';
 import {useStripe, useElements, CardElement} from '@stripe/react-stripe-js';
 
-function UserProfilePayment ({ backend, paymentData, grabPaymentData }) {
+function UserProfilePayment ({ backend, paymentData, grabPaymentData, defaultFirstPayment }) {
 
     const [modalIsOpen,setModalIsOpen] = useState(false);
     const [modalTwoIsOpen, setModalTwoIsOpen] = useState(false);
@@ -102,12 +102,15 @@ function UserProfilePayment ({ backend, paymentData, grabPaymentData }) {
             },
             body: JSON.stringify({
                 paymentMethodID: `${newPaymentResponse.paymentMethod.id}`,
-                default: check ? check : !check
+                default: check
             })
         })
         const savePaymentMethodToCustomerData = await savePaymentMethodToCustomerResponse.json();
         console.log(savePaymentMethodToCustomerData);
+        defaultFirstPayment(savePaymentMethodToCustomerData.paymentMethods);
         grabPaymentData(savePaymentMethodToCustomerData.paymentMethods);
+        setCardHolderInput({});
+        setBillingInput({});
         closeModalTwo();
     }
 
@@ -120,6 +123,8 @@ function UserProfilePayment ({ backend, paymentData, grabPaymentData }) {
                 key={index}
                 payment={payment}
                 backend={backend}
+                defaultFirstPayment={defaultFirstPayment}
+                grabPaymentData={grabPaymentData}
                 />
             )
         }
@@ -147,10 +152,10 @@ function UserProfilePayment ({ backend, paymentData, grabPaymentData }) {
                 isOpen={modalIsOpen}
                 onRequestClose={closeModal}
                 style={customStyles}
-                contentLabel="Example Modal"
+                contentLabel="Create Payment Modal"
                 >
                 <form className="form">
-                <h2>Add Your Payment</h2>
+                <h2>Add Your Card Information</h2>
                 <input value={cardHolderInput.cardName || ""} name="cardName" placeholder="Card Name" onChange={handleCardHolderNameChange}/>
                 <CardElement onChange={handleCardChange}/>
                 <div>{error}</div>
@@ -167,7 +172,7 @@ function UserProfilePayment ({ backend, paymentData, grabPaymentData }) {
                 isOpen={modalTwoIsOpen}
                 onRequestClose={closeModalTwo}
                 style={customStyles}
-                contentLabel="Example Modal"
+                contentLabel="Add Billing Information Modal"
                 >
                 <form className="form">
                 <h2>Add Your Billing Address</h2>

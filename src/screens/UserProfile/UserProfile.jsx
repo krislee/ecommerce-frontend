@@ -40,6 +40,8 @@ function UserProfile ({ backend }) {
                 }
             });
             const data = await resp.json();
+            console.log(data);
+            defaultFirstPayment(data.paymentMethods);
             setPaymentData(data.paymentMethods);
             console.log(data.paymentMethods)
         }
@@ -59,6 +61,20 @@ function UserProfile ({ backend }) {
             const defaultFirstAddress = data.splice(index, 1)[0];
             // Push it to the top of the list so it would be index zero (first element)
             data.unshift(defaultFirstAddress);
+        }
+    }
+
+    const defaultFirstPayment = (data) => {
+        // Reverses the order of the data so the newest data will be first and the oldest will be last
+        data.reverse();
+        // If the data that is returned has a object with the property of defaultAddress being true, then run 
+        if (data.findIndex(payment => payment.default === true) !== -1 && data.length !== 0) {
+            // Find the index of the object that has the default address information
+            const index = data.findIndex(payment => payment.default === true)
+            // Splice it so we can grab it and remove it from the array
+            const defaultFirstPayment = data.splice(index, 1)[0];
+            // Push it to the top of the list so it would be index zero (first element)
+            data.unshift(defaultFirstPayment);
         }
     }
 
@@ -125,6 +141,7 @@ function UserProfile ({ backend }) {
                         <Payment 
                         backend={backend} 
                         paymentData={paymentData}
+                        defaultFirstPayment={defaultFirstPayment}
                         grabPaymentData={grabPaymentData}/>
                     }
                     <Footer />
