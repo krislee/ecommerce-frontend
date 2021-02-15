@@ -22,6 +22,7 @@ function PaymentContainer ({ backend, index, payment, defaultFirstPayment, grabP
     // const [error, setError] = useState(null);
     const [editCardHolderInput, setEditCardHolderInput] = useState({});
     const [editBillingInput, setEditBillingInput] = useState({});
+    const [invalidExpirationDate, setInvalidExpirationDate] = useState(false);
 
     const elements = useElements();
     const stripe = useStripe();
@@ -185,7 +186,17 @@ function PaymentContainer ({ backend, index, payment, defaultFirstPayment, grabP
 
     const openEditModalTwo = (e) => {
       e.preventDefault();
-      setEditModalTwoIsOpen(true);
+      if (Number(editCardHolderInput.cardYearExpDate) === new Date().getFullYear()){
+        if (Number(editCardHolderInput.cardMonthExpDate) >= new Date().getMonth() + 1) {
+          setEditModalTwoIsOpen(true);
+          setInvalidExpirationDate(false);
+        } else {
+          setInvalidExpirationDate(true);
+        }
+      } else {
+        setEditModalTwoIsOpen(true);
+        setInvalidExpirationDate(false);
+      }
     }
 
     const closeEditModalTwo = () => {
@@ -330,6 +341,18 @@ function PaymentContainer ({ backend, index, payment, defaultFirstPayment, grabP
       }
     }
 
+    // const checkIfCardValidSameYear = () => {
+    //   if (editCardHolderInput.cardYearExpDate === new Date().getFullYear()) {
+    //     if (editCardHolderInput.cardMonthExpDate < new Date().getMonth() + 1) {
+    //       return true
+    //     } else {
+    //       return false
+    //     }
+    //   } else {
+    //     return false
+    //   }
+    // }
+
 
     return (
       <>
@@ -389,18 +412,35 @@ function PaymentContainer ({ backend, index, payment, defaultFirstPayment, grabP
         <h2>Edit Your Card Information</h2>
         <input 
         value={editCardHolderInput.cardName || ""} 
-        name="cardName" 
-        placeholder="Card Name" 
+        name="cardName"
+        type="text"
+        placeholder="Card Name"
         onChange={handleEditCardHolderNameChange}/>
+        {(/^[a-z][a-z\s]*$/i.test(editCardHolderInput.cardName) !== true && editCardHolderInput.cardName !== "") && <div className="warning">You must enter only letters as your name</div>}
         <input 
-        value={editCardHolderInput.cardMonthExpDate || ""} name="cardMonthExpDate" 
+        value={editCardHolderInput.cardMonthExpDate || ''} name="cardMonthExpDate" 
         placeholder="Month" 
+        maxLength="2" 
+        min="1"
+        max="12"
+        type="number"
         onChange={handleEditCardHolderNameChange}/>
+        {(editCardHolderInput.cardMonthExpDate > 12 || editCardHolderInput.cardMonthExpDate < 1 && editCardHolderInput.cardMonthExpDate !== "") && <div className="warning">You must enter a valid month</div>}
         <input 
-        value={editCardHolderInput.cardYearExpDate || ""} name="cardYearExpDate" 
+        value={editCardHolderInput.cardYearExpDate || ""} name="cardYearExpDate"
+        maxLength="4"
+        min={new Date().getFullYear()}
+        max={new Date().getFullYear() + 10}
+        type="number"
         placeholder="Year" 
         onChange={handleEditCardHolderNameChange}/>
-        <button onClick={openEditModalTwo} >
+        {(editCardHolderInput.cardYearExpDate > new Date().getFullYear() + 10 || editCardHolderInput.cardYearExpDate < new Date().getFullYear() && editCardHolderInput.cardYearExpDate !== "") && <div className="warning">You must enter a valid year</div>}
+        {invalidExpirationDate && <div className="warning">You must enter a valid expiration date</div>}
+        <button onClick={openEditModalTwo} 
+        style={{marginTop: "1rem"}}
+        disabled={
+          (/^[a-z][a-z\s]*$/i.test(editCardHolderInput.cardName) !== true || editCardHolderInput.cardName === "") || (editCardHolderInput.cardMonthExpDate > 12 || editCardHolderInput.cardMonthExpDate < 1 && editCardHolderInput.cardMonthExpDate === "") || (editCardHolderInput.cardYearExpDate > new Date().getFullYear() + 10 || editCardHolderInput.cardYearExpDate < new Date().getFullYear() || editCardHolderInput.cardYearExpDate === "")
+        }>
             Next
         </button>
         </form>
