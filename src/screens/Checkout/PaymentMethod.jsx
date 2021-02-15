@@ -6,14 +6,12 @@ import { useStripe, CardElement, useElements, CardCvcElement } from "@stripe/rea
 import createPaymentMethod from './CreatePayment'
 import { Redirect } from 'react-router-dom';
 import CardForm from './CardForm'
-// import Button from 'react-bootstrap/Button';
-// import Modal from 'react-bootstrap/Modal'
 import FormGroup from 'react-bootstrap/FormGroup'
 import '../../styles/Payment.css'
 import { Accordion, Card, Button } from 'react-bootstrap';
 
 
-function PaymentMethod ({ backend, processing, loggedIn, error, grabError, disabled, grabDisabled,  paymentLoading, grabPaymentLoading, billing, grabBilling, handleBillingChange, paymentMethod, grabPaymentMethod, cardholderName, grabCardholderName, handleCardholderNameChange, handleCardChange, collectCVV, grabCollectCVV, editPayment, grabEditPayment, redisplayCardElement, grabRedisplayCardElement, grabShowSavedCards, handleConfirmPayment, showSavedCards, grabLoggedOut, editExpiration, grabEditExpiration, openCollapse, sameAsShipping, handleSameAsShipping, shippingInput, grabBillingWithShipping }) {
+function PaymentMethod ({ backend, processing, loggedIn, error, grabError, disabled, grabDisabled,  paymentLoading, grabPaymentLoading, billing, grabBilling, handleBillingChange, paymentMethod, grabPaymentMethod, cardholderName, grabCardholderName, handleCardholderNameChange, handleCardChange, collectCVV, grabCollectCVV, editPayment, grabEditPayment, redisplayCardElement, grabRedisplayCardElement, grabShowSavedCards, handleConfirmPayment, showSavedCards, grabLoggedOut, editExpiration, grabEditExpiration, showPayment, sameAsShipping, handleSameAsShipping, shippingInput, grabBillingWithShipping, grabShowShipping, grabShowPayment, grabShowButtons, grabReadOnly }) {
 
     /* ------- STRIPE VARIABLES ------ */
     const elements = useElements()
@@ -73,6 +71,14 @@ function PaymentMethod ({ backend, processing, loggedIn, error, grabError, disab
             },2000) // update paymentLoading state to false so it will not render Loading... when we re-render CheckoutPage and Checkout/PaymentMethod components
         }
     }, [])
+
+    // const back = () => {
+    //     grabShowShipping(true)
+    //     grabShowPayment(false) // close the payment method info/form
+    //     grabShowButtons(true) // show the Add New, Edit, and All Addresses buttons
+    //     if(!paymentMethod.paymentMethodID)grabCardholderName("") // When we click Back while filling out the Payment method form we want to clear the cardholder's name input if user started typing in it
+    //     grabReadOnly(false)
+    // }
 
     /* ------- EDIT PAYMENT METHOD FUNCTIONS ------ */
 
@@ -261,8 +267,6 @@ function PaymentMethod ({ backend, processing, loggedIn, error, grabError, disab
         grabDisabled(true) // In case user was typing in the CVV element which would update the disabled state to false, we want to change the disabled state to true again, so that after the Saved Cards modal closes the Confirm Payment button is disabled until user enters CVV element
     }
 
- 
-
     if(paymentLoading) {
         return <></>
     } else if(!paymentMethod.paymentMethodID) {
@@ -270,7 +274,7 @@ function PaymentMethod ({ backend, processing, loggedIn, error, grabError, disab
         return collectCVV !== 'true' && (
             <>
             <div><h2>Payment Method</h2></div>
-            {openCollapse && <CardForm loggedIn={loggedIn} paymentMethod={paymentMethod} handleSubmitCardForm={handleConfirmPayment} handleCardChange={handleCardChange} handleBillingChange={handleBillingChange} handleCardholderNameChange={handleCardholderNameChange} cardholderName={cardholderName} billing={billing} grabBilling={grabBilling} collectCVV={collectCVV} redisplayCardElement={redisplayCardElement} closeAddNewModal={closeAddNewModal} disabled={disabled} error={error} sameAsShipping={sameAsShipping} handleSameAsShipping={handleSameAsShipping}/>}
+            {showPayment && <CardForm loggedIn={loggedIn} paymentMethod={paymentMethod} handleSubmitCardForm={handleConfirmPayment} handleCardChange={handleCardChange} handleBillingChange={handleBillingChange} handleCardholderNameChange={handleCardholderNameChange} cardholderName={cardholderName} billing={billing} grabBilling={grabBilling} collectCVV={collectCVV} redisplayCardElement={redisplayCardElement} closeAddNewModal={closeAddNewModal} disabled={disabled} error={error} sameAsShipping={sameAsShipping} handleSameAsShipping={handleSameAsShipping}/>}
             </>
         )      
 
@@ -287,7 +291,7 @@ function PaymentMethod ({ backend, processing, loggedIn, error, grabError, disab
         return (
             <>
             <div><h2>Payment Method</h2></div>
-            {openCollapse && (
+            {showPayment && (
             <div>
                 <p><b>{paymentMethod.cardholderName}</b></p>
                 <p><b>{paymentMethod.brand}</b></p>
@@ -327,7 +331,7 @@ function PaymentMethod ({ backend, processing, loggedIn, error, grabError, disab
                     )})}
                     <button onClick={ closeSavedCards }>Close</button>
                 </Modal>
-                
+
                 {/* Do not show the Confirm Payment button when Saved Cards modal, Edit modal, and Add New Card modal are open */}
                 {/* Disable Confirm Payment button when: 
                 1) There is an empty CVV Element 

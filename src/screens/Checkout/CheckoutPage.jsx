@@ -3,11 +3,12 @@ import { Redirect } from 'react-router-dom';
 import {useStripe, useElements, CardElement, CardCvcElement} from '@stripe/react-stripe-js';
 
 import NavBar from '../../components/NavigationBar';
-import PaymentMethod from './PaymentMethod'
 import Shipping from './Shipping'
-import createPaymentMethod from './CreatePayment'
+import PaymentMethod from './PaymentMethod'
+import CheckoutItems from './CheckoutItems'
 import OrderComplete from './OrderComplete'
 
+import createPaymentMethod from './CreatePayment'
 import '../../styles/CheckoutPage.css';
 import {Link} from 'react-router-dom';
 
@@ -57,13 +58,18 @@ function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCar
     const [editExpiration, setEditExpiration] = useState({})
     
     /* ------- SHIPPING STATES ------- */
-    // openCollapse state is passed to both PaymentMethod and Shipping components, and is updated in the Shipping Component when we click Next or Edit button
-    const [openCollapse, setOpenCollapse] = useState(false)
+    // showPayment state is passed to both PaymentMethod and Shipping components, and is updated in the Shipping Component when we click Next or Edit button
+    const [showPayment, setShowPayment] = useState(false)
     const [sameAsShipping, setSameAsShipping] = useState(true) // checkbox state 
     // shipping state is to store ONE saved shipping address (either default, last used, or last created) that we wil display or no saved shipping address. Aside from useEffect(), whenever we select an address, update an address, or add a new address, shipping state is updated to store that current, saved shipping address to redisplay it. If shipping state stores an object of saved shipping address, then we would always use it 
     const [shipping, setShipping] = useState({})
     // shippingInput state that contains the address values for the input value
     const [shippingInput, setShippingInput] = useState({})
+    const [showButtons, setShowButtons] = useState(false) //when we click Next button an Edit (sort of like a back button) appears. When the Edit button is clicked, showButtons state gets updated to true to display 3 other buttons: Add New, Edit, and Saved Shipping
+
+    const [showShipping, setShowShipping] = useState(false)
+    const [readOnly, setReadOnly] = useState(false) // Shipping form is enabled by default until we click Next
+    const [showItems, setShowItems] = useState(true)
 
     /* ------- SET UP STRIPE ------- */
     const stripe = useStripe(); // need stripe instance to confirm card payment: stripe.confirmCardPayment()
@@ -171,8 +177,8 @@ function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCar
 
     /* ------- FUNCTIONS UPDATING SHIPPING-RELATED STATES  ------- */  
 
-    // grabOpenCollapse updates the openCollapse state to true when we hit Next button from the Shipping component; when openCollapse state is true, the payment method details or form is shown
-    const grabOpenCollapse = (openCollapse) => setOpenCollapse(openCollapse)
+    // grabShowPayment updates the showPayment state to true when we hit Next button from the Shipping component; when showPayment state is true, the payment method details or form is shown
+    const grabShowPayment = (showPayment) => setShowPayment(showPayment)
     // update the shipping & shippingInput states whenever we Select a shipping, Add a new shipping, edit a shipping 
     const grabShipping = (shipping) => setShipping(shipping)
     const grabShippingInput = (shippingInput) => setShippingInput(shippingInput)
@@ -180,6 +186,10 @@ function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCar
     // grabBillingWithShipping is only called on when we are going to display a payment method form for guest user, logged in user who never saved a card before, and logged in user who wants to save more cards; this function will update billing state to have the same values as shipping input state, allowing for the payment method form's billing details input values, which is dependent on billing state, to be the same as shipping input values
     const grabBillingWithShipping = (shippingInput) => setBilling(shippingInput)
 
+    const grabShowButtons = (showButtons) => setShowButtons(showButtons)
+    const grabShowShipping = (showShipping) => setShowShipping(showShipping)
+    const grabShowItems = (showItems) => setShowItems(showItems)
+    const grabReadOnly = (readOnly) => setReadOnly(readOnly)
 
     /* ------- LISTEN TO INPUT CHANGES TO UPDATE STATES ------- */  
 
@@ -410,9 +420,11 @@ function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCar
             <>
             {/* <NavBar /> */}
             <div id="payment-form" >
-                <Shipping backend={backend} loggedIn={loggedIn} grabPaymentLoading={grabPaymentLoading} cartID={cartID} openCollapse={openCollapse} grabOpenCollapse={grabOpenCollapse} shipping={shipping} grabShipping={grabShipping} grabBillingWithShipping={grabBillingWithShipping} shippingInput={shippingInput} grabShippingInput={grabShippingInput} paymentMethod={paymentMethod} grabCardholderName={grabCardholderName} />
+                <CheckoutItems backend={backend} loggedIn={loggedIn} showItems={showItems} grabShowItems={grabShowItems} grabShowShipping={grabShowShipping} grabShowButtons={grabShowButtons} grabShowPayment={grabShowPayment} grabReadOnly={grabReadOnly}/>
 
-                <PaymentMethod backend={backend} loggedIn={loggedIn} error={error} grabError={grabError} disabled={disabled} grabDisabled={grabDisabled} paymentLoading={paymentLoading} grabPaymentLoading={grabPaymentLoading} billing={billing} handleBillingChange={handleBillingChange} grabBilling={grabBilling} paymentMethod={paymentMethod} grabPaymentMethod={grabPaymentMethod} cardholderName={cardholderName} grabCardholderName={grabCardholderName}handleCardholderNameChange={handleCardholderNameChange} handleCardChange={handleCardChange} collectCVV={collectCVV} grabCollectCVV={grabCollectCVV} editPayment={editPayment} grabEditPayment={grabEditPayment} redisplayCardElement={redisplayCardElement} grabRedisplayCardElement={grabRedisplayCardElement} grabShowSavedCards={grabShowSavedCards} handleConfirmPayment={handleConfirmPayment} showSavedCards={showSavedCards} editExpiration={editExpiration} grabEditExpiration={grabEditExpiration} loggedOut={loggedOut} grabLoggedOut={grabLoggedOut} openCollapse={openCollapse} sameAsShipping={sameAsShipping} handleSameAsShipping={handleSameAsShipping} shippingInput={shippingInput} grabBillingWithShipping={grabBillingWithShipping} shipping={shipping} />
+                <Shipping backend={backend} loggedIn={loggedIn} grabPaymentLoading={grabPaymentLoading} cartID={cartID} showPayment={showPayment} grabShowPayment={grabShowPayment} grabShowItems={grabShowItems} shipping={shipping} grabShipping={grabShipping} grabBillingWithShipping={grabBillingWithShipping} shippingInput={shippingInput} grabShippingInput={grabShippingInput} paymentMethod={paymentMethod} grabCardholderName={grabCardholderName} grabShowButtons={grabShowButtons} showButtons={showButtons} showShipping={showShipping} grabShowShipping={grabShowShipping} grabShowItems={grabShowItems} grabReadOnly={grabReadOnly}/>
+
+                <PaymentMethod backend={backend} loggedIn={loggedIn} error={error} grabError={grabError} disabled={disabled} grabDisabled={grabDisabled} paymentLoading={paymentLoading} grabPaymentLoading={grabPaymentLoading} billing={billing} handleBillingChange={handleBillingChange} grabBilling={grabBilling} paymentMethod={paymentMethod} grabPaymentMethod={grabPaymentMethod} cardholderName={cardholderName} grabCardholderName={grabCardholderName}handleCardholderNameChange={handleCardholderNameChange} handleCardChange={handleCardChange} collectCVV={collectCVV} grabCollectCVV={grabCollectCVV} editPayment={editPayment} grabEditPayment={grabEditPayment} redisplayCardElement={redisplayCardElement} grabRedisplayCardElement={grabRedisplayCardElement} grabShowSavedCards={grabShowSavedCards} handleConfirmPayment={handleConfirmPayment} showSavedCards={showSavedCards} editExpiration={editExpiration} grabEditExpiration={grabEditExpiration} loggedOut={loggedOut} grabLoggedOut={grabLoggedOut} showPayment={showPayment} sameAsShipping={sameAsShipping} handleSameAsShipping={handleSameAsShipping} shippingInput={shippingInput} grabBillingWithShipping={grabBillingWithShipping} shipping={shipping} grabShowButtons={grabShowButtons} grabShowShipping={grabShowShipping} grabShowPayment={grabShowPayment} grabReadOnly={grabReadOnly}/>
                 
             </div>         
             </>
