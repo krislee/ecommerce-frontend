@@ -103,7 +103,7 @@ function App() {
           <Route path="/show-order">
             <IndividualOrder loggedIn={loggedIn} orderID={orderID}/>
           </Route>
-          <Route path="">
+          <Route path="/shop/:pageIndex">
             <Homepage grabURL={grabURL} backend={backend} loggedIn={loggedIn}/>
           </Route>
         </Switch>

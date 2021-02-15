@@ -63,10 +63,8 @@ function CartPage ({ backend, loggedIn }) {
 
 
     if(cartLoading) {
-        console.log(123)
         return <></>
     } else if(emptyCart.cart || items.length === 0) {
-        console.log(126)
         return (
             <>
             <NavBar />
@@ -75,7 +73,6 @@ function CartPage ({ backend, loggedIn }) {
         )
     }
     else if(items.length >0) {
-        console.log(135)
         return (
             <>
             <div className="cart-page-container">

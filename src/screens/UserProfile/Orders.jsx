@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
-import IconButton from '@material-ui/core/IconButton';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+// import IconButton from '@material-ui/core/IconButton';
+// import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import IndividualOrder from './IndividualOrder'
 import {Link} from 'react-router-dom';
 import ConvertDate from './ConvertDate'
@@ -21,7 +21,7 @@ export default function Orders ({ backend, loggedIn, orderData, grabOrderData, o
         return (
             <>
             
-            {orderData.length == 0 ? <p>No purchases yet, but you could become the next owner of the latest gadget!</p> : (
+            {orderData.length === 0 ? <p>No purchases yet, but you could become the next owner of the latest gadget!</p> : (
                 orderData.map((orderData, index) => {return (
                     <Card key={index}>
                         <CardHeader
