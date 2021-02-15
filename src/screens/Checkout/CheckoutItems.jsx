@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react'
+import { Redirect } from 'react-router-dom';
 
-export default function CheckoutItems({ backend, loggedIn, showItems, grabShowItems, grabShowShipping, grabShowButtons, grabShowPayment, grabReadOnly}) {
+export default function CheckoutItems({ backend, loggedIn, showItems, grabShowItems, grabShowShipping, grabShowButtons, grabReadOnly}) {
     const [checkoutItemsLoading, setCheckoutItemsLoading] = useState(true)
     const [items, setItems] = useState([]);
     const [redirect, setRedirect] = useState(false)
@@ -40,12 +41,14 @@ export default function CheckoutItems({ backend, loggedIn, showItems, grabShowIt
     const handleNext = () => {
         grabShowItems(false) //hide the Next button in CheckoutItems
         grabShowShipping(true) // show the Shipping details or form
-        grabShowButtons(true) // show the Add New, Edit, and Saved Addresses buttons for the already saved Shipping details
+        grabReadOnly(true)
+        grabShowButtons(true) // show the Add New, Edit, and Saved Addresses buttons for the already saved Shipping
     }
 
     if(checkoutItemsLoading) {
-        console.log(123)
         return <></>
+    } else if(redirect) {
+        return <Redirect to='/cart'></Redirect>
     } else {
         return (
             <>
