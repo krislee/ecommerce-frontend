@@ -4,7 +4,7 @@ import Button from '../../components/Button'
 import Modal from 'react-modal';
 // import { Accordion, Card } from 'react-bootstrap'
 
-function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, openCollapse, grabOpenCollapse, loggedOut, grabLoggedOut, shipping, grabShipping, grabBillingWithShipping, shippingInput, grabShippingInput, paymentMethod, grabCardholderName }) {
+function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, grabShowPayment, loggedOut, grabLoggedOut, shipping, grabShipping, grabBillingWithShipping, shippingInput, grabShippingInput, paymentMethod, grabCardholderName, showButtons, grabShowButtons, grabShowItems, showShipping, grabShowShipping, readOnly, grabReadOnly }) {
     // shippingLoading state is initially set to true to render <></> before updating it to false in useEffect()
     const [shippingLoading, setShippingLoading] = useState(true)
     const [showModal, setShowModal] = useState(false)
@@ -17,8 +17,8 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, openCollapse,
     const [showSavedShipping, setShowSavedShipping] = useState(false)
     // editShipping state represents if we are currently editing an address
     const [editShipping, setEditShipping] = useState(false)
-    const [readOnly, setReadOnly] = useState(false) // disable the inputs after clicking Next
-    const [showButtons, setShowButtons] = useState(false) //when we click Next button an Edit (sort of like a back button) appears. When the Edit button is clicked, showButtons state gets updated to true to display 3 other buttons: Add New, Edit, and Saved Shipping
+    // const [readOnly, setReadOnly] = useState(false) // disable the inputs after clicking Next
+    // const [showButtons, setShowButtons] = useState(false) //when we click Next button an Edit (sort of like a back button) appears. When the Edit button is clicked, showButtons state gets updated to true to display 3 other buttons: Add New, Edit, and Saved Shipping
     const [multipleShipping, setMultipleShipping] = useState(false) //multipleShipping state is initially false but will update to true in UseEffect if there is more than 1 saved address coming back from the server or after adding a new address at checkout
 
     /* ------- MISCELLANEOUS FUNCTIONS ------ */
@@ -30,20 +30,21 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, openCollapse,
     // Fade out the Shipping component and show the Payment Method component when Next button is clicked
     const collapse = async () => {
         console.log("collapse")
-        grabOpenCollapse(true) //The payment method form or payment method details  from paymentMethod component will be displayed when openCollapse state is true
-        setReadOnly(true) // disable the input fields
-        setShowButtons(false) // hide the Add New, Saved Shipping, and Edit buttons 
+        grabShowShipping(false) // hide the Shipping component that shows the shipment details
+        grabShowPayment(true) //The payment method form or payment method details  from paymentMethod component will be displayed when openCollapse state is true
+        grabReadOnly(true) // disable the input fields
+        grabShowButtons(false) // hide the Add New, Saved Shipping, and Edit buttons 
         addNewShipping() // updates the payment intent with whatever is written in the shipping inputs; the shipping inputs would still have values when we are using an already saved shipping because we update the shippingInput state alongside updating shipping state in our useEffect()
         if(!paymentMethod.paymentMethodID) grabBillingWithShipping(shippingInput) // For guest user or logged in user without any saved payment methods, a payment method form shows after clicking Next. When we hit Next, collapse() runs, running the grabBillingWithShipping function, so that the billing state of the payment method form will be prefilled with the Shipping Input fields values; we do not want to prefill the Billing Inputs of an already saved payment method with shipping input fields values because the billing inputs may be different from shipping input; we only want the billing inputs value to be the same as shipping input field values when we are ADDING a new payment method. So for logged in users adding a payment method, grabBillingWithShipping(shippingInput) runs when we hit Add New payment method (see it in the PaymentMethod component)
     }
 
-    const back = () => {
-        setReadOnly(false)
-        grabOpenCollapse(false) // close the payment method info/form
-        setShowButtons(true) // show the Add New, Edit, and All Addresses buttons
-        if(!paymentMethod.paymentMethodID)grabCardholderName("") // When we click Edit while filling out the Payment method form we want to clear the cardholder's name input if user started typing in it
+    const back =() => {
+        grabShowShipping(true) // show the Shipping component with the shipment details again
+        grabShowPayment(false) // close the payment method info/form
+        grabShowButtons(true) // show the Add New, Edit (the one that is associated with handleEditShipping function), and All Addresses buttons again & 
+        if(!paymentMethod.paymentMethodID)grabCardholderName("") // When we click Back while filling out the Payment method form we want to clear the cardholder's name input if user started typing in it
+        grabReadOnly(false) // enable the Shipping Form for editing or Adding card again, and reshow the Next button
     }
-
      /* ------- HELPERS FOR UPDATING SHIPPING STATE/UPDATE SHIPPING INPUT STATE------ */
 
     // Update the shipping state whenever we want to store ONE saved address that we want to display. The param savedShippingAddressData is some data received after fetching the server. We update the shipping state to store that data of ONE address. We update the shipping state when we run useEffect(), edit address, selected address, and after adding a new address. The goals is to be able to display the address after editing/selecting/adding an address or showing the address when we load the page. To display the address, it depends on the shipping state. 
@@ -289,20 +290,28 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, openCollapse,
     if(shippingLoading) {
         return <></> // When the Checkout component first loads, render nothing for Shipping Component until after fetching an address. Depending if there is an address or not from the fetch, we will return something different as shown based on the conditional retuns below.
     } else if(!shipping.firstName || !loggedIn()) {
-        // If user is guest (as indicated by !loggedIn()), or logged in user does not have a shipping address (indicated by !shipping.address), or logged in user clicked Add New Shipping (as indicated by addShipping state), or logged in user clicked Edit Shipping show Shipping Input form
+        // If user is guest (as indicated by !loggedIn()), or logged in user does not have a shipping address (indicated by !shipping.address), we want to show the shipping form when the Next button from CheckoutItems component is clicked
         return (
             <>
-            {!openCollapse ? (
-                <ShippingForm backend={backend} loggedIn={loggedIn} shipping={shipping} shippingInput={shippingInput} grabShippingInput={grabShippingInput} grabPaymentLoading={grabPaymentLoading} addShipping={addShipping} grabAddNewShipping={grabAddNewShipping} cartID={cartID} updateShippingState={updateShippingState} updateShippingInputState={updateShippingInputState} editShipping={editShipping} handleEditShipping={handleEditShipping} closeModal={closeModal} collapse={collapse} back={back} addNewShipping={addNewShipping} /> 
-            ): (
-            <div>
+            <h2>Shipping Address</h2>
+            {/* When the Next button in CheckoutItems component is clicked, showShipping state is updated to true, and only then the form will be shown */}
+            {showShipping && (
+                <>
+                <ShippingForm backend={backend} loggedIn={loggedIn} shipping={shipping} shippingInput={shippingInput} grabShippingInput={grabShippingInput} grabPaymentLoading={grabPaymentLoading} addShipping={addShipping} grabAddNewShipping={grabAddNewShipping} cartID={cartID} updateShippingState={updateShippingState} updateShippingInputState={updateShippingInputState} editShipping={editShipping} handleEditShipping={handleEditShipping} closeModal={closeModal} collapse={collapse} addNewShipping={addNewShipping} /> 
+                </>
+            )} 
+            {/* When we click Next button in Shipping component, collapse() runs and showPayment state is updated to true to show the Payment Component. We need to make sure to still show the shipping details and Edit button when we do show the payment section*/}
+            {showPayment && (
+                <>
                 <h2>Shipping Address</h2>
-                <p>{shippingInput.firstName} {shippingInput.lastName}</p>
-                <p>{shippingInput.line1}</p>
-                <p>{shippingInput.line2}</p>
-                <p>{shippingInput.city}, {shippingInput.state} {shippingInput.postalCode}</p>
-                {!showButtons && <button onClick={back}>Edit</button>}
-            </div>
+                <div>
+                    <p>{shippingInput.firstName} {shippingInput.lastName}</p>
+                    <p>{shippingInput.line1}</p>
+                    <p>{shippingInput.line2}</p>
+                    <p>{shippingInput.city}, {shippingInput.state} {shippingInput.postalCode}</p>
+                    {!showButtons && <button onClick={back}>Edit</button>}
+                </div>
+                </>
             )} 
             </>
         )
@@ -325,14 +334,16 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, openCollapse,
     } else if(addShipping || editShipping ) {
         return (
             <Modal isOpen={showModal} onRequestClose={ closeModal } ariaHideApp={false} contentLabel="Saved Shipping">
-                <ShippingForm backend={backend} loggedIn={loggedIn} shipping={shipping} shippingInput={shippingInput} grabShippingInput={grabShippingInput} grabPaymentLoading={grabPaymentLoading} addShipping={addShipping} grabAddNewShipping={grabAddNewShipping} cartID={cartID} updateShippingState={updateShippingState} updateShippingInputState={updateShippingInputState} editShipping={editShipping} handleEditShipping={handleEditShipping} closeModal={closeModal} collapse={collapse} back={back} grabMultipleShipping={grabMultipleShipping}/> 
+                <ShippingForm backend={backend} loggedIn={loggedIn} shipping={shipping} shippingInput={shippingInput} grabShippingInput={grabShippingInput} grabPaymentLoading={grabPaymentLoading} addShipping={addShipping} grabAddNewShipping={grabAddNewShipping} cartID={cartID} updateShippingState={updateShippingState} updateShippingInputState={updateShippingInputState} editShipping={editShipping} handleEditShipping={handleEditShipping} closeModal={closeModal} collapse={collapse} grabMultipleShipping={grabMultipleShipping}/> 
             </Modal>
         )
     } else if(shipping.firstName) {
         return (
             <>
+            <h2>Shipping Address</h2>
+            {/* When Next is clicked from the CheckoutItems component, showShipping updates to true & showPayment updates to false so the following shipment details will show. We still want to show the shipment details when we click Next in Shipping component. When we click Next in Shipping component, showShipping is false but showPayment will be updated to true , so shipment details will STILL show. */}
+            {(showShipping || showPayment) && (
             <div>
-                <h2>Shipping Address</h2>
                 {/* If user has a saved address (indicated by shipping.address), display the address: */}
                 <p id="name">{shipping.firstName} {shipping.lastName}</p>
                 <p id="line1">{shipping.line1}</p>
@@ -346,9 +357,10 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, openCollapse,
                 {multipleShipping && <button disabled={readOnly} id="allAddresses" onClick={openAllAddressesModal}>All Addresses</button>}
                 </>
                 )}
-                
-                {!readOnly && <button onClick={collapse}>Next</button>}
+                {showShipping && <button onClick={collapse}>Next</button>}
             </div>
+            )}
+            
             </>
         )
     } 
