@@ -41,7 +41,6 @@ function PaymentContainer ({ backend, index, payment, defaultFirstPayment, grabP
     Modal.setAppElement('#root');
 
     const openEditModal = async (e) => {
-      console.log(e.target.id);
       e.preventDefault();
       const onePaymentResponse = await fetch(`${backend}/order/show/payment/${cardID}`, {
         method: 'GET',
@@ -340,19 +339,6 @@ function PaymentContainer ({ backend, index, payment, defaultFirstPayment, grabP
         )
       }
     }
-
-    // const checkIfCardValidSameYear = () => {
-    //   if (editCardHolderInput.cardYearExpDate === new Date().getFullYear()) {
-    //     if (editCardHolderInput.cardMonthExpDate < new Date().getMonth() + 1) {
-    //       return true
-    //     } else {
-    //       return false
-    //     }
-    //   } else {
-    //     return false
-    //   }
-    // }
-
 
     return (
       <>
