@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import CollectCard from "../../components/Card"
-import BillingInput from "../../components/BillingInput"
+import CollectCard from "../../components/Checkout/Card"
+import BillingInput from "../../components/Checkout/BillingInput"
 import Modal from 'react-modal';
 import { useStripe, CardElement, useElements, CardCvcElement } from "@stripe/react-stripe-js"; 
 import createPaymentMethod from './CreatePayment'
@@ -12,7 +12,8 @@ import FormGroup from 'react-bootstrap/FormGroup'
 import '../../styles/Payment.css'
 import { Accordion, Card, Button } from 'react-bootstrap';
 
-function PaymentMethod ({ backend, customer, processing, loggedIn, error, grabError, disabled, grabDisabled,  paymentLoading, grabPaymentLoading, billing, grabBilling, handleBillingChange, paymentMethod, grabPaymentMethod, cardholderName, grabCardholderName, handleCardholderNameChange, handleCardChange, collectCVV, grabCollectCVV, editPayment, grabEditPayment, redisplayCardElement, grabRedisplayCardElement, grabShowSavedCards, handleConfirmPayment, showSavedCards, grabLoggedOut, editExpiration, grabEditExpiration, openCollapse, sameAsShipping, handleSameAsShipping, shipping, shippingInput, grabBillingWithShipping }) {
+
+function PaymentMethod ({ backend, processing, loggedIn, error, grabError, disabled, grabDisabled,  paymentLoading, grabPaymentLoading, billing, grabBilling, handleBillingChange, paymentMethod, grabPaymentMethod, cardholderName, grabCardholderName, handleCardholderNameChange, handleCardChange, collectCVV, grabCollectCVV, editPayment, grabEditPayment, redisplayCardElement, grabRedisplayCardElement, grabShowSavedCards, handleConfirmPayment, showSavedCards, grabLoggedOut, editExpiration, grabEditExpiration, openCollapse, sameAsShipping, handleSameAsShipping, shippingInput, grabBillingWithShipping }) {
 
     /* ------- STRIPE VARIABLES ------ */
     const elements = useElements()
@@ -65,13 +66,17 @@ function PaymentMethod ({ backend, customer, processing, loggedIn, error, grabEr
             retrievingSavedCards()
            
         } else if (!loggedIn()){
-            grabPaymentMethod({}) // if guest user, then paymentMethod state would remain an empty obj, billing details state would remain empty obj, and collectCVV state would remain "false"
-            grabPaymentLoading(false) // update paymentLoading state to false so it will not render Loading... when we re-render CheckoutPage and Checkout/PaymentMethod components
+            // grabPaymentMethod({}) // if guest user, then paymentMethod state would remain an empty obj, billing details state would remain empty obj, and collectCVV state would remain "false"
+            setTimeout(() => {
+                grabPaymentMethod({}) // if guest user, then paymentMethod state would remain an empty obj, billing details state would remain empty obj, and collectCVV state would remain "false"
+                grabPaymentLoading(false)
+            },2000) // update paymentLoading state to false so it will not render Loading... when we re-render CheckoutPage and Checkout/PaymentMethod components
         }
     }, [])
 
     /* ------- EDIT PAYMENT METHOD FUNCTIONS ------ */
 
+    // When 2nd Edit button is clicked
     const handleEdit = () => {
         if(loggedIn()) {
             console.log("edit Expiration: ", editExpiration)
@@ -265,7 +270,7 @@ function PaymentMethod ({ backend, customer, processing, loggedIn, error, grabEr
         return collectCVV !== 'true' && (
             <>
             <div><h2>Payment Method</h2></div>
-            {openCollapse && <CardForm customer={customer} paymentMethod={paymentMethod} handleSubmitCardForm={handleConfirmPayment} handleCardChange={handleCardChange} handleBillingChange={handleBillingChange} handleCardholderNameChange={handleCardholderNameChange} cardholderName={cardholderName} billing={billing} grabBilling={grabBilling} collectCVV={collectCVV} redisplayCardElement={redisplayCardElement} closeAddNewModal={closeAddNewModal} disabled={disabled} error={error} sameAsShipping={sameAsShipping} handleSameAsShipping={handleSameAsShipping}/>}
+            {openCollapse && <CardForm loggedIn={loggedIn} paymentMethod={paymentMethod} handleSubmitCardForm={handleConfirmPayment} handleCardChange={handleCardChange} handleBillingChange={handleBillingChange} handleCardholderNameChange={handleCardholderNameChange} cardholderName={cardholderName} billing={billing} grabBilling={grabBilling} collectCVV={collectCVV} redisplayCardElement={redisplayCardElement} closeAddNewModal={closeAddNewModal} disabled={disabled} error={error} sameAsShipping={sameAsShipping} handleSameAsShipping={handleSameAsShipping}/>}
             </>
         )      
 
@@ -273,11 +278,11 @@ function PaymentMethod ({ backend, customer, processing, loggedIn, error, grabEr
         // When Add New Card button is clicked
         return collectCVV !== 'true' && (
             <Modal isOpen={showModal} onRequestClose={closeAddNewModal} ariaHideApp={false} contentLabel="Add Card">
-                <CardForm customer={customer} paymentMethod={paymentMethod} handleSubmitCardForm={saveNewCard} handleCardChange={handleCardChange} handleBillingChange={handleBillingChange} handleCardholderNameChange={handleCardholderNameChange} cardholderName={cardholderName} billing={billing} collectCVV={collectCVV} redisplayCardElement={redisplayCardElement} closeAddNewModal={closeAddNewModal} disabled={disabled} error={error} sameAsShipping={sameAsShipping} handleSameAsShipping={handleSameAsShipping} />
+                <CardForm loggedIn={loggedIn} paymentMethod={paymentMethod} handleSubmitCardForm={saveNewCard} handleCardChange={handleCardChange} handleBillingChange={handleBillingChange} handleCardholderNameChange={handleCardholderNameChange} cardholderName={cardholderName} billing={billing} collectCVV={collectCVV} redisplayCardElement={redisplayCardElement} closeAddNewModal={closeAddNewModal} disabled={disabled} error={error} sameAsShipping={sameAsShipping} handleSameAsShipping={handleSameAsShipping} />
             </Modal>
         )  
     } else if(paymentMethod.paymentMethodID && !editPayment) {
-        console.log(paymentMethod)
+        // console.log(paymentMethod)
 
         return (
             <>
@@ -298,7 +303,7 @@ function PaymentMethod ({ backend, customer, processing, loggedIn, error, grabEr
                 <h2>Billing Address</h2>
                 <p>{paymentMethod.billingDetails.name.split(", ")[0]} {paymentMethod.billingDetails.name.split(", ")[1]}</p>
                 <p>{paymentMethod.billingDetails.address.line1}</p>
-                <p>{paymentMethod.billingDetails.address.line2}</p>
+                <p>{paymentMethod.billingDetails.address.line2 === "null" || paymentMethod.billingDetails.address.line2 === "undefined" ? "" : paymentMethod.billingDetails.address.line2}</p>
                 <p>{paymentMethod.billingDetails.address.city}, {paymentMethod.billingDetails.address.state} {paymentMethod.billingDetails.address.postalCode}</p>
 
                 {/* Click Edit to update payment method */}

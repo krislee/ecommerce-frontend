@@ -27,8 +27,7 @@ function Homepage ({ loggedIn, grabURL, backend }) {
         <Link className="homepage-items" to={{
             pathname:"/store",
             search: `?${item.Name}=${item._id}`
-        }
-        }>
+        }}>
             <Item 
             // id={item._id}
             name={item.Name}

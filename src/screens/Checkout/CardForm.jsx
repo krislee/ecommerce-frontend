@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
-import CollectCard from "../../components/Card"
-import BillingInput from "../../components/BillingInput"
+import CollectCard from "../../components/Checkout/Card"
+import BillingInput from "../../components/Checkout/BillingInput"
 
-export default function CardForm ({ customer, paymentMethod, processing, handleSubmitCardForm, handleCardChange, handleBillingChange, handleCardholderNameChange, cardholderName, billing, collectCVV, redisplayCardElement, closeAddNewModal, error, disabled, sameAsShipping, handleSameAsShipping }) {
+export default function CardForm ({ loggedIn, paymentMethod, processing, handleSubmitCardForm, handleCardChange, handleBillingChange, handleCardholderNameChange, cardholderName, billing, collectCVV, redisplayCardElement, closeAddNewModal, error, disabled, sameAsShipping, handleSameAsShipping }) {
 
 
     return(
@@ -27,7 +27,7 @@ export default function CardForm ({ customer, paymentMethod, processing, handleS
             ): (
                 <>
                  {/* Do not show the checkbox for guests (as indicated by customer state. */}
-                {customer ? (
+                {loggedIn() ? (
                    <>
                     <label htmlFor="saveCard">
                         Save card for future purchases
