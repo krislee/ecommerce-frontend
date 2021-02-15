@@ -20,9 +20,12 @@ export default function OrderComplete({ backend, cartID }) {
     const id=indexOfEqualSign[indexOfEqualSign.length - 1];
 
     // const socketRef = useRef()
-    const socket = io('wss://elecommerce.herokuapp.com',  { transports: ['websocket', 'polling', 'flashsocket'] })
+    const socket = io.connect('wss://elecommerce.herokuapp.com',  { transports: ['websocket', 'polling', 'flashsocket'] })
+    console.log(typeof cartID, cartID)
+    socket.emit('join', {cartID: cartID})
 
     useEffect(() => {
+        
         socket.on('completeOrder', (orderData) => {
             console.log(orderData)
             const shipping = orderData.order.Shipping.Address.split(",")
@@ -36,6 +39,7 @@ export default function OrderComplete({ backend, cartID }) {
             setOrderLoading(false)
         })
 
+        socket.emit('end')
     })
 
 
