@@ -2,7 +2,8 @@ import React, {useState} from 'react'
 import {BrowserRouter, Switch, Route, Link} from 'react-router-dom';
 import './App.css';
 // import './styles/Card.css'
-import Homepage from './screens/Homepage'
+import Homepage from './screens/HomePage'
+import AllItems from './screens/AllItemsPage'
 import BuyerLogin from './screens/BuyerLogin'
 import SellerLogin from './screens/SellerLogin'
 import ItemPage from './screens/ItemPage';
@@ -104,7 +105,10 @@ function App() {
             <IndividualOrder loggedIn={loggedIn} orderID={orderID}/>
           </Route>
           <Route path="/shop/:pageIndex">
-            <Homepage grabURL={grabURL} backend={backend} loggedIn={loggedIn}/>
+            <AllItems grabURL={grabURL} backend={backend} loggedIn={loggedIn}/>
+          </Route>
+          <Route path="">
+            <Homepage />
           </Route>
         </Switch>
       </BrowserRouter>
