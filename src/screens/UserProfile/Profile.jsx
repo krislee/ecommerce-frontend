@@ -1,78 +1,138 @@
 import React, { useState, useEffect } from 'react';
-import Navbar from '../../components/NavigationBar';
 import Footer from '../../components/Footer';
-import { Snackbar } from '@material-ui/core';
+import Toast from 'react-bootstrap/Toast'
 
 export default function Profile({ backend, loggedIn, profileData, grabProfileData }) {
-
-    const [open, setOpen] = useState(true)
+   
+    // const [open, setOpen] = useState(false)
+    const [emailInvalid, setEmailInvalid] = useState(false)
+    const [emailErrorMessage, setEmailErrorMessage] = useState(false)
+    const [passwordInvalid, setPasswordInvalid] = useState(false)
+    const [passwordErrorMessage, setPasswordErrorMessage] = useState(false)
 
     const [showEmailInput, setShowEmailInput] = useState(false)
     const [showPasswordInput, setShowPasswordInput] = useState(false)
     const [emailInput, setEmailInput] = useState('')
     const [passwordInput, setPasswordInput] = useState('')
-    const [resetPassword, setResetPassword] = useState({})
-    const [updateEmail, setUpdateEmail] = useState({})
+    const [resetPasswordSuccess, setResetPasswordSuccess] = useState(false)
+    const [updateEmailSuccess, setUpdateEmailSuccess] = useState(false)
 
+  
     const handleEmailUpdate = async() => {
-        const emailUpdateResponse = await fetch(`${backend}/buyer/profile`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': loggedIn()
+        if(loggedIn()) {
+            const emailUpdateResponse = await fetch(`${backend}/buyer/profile`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': loggedIn()
+                },
+                body: JSON.stringify({email: emailInput})
+            })
+            const emailUpdateData = await emailUpdateResponse.json()
+            console.log(emailUpdateData)
+            if(!emailUpdateData.msg && !emailUpdateData.details) {
+                grabProfileData(emailUpdateData)
+                setUpdateEmailSuccess(true)
+                setEmailErrorMessage(false)
+                setEmailInvalid(false)
+                setShowEmailInput(false)
             }
-        })
-        const emailUpdateData = await emailUpdateResponse.json()
-        setUpdateEmail(emailUpdateData)
+            if(emailUpdateData.msg) {
+                setEmailErrorMessage(true)
+                setEmailInvalid(false)
+            }
+            if(emailUpdateData.details && emailUpdateData.details[0].message) {
+                setEmailInvalid(true)
+                setEmailErrorMessage(false)
+            }
+        }
+            
     }
 
     const handleResetPassword = async() => {
-        const resetPasswordResponse = await fetch(`${backend}/buyer/profile`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': loggedIn()
-            },
-            body: JSON.stringify({password: password})
-        })
-        const resetPasswordData = await resetPasswordResponse.json()
-        setResetPassword(resetPasswordData)
+        if(loggedIn()) {
+            const resetPasswordResponse = await fetch(`${backend}/buyer/profile`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': loggedIn()
+                },
+                body: JSON.stringify({password: passwordInput})
+            })
+            const resetPasswordData = await resetPasswordResponse.json()
+            console.log(resetPasswordData)
+            if(!resetPasswordData.msg && !resetPasswordData.details) {
+                setResetPasswordSuccess(true)
+                setPasswordErrorMessage(false)
+                setPasswordInvalid(false)
+                setShowPasswordInput(false)
+            }
+            if(resetPasswordData.msg) {
+                setPasswordErrorMessage(true)
+                setPasswordInvalid(false)
+            }
+            if(resetPasswordData.details && resetPasswordData.details[0].message) {
+                setPasswordInvalid(true)
+                setPasswordErrorMessage(false)
+            }
+        }
     }
 
     const handlePasswordInputChange = e => setPasswordInput(e.target.value)
     const handleEmailInputChange = e => setEmailInput(e.target.value)
 
-    const handleClose = (event, reason) => {
-        if (reason === 'clickaway') {
-          return;
-        }
-        setOpen(false);
-    };
-
     return (
         <>
             <div>
-            <h5>Email:{updateEmail || profileData.email} </h5>
-            <button disabled={showPasswordInput} onClick={() => setShowEmailInput(true)}>Update email</button>
-            {showEmailInput && <input type="email" value={emailInput} onChange={handleEmailInputChange}/>}
-            {showEmailInput && <input type="submit" onClick={handleEmailUpdate}/>}
-            <Snackbar open={ (open && updateEmail.details[0].message) || (open && updateEmail.msg)} autoHideDuration={6000} onClose={handleClose}> 
-                { updateEmail.details[0].message && <Alert severity="error"> Must be a valid email.</Alert> }
-                { updateEmail.msg && <Alert severity="error"> Email is already registered.</Alert> }
-            </Snackbar>
+                <h5>Email:{profileData.email} </h5>
+                <button disabled={showPasswordInput} onClick={() => {
+                    setShowEmailInput(true)
+                    setShowPasswordInput(false)
+                }}>Update email</button>
+                {showEmailInput && (
+                    <div>
+                        <input type="email" value={emailInput} onChange={handleEmailInputChange}/>
+                        <input type="submit" onClick={handleEmailUpdate}/>
+                        <button onClick={() => setShowEmailInput(false)}>Close</button>
+                    </div>
+                )} 
+                <Toast onClose={() => setEmailInvalid(false)} show={emailInvalid} delay={2000} autohide>
+                    <Toast.Body style={{backgroundColor: 'rgb(255, 51, 51)'}}>Must be a valid email.</Toast.Body>
+                </Toast>  
+                <Toast onClose={() => setEmailErrorMessage(false)} show={emailErrorMessage} delay={2000} autohide>
+                    <Toast.Body style={{backgroundColor: 'rgb(255, 51, 51)'}}> Email is already registered.</Toast.Body>
+                </Toast>  
+                <Toast onClose={() => setUpdateEmailSuccess(false)} show={updateEmailSuccess} delay={2000} autohide>
+                    <Toast.Body style={{backgroundColor: 'rgb(57, 172, 57)'}}>Your email is successfully changed.</Toast.Body>
+                </Toast>     
 
-            <h5>Username: {profileData.username} </h5>
+                <h5>Username: {profileData.username} </h5>
 
-            <h5>Password: *****</h5>
-            <button disabled = {showEmailInput} onClick={()=> setShowPasswordInput(true)}>Reset password</button>
-            {showPasswordInput && <input type="password" value={passwordInput} onChange={handlePasswordInputChange}/>}
-            {showPasswordInput && <input type="submit" onClick={handleResetPassword}/>}
-            <Snackbar open={ (open && resetPassword.msg)|| (open && resetPassword.details[0].message) } autoHideDuration={6000} onClose={handleClose}> 
-                { resetPassword.msg && <Alert severity="error"> Your password cannot be your 5 most recently used passwords.</Alert> }
-                { resetPassword.details[0].message && <Alert severity="error">Your password must be at least 8 characters long.</Alert> }
-            </Snackbar>
-            
+                <h5>Password: *****</h5>
+                <button disabled = {showEmailInput} onClick={()=> {
+                    setShowPasswordInput(true)
+                    setShowEmailInput(false)
+                }}>Reset password</button>
+
+                {showPasswordInput && (
+                    <div>
+                    <input type="password" value={passwordInput} onChange={handlePasswordInputChange}/>
+                    <input type="submit" onClick={handleResetPassword}/>
+                    <button onClick={() => setShowPasswordInput(false)}>Close</button>
+                    </div>
+                )}
+   
+                <Toast onClose={() => setPasswordInvalid(false)} show={passwordInvalid} delay={3000} autohide>
+                    <Toast.Body style={{backgroundColor: 'rgb(255, 51, 51)'}}>Your password must be at least 8 characters long.</Toast.Body>
+                </Toast>  
+                <Toast onClose={() => setPasswordErrorMessage(false)} show={passwordErrorMessage} delay={3000} autohide>
+                    <Toast.Body style={{backgroundColor: 'rgb(255, 51, 51)'}}> Your password cannot be your 5 most recently used passwords.</Toast.Body>
+                </Toast>  
+                <Toast onClose={() => setResetPasswordSuccess(false)} show={resetPasswordSuccess} delay={3000} autohide>
+                    <Toast.Body style={{backgroundColor: 'rgb(57, 172, 57)'}}>Your password is successfully changed.</Toast.Body>
+                </Toast>    
             </div>
+            <Footer />
         </>
     )
-} 
+}  

@@ -2,7 +2,7 @@ import React, {useState} from 'react'
 import {BrowserRouter, Switch, Route, Link} from 'react-router-dom';
 import './App.css';
 // import './styles/Card.css'
-import Homepage from './screens/HomePage'
+import Homepage from './screens/Homepage'
 import AllItems from './screens/AllItemsPage'
 import BuyerLogin from './screens/LoginRegister/BuyerLogin'
 import SellerLogin from './screens/LoginRegister/SellerLogin'

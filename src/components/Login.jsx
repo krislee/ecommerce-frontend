@@ -79,10 +79,6 @@ function Login ({backend, loggedIn, grabLoginInfo, buyer, seller}) {
                 <input type="password" placeholder="Password" value={password} onChange={handleChangePassword}  autoComplete="current-password"></input>
                 {username === '' || password === '' ? <input className="submit-button-disabled" type="submit" disabled></input> : 
                     <input className="submit-button" type="submit"></input>}
-                <button onClick={() => {
-                    setPassword('')
-                    setResetPassword(true)
-                }}>Forgot Password</button>
             </form>
         )
     }

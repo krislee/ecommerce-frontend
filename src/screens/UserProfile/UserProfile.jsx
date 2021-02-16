@@ -7,6 +7,7 @@ import Address from './Address';
 import Payment from './Payment'
 import Orders from './Orders'
 import '../../styles/UserProfile/UserProfile.css';
+import { SnackbarContent } from '@material-ui/core';
 
 
 function UserProfile ({ backend, loggedIn, orderID, grabOrderID }) {
@@ -62,9 +63,12 @@ function UserProfile ({ backend, loggedIn, orderID, grabOrderID }) {
             });
             const data = await resp.json();
             console.log(data);
-            defaultFirstPayment(data.paymentMethods);
-            setPaymentData(data.paymentMethods);
-            console.log(data.paymentMethods)
+            if(!data.msg) {
+                defaultFirstPayment(data.paymentMethods);
+                setPaymentData(data.paymentMethods);
+                console.log(data.paymentMethods)
+            }
+            
         }
 
         async function fetchOrderData () {
@@ -84,12 +88,12 @@ function UserProfile ({ backend, loggedIn, orderID, grabOrderID }) {
         fetchAddressData();
         fetchOrderData();
         fetchProfileData()
-    }, [backend]);
+    }, []);
 
     // Function that is used to reorder the data so that default is first and to also make the newest data come first on the list
     const defaultFirst = (data) => {
         // Reverses the order of the data so the newest data will be first and the oldest will be last
-        if(data) data.reverse();
+        data.reverse();
         // If the data that is returned has a object with the property of defaultAddress being true, then run 
         if (data.findIndex(address => address.DefaultAddress === true) !== -1 && data.length !== 0) {
             // Find the index of the object that has the default address information
@@ -103,7 +107,7 @@ function UserProfile ({ backend, loggedIn, orderID, grabOrderID }) {
 
     const defaultFirstPayment = (data) => {
         // Reverses the order of the data so the newest data will be first and the oldest will be last
-        if(data) data.reverse();
+        data.reverse(); 
         // If the data that is returned has a object with the property of defaultAddress being true, then run 
         if (data.findIndex(payment => payment.default === true) !== -1 && data.length !== 0) {
             // Find the index of the object that has the default address information
@@ -126,29 +130,29 @@ function UserProfile ({ backend, loggedIn, orderID, grabOrderID }) {
     // Function that will handle whether the address component is open or not
     const handleClickAddresses = () => {
         setAddressesTabOpen(true);
-        setProfileData(false)
+        setProfileTabOpen(false)
         setPaymentsTabOpen(false);
         setOrdersTabOpen(false)
     }
 
     // Function that will handle whether the payment component is open or not
     const handleClickPayments = () => {
-        setAddressesTabOpen(false);
-        setProfileData(false)
         setPaymentsTabOpen(true);
+        setProfileTabOpen(false)
+        setAddressesTabOpen(false);
         setOrdersTabOpen(false)
     }
 
     // Function that will handle whether the order component is open or not 
     const handleClickOrders = () => {
         setOrdersTabOpen(true)
-        setProfileData(false)
+        setProfileTabOpen(false)
         setAddressesTabOpen(false);
         setPaymentsTabOpen(false)
     }
 
-    const handleClickPofile = () => {
-        setProfileData(true)
+    const handleClickProfile = () => {
+        setProfileTabOpen(true)
         setAddressesTabOpen(false);
         setPaymentsTabOpen(false);
         setOrdersTabOpen(false)
@@ -218,7 +222,6 @@ function UserProfile ({ backend, loggedIn, orderID, grabOrderID }) {
             </>
         )
     }
-
 }
 
 export default UserProfile

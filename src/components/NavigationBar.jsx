@@ -1,5 +1,5 @@
-import React from 'react'
-import {Link} from 'react-router-dom';
+import React, {useState} from 'react'
+import {Link, Redirect} from 'react-router-dom';
 // import Button from '../components/Button'
 import '../styles/NavigationBar.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -7,11 +7,15 @@ import { faHome, faShoppingCart, faUser } from '@fortawesome/free-solid-svg-icon
 import { Dropdown } from 'react-bootstrap'
 
 function NavBar () {
+    const [redirect, setRedirect] = useState(false)
 
     const handleLogout = () => {
         localStorage.clear();
-        window.location.reload();
+        setRedirect(true)
     }
+    if(redirect) {
+        return <Redirect to='/'></Redirect>
+    } 
 
     return (
         <div className="navbar">
@@ -65,6 +69,7 @@ function NavBar () {
             </div>
         </div>
     )
+    
 }
 
 export default NavBar
