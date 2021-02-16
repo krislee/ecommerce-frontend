@@ -13,17 +13,17 @@ const useStyles = makeStyles((theme) => ({
         marginTop: theme.spacing(2),
       },
     },
-  }));
+}));
 
 function AllItems ({ loggedIn, grabURL, backend }) {
     const classes = useStyles();
+
+    const [footerLoading, setFooterLoading] = useState(true) // this state allows for the footer to be loaded at the SAME TIME as items being loaded in, instead of being loaded less than a second BEFORE the items are loaded in
 
     const {pageIndex} = useParams() // use the param from URL in the useEffect fetch to load the items automatically corresponding to that particular page; also since we still need to highlight the pagination number when we do not click on the number but by going to the page directly, we can use the param from URL to highlight the pagination number
     const history = useHistory()
 
     const [items, setItems] = useState([]); // store all the items in items state
-   
-    const [footerLoading, setFooterLoading] = useState(true) // this state allows for the footer to be loaded at the SAME TIME as items being loaded in, instead of being loaded less than a second BEFORE the items are loaded in
 
     useEffect(() => {
         async function fetchItems() {

@@ -23,6 +23,7 @@ function UserProfile ({ backend, loggedIn, orderID, grabOrderID }) {
     const [addressData, setAddressData] = useState([]);
     const [paymentData, setPaymentData] = useState([]);
     const [orderData, setOrderData] = useState([])
+    const [ordersTotal, setOrdersTotal] = useState(null)
 
     useEffect(() => {
         // Display the Profile
@@ -81,6 +82,7 @@ function UserProfile ({ backend, loggedIn, orderID, grabOrderID }) {
             })
             const orderData = await orderResponse.json()
             setOrderData(orderData.orders)
+            setOrdersTotal(orderData.totalPages)
             console.log(orderData.orders)
         }
 
@@ -215,7 +217,8 @@ function UserProfile ({ backend, loggedIn, orderID, grabOrderID }) {
                         orderData={orderData}
                         grabOrderData={grabOrderData}
                         orderID={orderID}
-                        grabOrderID={grabOrderID} />
+                        grabOrderID={grabOrderID}
+                        ordersTotal={ordersTotal} />
                     }
                     <Footer />
                 </div>
