@@ -216,9 +216,9 @@ function UserProfile ({ backend, loggedIn, orderID, grabOrderID }) {
                         loggedIn={loggedIn}
                         orderData={orderData}
                         grabOrderData={grabOrderData}
-                        orderID={orderID}
-                        grabOrderID={grabOrderID}
-                        ordersTotal={ordersTotal} />
+                        // orderID={orderID}
+                        // grabOrderID={grabOrderID}
+                        ordersTotal={ordersTotal}/>
                     }
                     <Footer />
                 </div>

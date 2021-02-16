@@ -1,7 +1,7 @@
 import React from 'react';
 // import '../styles/Button.css'
 
-function Item ({ name, itemUrl, grabURL}) {
+function Item ({ name, itemUrl, grabURL }) {
 
     function grabAndLogURL() {
         console.log(itemUrl);

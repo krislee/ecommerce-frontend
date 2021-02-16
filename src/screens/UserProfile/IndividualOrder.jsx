@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {Redirect} from 'react-router-dom';
+import {Redirect, useLocation} from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -17,8 +17,11 @@ const useStyles = makeStyles({
 });
   
   
-export default function IndividualOrder({ backend, loggedIn, orderID}) {
+export default function IndividualOrder({ backend, loggedIn }) {
+    const location = useLocation()
+
     const classes = useStyles();
+
     const [orderLoading, setOrderLoading] = useState(true)
     const [order, setOrder] = useState({})
     const [orderItems, setOrderItems] = useState([])
@@ -28,9 +31,19 @@ export default function IndividualOrder({ backend, loggedIn, orderID}) {
     const [redirect, setRedirect] = useState(false)
 
     useEffect(() => {
+        const queryParams = new URLSearchParams(location.search)
+        const orderID = queryParams.get('orderNumber')
+
         const getOrder = async() => {
             if(loggedIn()) {
-                const orderResponse = await fetch(`${backend}/complete/list/orders/${orderID}`)
+                const orderResponse = await fetch(`${backend}/complete/list/orders/${orderID}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': loggedIn()
+                    }
+                })
+                console.log(orderResponse)
                 const orderData = await orderResponse.json()
                 console.log(orderData)
                 setOrder(orderData.order)
@@ -54,7 +67,7 @@ export default function IndividualOrder({ backend, loggedIn, orderID}) {
     }else {
         return (
             <>
-            <h4>Order #: {orderID}</h4>
+            <h4>Order #: {order.OrderNumber}</h4>
             <h6>Placed on {ConvertDate(order.OrderDate)}</h6>
             <div id='items'>
                 <TableContainer component={Paper}>

@@ -49,8 +49,8 @@ function AllItems ({ loggedIn, grabURL, backend }) {
     const itemList = items.map((item, index) => 
         <React.Fragment key={index}>
         <Link className="homepage-items" to={{
-            pathname:"/store",
-            search: `?${item.Name}=${item._id}`
+            pathname:`/item/${item.Name}`,
+            search: `id=${item._id}`
         }}>
             <Item 
             name={item.Name}

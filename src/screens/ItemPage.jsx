@@ -1,21 +1,19 @@
-import React, {useEffect, useState} from 'react'
-// import {BrowserRouter, Switch, Route, Link} from 'react-router-dom';
+import React, { useEffect, useState } from 'react'
+import {useLocation} from 'react-router-dom';
 import '../styles/ItemPage.css'
 import AddCartButton from '../components/AddCartButton';
 import NavBar from '../components/NavigationBar';
 import Footer from '../components/Footer'
 
-function ItemPage ({ loggedIn, url, backend }) {
+
+function ItemPage ({ loggedIn, url, backend, itemName }) {
 
     const [itemInfo, setItemInfo] = useState('');
     const [quantity, setQuantity] = useState(1);
-    let currentURL = window.location.href;
-    let indexOfEqualSign = currentURL.split('=');
-    let id=indexOfEqualSign[indexOfEqualSign.length - 1];
+
+    const location = useLocation() //get the full URL
 
     useEffect(() => {
-
-        console.log(currentURL)
 
         // If the url to the backend is not empty because users directly went to the item page going through the homepage first
 
@@ -37,8 +35,11 @@ function ItemPage ({ loggedIn, url, backend }) {
 
             // If we are going to the item page not through the homepage
             // If the url to the backend is empty, then we need to grab the item using the id which is located in the url params
+            const queryParams = new URLSearchParams(location.search) // returns query obj
+            const electronicID = queryParams.get("id") // get the query value
+
             async function fetchData() {
-                let resp = await fetch(`${backend}/buyer/electronic/${id}`,{
+                let resp = await fetch(`${backend}/buyer/electronic/${electronicID}`,{
                     method: 'GET',
                     headers: { 'Content-Type': 'application/json' },
                     credentials: 'include'

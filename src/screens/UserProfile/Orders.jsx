@@ -43,7 +43,7 @@ export default function Orders ({ backend, loggedIn, orderData, grabOrderData, o
     }
 
     
-    if(!showOrder) {
+    // if(!showOrder) {
         return (
             <>
             
@@ -54,11 +54,12 @@ export default function Orders ({ backend, loggedIn, orderData, grabOrderData, o
                         <>
                         {index === 0 && <h3>{ConvertDate(orderData[0].OrderDate)}</h3>}
                         {index !==0 && ConvertDate(order.OrderDate) !== ConvertDate(orderData[index-1].OrderDate) && <h3>{ConvertDate(order.OrderDate)}</h3>}
+                        {/* <Link to={`/show-order?orderNumber=${order.OrderNumber}`}> */}
                         <Card key={index}>
                             <CardHeader
                                 action={
                                 <button onClick={() => {
-                                    grabOrderID(order.OrderNumber)
+                                    // grabOrderID(order.OrderNumber)
                                     setShowOrder(true)
                                 }}>Click
                                 </button>
@@ -67,6 +68,7 @@ export default function Orders ({ backend, loggedIn, orderData, grabOrderData, o
                                 subheader={ConvertDate(order.OrderDate)}
                             />
                         </Card>
+                        {/* </Link> */}
                         </>
                     )
                 })}
@@ -80,13 +82,13 @@ export default function Orders ({ backend, loggedIn, orderData, grabOrderData, o
 
             </>
         )
-    } else {
-        return (
-            <Link to={`/show-order/${orderID}`} target="_blank">
-                <IndividualOrder backend={backend} loggedIn={loggedIn} orderID={orderID}/>
-            </Link>
-        )
-    }
+    // } else {
+    //     return (
+    //         <Link to={`/show-order${orderID}`} target="_blank">
+    //             <IndividualOrder backend={backend} loggedIn={loggedIn} orderID={orderID}/>
+    //         </Link>
+    //     )
+    // }
 
     
 }
