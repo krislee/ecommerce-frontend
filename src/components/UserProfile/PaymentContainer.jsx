@@ -20,8 +20,8 @@ function PaymentContainer ({ backend, index, payment, defaultFirstPayment, grabP
     const [editCardHolderInput, setEditCardHolderInput] = useState({});
     const [editBillingInput, setEditBillingInput] = useState({});
     const [invalidExpirationDate, setInvalidExpirationDate] = useState(false);
-    const [zipcodeWarning, setZipcodeWarning] = useState(false);
-    const [stateAbbreviationWarning, setStateAbbreviationWarning] = useState(false);
+    const [editZipcodeWarning, setEditZipcodeWarning] = useState(false);
+    const [editStateAbbreviationWarning, setEditStateAbbreviationWarning] = useState(false);
     const customStyles = {
       content : {
         top: '50%',
@@ -97,14 +97,14 @@ function PaymentContainer ({ backend, index, payment, defaultFirstPayment, grabP
     const handleEditPaymentSubmit = async (e) => {
       e.preventDefault();
       if (editBillingInput.editBillingZipcode.length !== 5) {
-        setZipcodeWarning(true);
-        setStateAbbreviationWarning(false);
+        setEditZipcodeWarning(true);
+        setEditStateAbbreviationWarning(false);
       } else if (editBillingInput.editBillingState.length !== 2) {
-        setStateAbbreviationWarning(true);
-        setZipcodeWarning(false);
+        setEditStateAbbreviationWarning(true);
+        setEditZipcodeWarning(false);
       } else {
-        setZipcodeWarning(false);
-        setStateAbbreviationWarning(false);
+        setEditZipcodeWarning(false);
+        setEditStateAbbreviationWarning(false);
         const editPaymentResponse = await fetch(`${backend}/order/update/payment/${cardID}`, {
           method: 'PUT',
           headers: {
@@ -540,9 +540,9 @@ function PaymentContainer ({ backend, index, payment, defaultFirstPayment, grabP
           {(/[a-zA-Z]/g.test(editBillingInput.editBillingZipcode) === true 
           && editBillingInput.editBillingZipcode !== "") 
           && <div className="warning">You must enter only numbers as your zip code</div>}
-          {zipcodeWarning 
+          {editZipcodeWarning 
           && <div className="warning">You must enter five digits as your zip code</div>}
-          {stateAbbreviationWarning 
+          {editStateAbbreviationWarning 
           && <div className="warning">Please enter your state as an abbreviation (ex. CA, NY)</div>}
           <button onClick={handleEditPaymentSubmit} 
           disabled={(/^[a-z][a-z\s]*$/i.test(editBillingInput.editBillingFirstName) !== true 
