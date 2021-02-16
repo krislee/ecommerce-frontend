@@ -1,7 +1,7 @@
 import React, {useState} from 'react'
 import {Redirect} from 'react-router-dom';
 import '../styles/Login.css'
-
+import Toast from 'react-bootstrap/Toast'
 
 export default function Register ({backend, loggedIn, grabLoginInfo, buyer, seller}) {
 
@@ -13,6 +13,11 @@ export default function Register ({backend, loggedIn, grabLoginInfo, buyer, sell
 
     const [isRegistered, setIsRegistered] = useState(false) // if successfully registered, redirect to homepage
 
+    const [emailError, setEmailError] = useState(false)
+    const [usernameError, setUsernameError] = useState(false)
+    const [usernameInvalid, setUsernameInvalid] = useState(false)
+    const [passwordInvalid, setPasswordInvalid] = useState(false)
+
     const handleRegister = async (event) => {
         event.preventDefault();
 
@@ -22,7 +27,7 @@ export default function Register ({backend, loggedIn, grabLoginInfo, buyer, sell
             email: email,
             name: `${fullName.firstName}, ${fullName.lastName}`
         }
-     
+        console.log(registerInfo)
         if(buyer) {
             const registerResponse = await fetch(`${backend}/auth/buyer/register`, {
                 method: 'POST',
@@ -32,6 +37,16 @@ export default function Register ({backend, loggedIn, grabLoginInfo, buyer, sell
                 body: JSON.stringify(registerInfo)
             });
             const registerData = await registerResponse.json()
+            console.log(registerData)
+            if(registerData.emailMsg) {
+                setEmailError(true)
+            } else if(registerData.usernameMsg) {
+                setUsernameError(true)
+            } else if(registerData.details && registerData.details[0].message === '\"username\" length must be at least 8 characters long') {
+                setUsernameInvalid(true)
+            } else if(registerData.details && registerData.details[0].message === '\"password\" length must be at least 8 characters long"') {
+                setPasswordInvalid(true)
+            }
             if (registerData.success === true) {
                 grabLoginInfo(registerData.token);
                 setIsRegistered(true)
@@ -76,6 +91,7 @@ export default function Register ({backend, loggedIn, grabLoginInfo, buyer, sell
         )
     } else {
         return (
+            <>
             <form className="login" onSubmit={handleRegister}>
                 <input type="text" placeholder="First Name" name="firstName" value={fullName.firstName || ""} onChange={handleChangeName}></input>
                 <input type="text" placeholder="Last Name" name ="lastName" value={fullName.lastName || ""} onChange={handleChangeName}></input>
@@ -84,6 +100,19 @@ export default function Register ({backend, loggedIn, grabLoginInfo, buyer, sell
                 <input type="password" placeholder="Password" value={password} onChange={handleChangePassword}  autoComplete="current-password"></input>
                 {(email === '' || fullName.firstName === '' || fullName.lastName === '' || password === '' || username === '') ? <input className="submit-button-disabled" type="submit" disabled={true}/> :  <input className="submit-button" type="submit" />}
             </form>
+            <Toast onClose={() => setEmailError(false)} show={emailError} delay={3000} autohide>
+                <Toast.Body>Email is already taken.</Toast.Body>
+            </Toast>
+            <Toast onClose={() => setUsernameError(false)} show={usernameError} delay={3000} autohide>
+                <Toast.Body>Username is already taken.</Toast.Body>
+            </Toast>
+            <Toast onClose={() => setUsernameInvalid(false)} show={usernameInvalid} delay={3000} autohide>
+                <Toast.Body>Username needs to be at least 8 characters.</Toast.Body>
+            </Toast>
+            <Toast onClose={() => setPasswordInvalid(false)} show={passwordInvalid} delay={3000} autohide>
+                <Toast.Body>Password nneeds to be at least 8 characters.</Toast.Body>
+            </Toast>
+         </>
         )
     }
 }
