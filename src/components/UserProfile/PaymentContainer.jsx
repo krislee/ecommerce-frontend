@@ -23,6 +23,7 @@ function PaymentContainer ({ backend, index, payment, defaultFirstPayment, grabP
     const [editCardHolderInput, setEditCardHolderInput] = useState({});
     const [editBillingInput, setEditBillingInput] = useState({});
     const [invalidExpirationDate, setInvalidExpirationDate] = useState(false);
+    const [zipcodeWarning, setZipcodeWarning] = useState(false);
 
     const elements = useElements();
     const stripe = useStripe();
@@ -100,36 +101,41 @@ function PaymentContainer ({ backend, index, payment, defaultFirstPayment, grabP
 
     const handleEditPaymentSubmit = async (e) => {
       e.preventDefault();
-      const editPaymentResponse = await fetch(`${backend}/order/update/payment/${cardID}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': localStorage.getItem('token')
-        },
-        body: JSON.stringify({
-          billingDetails: {
-            line1: editBillingInput.editBillingFirstAddressLine,
-            line2: editBillingInput.editBillingSecondAddressLine,
-            city: editBillingInput.editBillingCity,
-            state: editBillingInput.editBillingState,
-            postal_code: editBillingInput.editBillingZipcode,
-            country: 'US',
-            name: `${editBillingInput.editBillingFirstName} ${editBillingInput.editBillingLastName}`
+      if (editBillingInput.editBillingZipcode.length !== 5) {
+        setZipcodeWarning(true);
+      } else {
+        setZipcodeWarning(false);
+        const editPaymentResponse = await fetch(`${backend}/order/update/payment/${cardID}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': localStorage.getItem('token')
           },
-          name: editCardHolderInput.cardName,
-          recollectCVV: false,
-          expMonth: editCardHolderInput.cardMonthExpDate,
-          expYear: editCardHolderInput.cardYearExpDate
+          body: JSON.stringify({
+            billingDetails: {
+              line1: editBillingInput.editBillingFirstAddressLine,
+              line2: editBillingInput.editBillingSecondAddressLine,
+              city: editBillingInput.editBillingCity,
+              state: editBillingInput.editBillingState,
+              postal_code: editBillingInput.editBillingZipcode,
+              country: 'US',
+              name: `${editBillingInput.editBillingFirstName} ${editBillingInput.editBillingLastName}`
+            },
+            name: editCardHolderInput.cardName,
+            recollectCVV: false,
+            expMonth: editCardHolderInput.cardMonthExpDate,
+            expYear: editCardHolderInput.cardYearExpDate
+          })
         })
-      })
-      const editPaymentData = await editPaymentResponse.json();
-      console.log(editPaymentData.paymentMethods);
-      defaultFirstPayment(editPaymentData.paymentMethods);
-      grabPaymentData(editPaymentData.paymentMethods);
-      setEditBillingInput({});
-      setEditCardHolderInput({});
-      handleExpandClick();
-      closeEditModalTwo();
+        const editPaymentData = await editPaymentResponse.json();
+        console.log(editPaymentData.paymentMethods);
+        defaultFirstPayment(editPaymentData.paymentMethods);
+        grabPaymentData(editPaymentData.paymentMethods);
+        setEditBillingInput({});
+        setEditCardHolderInput({});
+        handleExpandClick();
+        closeEditModalTwo();
+      }
     }
 
     const handleDeletePayment = async (e) => {
@@ -439,15 +445,51 @@ function PaymentContainer ({ backend, index, payment, defaultFirstPayment, grabP
           >
           <form className="form">
           <h2>Edit Your Card Information</h2>
-          <input value={editBillingInput.editBillingFirstName || ""} name="editBillingFirstName" placeholder="First Name" onChange={handleEditBillingChange}/>
-          <input value={editBillingInput.editBillingLastName || ""} name="editBillingLastName" placeholder="Last Name" onChange={handleEditBillingChange}/>
-          <input value={editBillingInput.editBillingFirstAddressLine || ""} name="editBillingFirstAddressLine" placeholder="Address Line One" onChange={handleEditBillingChange}/>
-          <input value={editBillingInput.editBillingSecondAddressLine || ""} name="editBillingSecondAddressLine" placeholder="Address Line Two" onChange={handleEditBillingChange}/>
-          <input value={editBillingInput.editBillingCity || ""} name="editBillingCity" placeholder="City" onChange={handleEditBillingChange}/>
-          <input value={editBillingInput.editBillingState || ""} name="editBillingState" placeholder="State" onChange={handleEditBillingChange}/>
-          <input value={editBillingInput.editBillingZipcode || ""} name="editBillingZipcode" placeholder="Zipcode" onChange={handleEditBillingChange}/>
+          <input 
+          value={editBillingInput.editBillingFirstName || ""} name="editBillingFirstName" 
+          placeholder="First Name" 
+          type="text"
+          onChange={handleEditBillingChange}/>
+          {(/^[a-z][a-z\s]*$/i.test(editBillingInput.editBillingFirstName) !== true && editBillingInput.editBillingFirstName !== "") && <div className="warning">You must enter only letters as your first name</div>}
+          <input 
+          value={editBillingInput.editBillingLastName || ""} name="editBillingLastName" 
+          placeholder="Last Name" 
+          type="text"
+          onChange={handleEditBillingChange}/>
+          {(/^[a-z][a-z\s]*$/i.test(editBillingInput.editBillingLastName) !== true && editBillingInput.editBillingLastName !== "") && <div className="warning">You must enter only letters as your last name</div>}
+          <input 
+          value={editBillingInput.editBillingFirstAddressLine || ""} name="editBillingFirstAddressLine" 
+          placeholder="Address Line One" 
+          type="text"
+          onChange={handleEditBillingChange}/>
+          {editBillingInput.editBillingFirstAddressLine === "" && <div className="warning">You must enter an address</div>}
+          <input 
+          value={editBillingInput.editBillingSecondAddressLine || ""} name="editBillingSecondAddressLine" 
+          placeholder="Address Line Two" 
+          type="text"
+          onChange={handleEditBillingChange}/>
+          <input 
+          value={editBillingInput.editBillingCity || ""} 
+          name="editBillingCity" 
+          placeholder="City" 
+          type="text"
+          onChange={handleEditBillingChange}/>
+          {(/^[a-z][a-z\s]*$/i.test(editBillingInput.editBillingCity) !== true && editBillingInput.editBillingCity !== "") && <div className="warning">You must enter only letters as your city</div>}
+          <input 
+          value={editBillingInput.editBillingState || ""} name="editBillingState" 
+          placeholder="State" 
+          type="text"
+          onChange={handleEditBillingChange}/>
+          {(/^[a-z][a-z\s]*$/i.test(editBillingInput.editBillingState) !== true && editBillingInput.editBillingState !== "") && <div className="warning">You must enter only letters as your state</div>}
+          <input 
+          value={editBillingInput.editBillingZipcode || ""} name="editBillingZipcode" 
+          placeholder="Zipcode" 
+          type="text"
+          onChange={handleEditBillingChange}/>
+          {(/^[a-z][a-z\s]*$/i.test(editBillingInput.editBillingZipcode) === true && editBillingInput.editBillingZipcode !== "") && <div className="warning">You must enter only numbers as your zip code</div>}
+          {zipcodeWarning && <div className="warning">You must enter five digits as your zip code</div>}
           <button onClick={handleEditPaymentSubmit} 
-          disabled={!editBillingInput.editBillingFirstName || !editBillingInput.editBillingLastName || !editBillingInput.editBillingFirstAddressLine || !editBillingInput.editBillingCity || !editBillingInput.editBillingState || !editBillingInput.editBillingZipcode}>
+          disabled={(/^[a-z][a-z\s]*$/i.test(editBillingInput.editBillingFirstName) !== true || editBillingInput.editBillingFirstName === "") || (/^[a-z][a-z\s]*$/i.test(editBillingInput.editBillingLastName) !== true || editBillingInput.editBillingLastName === "") || editBillingInput.editBillingFirstAddressLine === "" || (/^[a-z][a-z\s]*$/i.test(editBillingInput.editBillingCity) !== true || editBillingInput.editBillingCity === "")}>
               Submit
           </button>
           </form>
