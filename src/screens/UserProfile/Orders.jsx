@@ -4,7 +4,7 @@ import CardHeader from '@material-ui/core/CardHeader';
 // import IconButton from '@material-ui/core/IconButton';
 // import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import IndividualOrder from './IndividualOrder'
-import {Link} from 'react-router-dom';
+import {Link, useHistory} from 'react-router-dom';
 import ConvertDate from './ConvertDate'
 import { makeStyles } from '@material-ui/core/styles';
 import { Pagination, PaginationItem } from '@material-ui/lab';
@@ -18,6 +18,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function Orders ({ backend, loggedIn, orderData, grabOrderData, orderID, grabOrderID, ordersTotal, grabOrdersTotal}) {
+    const history = useHistory()
     const classes = useStyles();
     // var month = dateObj.getUTCMonth() + 1; 
     // var day = dateObj.getUTCDate();
@@ -43,52 +44,36 @@ export default function Orders ({ backend, loggedIn, orderData, grabOrderData, o
     }
 
     
-    // if(!showOrder) {
-        return (
+
+    return (
+        <>
+        {orderData.length === 0 ? <p>No purchases yet, but you could become the next owner of the latest gadget!</p> : (
             <>
-            
-            {orderData.length === 0 ? <p>No purchases yet, but you could become the next owner of the latest gadget!</p> : (
-                <>
-                {orderData.map((order, index) => {
-                    return (
-                        <>
-                        {index === 0 && <h3>{ConvertDate(orderData[0].OrderDate)}</h3>}
-                        {index !==0 && ConvertDate(order.OrderDate) !== ConvertDate(orderData[index-1].OrderDate) && <h3>{ConvertDate(order.OrderDate)}</h3>}
-                        {/* <Link to={`/show-order?orderNumber=${order.OrderNumber}`}> */}
-                        <Card key={index}>
+            {orderData.map((order, index) => {
+                return (
+                    <div key={index}>
+                    {index === 0 && <h3>{ConvertDate(orderData[0].OrderDate)}</h3>}
+                    {index !==0 && ConvertDate(order.OrderDate) !== ConvertDate(orderData[index-1].OrderDate) && <h3>{ConvertDate(order.OrderDate)}</h3>}
+                    <Link to={`/show-order?orderNumber=${order.OrderNumber}`}>
+                        <Card>
                             <CardHeader
-                                action={
-                                <button onClick={() => {
-                                    // grabOrderID(order.OrderNumber)
-                                    setShowOrder(true)
-                                }}>Click
-                                </button>
-                                }
                                 title={`Order Number:  ${order.OrderNumber}`}
                                 subheader={ConvertDate(order.OrderDate)}
                             />
                         </Card>
-                        {/* </Link> */}
-                        </>
-                    )
-                })}
-                <div className={classes.root}>
-                    <Pagination showFirstButton showLastButton size="large" variant="outlined" shape="rounded" count={ordersTotal} siblingCount={1} boundaryCount={2} onChange={handlePageOnChange} />
-                </div>  
-                </>
-
-            )}
-            
-
+                    </Link>
+                    </div>
+                )
+            })}
+            <div className={classes.root}>
+                <Pagination showFirstButton showLastButton size="large" variant="outlined" shape="rounded" count={ordersTotal} siblingCount={1} boundaryCount={2} onChange={handlePageOnChange} />
+            </div>  
             </>
-        )
-    // } else {
-    //     return (
-    //         <Link to={`/show-order${orderID}`} target="_blank">
-    //             <IndividualOrder backend={backend} loggedIn={loggedIn} orderID={orderID}/>
-    //         </Link>
-    //     )
-    // }
+
+        )}
+        </>
+    )
+   
 
     
 }
