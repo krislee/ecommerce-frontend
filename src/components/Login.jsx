@@ -1,14 +1,14 @@
 import React, {useState} from 'react'
 import {Redirect} from 'react-router-dom';
 import '../styles/Login.css'
+import Toast from 'react-bootstrap/Toast'
 
 function Login ({backend, loggedIn, grabLoginInfo, buyer, seller}) {
 
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [isLogin, setIsLogin] = useState(false)
-
-    const [resetPassword, setResetPassword] = useState(false)
+    const [loginError, setLoginError] = useState(false)
 
     const handleLogin = async (event) => {
         event.preventDefault();
@@ -25,6 +25,9 @@ function Login ({backend, loggedIn, grabLoginInfo, buyer, seller}) {
                 body: JSON.stringify(loginInfo)
             });
             const loginData = await loginResponse.json()
+            if(loginData.success === false){
+                setLoginError(true)
+            }
             if (loginData.success === true) {
                 grabLoginInfo(loginData.token);
                 setIsLogin(true)
@@ -73,6 +76,7 @@ function Login ({backend, loggedIn, grabLoginInfo, buyer, seller}) {
         )
     } else {
         return (
+            <>
             <form className="login" onSubmit={handleLogin}>
                 <input type="text" placeholder="Username" value={username} onChange={handleChangeUsername}></input>
                 {/* <input type="email" placeholder="Email" value={email} onChange={handleChangeEmail}></input> */}
@@ -80,6 +84,10 @@ function Login ({backend, loggedIn, grabLoginInfo, buyer, seller}) {
                 {username === '' || password === '' ? <input className="submit-button-disabled" type="submit" disabled></input> : 
                     <input className="submit-button" type="submit"></input>}
             </form>
+            <Toast onClose={() => setLoginError(false)} show={loginError} delay={3000} autohide>
+                    <Toast.Body>Invalid login credentials.</Toast.Body>
+            </Toast>
+            </>
         )
     }
 }
