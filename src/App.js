@@ -1,5 +1,5 @@
-import React, {useState} from 'react'
-import {BrowserRouter, Switch, Route, Link} from 'react-router-dom';
+import React, { useState } from 'react'
+import { BrowserRouter, Switch, Route } from 'react-router-dom';
 import './App.css';
 // import './styles/Card.css'
 import Homepage from './screens/Homepage'

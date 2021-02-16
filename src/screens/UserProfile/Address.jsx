@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Modal from 'react-modal';
 import AddressContainer from '../../components/UserProfile/AddressContainer';
 
-function UserProfileAddress ({ backend, addressData, defaultFirst, grabAddressData }) {
+function UserProfileAddress ({ backend, addressData, defaultFirst, grabAddressData, loggedIn }) {
 
     // Getter and Setter to store the information recieved back when fetching address data
     // Getter and Setter to display modal based off a boolean value
@@ -85,7 +85,8 @@ function UserProfileAddress ({ backend, addressData, defaultFirst, grabAddressDa
                 backend={backend}
                 addressData={addressData}
                 grabAddressData={grabAddressData}
-                defaultFirst={defaultFirst}/>
+                defaultFirst={defaultFirst}
+                loggedIn={loggedIn}/>
             )
         }
     })

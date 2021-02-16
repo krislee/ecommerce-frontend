@@ -174,7 +174,7 @@ function UserProfile ({ backend, loggedIn, orderID, grabOrderID }) {
                         className={profileTabOpen === true ? "highlighted-tab" : null}>
                             Profile
                         </div>
-                        <div style={{borderLeft: '1px solid #000'}} onClick={handleClickAddresses} 
+                        <div onClick={handleClickAddresses} 
                         className={addressesTabOpen === true ? "highlighted-tab" : null}>
                             Addresses
                         </div>
@@ -197,7 +197,8 @@ function UserProfile ({ backend, loggedIn, orderID, grabOrderID }) {
                         backend={backend} 
                         addressData={addressData} 
                         defaultFirst={defaultFirst}
-                        grabAddressData={grabAddressData}/>
+                        grabAddressData={grabAddressData}
+                        loggedIn={loggedIn}/>
                     }
                     {/* This component renders only when the paymentsTab is open  */}
                     {paymentsTabOpen &&
@@ -205,7 +206,8 @@ function UserProfile ({ backend, loggedIn, orderID, grabOrderID }) {
                         backend={backend} 
                         paymentData={paymentData}
                         defaultFirstPayment={defaultFirstPayment}
-                        grabPaymentData={grabPaymentData}/>
+                        grabPaymentData={grabPaymentData}
+                        loggedIn={loggedIn}/>
                     }
                     {/* This component renders only when the orderTabOpen is true  */}
                     {ordersTabOpen &&
