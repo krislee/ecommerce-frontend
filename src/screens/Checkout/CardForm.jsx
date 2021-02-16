@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import CollectCard from "../../components/Checkout/Card"
 import BillingInput from "../../components/Checkout/BillingInput"
 

@@ -52,7 +52,6 @@ export default function ShippingForm( { backend, loggedIn, readOnly, shipping, a
     return (
         <>
         <form id="form" name="form" onSubmit={handleNext}>
-            <h2>Shipping Address</h2>
             <input value={shippingInput.firstName || ""} name="firstName" placeholder="First Name" onChange={handleShippingChange} readOnly={readOnly} required/>
 
             <input value={shippingInput.lastName || ""} name="lastName" placeholder="Last Name" onChange={handleShippingChange} readOnly={readOnly} required/>
