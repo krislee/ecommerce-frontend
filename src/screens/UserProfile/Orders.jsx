@@ -14,6 +14,7 @@ export default function Orders ({ backend, loggedIn, orderData, grabOrderData, o
     // var year = dateObj.getUTCFullYear();
     
     const [showOrder, setShowOrder] = useState(false)
+    const [date, setDate] = useState('')
     
     console.log(22, orderData)
     
@@ -22,22 +23,27 @@ export default function Orders ({ backend, loggedIn, orderData, grabOrderData, o
             <>
             
             {orderData.length === 0 ? <p>No purchases yet, but you could become the next owner of the latest gadget!</p> : (
-                orderData.map((orderData, index) => {return (
-                    <Card key={index}>
-                        <CardHeader
-                            action={
-                            <button onClick={() => {
-                                grabOrderID(orderData.OrderNumber)
-                                setShowOrder(true)
-                            }}>Click
-                                {/* <ExpandMoreIcon /> */}
-                            </button>
-                            }
-                            title={`Order Number:  ${orderData.OrderNumber}`}
-                            subheader={ConvertDate(orderData.OrderDate)}
-                        />
-                    </Card>
-                )})
+                orderData.map((order, index) => {
+                    return (
+                        <>
+                        {index === 0 && <h3>{ConvertDate(orderData[0].OrderDate)}</h3>}
+                        {index !==0 && ConvertDate(order.OrderDate) !== ConvertDate(orderData[index-1].OrderDate) && <h3>{ConvertDate(order.OrderDate)}</h3>}
+                        <Card key={index}>
+                            <CardHeader
+                                action={
+                                <button onClick={() => {
+                                    grabOrderID(order.OrderNumber)
+                                    setShowOrder(true)
+                                }}>Click
+                                </button>
+                                }
+                                title={`Order Number:  ${order.OrderNumber}`}
+                                subheader={ConvertDate(order.OrderDate)}
+                            />
+                        </Card>
+                        </>
+                    )
+                })
             )}
             
 

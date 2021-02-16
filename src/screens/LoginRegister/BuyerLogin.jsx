@@ -1,9 +1,9 @@
 import React from 'react'
 import {Link} from 'react-router-dom';
-import Button from '../components/Button'
-import Login from '../components/Login'
-import Footer from '../components/Footer'
-import '../styles/Login.css'
+import Button from '../../components/Button'
+import Login from '../../components/Login'
+import Footer from '../../components/Footer'
+import '../../styles/Login.css'
 
 function BuyerLogin ({backend, loggedIn, grabLoginInfo}) {
     return (
@@ -11,7 +11,7 @@ function BuyerLogin ({backend, loggedIn, grabLoginInfo}) {
             <Link to="/">
                 <Button name={'Back'}></Button>
             </Link>
-            <Login backend={backend} grabLoginInfo={grabLoginInfo} loggedIn={loggedIn}/>
+            <Login backend={backend} grabLoginInfo={grabLoginInfo} loggedIn={loggedIn} buyer={true}/>
             <Footer />
         </div>
     )

@@ -37,17 +37,31 @@ function NavBar () {
                 <Dropdown.Item onClick={handleLogout}>Logout</Dropdown.Item>
             </Dropdown.Menu>
             </Dropdown> : 
+            <>
             <div className="login-button-container">
                 <Dropdown>
                 <Dropdown.Toggle id="dropdown-basic">
                     Login
                 </Dropdown.Toggle>
                 <Dropdown.Menu className="dropdown-menu">
-                    <Dropdown.Item href="/buyer">Buyer</Dropdown.Item>
-                    <Dropdown.Item href="/seller">Seller</Dropdown.Item>
+                    <Dropdown.Item href="/login/buyer">Buyer</Dropdown.Item>
+                    <Dropdown.Item href="/login/seller">Seller</Dropdown.Item>
                 </Dropdown.Menu>
                 </Dropdown>
-            </div>}
+            </div>
+            <div className="login-button-container">
+                <Dropdown>
+                <Dropdown.Toggle id="dropdown-basic">
+                    Register
+                </Dropdown.Toggle>
+                <Dropdown.Menu className="dropdown-menu">
+                    <Dropdown.Item href="/register/buyer">Buyer</Dropdown.Item>
+                    <Dropdown.Item href="/register/seller">Seller</Dropdown.Item>
+                </Dropdown.Menu>
+                </Dropdown>
+            </div>
+            </>
+            }
             </div>
         </div>
     )

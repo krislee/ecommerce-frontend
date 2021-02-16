@@ -4,8 +4,10 @@ import './App.css';
 // import './styles/Card.css'
 import Homepage from './screens/HomePage'
 import AllItems from './screens/AllItemsPage'
-import BuyerLogin from './screens/BuyerLogin'
-import SellerLogin from './screens/SellerLogin'
+import BuyerLogin from './screens/LoginRegister/BuyerLogin'
+import SellerLogin from './screens/LoginRegister/SellerLogin'
+import BuyerRegister from './screens/LoginRegister/BuyerRegister'
+import SellerRegister from './screens/LoginRegister/SellerRegister'
 import ItemPage from './screens/ItemPage';
 import CartPage from './screens/Cart/CartPage';
 import Checkout from './screens/Checkout/CheckoutPage'
@@ -79,11 +81,17 @@ function App() {
               <Checkout backend={backend} loggedIn={loggedIn} loggedOut={loggedOut} grabLoggedOut={grabLoggedOut} cartID={cartID}grabCartID={grabCartID} grabSuccessfulPaymentIntent={grabSuccessfulPaymentIntent}/>
             </Elements>
           </Route>
-          <Route path="/buyer">
+          <Route path="/login/buyer">
             <BuyerLogin backend={backend} loggedIn={loggedIn} grabLoginInfo={grabLoginInfo}/>
           </Route>
-          <Route path="/seller">
-            <SellerLogin backend={backend}/>
+          <Route path="/login/seller">
+            <SellerLogin backend={backend} loggedIn={loggedIn} grabLoginInfo={grabLoginInfo}/>
+          </Route>
+          <Route path="/register/buyer">
+            <BuyerRegister backend={backend} loggedIn={loggedIn} grabLoginInfo={grabLoginInfo}/>
+          </Route>
+          <Route path="/register/seller">
+            <SellerRegister backend={backend} loggedIn={loggedIn} grabLoginInfo={grabLoginInfo}/>
           </Route>
           <Route path='/store'>
             <ItemPage url={url} backend={backend} loggedIn={loggedIn}/>

@@ -302,8 +302,7 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
             )} 
             {/* When we click Next button in Shipping component, collapse() runs and showPayment state is updated to true to show the Payment Component. We need to make sure to still show the shipping details and Edit button when we do show the payment section*/}
             {showPayment && (
-                <>
-                <h2>Shipping Address</h2>
+                <>  
                 <div>
                     <p>{shippingInput.firstName} {shippingInput.lastName}</p>
                     <p>{shippingInput.line1}</p>
@@ -352,9 +351,9 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
                 {!showButtons && <button onClick={back}>Edit</button>}
                 { showButtons && (
                 <>
-                <button disabled={readOnly} id="addNewAddress" onClick={openAddNewModal}>Add New</button>
-                <button disabled={readOnly} id="editAddress" onClick={openEditModal}>Edit</button>
-                {multipleShipping && <button disabled={readOnly} id="allAddresses" onClick={openAllAddressesModal}>All Addresses</button>}
+                <button id="addNewAddress" onClick={openAddNewModal}>Add New</button>
+                <button id="editAddress" onClick={openEditModal}>Edit</button>
+                {multipleShipping && <button id="allAddresses" onClick={openAllAddressesModal}>All Addresses</button>}
                 </>
                 )}
                 {showShipping && <button onClick={collapse}>Next</button>}
