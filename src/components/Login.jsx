@@ -1,12 +1,14 @@
 import React, {useState} from 'react'
 import {Redirect} from 'react-router-dom';
 import '../styles/Login.css'
+import Toast from 'react-bootstrap/Toast'
 
-function Login ({backend, loggedIn, grabLoginInfo}) {
+function Login ({backend, loggedIn, grabLoginInfo, buyer, seller}) {
 
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [isLogin, setIsLogin] = useState(false)
+    const [loginError, setLoginError] = useState(false)
 
     const handleLogin = async (event) => {
         event.preventDefault();
@@ -14,30 +16,50 @@ function Login ({backend, loggedIn, grabLoginInfo}) {
             username: username,
             password: password,
         }
-        const loginResponse = await fetch(`${backend}/auth/buyer/login`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(loginInfo)
-        });
-        const loginData = await loginResponse.json()
-        if (loginData.success === true) {
-            grabLoginInfo(loginData.token);
-            setIsLogin(true)
-            const syncCartResponse = await fetch(`${backend}/buyer/sync/cart`, {
+        if(buyer) {
+            const loginResponse = await fetch(`${backend}/auth/buyer/login`, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': loggedIn()
+                    'Content-Type': 'application/json'
                 },
-                credentials: 'include'
-
-            })
-            const syncCartData = await syncCartResponse.json()
-            console.log(syncCartData)
-            
+                body: JSON.stringify(loginInfo)
+            });
+            const loginData = await loginResponse.json()
+            if(loginData.success === false){
+                setLoginError(true)
+            }
+            if (loginData.success === true) {
+                grabLoginInfo(loginData.token);
+                setIsLogin(true)
+                const syncCartResponse = await fetch(`${backend}/buyer/sync/cart`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': loggedIn()
+                    },
+                    credentials: 'include'
+    
+                })
+                const syncCartData = await syncCartResponse.json()
+                console.log(syncCartData)
+                
+            }
         }
+        if(seller) {
+            const loginResponse = await fetch(`${backend}/auth/seller/login`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(loginInfo)
+            });
+            const loginData = await loginResponse.json()
+            if (loginData.success === true) {
+                grabLoginInfo(loginData.token);
+                setIsLogin(true)
+            }
+        }
+        
     }
 
     const handleChangeUsername = e => {
@@ -54,6 +76,7 @@ function Login ({backend, loggedIn, grabLoginInfo}) {
         )
     } else {
         return (
+            <>
             <form className="login" onSubmit={handleLogin}>
                 <input type="text" placeholder="Username" value={username} onChange={handleChangeUsername}></input>
                 {/* <input type="email" placeholder="Email" value={email} onChange={handleChangeEmail}></input> */}
@@ -61,6 +84,10 @@ function Login ({backend, loggedIn, grabLoginInfo}) {
                 {username === '' || password === '' ? <input className="submit-button-disabled" type="submit" disabled></input> : 
                     <input className="submit-button" type="submit"></input>}
             </form>
+            <Toast onClose={() => setLoginError(false)} show={loginError} delay={3000} autohide>
+                    <Toast.Body>Invalid login credentials.</Toast.Body>
+            </Toast>
+            </>
         )
     }
 }

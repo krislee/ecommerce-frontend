@@ -1,9 +1,9 @@
 import React from 'react';
-import {CardCvcElement, CardElement, useElements} from "@stripe/react-stripe-js";
+import {CardCvcElement, CardElement } from "@stripe/react-stripe-js";
 import '../../styles/Card.css'
 
 function CollectCard({ handleCardChange, collectCVV, handleCardholderNameChange, cardholderName }) {
-    const elements = useElements()
+    // const elements = useElements()
     const cardStyle = {
         base: {
         color: "#32325d",

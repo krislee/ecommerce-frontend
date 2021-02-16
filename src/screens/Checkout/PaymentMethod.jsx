@@ -4,11 +4,9 @@ import BillingInput from "../../components/Checkout/BillingInput"
 import Modal from 'react-modal';
 import { useStripe, CardElement, useElements, CardCvcElement } from "@stripe/react-stripe-js"; 
 import createPaymentMethod from './CreatePayment'
-import { Redirect } from 'react-router-dom';
 import CardForm from './CardForm'
-import FormGroup from 'react-bootstrap/FormGroup'
 import '../../styles/Payment.css'
-import { Accordion, Card, Button } from 'react-bootstrap';
+
 
 
 function PaymentMethod ({ backend, processing, loggedIn, error, grabError, disabled, grabDisabled,  paymentLoading, grabPaymentLoading, billing, grabBilling, handleBillingChange, paymentMethod, grabPaymentMethod, cardholderName, grabCardholderName, handleCardholderNameChange, handleCardChange, collectCVV, grabCollectCVV, editPayment, grabEditPayment, redisplayCardElement, grabRedisplayCardElement, grabShowSavedCards, handleConfirmPayment, showSavedCards, grabLoggedOut, editExpiration, grabEditExpiration, showPayment, sameAsShipping, handleSameAsShipping, shippingInput, grabBillingWithShipping, }) {

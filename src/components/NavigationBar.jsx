@@ -1,5 +1,5 @@
-import React from 'react'
-import {Link} from 'react-router-dom';
+import React, {useState} from 'react'
+import {Link, Redirect} from 'react-router-dom';
 // import Button from '../components/Button'
 import '../styles/NavigationBar.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -7,11 +7,15 @@ import { faHome, faShoppingCart, faUser } from '@fortawesome/free-solid-svg-icon
 import { Dropdown } from 'react-bootstrap'
 
 function NavBar () {
+    const [redirect, setRedirect] = useState(false)
 
     const handleLogout = () => {
         localStorage.clear();
-        window.location.reload();
+        setRedirect(true)
     }
+    if(redirect) {
+        return <Redirect to='/'></Redirect>
+    } 
 
     return (
         <div className="navbar">
@@ -37,20 +41,35 @@ function NavBar () {
                 <Dropdown.Item onClick={handleLogout}>Logout</Dropdown.Item>
             </Dropdown.Menu>
             </Dropdown> : 
+            <>
             <div className="login-button-container">
                 <Dropdown>
                 <Dropdown.Toggle id="dropdown-basic">
                     Login
                 </Dropdown.Toggle>
                 <Dropdown.Menu className="dropdown-menu">
-                    <Dropdown.Item href="/buyer">Buyer</Dropdown.Item>
-                    <Dropdown.Item href="/seller">Seller</Dropdown.Item>
+                    <Dropdown.Item href="/login/buyer">Buyer</Dropdown.Item>
+                    <Dropdown.Item href="/login/seller">Seller</Dropdown.Item>
                 </Dropdown.Menu>
                 </Dropdown>
-            </div>}
+            </div>
+            <div className="login-button-container">
+                <Dropdown>
+                <Dropdown.Toggle id="dropdown-basic">
+                    Register
+                </Dropdown.Toggle>
+                <Dropdown.Menu className="dropdown-menu">
+                    <Dropdown.Item href="/register/buyer">Buyer</Dropdown.Item>
+                    <Dropdown.Item href="/register/seller">Seller</Dropdown.Item>
+                </Dropdown.Menu>
+                </Dropdown>
+            </div>
+            </>
+            }
             </div>
         </div>
     )
+    
 }
 
 export default NavBar
