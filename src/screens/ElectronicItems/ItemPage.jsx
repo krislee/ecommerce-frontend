@@ -93,7 +93,7 @@ function ItemPage ({ loggedIn, url, backend }) {
                         <div>
                             <div className="name">{itemInfo.Name}</div>
                             <div className={classes.root}>
-                                <Rating name="size-small" value={avgRating} size="small" readOnly/>
+                                <Rating name="size-small" value={avgRating} size="small" precision={0.25} readOnly/>
                             </div>
                             <div className="price">Price: ${itemInfo.Price}</div>
                             <div className="description">Description: {itemInfo.Description}</div>

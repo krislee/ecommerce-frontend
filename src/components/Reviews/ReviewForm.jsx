@@ -42,7 +42,7 @@ export default function ReviewForm({ratingValue, grabRatingValue, ratingHover, g
             </div>
             
             <label htmlFor="comments"></label>
-            <textarea name="comments" placeholder="Write your comment here." value={commentsValue} onChange={handleCommentsChange}></textarea>
+            <textarea name="comments" rows="6" cols="50" placeholder="Write your comment here." value={commentsValue} onChange={handleCommentsChange}></textarea>
         </>
     )
 }
