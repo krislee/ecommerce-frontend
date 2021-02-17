@@ -90,6 +90,17 @@ function UserProfile ({ backend, loggedIn, orderID, grabOrderID }) {
         fetchProfileData()
     }, []);
 
+    const capitalize = (string) => {
+        return (string.charAt(0).toUpperCase() + string.slice(1))
+      }
+  
+    const capitalizeArray = (splitArray, newArray) => {
+        for (let i = 0; i < splitArray.length; i++) {
+            newArray.push(capitalize(splitArray[i]));
+        }
+        return newArray.join(" ");
+    }
+
     // Function that is used to reorder the data so that default is first and to also make the newest data come first on the list
     const defaultFirst = (data) => {
         // Reverses the order of the data so the newest data will be first and the oldest will be last
@@ -198,7 +209,9 @@ function UserProfile ({ backend, loggedIn, orderID, grabOrderID }) {
                         addressData={addressData} 
                         defaultFirst={defaultFirst}
                         grabAddressData={grabAddressData}
-                        loggedIn={loggedIn}/>
+                        loggedIn={loggedIn}
+                        capitalize={capitalize}
+                        capitalizeArray={capitalizeArray}/>
                     }
                     {/* This component renders only when the paymentsTab is open  */}
                     {paymentsTabOpen &&
@@ -207,7 +220,9 @@ function UserProfile ({ backend, loggedIn, orderID, grabOrderID }) {
                         paymentData={paymentData}
                         defaultFirstPayment={defaultFirstPayment}
                         grabPaymentData={grabPaymentData}
-                        loggedIn={loggedIn}/>
+                        loggedIn={loggedIn}
+                        capitalize={capitalize}
+                        capitalizeArray={capitalizeArray}/>
                     }
                     {/* This component renders only when the orderTabOpen is true  */}
                     {ordersTabOpen &&

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Modal from 'react-modal';
 import AddressContainer from '../../components/UserProfile/AddressContainer';
 
-function UserProfileAddress ({ backend, addressData, defaultFirst, grabAddressData, loggedIn }) {
+function UserProfileAddress ({ backend, addressData, defaultFirst, grabAddressData, loggedIn, capitalize, capitalizeArray }) {
 
     // Getter and Setter to store the information recieved back when fetching address data
     // Getter and Setter to display modal based off a boolean value
@@ -86,7 +86,9 @@ function UserProfileAddress ({ backend, addressData, defaultFirst, grabAddressDa
                 addressData={addressData}
                 grabAddressData={grabAddressData}
                 defaultFirst={defaultFirst}
-                loggedIn={loggedIn}/>
+                loggedIn={loggedIn}
+                capitalize={capitalize}
+                capitalizeArray={capitalizeArray}/>
             )
         }
     })
@@ -120,17 +122,39 @@ function UserProfileAddress ({ backend, addressData, defaultFirst, grabAddressDa
                 >
                 <form className="form">
                 <h2>Add Your Address</h2>
-                <input value={addressInput.firstName || ""} name="firstName" placeholder="First Name" onChange={handleAddressChange}/>
-                <input value={addressInput.lastName || ""} name="lastName" placeholder="Last Name" onChange={handleAddressChange}/>
-                <input value={addressInput.addressLineOne || ""} name="addressLineOne" placeholder="Address Line One"
+                <input 
+                value={addressInput.firstName || ""} 
+                name="firstName" 
+                placeholder="First Name" 
                 onChange={handleAddressChange}/>
-                <input value={addressInput.addressLineTwo || ""} name="addressLineTwo" placeholder="Address Line Two"
+                <input 
+                value={addressInput.lastName || ""} 
+                name="lastName" 
+                placeholder="Last Name" 
                 onChange={handleAddressChange}/>
-                <input value={addressInput.city || ""} name="city" placeholder="City"
+                <input 
+                value={addressInput.addressLineOne || ""} 
+                name="addressLineOne" 
+                placeholder="Address Line One"
                 onChange={handleAddressChange}/>
-                <input value={addressInput.state || ""} name="state" placeholder="State"
+                <input 
+                value={addressInput.addressLineTwo || ""} 
+                name="addressLineTwo" 
+                placeholder="Address Line Two"
                 onChange={handleAddressChange}/>
-                <input value={addressInput.zipcode || ""} name="zipcode" placeholder="Zipcode"
+                <input 
+                value={addressInput.city || ""} 
+                name="city" placeholder="City"
+                onChange={handleAddressChange}/>
+                <input 
+                value={addressInput.state || ""} 
+                name="state" 
+                placeholder="State"
+                onChange={handleAddressChange}/>
+                <input 
+                value={addressInput.zipcode || ""} 
+                name="zipcode" 
+                placeholder="Zipcode"
                 onChange={handleAddressChange}/>
                 {/* Section where users can check off whether or not they want the address being created to become the default address */}
                 <div className="default-container">

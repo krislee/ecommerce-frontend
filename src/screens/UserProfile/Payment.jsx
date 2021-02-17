@@ -3,7 +3,7 @@ import Modal from 'react-modal';
 import PaymentContainer from '../../components/UserProfile/PaymentContainer';
 import {useStripe, useElements, CardElement} from '@stripe/react-stripe-js';
 
-function UserProfilePayment ({ backend, paymentData, grabPaymentData, defaultFirstPayment, loggedIn }) {
+function UserProfilePayment ({ backend, paymentData, grabPaymentData, defaultFirstPayment, loggedIn, capitalize, capitalizeArray }) {
 
     const [modalIsOpen,setModalIsOpen] = useState(false);
     const [modalTwoIsOpen, setModalTwoIsOpen] = useState(false);
@@ -16,17 +16,6 @@ function UserProfilePayment ({ backend, paymentData, grabPaymentData, defaultFir
 
     const elements = useElements();
     const stripe = useStripe();
-
-    const capitalize = (string) => {
-        return (string.charAt(0).toUpperCase() + string.slice(1))
-      }
-  
-    const capitalizeArray = (splitArray, newArray) => {
-    for (let i = 0; i < splitArray.length; i++) {
-        newArray.push(capitalize(splitArray[i]));
-    }
-    return newArray.join(" ");
-    }
     
     const customStyles = {
         content : {

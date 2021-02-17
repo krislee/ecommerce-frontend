@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import '../../styles/UserProfile/AddressContainer.css'
 import Modal from 'react-modal';
 
-function AddressContainer ({ index, address, backend, grabAddressData, defaultFirst }) {
+function AddressContainer ({ index, address, backend, grabAddressData, defaultFirst, capitalize, capitalizeArray }) {
 
     // Creating a setter and getter function to open and close the modal
     const [isEditModalIsOpen,setIsEditModalOpen] = useState(false);
@@ -153,48 +153,6 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
             setIsDeleteModalOpen(false);
             // Close the modal after all of this function is finished so user will end up back on the regular screen
             grabAddressData(data);
-            // if (data.findIndex(address => address.DefaultAddress === true) === -1 && data.length !== 0) {
-            //     const oldestAddress = data[data.length - 1];
-            //     console.log(oldestAddress);
-            //     // We grab the last element in the address array, and make it default
-            //     // We pass it through the handle submit again
-            //     // We delete the old one and create a new one
-            //     const oldestAddressCheckedResponse = await fetch(`${backend}/shipping/address?lastUse=false&default=true`, {
-            //         method: 'POST',
-            //         headers: {
-            //             'Content-Type': 'application/json',
-            //             'Authorization': localStorage.getItem('token')
-            //         },
-            //         body: JSON.stringify({
-            //             name: oldestAddress.Name,
-            //             address: oldestAddress.Address
-            //         })
-            //     })
-            //     const oldestAddressCheckedData = await oldestAddressCheckedResponse.json()
-            //     console.log(oldestAddressCheckedData);
-            //     const deleteDuplicateResponse = await fetch(`${backend}/shipping/address/${oldestAddress._id}`, {
-            //         method: 'DELETE',
-            //         headers: {
-            //             'Content-Type': 'application/json',
-            //             'Authorization': localStorage.getItem('token')
-            //         }
-            //     })
-            //     const finalDeleteData = await deleteDuplicateResponse.json();
-            //     if (finalDeleteData.findIndex(address => address.DefaultAddress === true) !== -1 && finalDeleteData.length !== 0){
-            //         defaultFirst(finalDeleteData);
-            //         grabAddressData(finalDeleteData);
-            //     } else {
-            //         grabAddressData(finalDeleteData)
-            //     }
-            // } else {
-            //     console.log('there is a default');
-            //     if (data.findIndex(address => address.DefaultAddress === true) !== -1 && data.length !== 0){
-            //         defaultFirst(data);
-            //         grabAddressData(data);
-            //     } else {
-            //         grabAddressData(data);
-            //     }
-            // }
         }
     }
 
@@ -205,6 +163,7 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
     // Using the elements in the array newAddress, we are able to create new strings by interpolating the information
     const addressLineWithSecondAddress = `${newAddress[0]} ${newAddress[1]}`
     const secondAddressLineWithSecondAddress = `${newAddress[2]}, ${newAddress[3]} ${newAddress[4]}`
+    console.log(newAddress[1])
     // These variables are created in case users did not use a second line
     const addressLineWithoutSecondAddress = `${newAddress[0]}`
     const secondAddressLineWithoutSecondAddress = `${newAddress[2]}, ${newAddress[3]} ${newAddress[4]}`
@@ -221,13 +180,13 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
                     {/* Next we put the address line one */}
                     <div className="address">
                         {/* We wrap it around curly braces so that the information that renders is based off of whether or not there is a second line to the address */}
-                        {newAddress[1] !== ' undefined' 
+                        {(newAddress[1] === ' undefined' || newAddress[1] === null )
                         ? addressLineWithSecondAddress : addressLineWithoutSecondAddress }
                     </div>
                     <div 
                     className="address">
                         {/* We wrap it around curly braces so that the information that renders is based off of whether or not there is a second line to the address */}
-                        {newAddress[1] !== ' undefined'  
+                        {(newAddress[1] === ' undefined' ||  newAddress[1] === null)
                         ? secondAddressLineWithSecondAddress : secondAddressLineWithoutSecondAddress }
                     </div>
                     {/* This badge labeled Default only appears if the address is the default address based off the condition defaultAddress, which is a boolean */}
