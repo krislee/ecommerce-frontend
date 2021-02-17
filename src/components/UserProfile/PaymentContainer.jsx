@@ -546,6 +546,7 @@ function PaymentContainer ({ backend, index, payment, defaultFirstPayment, grabP
         name="editBillingZipcode" 
         placeholder="Zipcode" 
         type="text"
+        pattern="\d*"
         onChange={handleEditBillingChange}/>
         {(/[a-zA-Z]/g.test(editBillingInput.editBillingZipcode) === true 
         && editBillingInput.editBillingZipcode !== "") 

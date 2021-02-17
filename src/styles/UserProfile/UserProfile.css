@@ -103,6 +103,10 @@
     flex-wrap: wrap;
 }
 
+.all-addresses-container {
+    width: 50rem;
+}
+
 /* .form {
     margin: 2vh 2vw;
 } */

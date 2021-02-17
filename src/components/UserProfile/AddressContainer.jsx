@@ -9,6 +9,8 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
     const [isDeleteModalIsOpen,setIsDeleteModalOpen] = useState(false);
     // Creating a setter and getter function for the input fields
     const [editAddress, setEditAddress] = useState({});
+    const [editZipcodeAddressWarning, setEditZipcodeAddressWarning] = useState(false);
+    const [editStateAbbreviationAddressWarning, setEditStateAbbreviationAddressWarning] = useState(false);
 
     // Styles for the Modal
     const customStyles = {
@@ -41,24 +43,25 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
         // Function that sets the input values equal to the data recieved back
         const checkForAddressLineTwo = () => {
             // Our condition is make sure that we display data in the input based off whether or not there is an addressLineTwo, since it is not required
+            const [capitalizedAddressLineOneEditModal, capitalizedAddressLineTwoEditModal, capitalizedCityEditModal] = [[], [], []];
             if (address[1] === "undefined"){
                 setEditAddress({
-                    firstName: name[0],
-                    lastName: name[1],
-                    addressLineOne: address[0],
+                    firstName: capitalize(name[0]),
+                    lastName: capitalize(name[1]),
+                    addressLineOne: capitalizeArray(address[0].split(" "), capitalizedAddressLineOneEditModal),
                     addressLineTwo: "",
-                    city: address[2],
-                    state: address[3],
+                    city: capitalizeArray(address[2].split(" "), capitalizedCityEditModal),
+                    state: address[3].toUpperCase(),
                     zipcode: address[4]
                 })
             } else {
                 setEditAddress({
-                    firstName: name[0],
-                    lastName: name[1],
-                    addressLineOne: address[0],
-                    addressLineTwo: address[1],
-                    city: address[2],
-                    state: address[3],
+                    firstName: capitalize(name[0]),
+                    lastName: capitalize(name[1]),
+                    addressLineOne: capitalizeArray(address[0].split(" "), capitalizedAddressLineOneEditModal),
+                    addressLineTwo: capitalizeArray(address[1].split(" "), capitalizedAddressLineTwoEditModal),
+                    city: capitalizeArray(address[2].split(" "), capitalizedCityEditModal),
+                    state: address[3].toUpperCase(),
                     zipcode: address[4]
                 })
             }
@@ -90,26 +93,36 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
     const handleEditAddress = async(e) => {
         // Prevents the page from refreshing
         e.preventDefault()
-        // Creating a variable that tells the server we are EDITING the information for a specific address, which is identified from the e.target.id
-        const editAddressResponse = await fetch(`${backend}/shipping/address/${e.target.id}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': localStorage.getItem('token')
-            },
-            // For our body, we need to have a value for both the address and name, and we use the values recieved back from the inputs to do so
-            body: JSON.stringify({
-                address: `${editAddress.addressLineOne}, ${editAddress.addressLineTwo}, ${editAddress.city}, ${editAddress.state}, ${editAddress.zipcode}`,
-                name: `${editAddress.firstName}, ${editAddress.lastName}`
+        if (editAddress.zipcode.length !== 5) {
+            setEditZipcodeAddressWarning(true);
+            setEditStateAbbreviationAddressWarning(false);
+        } else if (editAddress.state.length !== 2) {
+            setEditZipcodeAddressWarning(false);
+            setEditStateAbbreviationAddressWarning(true);
+        } else {
+            setEditZipcodeAddressWarning(false);
+            setEditStateAbbreviationAddressWarning(false);
+            // Creating a variable that tells the server we are EDITING the information for a specific address, which is identified from the e.target.id
+            const editAddressResponse = await fetch(`${backend}/shipping/address/${e.target.id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': localStorage.getItem('token')
+                },
+                // For our body, we need to have a value for both the address and name, and we use the values recieved back from the inputs to do so
+                body: JSON.stringify({
+                    address: `${editAddress.addressLineOne}, ${editAddress.addressLineTwo}, ${editAddress.city}, ${editAddress.state}, ${editAddress.zipcode}`,
+                    name: `${editAddress.firstName}, ${editAddress.lastName}`
+                })
             })
-        })
-        const editAddressData = await editAddressResponse.json()
-        // Being passed down as a prop from the parent component of UserProfile, we are able to reorder the data so it will display the default address first on the list followed by the newest
-        defaultFirst(editAddressData);
-        // Being passed down as a prop from the parent component of UserProfile, we are able to the set the data that we recieved back from the response of the server to the variable AddressData, so we can reuse that data to map through and display the different AddressContainer components
-        grabAddressData(editAddressData)
-        // Close the modal after all of this function is finished so user will end up back on the regular screen
-        setIsEditModalOpen(false)
+            const editAddressData = await editAddressResponse.json()
+            // Being passed down as a prop from the parent component of UserProfile, we are able to reorder the data so it will display the default address first on the list followed by the newest
+            defaultFirst(editAddressData);
+            // Being passed down as a prop from the parent component of UserProfile, we are able to the set the data that we recieved back from the response of the server to the variable AddressData, so we can reuse that data to map through and display the different AddressContainer components
+            grabAddressData(editAddressData)
+            // Close the modal after all of this function is finished so user will end up back on the regular screen
+            setIsEditModalOpen(false)
+        }
     }
 
     // Function that handles the editing of the default status (and not the contents of the address)
@@ -156,17 +169,18 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
         }
     }
 
-    // We create the name by grabbing the Name property in the Object returned by the prop that was passed down, and then replacing it by removing the commas in between.
-    const name = address.Name.replace(/,/g, '');
-    // Split the address up by the comma, since the information is seperated by commas and creating an array where each information is its own seperate element
+    const [capitalizedName, capitalizedFirstAddressLine, capitalizedSecondAddressLine, capitalizedCity] = [[], [], [], []];
+    const name = capitalizeArray(address.Name.replace(/,/g, '').split(' '), capitalizedName);
     const newAddress = address.Address.split(',')
-    // Using the elements in the array newAddress, we are able to create new strings by interpolating the information
-    const addressLineWithSecondAddress = `${newAddress[0]} ${newAddress[1]}`
-    const secondAddressLineWithSecondAddress = `${newAddress[2]}, ${newAddress[3]} ${newAddress[4]}`
-    console.log(newAddress[1])
-    // These variables are created in case users did not use a second line
-    const addressLineWithoutSecondAddress = `${newAddress[0]}`
-    const secondAddressLineWithoutSecondAddress = `${newAddress[2]}, ${newAddress[3]} ${newAddress[4]}`
+    const firstAddressLine = capitalizeArray(newAddress[0].split(" "), capitalizedFirstAddressLine);
+    const secondAddressLine = capitalizeArray(newAddress[1].split(" "), capitalizedSecondAddressLine);
+    const city = capitalizeArray(newAddress[2].split(' '), capitalizedCity);
+    const state = newAddress[3].toUpperCase();
+    const zipcode = newAddress[4];
+    const addressLineWithSecondAddress = `${firstAddressLine} ${secondAddressLine}`
+    const secondAddressLineWithSecondAddress = `${city}, ${state} ${zipcode}`
+    const addressLineWithoutSecondAddress = `${firstAddressLine}`
+    const secondAddressLineWithoutSecondAddress = `${city}, ${state} ${zipcode}`
     // This returns a boolean on whether or not address is default
     const defaultAddress = address.DefaultAddress
 
@@ -180,11 +194,10 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
                     {/* Next we put the address line one */}
                     <div className="address">
                         {/* We wrap it around curly braces so that the information that renders is based off of whether or not there is a second line to the address */}
-                        {(newAddress[1] === ' undefined' || newAddress[1] === null )
+                        {(newAddress[1] !== ' undefined' || newAddress[1] !== null )
                         ? addressLineWithSecondAddress : addressLineWithoutSecondAddress }
                     </div>
-                    <div 
-                    className="address">
+                    <div className="address">
                         {/* We wrap it around curly braces so that the information that renders is based off of whether or not there is a second line to the address */}
                         {(newAddress[1] === ' undefined' ||  newAddress[1] === null)
                         ? secondAddressLineWithSecondAddress : secondAddressLineWithoutSecondAddress }
@@ -207,21 +220,73 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
             style={customStyles}
             contentLabel="Edit Your Address"
             >
-            <form className="form" id={address._id} onSubmit={handleEditAddress}>
+            <form 
+            className="form" 
+            id={address._id} 
+            onSubmit={handleEditAddress}>
             <h2>Edit Your Address</h2>
-            <input value={editAddress.firstName || ""} name="firstName" placeholder="First Name" onChange={handleEditAddressChange}/>
-            <input value={editAddress.lastName || ""} name="lastName" placeholder="Last Name" onChange={handleEditAddressChange}/>
-            <input value={editAddress.addressLineOne || ""} name="addressLineOne" placeholder="Address Line One"
+            <input 
+            value={editAddress.firstName || ""} 
+            name="firstName" 
+            placeholder="First Name" 
             onChange={handleEditAddressChange}/>
-            <input value={editAddress.addressLineTwo || ""} name="addressLineTwo" placeholder="Address Line Two"
+            {(/^[a-z][a-z\s]*$/i.test(editAddress.firstName) !== true 
+            && editAddress.firstName !== "") 
+            && <div className="warning">You must enter only letters as your first name</div>}
+            <input 
+            value={editAddress.lastName || ""} 
+            name="lastName" 
+            placeholder="Last Name" 
             onChange={handleEditAddressChange}/>
-            <input value={editAddress.city || ""} name="city" placeholder="City"
+            {(/^[a-z][a-z\s]*$/i.test(editAddress.lastName) !== true 
+            && editAddress.lastName !== "") 
+            && <div className="warning">You must enter only letters as your last name</div>}
+            <input 
+            value={editAddress.addressLineOne || ""} 
+            name="addressLineOne" 
+            placeholder="Address Line One"
             onChange={handleEditAddressChange}/>
-            <input value={editAddress.state|| ""} name="state" placeholder="State"
+            {editAddress.addressLineOne === "" 
+            && <div className="warning">You must enter an address</div>}
+            <input 
+            value={editAddress.addressLineTwo || ""} 
+            name="addressLineTwo" 
+            placeholder="Address Line Two"
             onChange={handleEditAddressChange}/>
-            <input value={editAddress.zipcode || ""} name="zipcode" placeholder="Zipcode"
-            onChange={handleEditAddressChange} type="text" maxLength="5" pattern="\d*"/>
-            <div className="submit-default-button-container">
+            <input 
+            value={editAddress.city || ""} 
+            name="city" 
+            placeholder="City"
+            onChange={handleEditAddressChange}/>
+            {(/^[a-z][a-z\s]*$/i.test(editAddress.city) !== true 
+            && editAddress.city !== "") 
+            && <div className="warning">You must enter only letters as your city</div>}
+            <input 
+            value={editAddress.state|| ""} 
+            name="state" 
+            placeholder="State"
+            onChange={handleEditAddressChange}/>
+            {(/^[a-z][a-z\s]*$/i.test(editAddress.state) !== true 
+            && editAddress.state !== "") 
+            && <div className="warning">You must enter only letters as your state</div>}
+            <input 
+            value={editAddress.zipcode || ""} 
+            name="zipcode" 
+            placeholder="Zipcode"
+            onChange={handleEditAddressChange} 
+            type="text" 
+            maxLength="5" 
+            pattern="\d*"/>
+            {(/[a-zA-Z]/g.test(editAddress.zipcode) === true 
+            && editAddress.zipcode !== "") 
+            && <div className="warning">You must enter only numbers as your zip code</div>}
+            {editZipcodeAddressWarning 
+            && <div className="warning">You must enter five digits as your zip code</div>}
+            {editStateAbbreviationAddressWarning 
+            && <div className="warning">Please enter your state as an abbreviation (ex. CA, NY)</div>}
+            <div 
+            className="submit-default-button-container" 
+            style={{marginTop: '1rem'}}>
             {/* Based off whether or not defaultAddress is true or false, we display the button that allows users to remove default if the address is the default, or the button to make the address a default if it is not currently the default address */}
             {!defaultAddress ? <div className="update-default-container">
                 <button id={address._id} onClick={handleDefaultEdit}>Make Default</button>
@@ -233,7 +298,18 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
             type="submit"
             value="Submit"
             // Disabled based off whether or not inputs were filled to prevent blank answers
-            disabled={!editAddress.firstName || !editAddress.addressLineOne || !editAddress.city || !editAddress.state || !editAddress.zipcode}>
+            disabled={
+            (/^[a-z][a-z\s]*$/i.test(editAddress.firstName) !== true 
+            || editAddress.firstName === "")
+            || (/^[a-z][a-z\s]*$/i.test(editAddress.lastName) !== true 
+            || editAddress.lastName === "")
+            || editAddress.addressLineOne === ""
+            || (/^[a-z][a-z\s]*$/i.test(editAddress.city) !== true 
+            || editAddress.city === "")
+            || (/^[a-z][a-z\s]*$/i.test(editAddress.state) !== true 
+            || editAddress.state === "")
+            || (/[a-zA-Z]/g.test(editAddress.zipcode) === true 
+            || editAddress.zipcode === "")}>
             Submit</button>
             </div>
             </form>
