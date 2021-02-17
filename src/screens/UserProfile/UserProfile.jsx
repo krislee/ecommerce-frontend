@@ -2,27 +2,35 @@ import React, { useState, useEffect } from 'react';
 import Navbar from '../../components/NavigationBar';
 import { Redirect } from 'react-router-dom';
 import Footer from '../../components/Footer';
-import Profile from './Profile'
+import Profile from './Profile';
 import Address from './Address';
-import Payment from './Payment'
-import Orders from './Orders'
+import Payment from './Payment';
+import Orders from './Orders';
 import '../../styles/UserProfile/UserProfile.css';
 import { SnackbarContent } from '@material-ui/core';
 
 
 function UserProfile ({ backend, loggedIn, orderID, grabOrderID }) {
 
+    /* ------- STATES ------- */
+
     // Getter and Setter to display the address component or not
     const [addressesTabOpen, setAddressesTabOpen] = useState(false);
     // Getter and Setter to display the payments component or not
     const [paymentsTabOpen, setPaymentsTabOpen] = useState(false);
+    // Getter and Setter to display the orders component or not
     const [ordersTabOpen, setOrdersTabOpen] = useState(false);
-    const [profileTabOpen, setProfileTabOpen] = useState(true)
-
-    const [profileData, setProfileData] = useState({})
+    // Getter and Setter to display the profiles component or not
+    const [profileTabOpen, setProfileTabOpen] = useState(true);
+    /* ------- Data used as information to load in components within the User Profile page ------- */
+    // Getter and Setter for the data pertaining to the profile
+    const [profileData, setProfileData] = useState({});
+    // Getter and Setter for the data pertaining to the address
     const [addressData, setAddressData] = useState([]);
+    // Getter and Setter for the data pertaining to the payments
     const [paymentData, setPaymentData] = useState([]);
-    const [orderData, setOrderData] = useState([])
+    // Getter and Setter for the data pertaining to the orders
+    const [orderData, setOrderData] = useState([]);
 
     useEffect(() => {
         // Display the Profile
@@ -33,10 +41,10 @@ function UserProfile ({ backend, loggedIn, orderID, grabOrderID }) {
                     'Content-Type': 'application/json',
                     'Authorization': loggedIn()
                 }
-            })
-            const profileData = await profileResponse.json()
-            setProfileData(profileData)
-        }
+            });
+            const profileData = await profileResponse.json();
+            setProfileData(profileData);
+        };
 
         // When the page renders in, we want to grab the address data from the backend server and use that data to display different AddressContainer components
         async function fetchAddressData() {
@@ -44,7 +52,7 @@ function UserProfile ({ backend, loggedIn, orderID, grabOrderID }) {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': localStorage.getItem('token')
+                    'Authorization': loggedIn()
                 }
             });
             const data = await resp.json();
@@ -53,20 +61,21 @@ function UserProfile ({ backend, loggedIn, orderID, grabOrderID }) {
             // Use that data recieved back and set it to the variable addressData
             setAddressData(data);
         }
+        // When the page renders in, we want to grab the payment data from the backend server and use that data to display different PaymentContainer components
         async function fetchPaymentData () {
             let resp = await fetch(`${backend}/order/index/payment`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': localStorage.getItem('token')
+                    'Authorization': loggedIn()
                 }
             });
             const data = await resp.json();
-            console.log(data);
             if(!data.msg) {
+                // The data recieved back will be reordered to make sure the default payment appears first followed by the newest payment on the list
                 defaultFirstPayment(data.paymentMethods);
+                // Use that data recieved back and set it to the variable paymentData
                 setPaymentData(data.paymentMethods);
-                console.log(data.paymentMethods)
             }
             
         }
@@ -78,28 +87,30 @@ function UserProfile ({ backend, loggedIn, orderID, grabOrderID }) {
                     'Content-Type': 'application/json',
                     'Authorization': loggedIn()
                 }
-            })
-            const orderData = await orderResponse.json()
-            setOrderData(orderData.orders)
-            console.log(orderData.orders)
-        }
+            });
+            const orderData = await orderResponse.json();
+            setOrderData(orderData.orders);
+            console.log(orderData.orders);
+        };
 
         fetchPaymentData();
         fetchAddressData();
         fetchOrderData();
-        fetchProfileData()
+        fetchProfileData();
     }, []);
 
+    // Function that is used to capitalize a string
     const capitalize = (string) => {
-        return (string.charAt(0).toUpperCase() + string.slice(1))
-      }
+        return (string.charAt(0).toUpperCase() + string.slice(1));
+    };
   
+    // Function that is used to capitalize a group of strings (like addresses and full names)
     const capitalizeArray = (splitArray, newArray) => {
         for (let i = 0; i < splitArray.length; i++) {
             newArray.push(capitalize(splitArray[i]));
-        }
+        };
         return newArray.join(" ");
-    }
+    };
 
     // Function that is used to reorder the data so that default is first and to also make the newest data come first on the list
     const defaultFirst = (data) => {
@@ -108,65 +119,68 @@ function UserProfile ({ backend, loggedIn, orderID, grabOrderID }) {
         // If the data that is returned has a object with the property of defaultAddress being true, then run 
         if (data.findIndex(address => address.DefaultAddress === true) !== -1 && data.length !== 0) {
             // Find the index of the object that has the default address information
-            const index = data.findIndex(address => address.DefaultAddress === true)
-            // Splice it so we can grab it and remove it from the array
+            const index = data.findIndex(address => address.DefaultAddress === true);
+            // Splice the address with the default status so we can grab it and remove it from the array
             const defaultFirstAddress = data.splice(index, 1)[0];
             // Push it to the top of the list so it would be index zero (first element)
             data.unshift(defaultFirstAddress);
-        }
-    }
+        };
+    };
 
+    // Function that is used to reorder the data so that default is first and to also make the newest data come first on the list 
     const defaultFirstPayment = (data) => {
         // Reverses the order of the data so the newest data will be first and the oldest will be last
         data.reverse(); 
-        // If the data that is returned has a object with the property of defaultAddress being true, then run 
+        // If the data that is returned has a object with the property of defaultPayment being true, then run 
         if (data.findIndex(payment => payment.default === true) !== -1 && data.length !== 0) {
-            // Find the index of the object that has the default address information
-            const index = data.findIndex(payment => payment.default === true)
-            // Splice it so we can grab it and remove it from the array
+            // Find the index of the object that has the default payment information
+            const index = data.findIndex(payment => payment.default === true);
+            // Splice the payment with the default status so we can grab it and remove it from the array
             const defaultFirstPayment = data.splice(index, 1)[0];
             // Push it to the top of the list so it would be index zero (first element)
             data.unshift(defaultFirstPayment);
-        }
-    }
+        };
+    };
 
+    // Function to set data for Address in child components
     const grabAddressData = (data) => setAddressData(data);
-    
+    // Function to set data for Payments in child components
     const grabPaymentData = (data) => setPaymentData(data);
-
-    const grabOrderData = (data) => setOrderData(data)
-
-    const grabProfileData = (data) => setProfileData(data)
+    // Function to set data for Orders in child components
+    const grabOrderData = (data) => setOrderData(data);
+    // Function to set data for Profile Data in child components
+    const grabProfileData = (data) => setProfileData(data);
 
     // Function that will handle whether the address component is open or not
     const handleClickAddresses = () => {
         setAddressesTabOpen(true);
-        setProfileTabOpen(false)
+        setProfileTabOpen(false);
         setPaymentsTabOpen(false);
-        setOrdersTabOpen(false)
+        setOrdersTabOpen(false);
     }
 
     // Function that will handle whether the payment component is open or not
     const handleClickPayments = () => {
         setPaymentsTabOpen(true);
-        setProfileTabOpen(false)
+        setProfileTabOpen(false);
         setAddressesTabOpen(false);
-        setOrdersTabOpen(false)
+        setOrdersTabOpen(false);
     }
 
     // Function that will handle whether the order component is open or not 
     const handleClickOrders = () => {
-        setOrdersTabOpen(true)
-        setProfileTabOpen(false)
-        setAddressesTabOpen(false);
-        setPaymentsTabOpen(false)
-    }
-
-    const handleClickProfile = () => {
-        setProfileTabOpen(true)
+        setOrdersTabOpen(true);
+        setProfileTabOpen(false);
         setAddressesTabOpen(false);
         setPaymentsTabOpen(false);
-        setOrdersTabOpen(false)
+    }
+    
+    // Function that will handle whether the profile component is open or not
+    const handleClickProfile = () => {
+        setProfileTabOpen(true);
+        setAddressesTabOpen(false);
+        setPaymentsTabOpen(false);
+        setOrdersTabOpen(false);
     }
 
     // If the user does not have a token (or logged in), users will automatically render onto the homepage because the user profile page is on accessible to users that are logged in
@@ -237,8 +251,8 @@ function UserProfile ({ backend, loggedIn, orderID, grabOrderID }) {
                     <Footer />
                 </div>
             </>
-        )
-    }
-}
+        );
+    };
+};
 
 export default UserProfile

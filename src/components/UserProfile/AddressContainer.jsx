@@ -4,6 +4,8 @@ import Modal from 'react-modal';
 
 function AddressContainer ({ index, address, backend, grabAddressData, defaultFirst, capitalize, capitalizeArray }) {
 
+    /* ------- STATES ------- */
+
     // Creating a setter and getter function to open and close the modal
     const [isEditModalIsOpen,setIsEditModalOpen] = useState(false);
     const [isDeleteModalIsOpen,setIsDeleteModalOpen] = useState(false);
