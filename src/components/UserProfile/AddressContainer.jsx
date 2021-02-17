@@ -282,13 +282,11 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
             {/* Modal used to delete the address */}
             <Modal
             isOpen={isDeleteModalIsOpen}
-            // onAfterOpen={afterOpenModal}
             onRequestClose={closeModal}
             style={customStyles}
             contentLabel="Edit Your Address"
             >
             <form className="form" id="delete-address-form">
-            {/* <h2>Delete Your Address</h2> */}
             <div style={{'marginBottom':'1rem'}}>Are you sure you want to delete this address?</div>
             <div className="submit-default-button-container">
             <button id={address._id} 

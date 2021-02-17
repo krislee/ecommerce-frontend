@@ -22,6 +22,8 @@ function PaymentContainer ({ backend, index, payment, defaultFirstPayment, grabP
     const [invalidExpirationDate, setInvalidExpirationDate] = useState(false);
     const [editZipcodeWarning, setEditZipcodeWarning] = useState(false);
     const [editStateAbbreviationWarning, setEditStateAbbreviationWarning] = useState(false);
+    const [deletePaymentModalIsOpen, setDeletePaymentModalIsOpen] = useState(false);
+
     const customStyles = {
       content : {
         top: '50%',
@@ -206,6 +208,14 @@ function PaymentContainer ({ backend, index, payment, defaultFirstPayment, grabP
     const closeEditModalTwo = () => {
       setEditModalTwoIsOpen(false);
       setEditModalIsOpen(false);
+    }
+
+    const openDeleteModal = () => {
+      setDeletePaymentModalIsOpen(true);
+    }
+
+    const closeDeleteModal = () => {
+      setDeletePaymentModalIsOpen(false);
     }
 
     const handleExpandClick = () => {
@@ -409,7 +419,7 @@ function PaymentContainer ({ backend, index, payment, defaultFirstPayment, grabP
               <Button variant="contained" onClick={handleEditPaymentDefaultStatus}>Remove Default</Button> : 
               <Button variant="contained" onClick={handleEditPaymentDefaultStatus}>Make Default</Button> }
               <Button variant="contained" onClick={openEditModal}>Edit</Button>
-              <Button variant="contained" onClick={handleDeletePayment}>Delete</Button>
+              <Button variant="contained" color="secondary" onClick={openDeleteModal}>Delete</Button>
             </div>
           </CardContent>
         </Collapse>
@@ -476,89 +486,109 @@ function PaymentContainer ({ backend, index, payment, defaultFirstPayment, grabP
         </form>
       </Modal>
       <Modal
-          isOpen={editModalTwoIsOpen}
-          onRequestClose={closeEditModalTwo}
-          style={customStyles}
-          contentLabel="Edit Payment Modal"
-          >
-          <form className="form">
-          <h2>Edit Your Card Information</h2>
-          <input 
-          value={editBillingInput.editBillingFirstName || ""} 
-          name="editBillingFirstName" 
-          placeholder="First Name" 
-          type="text"
-          onChange={handleEditBillingChange}/>
-          {(/^[a-z][a-z\s]*$/i.test(editBillingInput.editBillingFirstName) !== true 
-          && editBillingInput.editBillingFirstName !== "") 
-          && <div className="warning">You must enter only letters as your first name</div>}
-          <input 
-          value={editBillingInput.editBillingLastName || ""} 
-          name="editBillingLastName" 
-          placeholder="Last Name" 
-          type="text"
-          onChange={handleEditBillingChange}/>
-          {(/^[a-z][a-z\s]*$/i.test(editBillingInput.editBillingLastName) !== true 
-          && editBillingInput.editBillingLastName !== "") 
-          && <div className="warning">You must enter only letters as your last name</div>}
-          <input 
-          value={editBillingInput.editBillingFirstAddressLine || ""} name="editBillingFirstAddressLine" 
-          placeholder="Address Line One" 
-          type="text"
-          onChange={handleEditBillingChange}/>
-          {editBillingInput.editBillingFirstAddressLine === "" 
-          && <div className="warning">You must enter an address</div>}
-          <input 
-          value={editBillingInput.editBillingSecondAddressLine || ""} name="editBillingSecondAddressLine" 
-          placeholder="Address Line Two" 
-          type="text"
-          onChange={handleEditBillingChange}/>
-          <input 
-          value={editBillingInput.editBillingCity || ""} 
-          name="editBillingCity" 
-          placeholder="City" 
-          type="text"
-          onChange={handleEditBillingChange}/>
-          {(/^[a-z][a-z\s]*$/i.test(editBillingInput.editBillingCity) !== true 
-          && editBillingInput.editBillingCity !== "") 
-          && <div className="warning">You must enter only letters as your city</div>}
-          <input 
-          value={editBillingInput.editBillingState || ""} 
-          name="editBillingState" 
-          placeholder="State" 
-          type="text"
-          onChange={handleEditBillingChange}/>
-          {(/^[a-z][a-z\s]*$/i.test(editBillingInput.editBillingState) !== true 
-          && editBillingInput.editBillingState !== "") 
-          && <div className="warning">You must enter only letters as your state</div>}
-          <input 
-          value={editBillingInput.editBillingZipcode || ""} 
-          name="editBillingZipcode" 
-          placeholder="Zipcode" 
-          type="text"
-          onChange={handleEditBillingChange}/>
-          {(/[a-zA-Z]/g.test(editBillingInput.editBillingZipcode) === true 
-          && editBillingInput.editBillingZipcode !== "") 
-          && <div className="warning">You must enter only numbers as your zip code</div>}
-          {editZipcodeWarning 
-          && <div className="warning">You must enter five digits as your zip code</div>}
-          {editStateAbbreviationWarning 
-          && <div className="warning">Please enter your state as an abbreviation (ex. CA, NY)</div>}
-          <button onClick={handleEditPaymentSubmit} 
-          disabled={(/^[a-z][a-z\s]*$/i.test(editBillingInput.editBillingFirstName) !== true 
-          || editBillingInput.editBillingFirstName === "") 
-          || (/^[a-z][a-z\s]*$/i.test(editBillingInput.editBillingLastName) !== true 
-          || editBillingInput.editBillingLastName === "") 
-          || editBillingInput.editBillingFirstAddressLine === "" 
-          || (/^[a-z][a-z\s]*$/i.test(editBillingInput.editBillingCity) !== true 
-          || editBillingInput.editBillingCity === "") 
-          || (/^[a-z][a-z\s]*$/i.test(editBillingInput.editBillingState) !== true 
-          || editBillingInput.editBillingState === "") 
-          || (/[a-zA-Z]/g.test(editBillingInput.editBillingZipcode) === true 
-          || editBillingInput.editBillingZipcode === "")}>
-              Submit
-          </button>
-          </form>
+        isOpen={editModalTwoIsOpen}
+        onRequestClose={closeEditModalTwo}
+        style={customStyles}
+        contentLabel="Edit Payment Modal"
+        >
+        <form className="form">
+        <h2>Edit Your Card Information</h2>
+        <input 
+        value={editBillingInput.editBillingFirstName || ""} 
+        name="editBillingFirstName" 
+        placeholder="First Name" 
+        type="text"
+        onChange={handleEditBillingChange}/>
+        {(/^[a-z][a-z\s]*$/i.test(editBillingInput.editBillingFirstName) !== true 
+        && editBillingInput.editBillingFirstName !== "") 
+        && <div className="warning">You must enter only letters as your first name</div>}
+        <input 
+        value={editBillingInput.editBillingLastName || ""} 
+        name="editBillingLastName" 
+        placeholder="Last Name" 
+        type="text"
+        onChange={handleEditBillingChange}/>
+        {(/^[a-z][a-z\s]*$/i.test(editBillingInput.editBillingLastName) !== true 
+        && editBillingInput.editBillingLastName !== "") 
+        && <div className="warning">You must enter only letters as your last name</div>}
+        <input 
+        value={editBillingInput.editBillingFirstAddressLine || ""} name="editBillingFirstAddressLine" 
+        placeholder="Address Line One" 
+        type="text"
+        onChange={handleEditBillingChange}/>
+        {editBillingInput.editBillingFirstAddressLine === "" 
+        && <div className="warning">You must enter an address</div>}
+        <input 
+        value={editBillingInput.editBillingSecondAddressLine || ""} name="editBillingSecondAddressLine" 
+        placeholder="Address Line Two" 
+        type="text"
+        onChange={handleEditBillingChange}/>
+        <input 
+        value={editBillingInput.editBillingCity || ""} 
+        name="editBillingCity" 
+        placeholder="City" 
+        type="text"
+        onChange={handleEditBillingChange}/>
+        {(/^[a-z][a-z\s]*$/i.test(editBillingInput.editBillingCity) !== true 
+        && editBillingInput.editBillingCity !== "") 
+        && <div className="warning">You must enter only letters as your city</div>}
+        <input 
+        value={editBillingInput.editBillingState || ""} 
+        name="editBillingState" 
+        placeholder="State" 
+        type="text"
+        onChange={handleEditBillingChange}/>
+        {(/^[a-z][a-z\s]*$/i.test(editBillingInput.editBillingState) !== true 
+        && editBillingInput.editBillingState !== "") 
+        && <div className="warning">You must enter only letters as your state</div>}
+        <input 
+        value={editBillingInput.editBillingZipcode || ""} 
+        name="editBillingZipcode" 
+        placeholder="Zipcode" 
+        type="text"
+        onChange={handleEditBillingChange}/>
+        {(/[a-zA-Z]/g.test(editBillingInput.editBillingZipcode) === true 
+        && editBillingInput.editBillingZipcode !== "") 
+        && <div className="warning">You must enter only numbers as your zip code</div>}
+        {editZipcodeWarning 
+        && <div className="warning">You must enter five digits as your zip code</div>}
+        {editStateAbbreviationWarning 
+        && <div className="warning">Please enter your state as an abbreviation (ex. CA, NY)</div>}
+        <button 
+        style={{marginTop: '1rem'}}
+        onClick={handleEditPaymentSubmit} 
+        disabled={(/^[a-z][a-z\s]*$/i.test(editBillingInput.editBillingFirstName) !== true 
+        || editBillingInput.editBillingFirstName === "") 
+        || (/^[a-z][a-z\s]*$/i.test(editBillingInput.editBillingLastName) !== true 
+        || editBillingInput.editBillingLastName === "") 
+        || editBillingInput.editBillingFirstAddressLine === "" 
+        || (/^[a-z][a-z\s]*$/i.test(editBillingInput.editBillingCity) !== true 
+        || editBillingInput.editBillingCity === "") 
+        || (/^[a-z][a-z\s]*$/i.test(editBillingInput.editBillingState) !== true 
+        || editBillingInput.editBillingState === "") 
+        || (/[a-zA-Z]/g.test(editBillingInput.editBillingZipcode) === true 
+        || editBillingInput.editBillingZipcode === "")}>
+            Submit
+        </button>
+        </form>
+      </Modal>
+      <Modal
+      isOpen={deletePaymentModalIsOpen}
+      onRequestClose={closeDeleteModal}
+      style={customStyles}
+      contentLabel="Delete Your Payment"
+      >
+        <form className="form" id="delete-payment-form">
+          <div style={{'marginBottom':'1rem'}}>Are you sure you want to delete this payment?</div>
+          <div className="submit-default-button-container">
+          <button id={payment._id} 
+          type="submit"
+          form="delete-address-form"
+          value="Submit"
+          onClick={handleDeletePayment}>Delete</button>
+          <button onClick={closeDeleteModal}>Cancel</button>
+          </div>
+        </form>
       </Modal>
     </>
   );
