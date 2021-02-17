@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Footer from '../../components/Footer';
 import Toast from 'react-bootstrap/Toast'
 
-export default function Profile({ backend, loggedIn, profileData, grabProfileData }) {
+export default function Settings({ backend, loggedIn, settingData, grabSettingData }) {
    
     // const [open, setOpen] = useState(false)
     const [emailInvalid, setEmailInvalid] = useState(false)
@@ -31,7 +31,7 @@ export default function Profile({ backend, loggedIn, profileData, grabProfileDat
             const emailUpdateData = await emailUpdateResponse.json()
             console.log(emailUpdateData)
             if(!emailUpdateData.msg && !emailUpdateData.details) {
-                grabProfileData(emailUpdateData)
+                grabSettingData(emailUpdateData)
                 setUpdateEmailSuccess(true)
                 setEmailErrorMessage(false)
                 setEmailInvalid(false)
@@ -84,7 +84,7 @@ export default function Profile({ backend, loggedIn, profileData, grabProfileDat
     return (
         <>
             <div>
-                <h5>Email:{profileData.email} </h5>
+                <h5>Email:{settingData.email} </h5>
                 <button disabled={showPasswordInput} onClick={() => {
                     setShowEmailInput(true)
                     setShowPasswordInput(false)
@@ -106,7 +106,7 @@ export default function Profile({ backend, loggedIn, profileData, grabProfileDat
                     <Toast.Body style={{backgroundColor: 'rgb(57, 172, 57)'}}>Your email is successfully changed.</Toast.Body>
                 </Toast>     
 
-                <h5>Username: {profileData.username} </h5>
+                <h5>Username: {settingData.username} </h5>
 
                 <h5>Password: *****</h5>
                 <button disabled = {showEmailInput} onClick={()=> {

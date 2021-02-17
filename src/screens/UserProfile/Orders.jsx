@@ -17,17 +17,14 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export default function Orders ({ backend, loggedIn, orderData, grabOrderData, orderID, grabOrderID, ordersTotal, grabOrdersTotal}) {
-    const history = useHistory()
+export default function Orders ({ backend, loggedIn, orderData, grabOrderData, ordersTotal}) {
     const classes = useStyles();
-    // var month = dateObj.getUTCMonth() + 1; 
-    // var day = dateObj.getUTCDate();
-    // var year = dateObj.getUTCFullYear();
-    
-    const [showOrder, setShowOrder] = useState(false)
-    
-    console.log(22, orderData)
 
+    // const history = useHistory()
+    
+    // const [showOrder, setShowOrder] = useState(false)
+    
+    // When a page number is clicked, the onChange function aka handlePageOnChange runs (similar to how we handle input changes)
     const handlePageOnChange = async(event, page) => {
        
         const nextPageOrdersResponse = await fetch(`${backend}/complete/list/orders?page=${page}`, {
@@ -39,8 +36,7 @@ export default function Orders ({ backend, loggedIn, orderData, grabOrderData, o
         })
         const nextPageOrdersData = await nextPageOrdersResponse.json();
         console.log(nextPageOrdersData.orders);
-        grabOrderData(nextPageOrdersData.orders)
-        // grabOrdersTotal(nextPageOrdersData.totalPages)
+        grabOrderData(nextPageOrdersData.orders) // update orderData state to contain the new list of orders
     }
 
     

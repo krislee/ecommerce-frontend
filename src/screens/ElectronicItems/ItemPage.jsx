@@ -1,17 +1,22 @@
 import React, { useEffect, useState } from 'react'
 import {useLocation} from 'react-router-dom';
-import '../styles/ItemPage.css'
-import AddCartButton from '../components/AddCartButton';
-import NavBar from '../components/NavigationBar';
-import Footer from '../components/Footer'
+import '../../styles/ItemPage.css'
+import AddCartButton from '../../components/Buttons/AddCartButton';
+import AddReviewButton from '../../components/Buttons/AddReviewButton';
+import NavBar from '../../components/NavigationBar';
+import Footer from '../../components/Footer'
+import AllReviews from '../../components/Reviews/AllReviews'
 
-
-function ItemPage ({ loggedIn, url, backend, itemName }) {
+function ItemPage ({ loggedIn, url, backend }) {
 
     const [itemInfo, setItemInfo] = useState('');
     const [quantity, setQuantity] = useState(1);
+    const [review, setReview] = useState("")
+    const [allReviews, setAllReviews] = useState([])
 
-    const location = useLocation() //get the full URL
+    const grabReview = (review) => setReview(review)
+
+    const location = useLocation() //get the full URL which will be parsed in the else statement to get the query value if user decides to not go through the /shop page but straight to the URL
 
     useEffect(() => {
 
@@ -28,7 +33,9 @@ function ItemPage ({ loggedIn, url, backend, itemName }) {
                     credentials: 'include'
                 });
                 let data = await resp.json();
+                console.log(31, data)
                 setItemInfo(data.electronicItem);
+                setAllReviews(data.review)
             }
             fetchData();
         } else {
@@ -45,12 +52,13 @@ function ItemPage ({ loggedIn, url, backend, itemName }) {
                     credentials: 'include'
                 });
                 let data = await resp.json();
-                console.log(data)
+                console.log(49, data)
                 setItemInfo(data.electronicItem);
+                setAllReviews(data.review)
             }
             fetchData();
         }
-    }, [])
+    }, [review])
 
     const handleChangeQuantity = e => {
         setQuantity(e.target.value)
@@ -75,7 +83,11 @@ function ItemPage ({ loggedIn, url, backend, itemName }) {
                         <div className="quantity-tag">Quantity</div>
                         <input className="quantity-input" type="number" min="1" value={quantity} onChange={handleChangeQuantity}></input>
                         <AddCartButton backend={backend} loggedIn={loggedIn} id={itemInfo._id} quantity={quantity} name={'Add To Cart'} />
+                        <AddReviewButton backend={backend} loggedIn={loggedIn} electronicID={itemInfo._id} grabReview={grabReview}/>
                         </div>
+                    </div>
+                    <div>
+                        <AllReviews backend={backend} allReviews={allReviews} />
                     </div>
                 </div>
             </div>

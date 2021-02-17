@@ -3,12 +3,12 @@ import {BrowserRouter, Switch, Route, Link} from 'react-router-dom';
 import './App.css';
 // import './styles/Card.css'
 import Homepage from './screens/Homepage'
-import AllItems from './screens/AllItemsPage'
+import AllItems from './screens/ElectronicItems/AllItemsPage'
 import BuyerLogin from './screens/LoginRegister/BuyerLogin'
 import SellerLogin from './screens/LoginRegister/SellerLogin'
 import BuyerRegister from './screens/LoginRegister/BuyerRegister'
 import SellerRegister from './screens/LoginRegister/SellerRegister'
-import ItemPage from './screens/ItemPage';
+import ItemPage from './screens/ElectronicItems/ItemPage';
 import CartPage from './screens/Cart/CartPage';
 import Checkout from './screens/Checkout/CheckoutPage'
 import UserProfile from './screens/UserProfile/UserProfile'
@@ -27,16 +27,15 @@ function App() {
   const stripePromise = loadStripe('pk_test_51HnnIMIYuoOQip6pUnsYnuXlHlEZDBIrXMRatY8FOKakcOsFN08ptoIPrHIthMNBo8n58lvQGNoh5bYAfJFmgc6R00ufne9cZV')
   const backend = `https://elecommerce.herokuapp.com`
 
-   /* ------- STATES ------- */
+  /* ------- STATES ------- */
   const [url, setURL] = useState('');
   const [loggedOut, setLoggedOut] = useState(false)
   const [cartID, setCartID] = useState('')
   const [orderID, setOrderID] = useState("")
-  const [itemName, setItemName] = useState("")
 
   const [successfulPaymentIntent, setSuccessfulPaymentIntent] = useState({})
 
-   /* ------- UPDATE STATES ------- */
+  /* ------- UPDATE STATES ------- */
 
   // Update loggedOut state if loggedIn() returns null whenever we call loggedIn function in our useEffects or on<Event> functions
   const grabLoggedOut = (loggedOut) => setLoggedOut(loggedOut)
@@ -49,7 +48,7 @@ function App() {
   // Pass the orderID state to User Profile to pass it down to Order component, where the OrderID state gets updated when we click on an order
   const grabOrderID = (orderID) => setOrderID(orderID)
 
-   /* ------- CHECK IF USER IS LOGGED IN BEFORE RUNNING FUNCTIONS ------- */
+  /* ------- CHECK IF USER IS LOGGED IN BEFORE RUNNING FUNCTIONS ------- */
    const loggedIn = () => localStorage.getItem('token')
 
   const grabLoginInfo = async (token) => {
@@ -113,7 +112,7 @@ function App() {
             <AllItems grabURL={grabURL} backend={backend} loggedIn={loggedIn} />
           </Route>
           <Route path='/item'> 
-            <ItemPage url={url} backend={backend} loggedIn={loggedIn} itemName={itemName}/>
+            <ItemPage url={url} backend={backend} loggedIn={loggedIn} />
           </Route>
           {/* CART */}
           <Route path="/cart">
