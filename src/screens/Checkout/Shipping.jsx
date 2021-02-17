@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import ShippingForm from '../../components/Checkout/ShippingForm'
-import Button from '../../components/Button'
+import Button from '../../components/Buttons/Button'
 import Modal from 'react-modal';
 // import { Accordion, Card } from 'react-bootstrap'
 

@@ -1,9 +1,9 @@
 import React, {useEffect, useState} from 'react'
 import {Link, useParams, useHistory} from 'react-router-dom';
-import Item from '../components/Item';
-import '../styles/Homepage.css'
-import NavBar from '../components/NavigationBar'
-import Footer from '../components/Footer'
+import Item from '../../components/Item';
+import '../../styles/Homepage.css'
+import NavBar from '../../components/NavigationBar'
+import Footer from '../../components/Footer'
 import { makeStyles } from '@material-ui/core/styles';
 import { Pagination, PaginationItem } from '@material-ui/lab';
 
@@ -49,8 +49,8 @@ function AllItems ({ loggedIn, grabURL, backend }) {
     const itemList = items.map((item, index) => 
         <React.Fragment key={index}>
         <Link className="homepage-items" to={{
-            pathname:"/store",
-            search: `?${item.Name}=${item._id}`
+            pathname:`/item/${item.Name}`,
+            search: `id=${item._id}`
         }}>
             <Item 
             name={item.Name}

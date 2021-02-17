@@ -1,5 +1,5 @@
 import React from 'react'
-import Button from '../Button'
+import Button from '../Buttons/Button'
 
 export default function ShippingForm( { backend, loggedIn, readOnly, shipping, addShipping, shippingInput, grabShippingInput, cartID, updateShippingState, updateShippingInputState, editShipping, handleEditShipping, closeModal, collapse, back, addNewShipping, grabAddNewShipping, grabMultipleShipping }) {
     
