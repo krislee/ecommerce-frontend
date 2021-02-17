@@ -27,6 +27,7 @@ function UserProfile ({ backend, loggedIn, orderID, grabOrderID }) {
     const [orderData, setOrderData] = useState([])
     const [ordersTotal, setOrdersTotal] = useState(null)
     const [reviewData, setReviewData] = useState([])
+    const [reviewsTotal, setReviewsTotal] = useState(null)
 
     useEffect(() => {
         // Display the Profile
@@ -85,7 +86,7 @@ function UserProfile ({ backend, loggedIn, orderID, grabOrderID }) {
                 }
             })
             const orderData = await orderResponse.json()
-            setOrderData(orderData.orders)
+            setOrderData(orderData.orders.reverse())
             setOrdersTotal(orderData.totalPages)
             console.log(orderData.orders)
         }
@@ -99,15 +100,16 @@ function UserProfile ({ backend, loggedIn, orderID, grabOrderID }) {
                 }
             })
             const reviewsData = await reviewsResponse.json()
-            console.log(reviewsData)
+            console.log(reviewsData.totalPages, reviewsData)
             setReviewData(reviewsData.allReviews)
+            setReviewsTotal(reviewsData.totalPages)
         }
 
         fetchPaymentData();
         fetchAddressData();
         fetchOrderData();
-        fetchSettingData()
         fetchReviewsData()
+        fetchSettingData()
     }, []);
 
     // Function that is used to reorder the data so that default is first and to also make the newest data come first on the list
@@ -256,7 +258,8 @@ function UserProfile ({ backend, loggedIn, orderID, grabOrderID }) {
                         backend={backend} 
                         loggedIn={loggedIn} 
                         reviewData={reviewData} 
-                        grabReviewData={grabReviewData} />
+                        grabReviewData={grabReviewData} 
+                        reviewsTotal={reviewsTotal}/>
                     }
                     <Footer />
                 </div>

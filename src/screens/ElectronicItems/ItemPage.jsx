@@ -6,11 +6,25 @@ import AddReviewButton from '../../components/Buttons/AddReviewButton';
 import NavBar from '../../components/NavigationBar';
 import Footer from '../../components/Footer'
 import AllReviews from '../../components/Reviews/AllReviews'
+import Rating from '@material-ui/lab/Rating';
+import { makeStyles } from '@material-ui/core/styles';
+
+const useStyles = makeStyles((theme) => ({
+  root: {
+    display: 'flex',
+    flexDirection: 'column',
+    '& > * + *': {
+      marginTop: theme.spacing(1),
+    },
+  },
+}));
 
 function ItemPage ({ loggedIn, url, backend }) {
+    const classes = useStyles()
 
     const [itemInfo, setItemInfo] = useState('');
     const [quantity, setQuantity] = useState(1);
+    const [avgRating, setAvgRating] = useState(null)
     const [review, setReview] = useState("")
     const [allReviews, setAllReviews] = useState([])
 
@@ -36,6 +50,7 @@ function ItemPage ({ loggedIn, url, backend }) {
                 console.log(31, data)
                 setItemInfo(data.electronicItem);
                 setAllReviews(data.review)
+                setAvgRating(data.avgRating)
             }
             fetchData();
         } else {
@@ -55,6 +70,7 @@ function ItemPage ({ loggedIn, url, backend }) {
                 console.log(49, data)
                 setItemInfo(data.electronicItem);
                 setAllReviews(data.review)
+                setAvgRating(data.avgRating)
             }
             fetchData();
         }
@@ -76,21 +92,22 @@ function ItemPage ({ loggedIn, url, backend }) {
                     <div className="item-logistics">
                         <div>
                             <div className="name">{itemInfo.Name}</div>
+                            <div className={classes.root}>
+                                <Rating name="size-small" value={avgRating} size="small" readOnly/>
+                            </div>
                             <div className="price">Price: ${itemInfo.Price}</div>
                             <div className="description">Description: {itemInfo.Description}</div>
                         </div>
                         <div className="input-info">
-                        <div className="quantity-tag">Quantity</div>
-                        <input className="quantity-input" type="number" min="1" value={quantity} onChange={handleChangeQuantity}></input>
-                        <AddCartButton backend={backend} loggedIn={loggedIn} id={itemInfo._id} quantity={quantity} name={'Add To Cart'} />
-                        <AddReviewButton backend={backend} loggedIn={loggedIn} electronicID={itemInfo._id} grabReview={grabReview}/>
+                            <div className="quantity-tag">Quantity</div>
+                            <input className="quantity-input" type="number" min="1" value={quantity} onChange={handleChangeQuantity}></input>
+                            <AddCartButton backend={backend} loggedIn={loggedIn} id={itemInfo._id} quantity={quantity} name={'Add To Cart'} />
+                            <AddReviewButton backend={backend} loggedIn={loggedIn} electronicID={itemInfo._id} grabReview={grabReview}/>
                         </div>
-                    </div>
-                    <div>
-                        <AllReviews backend={backend} allReviews={allReviews} />
                     </div>
                 </div>
             </div>
+            <AllReviews backend={backend} allReviews={allReviews} />
             <Footer />
         </div>
     )
