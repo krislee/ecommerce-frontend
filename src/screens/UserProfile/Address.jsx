@@ -72,7 +72,7 @@ function UserProfileAddress ({ backend, addressData, defaultFirst, grabAddressDa
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': localStorage.getItem('token')
+                    'Authorization': loggedIn()
                 },
                 // Using the addressInput object, we are able to grab the values and use these values to generate what user wants for the name and address of the address they are trying to create
                 body: JSON.stringify({

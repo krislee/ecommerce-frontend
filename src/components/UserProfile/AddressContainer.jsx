@@ -3,19 +3,19 @@ import '../../styles/UserProfile/AddressContainer.css'
 import Modal from 'react-modal';
 import Input from '../Input'
 
-function AddressContainer ({ index, address, backend, grabAddressData, defaultFirst, capitalize, capitalizeArray }) {
+function AddressContainer ({ index, address, backend, grabAddressData, defaultFirst, capitalize, capitalizeArray, loggedIn }) {
 
     /* ------- STATES ------- */
 
-    // Creating a setter and getter function to open and close the edit modal
+    // Getter and Setter to open and close the edit modal for addresses
     const [isEditModalIsOpen,setIsEditModalOpen] = useState(false);
-    // Creating a setter and getter function to open and close the delete modal
+    // Getter and Setter to open and close the delete modal for addresses
     const [isDeleteModalIsOpen,setIsDeleteModalOpen] = useState(false);
     // Getter and Setter to store an object that will later be used to determine what users enter into inputs specifically regarding the editing address function
     const [editAddress, setEditAddress] = useState({});
-    // Getter and setter to display a warning message regarding when the user does not fulfill requirements for the zipcode input when editing an address
+    // Getter and Setter to display a warning message regarding when the user does not fulfill requirements for the zipcode input when editing an address
     const [editZipcodeAddressWarning, setEditZipcodeAddressWarning] = useState(false);
-    // Getter and setter to display a warning message regarding when the user does not fulfill requirements for the state input when editing an address
+    // Getter and Setter to display a warning message regarding when the user does not fulfill requirements for the state input when editing an address
     const [editStateAbbreviationAddressWarning, setEditStateAbbreviationAddressWarning] = useState(false);
 
     // Styles for the Modal
@@ -38,19 +38,20 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': localStorage.getItem('token')
+                'Authorization': loggedIn()
             }
         });
+        // Data regarding the addresses that is received back from the request to the backend server
         const oneAddressData = await oneAddressResponse.json();
         // Splitting the name with the comma so we get an array back
         const name = oneAddressData.address.Name.split(", ");
         // Splitting the address with the comma so we get an array back
         const address = oneAddressData.address.Address.split(", ");
-        // Function that sets the input values equal to the data recieved back
+        // Function that sets the input values equal to the data received back
         const checkForAddressLineTwo = () => {
             // Define arrays that will be used to capitalize strings with multiple words (like full name, or addresses)
             const [capitalizedAddressLineOneEditModal, capitalizedAddressLineTwoEditModal, capitalizedCityEditModal] = [[], [], []];
-            // Our condition is make sure that we display data in the input based off whether or not there is an addressLineTwo, since it is not required
+            // Our condition is make sure that we prefill data in the input based off whether or not there is an addressLineTwo, since it is not required
             if (address[1] === "undefined"){
                 setEditAddress({
                     firstName: capitalize(name[0]),
@@ -118,26 +119,29 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': localStorage.getItem('token')
+                    'Authorization': loggedIn()
                 },
-                // For our body, we need to have a value for both the address and name, and we use the values recieved back from the inputs to do so
+                // For our body, we need to have a value for both the address and name, and we use the values received back from the inputs to do so
                 body: JSON.stringify({
                     address: `${editAddress.addressLineOne}, ${editAddress.addressLineTwo}, ${editAddress.city}, ${editAddress.state}, ${editAddress.zipcode}`,
                     name: `${editAddress.firstName}, ${editAddress.lastName}`
                 })
             });
+            // Data regarding the addresses that is received back from the request to the backend server when editing is finished to receive updated version of the data
             const editAddressData = await editAddressResponse.json();
             // Being passed down as a prop from the parent component of UserProfile, we are able to reorder the data so it will display the default address first on the list followed by the newest
             defaultFirst(editAddressData);
-            // Being passed down as a prop from the parent component of UserProfile, we are able to the set the data that we recieved back from the response of the server to the variable AddressData, so we can reuse that data to map through and display the different AddressContainer components
+            // Being passed down as a prop from the parent component of UserProfile, we are able to the set the data that we received back from the response of the server to the variable AddressData, so we can reuse that data to map through and display the different AddressContainer components
             grabAddressData(editAddressData);
-            // Close the modal after all of this function is finished so user will end up back on the regular screen
+            // Empty the object of the address inputs so that new ones can replace it later on without any duplication errors
+            setEditAddress({});
+            // Close the modal after all of this function is finished so user will return back on the regular screen
             setIsEditModalOpen(false);
         };
     };
 
     // Function that handles the editing of the default status (and not the contents of the address)
-    const handleDefaultEdit = async(e) => {
+    const handleEditAddressDefaultStatus = async(e) => {
         // Prevents the page from refreshing
         e.preventDefault();
         // Fetching to a server to make a request to update the default status based off of the current default status. If the default status is true, then it will turn into false, and vice versa.
@@ -145,13 +149,14 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': localStorage.getItem('token')
+                'Authorization': loggedIn()
             }
         });
+        // Data regarding the addresses that is received back from the request to the backend server when editing default is finished to receive updated version of the data
         const editDefaultData = await editDefaultResponse.json();
         // Being passed down as a prop from the parent component of UserProfile, we are able to reorder the data so it will display the default address first on the list followed by the newest
         defaultFirst(editDefaultData);
-        // Being passed down as a prop from the parent component of UserProfile, we are able to the set the data that we recieved back from the response of the server to the variable AddressData, so we can reuse that data to map through and display the different AddressContainer components
+        // Being passed down as a prop from the parent component of UserProfile, we are able to the set the data that we received back from the response of the server to the variable AddressData, so we can reuse that data to map through and display the different AddressContainer components
         grabAddressData(editDefaultData);
         // Close the modal after all of this function is finished so user will end up back on the regular screen
         setIsEditModalOpen(false);
@@ -162,21 +167,22 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
         // Prevents the page from refreshing
         e.preventDefault();
         // Fetching to a server to make a request to delete an address
-        if (localStorage.getItem('token')) {
+        if (loggedIn()) {
             const deleteResponse = await fetch(`${backend}/shipping/address/${e.target.id}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': localStorage.getItem('token')
+                    'Authorization': loggedIn()
                 }
             });
-            const data = await deleteResponse.json();
+            // Data regarding the addresses that is received back from the request to the backend server when deleting is finished to receive updated version of the data
+            const deleteAddressData = await deleteResponse.json();
             // Being passed down as a prop from the parent component of UserProfile, we are able to reorder the data so it will display the default address first on the list followed by the newest
-            defaultFirst(data);
-            // Being passed down as a prop from the parent component of UserProfile, we are able to the set the data that we recieved back from the response of the server to the variable AddressData, so we can reuse that data to map through and display the different AddressContainer components
+            defaultFirst(deleteAddressData);
+            // Being passed down as a prop from the parent component of UserProfile, we are able to the set the data that we received back from the response of the server to the variable AddressData, so we can reuse that data to map through and display the different AddressContainer components
             setIsDeleteModalOpen(false);
             // Close the modal after all of this function is finished so user will end up back on the regular screen
-            grabAddressData(data);
+            grabAddressData(deleteAddressData);
         };
     };
 
@@ -327,10 +333,10 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
             style={{marginTop: '1rem'}}>
             {/* Based off whether or not defaultAddress is true or false, we display the button that allows users to remove default if the address is the default, or the button to make the address a default if it is not currently the default address */}
             {!defaultAddress ? <div className="update-default-container">
-                <button id={address._id} onClick={handleDefaultEdit}>Make Default</button>
+                <button id={address._id} onClick={handleEditAddressDefaultStatus}>Make Default</button>
                 </div> :
                 <div>
-                <button id={address._id} onClick={handleDefaultEdit}>Remove Default</button>
+                <button id={address._id} onClick={handleEditAddressDefaultStatus}>Remove Default</button>
             </div>}
             {/* Button will be disabled if the input fields are not filled in (except for the address line two input field) */}
             <button id={address._id}
