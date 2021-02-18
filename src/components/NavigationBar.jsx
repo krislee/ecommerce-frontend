@@ -61,7 +61,7 @@ function NavBar ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuantity }
             : null}
             </Dropdown.Toggle>
             <Dropdown.Menu className="dropdown-menu">
-                <Dropdown.Item href="/profile">Account Settings</Dropdown.Item>
+                <Dropdown.Item href="/profile/setting">Account Settings</Dropdown.Item>
                 <Dropdown.Item onClick={handleLogout}>Logout</Dropdown.Item>
             </Dropdown.Menu>
             </Dropdown> : 

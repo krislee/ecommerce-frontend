@@ -59,7 +59,7 @@ function ItemPage ({ loggedIn, url, backend, totalCartQuantity, grabTotalCartQua
             // If the url to the backend is empty, then we need to grab the item using the id which is located in the url params
             const queryParams = new URLSearchParams(location.search) // returns query obj
             const electronicID = queryParams.get("id") // get the query value
-
+            console.log(electronicID)
             async function fetchData() {
                 let resp = await fetch(`${backend}/buyer/electronic/${electronicID}`,{
                     method: 'GET',
