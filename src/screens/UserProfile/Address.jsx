@@ -80,6 +80,7 @@ function UserProfileAddress ({ backend, addressData, defaultFirst, grabAddressDa
                     address: `${addressInput.addressLineOne}, ${addressInput.addressLineTwo}, ${addressInput.city}, ${addressInput.state}, ${addressInput.zipcode}`
                 })
             });
+            // Data regarding the addresses that is received back from the request to the backend server when creating is finished to receive updated version of the data
             const newAddressData = await newAddressResponse.json();
             // Make sure that data we recieve back is ordered so that the default will be first followed by newest address added
             defaultFirst(newAddressData);
