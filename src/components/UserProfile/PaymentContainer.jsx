@@ -355,7 +355,7 @@ function PaymentContainer ({ backend, payment, defaultFirstPayment, grabPaymentD
 
     // Regular card information
     // Define arrays that will be used to capitalize strings with multiple words (like full name, or addresses)
-    const [cardHolderNameCapitalized, billingNameCapitalized, capitalizedBillingCity, splitBillingAddressCapitalized, splitBillingAddressCapitalizedLineOne, splitBillingAddressCapitalizedLine] = [[], [], [], [], [], []];
+    const [cardHolderNameCapitalized, billingNameCapitalized, capitalizedBillingCity, splitBillingAddressCapitalized, splitBillingAddressCapitalizedLineOne, splitBillingAddressCapitalizedLineTwo] = [[], [], [], [], [], []];
     // Capitalizing the name from the card holder
     const cardHolderName = capitalizeArray(payment.cardholderName.split(" "), cardHolderNameCapitalized);
     // Grabbing the payment brand
