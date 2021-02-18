@@ -84,15 +84,15 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
         setIsDeleteModalOpen(true);
     };
 
-    // Function used to close the modal by setting the edit modal condition to false
+    // Function used to close the modal by setting the edit and delete modal condition to false
     const closeModal = () => {
         setIsEditModalOpen(false);
         setIsDeleteModalOpen(false);
     };
 
-    // Function that allows us to change the value of the input dynamically and display it on the page
+    // Function that allows us to change the value of the input dynamically and display it on the page regarding the address
     const handleEditAddressChange = (e) => {
-        const { name, value } = e.target
+        const { name, value } = e.target;
         setEditAddress((prevAddress) => ({
             ...prevAddress, [name] : value
         }));
