@@ -1,7 +1,8 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import {BrowserRouter, Switch, Route, Link} from 'react-router-dom';
 import './App.css';
-// import './styles/Card.css'
+
+import NavBar from './components/NavigationBar'
 import Homepage from './screens/Homepage'
 import AllItems from './screens/ElectronicItems/AllItemsPage'
 import BuyerLogin from './screens/LoginRegister/BuyerLogin'
@@ -45,19 +46,56 @@ function App() {
 
   // Update the cartID state after fetching for the cart items in checkout to store the logged in or guest session cart's ID
   const grabCartID = (cartID) => setCartID(cartID)
+
   // Pass the orderID state to User Profile to pass it down to Order component, where the OrderID state gets updated when we click on an order
   const grabOrderID = (orderID) => setOrderID(orderID)
+  const grabSuccessfulPaymentIntent = (paymentIntent) => setSuccessfulPaymentIntent(paymentIntent)
 
   /* ------- CHECK IF USER IS LOGGED IN BEFORE RUNNING FUNCTIONS ------- */
    const loggedIn = () => localStorage.getItem('token')
 
+  const [totalCartQuantity, setTotalCartQuantity] = useState(0)
+  const grabTotalCartQuantity = (totalCartQuantity) => setTotalCartQuantity(totalCartQuantity)
 
-
-  const grabSuccessfulPaymentIntent = (paymentIntent) => setSuccessfulPaymentIntent(paymentIntent)
+  useEffect(() => {
+    async function getCartItems() {
+      if(localStorage.getItem('token')){
+        const cartItemsResponse = await fetch(`${backend}/buyer/cart`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': localStorage.getItem('token')
+            }
+        });
+        const cartItemsData = await cartItemsResponse.json();
+        console.log(cartItemsData.cart)
+        if(typeof cartItemsData.cart == 'string') {
+            grabTotalCartQuantity(0)
+        } else {
+          grabTotalCartQuantity(cartItemsData.cart.TotalItems)
+        }
+      } else {
+        const cartItemsResponse = await fetch(`${backend}/buyer/cart`, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include'
+        });
+        const cartItemsData = await cartItemsResponse.json();
+        console.log(cartItemsData);
+        if (typeof cartItemsData.cart == "string")  {
+          grabTotalCartQuantity(0)
+        } else {
+          grabTotalCartQuantity(cartItemsData.totalItems)
+        }
+      }
+    };
+    getCartItems();
+},[totalCartQuantity, localStorage.getItem('token')])
 
   return (
     <div className="App">
       <BrowserRouter>
+      <NavBar totalCartQuantity={totalCartQuantity} grabTotalCartQuantity={grabTotalCartQuantity} />
         <Switch>
           {/* CHECKOUT */}
           <Route path="/checkout">
@@ -70,13 +108,13 @@ function App() {
           </Route>
           {/* LOGIN/REGISTRATION */}
           <Route path="/login/buyer">
-            <BuyerLogin backend={backend} loggedIn={loggedIn} />
+            <BuyerLogin backend={backend} loggedIn={loggedIn} grabTotalCartQuantity={grabTotalCartQuantity}/>
           </Route>
           <Route path="/login/seller">
             <SellerLogin backend={backend} loggedIn={loggedIn} />
           </Route>
           <Route path="/register/buyer">
-            <BuyerRegister backend={backend} loggedIn={loggedIn} />
+            <BuyerRegister backend={backend} loggedIn={loggedIn} grabTotalCartQuantity={grabTotalCartQuantity}/>
           </Route>
           <Route path="/register/seller">
             <SellerRegister backend={backend} loggedIn={loggedIn} />
@@ -84,7 +122,7 @@ function App() {
           {/* USER PROFILE */}
           <Route path="/profile">
             <Elements stripe={stripePromise}>
-              <UserProfile backend={backend} loggedIn={loggedIn} 
+              <UserProfile backend={backend} loggedIn={loggedIn} totalCartQuantity={totalCartQuantity} grabTotalCartQuantity={grabTotalCartQuantity}
               // orderID={orderID} grabOrderID={grabOrderID} 
               />
             </Elements>
@@ -94,18 +132,18 @@ function App() {
           </Route>
           {/* SHOW ALL ITEMS/INDIVIDUAL ITEM */}
           <Route path="/shop/:pageIndex">
-            <AllItems grabURL={grabURL} backend={backend} loggedIn={loggedIn} />
+            <AllItems grabURL={grabURL} backend={backend} loggedIn={loggedIn} totalCartQuantity={totalCartQuantity} grabTotalCartQuantity={grabTotalCartQuantity} />
           </Route>
           <Route path='/item'> 
-            <ItemPage url={url} backend={backend} loggedIn={loggedIn} />
+            <ItemPage url={url} backend={backend} loggedIn={loggedIn} totalCartQuantity={totalCartQuantity} grabTotalCartQuantity={grabTotalCartQuantity}/>
           </Route>
           {/* CART */}
           <Route path="/cart">
-            <CartPage backend={backend} loggedIn={loggedIn} />
+            <CartPage backend={backend} loggedIn={loggedIn} totalCartQuantity={totalCartQuantity} grabTotalCartQuantity={grabTotalCartQuantity}/>
           </Route>
 
           <Route path="">
-            <Homepage />
+            <Homepage backend={backend} loggedIn={loggedIn} totalCartQuantity={totalCartQuantity} grabTotalCartQuantity={grabTotalCartQuantity}/>
           </Route>
         </Switch>
       </BrowserRouter>

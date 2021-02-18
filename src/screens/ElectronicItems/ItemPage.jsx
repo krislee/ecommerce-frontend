@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function ItemPage ({ loggedIn, url, backend }) {
+function ItemPage ({ loggedIn, url, backend, totalCartQuantity, grabTotalCartQuantity }) {
     const classes = useStyles()
 
     const [itemInfo, setItemInfo] = useState('');
@@ -83,7 +83,7 @@ function ItemPage ({ loggedIn, url, backend }) {
     return (
         // Name, price, description, add to cart
         <div className="item-page">
-            <NavBar />
+            {/* <NavBar totalCartQuantity={totalCartQuantity} grabTotalCartQuantity={grabTotalCartQuantity} backend={backend} loggedIn={loggedIn}/> */}
             <div className="item-info">
                 <div className="left-side-item-page">
                     <div className="item-image">Image of Item Here</div>
@@ -101,8 +101,8 @@ function ItemPage ({ loggedIn, url, backend }) {
                         <div className="input-info">
                             <div className="quantity-tag">Quantity</div>
                             <input className="quantity-input" type="number" min="1" value={quantity} onChange={handleChangeQuantity}></input>
-                            <AddCartButton backend={backend} loggedIn={loggedIn} id={itemInfo._id} quantity={quantity} name={'Add To Cart'} />
-                            <AddReviewButton backend={backend} loggedIn={loggedIn} electronicID={itemInfo._id} grabReview={grabReview}/>
+                            <AddCartButton backend={backend} loggedIn={loggedIn} id={itemInfo._id} quantity={quantity} name={'Add To Cart'} grabTotalCartQuantity={grabTotalCartQuantity} />
+                            <AddReviewButton backend={backend} loggedIn={loggedIn} electronicID={itemInfo._id} grabReview={grabReview} />
                         </div>
                     </div>
                 </div>

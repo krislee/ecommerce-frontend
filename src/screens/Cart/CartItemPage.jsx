@@ -3,7 +3,7 @@ import '../../styles/CartPage.css'
 
 
 
-export default function CartItemPage ({ backend, loggedIn, id, name, quantity, totalPrice, grabItems, grabTotalPrice}) {
+export default function CartItemPage ({ backend, loggedIn, id, name, quantity, totalPrice, grabItems, grabTotalPrice, grabTotalCartQuantity}) {
     const [cartQuantity, setCartQuantity] = useState(quantity)
 
     useEffect(() => setCartQuantity(quantity), [quantity]) // resolved the deleting issue of input having the last deleted item input value
@@ -30,6 +30,7 @@ export default function CartItemPage ({ backend, loggedIn, id, name, quantity, t
             console.log(updateCartData)
             grabItems(updateCartData.cart.Items)
             grabTotalPrice(updateCartData.cart.TotalCartPrice)
+            grabTotalCartQuantity(updateCartData.cart.TotalItems)
         } else {
             const updateCartResponse = await fetch(`${backend}/buyer/electronic/cart/${event.target.id}`, {
                 method: 'PUT',
@@ -43,6 +44,7 @@ export default function CartItemPage ({ backend, loggedIn, id, name, quantity, t
             console.log(updateCartData)
             grabItems(updateCartData.cart)
             grabTotalPrice(updateCartData.totalCartPrice)
+            grabTotalCartQuantity(updateCartData.totalItems)
         }
     }
 
@@ -61,6 +63,7 @@ export default function CartItemPage ({ backend, loggedIn, id, name, quantity, t
             console.log(deleteCartItemData)
             grabItems(deleteCartItemData.cart.Items)
             grabTotalPrice(deleteCartItemData.cart.TotalCartPrice)
+            grabTotalCartQuantity(deleteCartItemData.cart.TotalItems)
         } else {
             console.log("deleting guest")
             const deleteCartItemResponse = await fetch(`${backend}/buyer/electronic/cart/${event.target.id}`, {
@@ -72,6 +75,7 @@ export default function CartItemPage ({ backend, loggedIn, id, name, quantity, t
             console.log(deleteCartItemData)
             grabItems(deleteCartItemData.cart)
             grabTotalPrice(deleteCartItemData.totalCartPrice)
+            grabTotalCartQuantity(deleteCartItemData.totalItems)
         }
     }
 

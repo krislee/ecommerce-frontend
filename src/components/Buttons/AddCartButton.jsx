@@ -1,12 +1,12 @@
 import React from 'react';
 import '../../styles/Button.css'
 
-function AddCartButton ({ name, id, loggedIn, backend, quantity }) {
+function AddCartButton ({ name, id, loggedIn, backend, quantity, grabTotalCartQuantity }) {
 
     const addItem = async () => {
 
         if(loggedIn()) {
-            const resp = await fetch(`${backend}/buyer/electronic/cart/${id}`, {
+            const addItemResponse = await fetch(`${backend}/buyer/electronic/cart/${id}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -16,10 +16,11 @@ function AddCartButton ({ name, id, loggedIn, backend, quantity }) {
                     Quantity: quantity
                 })
             });
-            const data = await resp.json()
-            console.log(data)
+            const addItemData = await addItemResponse.json()
+            console.log(addItemData)
+            grabTotalCartQuantity(addItemData.cart.TotalQuantity)
         } else{ 
-            const resp = await fetch(`${backend}/buyer/electronic/cart/${id}`, {
+            const addItemResponse = await fetch(`${backend}/buyer/electronic/cart/${id}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -29,8 +30,9 @@ function AddCartButton ({ name, id, loggedIn, backend, quantity }) {
                     Quantity: quantity
                 })
             });
-            const data = await resp.json()
-            console.log(data)
+            const addItemData = await addItemResponse.json()
+            console.log(addItemData)
+            grabTotalCartQuantity(addItemData.totalQuantity)
         }
     }
 

@@ -1,18 +1,37 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import {Link, Redirect} from 'react-router-dom';
 // import Button from '../components/Button'
 import '../styles/NavigationBar.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faHome, faShoppingCart, faUser } from '@fortawesome/free-solid-svg-icons'
 import { Dropdown } from 'react-bootstrap'
+import Badge from '@material-ui/core/Badge';
+import { withStyles } from '@material-ui/core/styles';
+import IconButton from '@material-ui/core/IconButton';
+import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 
-function NavBar () {
+const StyledBadge = withStyles((theme) => ({
+  badge: {
+    right: -3,
+    top: 13,
+    border: `2px solid ${theme.palette.background.paper}`,
+    padding: '0 4px',
+  },
+}))(Badge);
+
+
+function NavBar ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuantity }) {
     const [redirect, setRedirect] = useState(false)
+    // const [loggedOutByClicking, setLoggedOutByClicking] = useState(false)
 
     const handleLogout = () => {
         localStorage.clear();
+        // setLoggedOutByClicking(true)
+        grabTotalCartQuantity(0)
         setRedirect(true)
     }
+
+
     if(redirect) {
         return <Redirect to='/'></Redirect>
     } 
@@ -27,7 +46,12 @@ function NavBar () {
             </Link>
             <div className="cart-profile-container">
             <Link to="/cart">
-                <FontAwesomeIcon className="cart-icon" icon={faShoppingCart}/>
+                {/* <FontAwesomeIcon className="cart-icon" icon={faShoppingCart}/> */}
+                <IconButton aria-label="cart">
+                    <StyledBadge badgeContent={totalCartQuantity} color="secondary">
+                        <ShoppingCartIcon />
+                    </StyledBadge>
+                </IconButton>
             </Link>
             {localStorage.getItem('token') ? 
             <Dropdown>

@@ -4,13 +4,13 @@ import Login from '../../components/Login'
 import Footer from '../../components/Footer'
 import '../../styles/Login.css'
 
-function BuyerLogin ({backend, loggedIn }) {
+function BuyerLogin ({backend, loggedIn, grabTotalCartQuantity }) {
     return (
         <div className="buyer-login">
             <Link to="/">
                 <button>Back</button>
             </Link>
-            <Login backend={backend} loggedIn={loggedIn} buyer={true}/>
+            <Login backend={backend} loggedIn={loggedIn} buyer={true} grabTotalCartQuantity={grabTotalCartQuantity}/>
             <Footer />
         </div>
     )

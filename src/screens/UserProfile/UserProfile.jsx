@@ -11,7 +11,7 @@ import '../../styles/UserProfile/UserProfile.css';
 import { SnackbarContent } from '@material-ui/core';
 
 
-function UserProfile ({ backend, loggedIn, orderID, grabOrderID }) {
+function UserProfile ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuantity }) {
 
     // Getter and Setter to display the address component or not
     const [addressesTabOpen, setAddressesTabOpen] = useState(false);
@@ -86,7 +86,7 @@ function UserProfile ({ backend, loggedIn, orderID, grabOrderID }) {
                 }
             })
             const orderData = await orderResponse.json()
-            setOrderData(orderData.orders.reverse())
+            setOrderData(orderData.orders)
             setOrdersTotal(orderData.totalPages)
             console.log(orderData.orders)
         }
@@ -197,7 +197,7 @@ function UserProfile ({ backend, loggedIn, orderID, grabOrderID }) {
     } else {
         return (
             <>
-                <Navbar />
+                {/* <Navbar totalCartQuantity={totalCartQuantity} grabTotalCartQuantity={grabTotalCartQuantity} backend={backend} loggedIn={loggedIn}/> */}
                 <div className="user-profile-container">
                     {/* This bar represents the sections that users can click on to switch between the address, payments, and order components (screens) */}
                     <div className='top-bar'>
