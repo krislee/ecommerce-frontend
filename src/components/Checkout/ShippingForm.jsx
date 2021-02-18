@@ -1,5 +1,4 @@
 import React from 'react'
-import Button from '../Buttons/Button'
 
 export default function ShippingForm( { backend, loggedIn, readOnly, shipping, addShipping, shippingInput, grabShippingInput, cartID, updateShippingState, updateShippingInputState, editShipping, handleEditShipping, closeModal, collapse, back, addNewShipping, grabAddNewShipping, grabMultipleShipping }) {
     
@@ -76,7 +75,7 @@ export default function ShippingForm( { backend, loggedIn, readOnly, shipping, a
         {shipping.firstName ? (
             <>
             <button form="form">Save</button> 
-            <Button type={"button"} name={"Cancel"} onClick={closeModal}/>
+            <button type="button" onClick={closeModal}>Cancel</button>
             </>
         ) : <button form="form" disabled={readOnly}>Next</button>   
         }

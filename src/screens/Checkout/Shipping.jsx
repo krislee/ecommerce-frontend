@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import ShippingForm from '../../components/Checkout/ShippingForm'
-import Button from '../../components/Buttons/Button'
 import Modal from 'react-modal';
 // import { Accordion, Card } from 'react-bootstrap'
 
@@ -327,7 +326,7 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
                         <button id={savedShipping._id} onClick={handleSelectedShipping}>Select</button>
                     </div>
                 )})}
-                <Button name={'Close'} onClick={ closeModal } />
+                <button onClick={ closeModal }>Close</button>
             </Modal>
         )
     } else if(addShipping || editShipping ) {

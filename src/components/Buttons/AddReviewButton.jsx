@@ -3,7 +3,6 @@ import Modal from 'react-modal';
 import Toast from 'react-bootstrap/Toast'
 import '../../styles/Button.css'
 import ReviewForm from '../Reviews/ReviewForm'
-import { faCloudShowersHeavy } from '@fortawesome/free-solid-svg-icons';
 
 
 // name, comment, rating, id

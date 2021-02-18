@@ -29,7 +29,7 @@ function Login ({backend, loggedIn, grabLoginInfo, buyer, seller}) {
                 setLoginError(true)
             }
             if (loginData.success === true) {
-                grabLoginInfo(loginData.token);
+                localStorage.setItem('token', loginData.token)
                 setIsLogin(true)
                 const syncCartResponse = await fetch(`${backend}/buyer/sync/cart`, {
                     method: 'POST',
