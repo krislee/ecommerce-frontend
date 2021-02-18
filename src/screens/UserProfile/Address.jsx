@@ -9,7 +9,7 @@ function UserProfileAddress ({ backend, addressData, defaultFirst, grabAddressDa
 
     // Getter and Setter to display modal based off a boolean value
     const [modalIsOpen,setIsOpen] = useState(false);
-    // Getter and Setter to store an object that will later be used to determine what users put into inputs specifically regarding the adding address function
+    // Getter and Setter to store an object that will later be used to determine what users enter into inputs specifically regarding the adding address function
     const [addressInput, setAddressInput] = useState({});
     // Getter and setter to display a warning message regarding when the user does not fulfill requirements for the zipcode input when creating an address
     const [addZipcodeAddressWarning, setAddZipcodeAddressWarning] = useState(false);
@@ -233,7 +233,6 @@ function UserProfileAddress ({ backend, addressData, defaultFirst, grabAddressDa
                 {/* Button will be disabled if the input fields are not filled in (except for the address line two input field) */}
                 <button 
                 onClick={handleSubmitAddress} 
-                // Disabled if the input fields are empty or contain characters they are not suppose to contain
                 disabled={
                 (/^[a-z][a-z\s]*$/i.test(addressInput.firstName) !== true 
                 || addressInput.firstName === undefined)
@@ -250,7 +249,7 @@ function UserProfileAddress ({ backend, addressData, defaultFirst, grabAddressDa
                 </form>
                 </Modal>
         </div>
-    )
-}
+    );
+};
 
 export default UserProfileAddress

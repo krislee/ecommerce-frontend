@@ -9,7 +9,6 @@ function Input ({ name, value, placeholder, type, onChange, pattern, maxLength, 
             value={value}
             name={name}
             onChange={onChange}
-            pattern={pattern}
             maxLength={maxLength}
             id={id}
             />
