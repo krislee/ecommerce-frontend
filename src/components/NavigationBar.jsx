@@ -46,10 +46,11 @@ function NavBar ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuantity }
             </Link>
             <div className="cart-profile-container">
             <Link to="/cart">
-                {/* <FontAwesomeIcon className="cart-icon" icon={faShoppingCart}/> */}
+               
                 <IconButton aria-label="cart">
                     <StyledBadge badgeContent={totalCartQuantity} color="secondary">
-                        <ShoppingCartIcon />
+                        {/* <ShoppingCartIcon /> */}
+                         <FontAwesomeIcon className="cart-icon" icon={faShoppingCart}/>
                     </StyledBadge>
                 </IconButton>
             </Link>
