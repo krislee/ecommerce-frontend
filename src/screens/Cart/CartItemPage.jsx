@@ -1,11 +1,12 @@
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import '../../styles/CartPage.css'
 
 
 
 export default function CartItemPage ({ backend, loggedIn, id, name, quantity, totalPrice, grabItems, grabTotalPrice}) {
-
     const [cartQuantity, setCartQuantity] = useState(quantity)
+
+    useEffect(() => setCartQuantity(quantity), [quantity]) // resolved the deleting issue of input having the last deleted item input value
 
     const handleQuantity = (event) => {
         setCartQuantity(event.target.value)
@@ -28,7 +29,7 @@ export default function CartItemPage ({ backend, loggedIn, id, name, quantity, t
             const updateCartData = await updateCartResponse.json()
             console.log(updateCartData)
             grabItems(updateCartData.cart.Items)
-            grabTotalPrice(updateCartData.totalCartPrice)
+            grabTotalPrice(updateCartData.cart.TotalCartPrice)
         } else {
             const updateCartResponse = await fetch(`${backend}/buyer/electronic/cart/${event.target.id}`, {
                 method: 'PUT',
@@ -59,7 +60,7 @@ export default function CartItemPage ({ backend, loggedIn, id, name, quantity, t
             const deleteCartItemData = await deleteCartItemResponse.json()
             console.log(deleteCartItemData)
             grabItems(deleteCartItemData.cart.Items)
-            grabTotalPrice(deleteCartItemData.totalCartPrice)
+            grabTotalPrice(deleteCartItemData.cart.TotalCartPrice)
         } else {
             console.log("deleting guest")
             const deleteCartItemResponse = await fetch(`${backend}/buyer/electronic/cart/${event.target.id}`, {

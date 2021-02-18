@@ -32,7 +32,7 @@ function CartPage ({ backend, loggedIn }) {
                     setEmptyCart(cartItemsData);
                 } else {
                     setItems(cartItemsData.cart.Items);
-                    setTotalPrice(cartItemsData.totalCartPrice)
+                    setTotalPrice(cartItemsData.cart.TotalCartPrice)
                 }
                 setCartLoading(false)
             } else {
@@ -71,8 +71,7 @@ function CartPage ({ backend, loggedIn }) {
             <h2 className="noItems">No Items...</h2>
             </>
         )
-    }
-    else if(items.length >0) {
+    } else if(items.length >0) {
         return (
             <>
             <div className="cart-page-container">
@@ -83,13 +82,11 @@ function CartPage ({ backend, loggedIn }) {
                         <p><b>Total Price: ${totalPrice}</b></p>
                     </div>
                         
-                
-                    {/* {renderRedirect()} */}
                     <Link to="/checkout">
-                    <button>Checkout</button>
+                        <button>Checkout</button>
                     </Link>
                 </div>
-                {/* <button onClick={checkout}>Checkout</button> */}
+               
             </div>
             <Footer />
             </>
