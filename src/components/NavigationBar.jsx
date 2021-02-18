@@ -22,11 +22,10 @@ const StyledBadge = withStyles((theme) => ({
 
 function NavBar ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuantity }) {
     const [redirect, setRedirect] = useState(false)
-    // const [loggedOutByClicking, setLoggedOutByClicking] = useState(false)
+
 
     const handleLogout = () => {
         localStorage.clear();
-        // setLoggedOutByClicking(true)
         grabTotalCartQuantity(0)
         setRedirect(true)
     }
@@ -45,11 +44,10 @@ function NavBar ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuantity }
                 </div>
             </Link>
             <div className="cart-profile-container">
-            <Link to="/cart">
-               
+            {/*  reload the cart page in case user clears local storage and then re-clicks on the cart icon */}
+            <Link to="/cart" onClick={() => window.location.reload()} > 
                 <IconButton aria-label="cart">
                     <StyledBadge badgeContent={totalCartQuantity} color="secondary">
-                        {/* <ShoppingCartIcon /> */}
                          <FontAwesomeIcon className="cart-icon" icon={faShoppingCart}/>
                     </StyledBadge>
                 </IconButton>
@@ -62,7 +60,7 @@ function NavBar ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuantity }
             : null}
             </Dropdown.Toggle>
             <Dropdown.Menu className="dropdown-menu">
-                <Dropdown.Item href="/profile/setting">Account Settings</Dropdown.Item>
+                <Dropdown.Item href="/profile/setting" onClick={() => window.location.reload()}>Account Settings</Dropdown.Item>
                 <Dropdown.Item onClick={handleLogout}>Logout</Dropdown.Item>
             </Dropdown.Menu>
             </Dropdown> : 
