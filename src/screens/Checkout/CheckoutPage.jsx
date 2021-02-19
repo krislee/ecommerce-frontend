@@ -358,7 +358,6 @@ function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCar
                 if(prevLoggedIn) {
                     console.log(359)
                     return grabTotalCartQuantity(0) // update the Nav Bar & rerun CheckoutPage UseEffect
-                    return setRedirect(true)
                 }
                 else {
                     grabTotalCartQuantity(0) // update the Nav Bar

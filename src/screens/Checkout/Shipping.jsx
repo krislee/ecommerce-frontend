@@ -38,18 +38,33 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
         if(!paymentMethod.paymentMethodID) grabBillingWithShipping(shippingInput) // For guest user or logged in user without any saved payment methods, a payment method form shows after clicking Next. When we hit Next, collapse() runs, running the grabBillingWithShipping function, so that the billing state of the payment method form will be prefilled with the Shipping Input fields values; we do not want to prefill the Billing Inputs of an already saved payment method with shipping input fields values because the billing inputs may be different from shipping input; we only want the billing inputs value to be the same as shipping input field values when we are ADDING a new payment method. So for logged in users adding a payment method, grabBillingWithShipping(shippingInput) runs when we hit Add New payment method (see it in the PaymentMethod component)
     }
 
-    const back =() => {
-        if(!loggedIn() && prevLoggedIn) return grabTotalCartQuantity(0)
+    const back = async () => {
+        if(!loggedIn() && prevLoggedIn) return grabTotalCartQuantity(0) // if logged in user cleared local storage and clicked Edit in shipping component
+        if(!loggedIn() && !prevLoggedIn) { // check if guest user cleared cookies(indicated by empty cart) before running any other code
+            const cartResponse = await fetch(`${backend}/buyer/cart`, {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include'
+            })
+            const cartResponseData = await cartResponse.json()
+            console.log(cartResponseData);
+            if(typeof cartResponseData.cart === 'string') {
+                grabTotalCartQuantity(0) // update the Nav Bar
+                return grabRedirect(true) //
+            }
+        }
+        // For both guest and logged in users (who are still logged in)
         grabShowShipping(true) // show the Shipping component with the shipment details again
         grabShowPayment(false) // close the payment method info/form
-        grabShowButtons(true) // show the Add New, Edit (the one that is associated with handleEditShipping function), and All Addresses buttons again & 
-        // For guests who are at the PaymentMethod component but clicks Edit button at the Shipping Component to edit the Shipping form, the following condition is run:
+        grabShowButtons(true) // show the Add New, Edit (the one that is associated with handleEditShipping function), and All Addresses buttons again 
+        // For guests or logged in user (who does not have saved payment method), who are at the PaymentMethod component but clicks Edit button at the Shipping Component to edit the Shipping form, the following condition is run:
         if(!paymentMethod.paymentMethodID) {
             grabCardholderName("") // When we click Back while filling out the Payment method form we want to clear the cardholder's name input if user started typing in it
             grabError(null) // clear any card errors if we are clicking back into the Shipping component from PaymentMethod component, so that when we click Next to show the PaymentMethod component, there would not be any errors displayed
             grabDisabled(true) // if we are clicking back into the Shipping component from PaymentMethod component, and then click Next to show the PaymentMethod component, we want the confirm payment button to be disabled until guest types the card number again
         }
         grabReadOnly(false) // enable the Shipping Form for editing or Adding card again, and reshow the Next button
+        
     }
 
 
