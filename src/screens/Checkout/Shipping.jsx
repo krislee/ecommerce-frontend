@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import ShippingForm from '../../components/Checkout/ShippingForm'
 import Modal from 'react-modal';
+import { Redirect } from 'react-router-dom';
 // import { Accordion, Card } from 'react-bootstrap'
 
-function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, grabShowPayment, loggedOut, grabLoggedOut, shipping, grabShipping, grabBillingWithShipping, shippingInput, grabShippingInput, paymentMethod, grabCardholderName, showButtons, grabShowButtons, grabShowItems, showShipping, grabShowShipping, readOnly, grabReadOnly, grabTotalCartQuantity, grabRedirect }) {
+function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, grabShowPayment, loggedOut, grabLoggedOut, shipping, grabShipping, grabBillingWithShipping, shippingInput, grabShippingInput, paymentMethod, grabCardholderName, showButtons, grabShowButtons, grabShowItems, showShipping, grabShowShipping, grabError, grabDisabled, readOnly, grabReadOnly, grabTotalCartQuantity, grabRedirect }) {
    
     const [shippingLoading, setShippingLoading] = useState(true) // shippingLoading state is initially set to true to render <></> before updating it to false in useEffect()
     const [showModal, setShowModal] = useState(false)
-    // const [redirect, setRedirect] = useState(false)
+    const [redirect, setRedirect] = useState(false)
 
     // addShipping state to represent if we are currently adding a new shipping address to addresses logged in user has already saved
     const [addShipping, setAddShipping] = useState(false)
@@ -21,6 +22,7 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
     // const [showButtons, setShowButtons] = useState(false) //when we click Next button an Edit (sort of like a back button) appears. When the Edit button is clicked, showButtons state gets updated to true to display 3 other buttons: Add New, Edit, and Saved Shipping
     const [multipleShipping, setMultipleShipping] = useState(false) //multipleShipping state is initially false but will update to true in UseEffect if there is more than 1 saved address coming back from the server or after adding a new address at checkout
 
+
     /* ------- MISCELLANEOUS FUNCTIONS ------ */
 
     const grabAddNewShipping = (addShipping) => setAddShipping(addShipping)
@@ -28,6 +30,7 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
     // Fade out the Shipping component and show the Payment Method component when Next button is clicked
     const collapse = async () => {
         console.log("collapse")
+        // if(!loggedIn() && shipping.firstName) return
         grabShowShipping(false) // hide the Shipping component that shows the shipment details
         grabShowPayment(true) //The payment method form or payment method details  from paymentMethod component will be displayed when openCollapse state is true
         grabReadOnly(true) // disable the input fields
@@ -37,14 +40,16 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
     }
 
     const back =() => {
-        // if(!loggedIn() && shipping.firstName) {
-        //     grabTotalCartQuantity(0)
-        //     return grabRedirect(true)
-        // }
+        if(!loggedIn() && shipping.firstName) return
         grabShowShipping(true) // show the Shipping component with the shipment details again
         grabShowPayment(false) // close the payment method info/form
         grabShowButtons(true) // show the Add New, Edit (the one that is associated with handleEditShipping function), and All Addresses buttons again & 
-        if(!paymentMethod.paymentMethodID)grabCardholderName("") // When we click Back while filling out the Payment method form we want to clear the cardholder's name input if user started typing in it
+        // For guests who are at the PaymentMethod component but clicks Edit button at the Shipping Component to edit the Shipping form, the following condition is run:
+        if(!paymentMethod.paymentMethodID) {
+            grabCardholderName("") // When we click Back while filling out the Payment method form we want to clear the cardholder's name input if user started typing in it
+            grabError(null) // clear any card errors if we are clicking back into the Shipping component from PaymentMethod component, so that when we click Next to show the PaymentMethod component, there would not be any errors displayed
+            grabDisabled(true) // if we are clicking back into the Shipping component from PaymentMethod component, and then click Next to show the PaymentMethod component, we want the confirm payment button to be disabled until guest types the card number again
+        }
         grabReadOnly(false) // enable the Shipping Form for editing or Adding card again, and reshow the Next button
     }
 
@@ -98,88 +103,124 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
     /* ------- SAVED SHIPPING FUNCTIONS ------ */
 
     const handleSavedShipping = async() => {
-        const allSavedShippingResponse = await fetch(`${backend}/shipping/saved/address/${shipping.id}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': loggedIn()
-            }
-        })
+        if(loggedIn()) {
+            const allSavedShippingResponse = await fetch(`${backend}/shipping/saved/address/${shipping.id}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': loggedIn()
+                }
+            })
 
-        const allSavedShippingData = await allSavedShippingResponse.json()
-        console.log(47, "all shipping: ", allSavedShippingData)
-        setAllSavedShipping(allSavedShippingData) // update allSavedShipping state from [] to store all the addresses returned from server
+            const allSavedShippingData = await allSavedShippingResponse.json()
+            console.log(47, "all shipping: ", allSavedShippingData)
+            setAllSavedShipping(allSavedShippingData) // update allSavedShipping state from [] to store all the addresses returned from server
+        } else {
+            setRedirect(true)
+        }
     }
 
     const handleSelectedShipping = async(event) => {
-        const selectedShippingResponse = await fetch(`${backend}/shipping/address/${event.target.id}`, { // address id stored in each Selected button
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': loggedIn()
-            }
-        })
+        if(loggedIn()) {
+            const selectedShippingResponse = await fetch(`${backend}/shipping/address/${event.target.id}`, { // address id stored in each Selected button
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': loggedIn()
+                }
+            })
 
-        const selectedShippingData = await selectedShippingResponse.json()
-        console.log(59, "selected shipping: ", selectedShippingData)
-        updateShippingState(selectedShippingData.address) // update the shipping state with updateShippingState helper to store the selected address; then we can use the shipping state in the return below to show the selected address
-        updateShippingInputState(selectedShippingData.address) // update the shippingInput state so the input values would be the select address
-        closeModal() // call the helper to close modal and update showSavedShipping state to false to represent we are no longer showing saved addresses after selecting one
+            const selectedShippingData = await selectedShippingResponse.json()
+            console.log(59, "selected shipping: ", selectedShippingData)
+            updateShippingState(selectedShippingData.address) // update the shipping state with updateShippingState helper to store the selected address; then we can use the shipping state in the return below to show the selected address
+            updateShippingInputState(selectedShippingData.address) // update the shippingInput state so the input values would be the select address
+            closeModal() // call the helper to close modal and update showSavedShipping state to false to represent we are no longer showing saved addresses after selecting one
+        } else {
+            setRedirect(true)
+        }
     }
 
     /* ------- CONTROLLING MODALS ------ */
 
     // This function runs when we hit Cancel in the Add New Shipping, Edit, or Saved Addresses modal
     const closeModal = () => {
-        if(showSavedShipping) {
-            setShowSavedShipping(false) // update showSavedShipping state to false to represent we are not showing saved addresses
-        } else if(addShipping) {
-            setAddShipping(false) // update the addShipping state to false to represent we are not adding a shipping
-            grabShippingInput(shipping) // We need to reset back the input fields to what the displayed address is if user did not add a new card and just closes the modal/click Cancel since we updated the shippingInput state to be an empty object when we first clicked Add New to open modal or if user began typing and then hit Cancel/close modal. The displayed address is retrieved from shipping state.
-        } else if(editShipping) {
-            setEditShipping(false) // update the editShipping state to false to represent we are not edditing a shipping
-            grabShippingInput(shipping) // In case the user starts editing and then closes the Edit modal, and then immediately click Edit again, the input fields need to be reset with what the address values are, which is retrieved from the shipping state.
+        if(loggedIn()) {
+            if(showSavedShipping) {
+                setShowSavedShipping(false) // update showSavedShipping state to false to represent we are not showing saved addresses
+            } else if(addShipping) {
+                setAddShipping(false) // update the addShipping state to false to represent we are not adding a shipping
+                grabShippingInput(shipping) // We need to reset back the input fields to what the displayed address is if user did not add a new card and just closes the modal/click Cancel since we updated the shippingInput state to be an empty object when we first clicked Add New to open modal or if user began typing and then hit Cancel/close modal. The displayed address is retrieved from shipping state.
+            } else if(editShipping) {
+                setEditShipping(false) // update the editShipping state to false to represent we are not edditing a shipping
+                grabShippingInput(shipping) // In case the user starts editing and then closes the Edit modal, and then immediately click Edit again, the input fields need to be reset with what the address values are, which is retrieved from the shipping state.
+            }
+            setShowModal(false) // close modal
+        } else {
+            setRedirect(true)
         }
-        setShowModal(false) // close modal
     }
 
     const openAddNewModal = () => {
-        setAddShipping(true) // update the addShipping state to true to represent we are currently adding a shipping
-        grabShippingInput({}) // clear out the pre-filled input fields by updating shippingInput state to be an empty obj so user will see a shipping form with empty inputs
-        setShowModal(true) // open modal
+        if(loggedIn()) {
+            setAddShipping(true) // update the addShipping state to true to represent we are currently adding a shipping
+            grabShippingInput({}) // clear out the pre-filled input fields by updating shippingInput state to be an empty obj so user will see a shipping form with empty inputs
+            setShowModal(true) // open modal
+        } else {
+            grabTotalCartQuantity(0)
+            // grabRedirect(true) - including this alone without grabTotalCartQuantity(0) or including this with grabTotalCartQuantity(0) causes the following error:
+            // index.js:1 Uncaught Error: The error you provided does not contain a stack trace.
+            // at S (index.js:1)
+            // at V (index.js:1)
+            // at index.js:1
+            // at index.js:1
+            // at a (index.js:1)
+        }
     }
 
     const openEditModal = () => {
-        setEditShipping(true) // update the editShipping state to true to represent we are currently edditing a shipping
-        setShowModal(true) // open modal
+        if(loggedIn()) {
+            setEditShipping(true) // update the editShipping state to true to represent we are currently edditing a shipping
+            setShowModal(true) // open modal
+        } else {
+            setRedirect(true)
+        }
+        
     }
 
     const openAllAddressesModal = () => {
-        setShowModal(true) // open modal
-        setShowSavedShipping(true) // update showSavedShipping state to true to represent we are currently showing saved addresses
-        handleSavedShipping() // when we open the Saved Addresses modal we want to run handleSavedShipping to fetch to the server to display all the shipping addresses user has saved
+        if(loggedIn()) {
+            setShowModal(true) // open modal
+            setShowSavedShipping(true) // update showSavedShipping state to true to represent we are currently showing saved addresses
+            handleSavedShipping() // when we open the Saved Addresses modal we want to run handleSavedShipping to fetch to the server to display all the shipping addresses user has saved
+        } else {
+            setRedirect(true)
+        }
     }
 
     /* ------- EDITING SHIPPING ------ */
 
     const handleEditShipping = async () => {
-        const editShippingResponse = await fetch(`${backend}/shipping/address/${shipping.id}?checkout=true`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': loggedIn()
-            },
-            body: JSON.stringify({
-                name: `${shippingInput.firstName}, ${shippingInput.lastName}`,
-                address: `${shippingInput.line1}, ${shippingInput.line2}, ${shippingInput.city}, ${shippingInput.state}, ${shippingInput.postalCode}`
+        if(loggedIn()) {
+            const editShippingResponse = await fetch(`${backend}/shipping/address/${shipping.id}?checkout=true`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': loggedIn()
+                },
+                body: JSON.stringify({
+                    name: `${shippingInput.firstName}, ${shippingInput.lastName}`,
+                    address: `${shippingInput.line1}, ${shippingInput.line2}, ${shippingInput.city}, ${shippingInput.state}, ${shippingInput.postalCode}`
+                })
             })
-        })
-        const editShippingData = await editShippingResponse.json()
-        console.log("edit shipping: ", editShippingData)
+            const editShippingData = await editShippingResponse.json()
+            console.log("edit shipping: ", editShippingData)
 
-        updateShippingState(editShippingData.address) // Update the shipping state to re-render the newly edited address. Recall address display is retrieved from shipping state, so shipping state stores the address info.
-        updateShippingInputState(editShippingData.address) // Update the shippingInput state so that the input fields will also reflect the newly edited address, so when you click Edit button again the input fields are prefilled with the newly edited address
-        setEditShipping(false) // update the editShipping state to true to represent we are not edditing a shipping
+            updateShippingState(editShippingData.address) // Update the shipping state to re-render the newly edited address. Recall address display is retrieved from shipping state, so shipping state stores the address info.
+            updateShippingInputState(editShippingData.address) // Update the shippingInput state so that the input fields will also reflect the newly edited address, so when you click Edit button again the input fields are prefilled with the newly edited address
+            setEditShipping(false) // update the editShipping state to true to represent we are not edditing a shipping
+        } else {
+            setRedirect(true)
+        }
     }
 
     /* ------- NEXT BUTTON FUNCTION ------ */
@@ -216,7 +257,7 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
             const updatePaymentIntentWithShippingData = await updatePaymentIntentWithShippingResponse.json()
             console.log(updatePaymentIntentWithShippingData)
         } else {
-            if(shipping.firstName) return
+            if(shipping.firstName) return // check if user is a guest because user actively cleared local storage; we would know if user was previously logged in if shipping state has stored the address, since in useEffect, we store address in shipping state if user was logged in; if logged in user cleared local storage do not run the function
             // Guest user fetches to this route:
             const updatePaymentIntentWithShippingResponse = await fetch(`${backend}/order/payment-intent`, {
                 method: 'POST',
@@ -297,7 +338,11 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
    
     if(shippingLoading) {
         return <></> // When the Checkout component first loads, render nothing for Shipping Component until after fetching an address. Depending if there is an address or not from the fetch, we will return something different as shown based on the conditional retuns below.
-    } else if(!shipping.firstName || !loggedIn()) {
+    } 
+    // else if(redirect) {
+    //     return <Redirect to="/cart"></Redirect>
+    // }
+    else if(!shipping.firstName || !loggedIn()) {
         console.log(300)
         // If user is guest (as indicated by !loggedIn()), or logged in user does not have a shipping address (indicated by !shipping.address), we want to show the shipping form when the Next button from CheckoutItems component is clicked
         return (
@@ -342,7 +387,7 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
     } else if(addShipping || editShipping ) {
         return (
             <Modal isOpen={showModal} onRequestClose={ closeModal } ariaHideApp={false} contentLabel="Add or Edit Shipping">
-                <ShippingForm backend={backend} loggedIn={loggedIn} shipping={shipping} shippingInput={shippingInput} grabShippingInput={grabShippingInput} grabPaymentLoading={grabPaymentLoading} addShipping={addShipping} grabAddNewShipping={grabAddNewShipping} cartID={cartID} updateShippingState={updateShippingState} updateShippingInputState={updateShippingInputState} editShipping={editShipping} handleEditShipping={handleEditShipping} closeModal={closeModal} collapse={collapse} grabMultipleShipping={grabMultipleShipping}/> 
+                <ShippingForm backend={backend} loggedIn={loggedIn} shipping={shipping} shippingInput={shippingInput} grabShippingInput={grabShippingInput} grabPaymentLoading={grabPaymentLoading} addShipping={addShipping} grabAddNewShipping={grabAddNewShipping} cartID={cartID} updateShippingState={updateShippingState} updateShippingInputState={updateShippingInputState} editShipping={editShipping} handleEditShipping={handleEditShipping} closeModal={closeModal} collapse={collapse} grabMultipleShipping={grabMultipleShipping} grabRedirect={grabRedirect} /> 
             </Modal>
         )
     } else if(shipping.firstName) {
