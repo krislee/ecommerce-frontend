@@ -18,7 +18,7 @@ function AddCartButton ({ name, id, loggedIn, backend, quantity, grabTotalCartQu
             });
             const addItemData = await addItemResponse.json()
             console.log(addItemData)
-            grabTotalCartQuantity(addItemData.cart.TotalQuantity)
+            grabTotalCartQuantity(addItemData.cart.TotalItems)
         } else{ 
             const addItemResponse = await fetch(`${backend}/buyer/electronic/cart/${id}`, {
                 method: 'POST',
@@ -32,7 +32,7 @@ function AddCartButton ({ name, id, loggedIn, backend, quantity, grabTotalCartQu
             });
             const addItemData = await addItemResponse.json()
             console.log(addItemData)
-            grabTotalCartQuantity(addItemData.totalQuantity)
+            grabTotalCartQuantity(addItemData.totalItems)
         }
     }
 

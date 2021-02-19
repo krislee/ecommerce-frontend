@@ -1,12 +1,15 @@
 import React, {useEffect, useState} from 'react'
 import { Redirect } from 'react-router-dom';
 
-export default function CheckoutItems({ backend, loggedIn, showItems, grabShowItems, grabShowShipping, grabShowButtons, grabReadOnly}) {
+export default function CheckoutItems({ backend, loggedIn, showItems, grabShowItems, grabShowShipping, grabShowButtons, grabReadOnly }) {
     const [checkoutItemsLoading, setCheckoutItemsLoading] = useState(true)
     const [items, setItems] = useState([]);
     const [redirect, setRedirect] = useState(false)
 
     useEffect(() => {
+        const abortController = new AbortController()
+        const signal = abortController.signal
+
         const getCheckoutItems = async() => {
             if(loggedIn()){
                 const cartItemsResponse = await fetch(`${backend}/buyer/cart`, {
@@ -14,7 +17,8 @@ export default function CheckoutItems({ backend, loggedIn, showItems, grabShowIt
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': loggedIn()
-                    }
+                    },
+                    signal: signal
                 });
                 const cartItemsData = await cartItemsResponse.json();
                 console.log(cartItemsData)
@@ -25,7 +29,8 @@ export default function CheckoutItems({ backend, loggedIn, showItems, grabShowIt
                 const cartItemsResponse = await fetch(`${backend}/buyer/cart`, {
                     method: 'GET',
                     headers: { 'Content-Type': 'application/json' },
-                    credentials: 'include'
+                    credentials: 'include',
+                    signal: signal
                 });
                 const cartItemsData = await cartItemsResponse.json();
                 console.log(cartItemsData);
@@ -36,13 +41,17 @@ export default function CheckoutItems({ backend, loggedIn, showItems, grabShowIt
             }
         }
         getCheckoutItems();
+        return function cleanUp () {
+            abortController.abort()
+        }
+
     }, [])
 
     const handleNext = () => {
         grabShowItems(false) //hide the Next button in CheckoutItems
-        grabShowShipping(true) // show the Shipping details or form
         grabReadOnly(true)
         grabShowButtons(true) // show the Add New, Edit, and Saved Addresses buttons for the already saved Shipping
+        grabShowShipping(true) // show the Shipping details or form
     }
 
     if(checkoutItemsLoading) {
@@ -53,7 +62,6 @@ export default function CheckoutItems({ backend, loggedIn, showItems, grabShowIt
         return (
             <>
             <h2>Your Cart</h2>
-            {/* {showItems && ( */}
                 <>
                 <div style={{display: 'flex'}}>
                     {items.map((item, index) => { return(
@@ -63,7 +71,6 @@ export default function CheckoutItems({ backend, loggedIn, showItems, grabShowIt
                 </div>
                 {showItems && <button onClick={handleNext}>Next</button>}
                 </>
-            {/* )} */}
             <button onClick={()=> setRedirect(true)}>Edit</button>
             </>
         )

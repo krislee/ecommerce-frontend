@@ -21,6 +21,9 @@ function PaymentMethod ({ backend, processing, loggedIn, error, grabError, disab
     const [multipleSavedCards, setMultipleSavedCards] = useState(false)
 
     useEffect(() => {
+        const abortController = new AbortController()
+        const signal = abortController.signal
+
         // Check if user is logged in or not since different headers for routes depend if user is logged in or not
         if(loggedIn()){
             // Get either a 1) default, saved card or 2) last used, saved card info, or 3) last created, saved card, or 4) no saved cards 
@@ -34,7 +37,8 @@ function PaymentMethod ({ backend, processing, loggedIn, error, grabError, disab
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': loggedIn()
-                    }
+                    },
+                    signal: signal
                 })
                 paymentMethodData = await paymentMethodResponse.json()
                 console.log(paymentMethodData);
@@ -50,7 +54,8 @@ function PaymentMethod ({ backend, processing, loggedIn, error, grabError, disab
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': loggedIn()
-                    }
+                    },
+                    signal: signal
                 })
                 const savedCardsData = await savedCardsResponse.json()
                 console.log(savedCardsData.paymentMethods)
@@ -60,6 +65,9 @@ function PaymentMethod ({ backend, processing, loggedIn, error, grabError, disab
 
             fetchPaymentMethod();
             retrievingSavedCards()
+            return function cleanUp () {
+                abortController.abort()
+            }
            
         } else if (!loggedIn()){
             // grabPaymentMethod({}) // if guest user, then paymentMethod state would remain an empty obj, billing details state would remain empty obj, and collectCVV state would remain "false"
@@ -69,14 +77,6 @@ function PaymentMethod ({ backend, processing, loggedIn, error, grabError, disab
             },2000) // update paymentLoading state to false so it will not render Loading... when we re-render CheckoutPage and Checkout/PaymentMethod components
         }
     }, [])
-
-    // const back = () => {
-    //     grabShowShipping(true)
-    //     grabShowPayment(false) // close the payment method info/form
-    //     grabShowButtons(true) // show the Add New, Edit, and All Addresses buttons
-    //     if(!paymentMethod.paymentMethodID)grabCardholderName("") // When we click Back while filling out the Payment method form we want to clear the cardholder's name input if user started typing in it
-    //     grabReadOnly(false)
-    // }
 
     /* ------- EDIT PAYMENT METHOD FUNCTIONS ------ */
 

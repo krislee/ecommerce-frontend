@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react'
-import {BrowserRouter, Switch, Route, Link} from 'react-router-dom';
+import {BrowserRouter, Switch, Route, Link, Redirect} from 'react-router-dom';
 import './App.css';
 
 import NavBar from './components/NavigationBar'
@@ -54,6 +54,7 @@ function App() {
   /* ------- CHECK IF USER IS LOGGED IN BEFORE RUNNING FUNCTIONS ------- */
    const loggedIn = () => localStorage.getItem('token')
 
+  /* ------- NAV BAR UPDATE ------- */
   const [totalCartQuantity, setTotalCartQuantity] = useState(0)
   const grabTotalCartQuantity = (totalCartQuantity) => setTotalCartQuantity(totalCartQuantity)
 
@@ -90,7 +91,7 @@ function App() {
       }
     };
     getCartItems();
-},[totalCartQuantity, localStorage.getItem('token')])
+},[])
 
   return (
     <div className="App">
@@ -100,7 +101,7 @@ function App() {
           {/* CHECKOUT */}
           <Route path="/checkout">
             <Elements stripe={stripePromise}>
-              <Checkout backend={backend} loggedIn={loggedIn} loggedOut={loggedOut} grabLoggedOut={grabLoggedOut} cartID={cartID}grabCartID={grabCartID} grabSuccessfulPaymentIntent={grabSuccessfulPaymentIntent}/>
+              <Checkout backend={backend} loggedIn={loggedIn} loggedOut={loggedOut} grabLoggedOut={grabLoggedOut} cartID={cartID}grabCartID={grabCartID} grabSuccessfulPaymentIntent={grabSuccessfulPaymentIntent} grabTotalCartQuantity={grabTotalCartQuantity} />
             </Elements>
           </Route>
           <Route path="/order-complete">

@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react'
-import {Redirect} from "react-router-dom";
+import {Redirect, Link} from "react-router-dom";
 import NavBar from '../components/NavigationBar'
 import Footer from '../components/Footer'
 

@@ -23,7 +23,6 @@ const StyledBadge = withStyles((theme) => ({
 function NavBar ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuantity }) {
     const [redirect, setRedirect] = useState(false)
 
-
     const handleLogout = () => {
         localStorage.clear();
         grabTotalCartQuantity(0)
@@ -45,7 +44,7 @@ function NavBar ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuantity }
             </Link>
             <div className="cart-profile-container">
             {/*  reload the cart page in case user clears local storage and then re-clicks on the cart icon */}
-            <Link to="/cart" onClick={() => window.location.reload()} > 
+            <Link to="/cart"  > 
                 <IconButton aria-label="cart">
                     <StyledBadge badgeContent={totalCartQuantity} color="secondary">
                          <FontAwesomeIcon className="cart-icon" icon={faShoppingCart}/>

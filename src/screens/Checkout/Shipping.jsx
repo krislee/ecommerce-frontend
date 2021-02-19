@@ -3,10 +3,11 @@ import ShippingForm from '../../components/Checkout/ShippingForm'
 import Modal from 'react-modal';
 // import { Accordion, Card } from 'react-bootstrap'
 
-function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, grabShowPayment, loggedOut, grabLoggedOut, shipping, grabShipping, grabBillingWithShipping, shippingInput, grabShippingInput, paymentMethod, grabCardholderName, showButtons, grabShowButtons, grabShowItems, showShipping, grabShowShipping, readOnly, grabReadOnly }) {
-    // shippingLoading state is initially set to true to render <></> before updating it to false in useEffect()
-    const [shippingLoading, setShippingLoading] = useState(true)
+function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, grabShowPayment, loggedOut, grabLoggedOut, shipping, grabShipping, grabBillingWithShipping, shippingInput, grabShippingInput, paymentMethod, grabCardholderName, showButtons, grabShowButtons, grabShowItems, showShipping, grabShowShipping, readOnly, grabReadOnly, grabTotalCartQuantity, grabRedirect }) {
+   
+    const [shippingLoading, setShippingLoading] = useState(true) // shippingLoading state is initially set to true to render <></> before updating it to false in useEffect()
     const [showModal, setShowModal] = useState(false)
+    // const [redirect, setRedirect] = useState(false)
 
     // addShipping state to represent if we are currently adding a new shipping address to addresses logged in user has already saved
     const [addShipping, setAddShipping] = useState(false)
@@ -22,8 +23,6 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
 
     /* ------- MISCELLANEOUS FUNCTIONS ------ */
 
-    // const grabShippingInput = (shippingInput) => setShippingInput(shippingInput)
-
     const grabAddNewShipping = (addShipping) => setAddShipping(addShipping)
 
     // Fade out the Shipping component and show the Payment Method component when Next button is clicked
@@ -38,12 +37,18 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
     }
 
     const back =() => {
+        // if(!loggedIn() && shipping.firstName) {
+        //     grabTotalCartQuantity(0)
+        //     return grabRedirect(true)
+        // }
         grabShowShipping(true) // show the Shipping component with the shipment details again
         grabShowPayment(false) // close the payment method info/form
         grabShowButtons(true) // show the Add New, Edit (the one that is associated with handleEditShipping function), and All Addresses buttons again & 
         if(!paymentMethod.paymentMethodID)grabCardholderName("") // When we click Back while filling out the Payment method form we want to clear the cardholder's name input if user started typing in it
         grabReadOnly(false) // enable the Shipping Form for editing or Adding card again, and reshow the Next button
     }
+
+
      /* ------- HELPERS FOR UPDATING SHIPPING STATE/UPDATE SHIPPING INPUT STATE------ */
 
     // Update the shipping state whenever we want to store ONE saved address that we want to display. The param savedShippingAddressData is some data received after fetching the server. We update the shipping state to store that data of ONE address. We update the shipping state when we run useEffect(), edit address, selected address, and after adding a new address. The goals is to be able to display the address after editing/selecting/adding an address or showing the address when we load the page. To display the address, it depends on the shipping state. 
@@ -184,6 +189,7 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
         console.log("adding new address as guest or first saved address")
         console.log("adding new address input: ", shippingInput)
         console.log("used shipping: ", shipping)
+
         // We want to always update the Payment Intent when we click Next so that it stores the most up to date shipping for both guest and logged in users. For logged in user who has saved shipping addresses or is saving an address for the first time, we also want to highlight it as the last used shipping in our Payment Intent. The payment intent webhook will create a new address with LastUsed property with a true value if saving an address for the first time. The payment webhook will update the saved address with LastUsed property with a true value. If logged in user does not have any saved address, the payment webhook won't do anything to the addresses.
         if(loggedIn()) {
             console.log(49, cartID)
@@ -191,7 +197,7 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'idempotency-key': cartID,
+                    'idempotency-key': cartID, // cartID is a state passed from CheckoutPage component; cartID state value set in CheckoutPage component's useEffect
                     'Authorization': loggedIn()
                 },
                 body: JSON.stringify({
@@ -210,6 +216,7 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
             const updatePaymentIntentWithShippingData = await updatePaymentIntentWithShippingResponse.json()
             console.log(updatePaymentIntentWithShippingData)
         } else {
+            if(shipping.firstName) return
             // Guest user fetches to this route:
             const updatePaymentIntentWithShippingResponse = await fetch(`${backend}/order/payment-intent`, {
                 method: 'POST',
@@ -235,12 +242,14 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
         }
     }
  
-    /* ------- UPDATE MULTIPLESHIPPING STATE AFTER ADDING AN ADDRESS ------ */
+    /* ------- UPDATE MULTIPLESHIPPING STATE AFTER ADDING AN ADDRESS TO SHOW SAVED ADDRESSES BUTTON ------ */
     const grabMultipleShipping = (multipleShipping) => setMultipleShipping(multipleShipping)
 
     /* --------------------- USE EFFECT -------------------- */
 
     useEffect(() => {
+        const abortController = new AbortController()
+        const signal = abortController.signal
         if(loggedIn()) {
             const getCheckoutShippingAddress = async() => {
                 const checkoutShippingAddressResponse = await fetch(`${backend}/shipping/checkout/address`, {
@@ -248,40 +257,40 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
                     headers: { 
                         'Content-Type': 'application/json',
                         'Authorization': loggedIn()
-                    }
+                    },
+                    signal: signal
                 })
-    
                 const checkoutShippingAddressData = await checkoutShippingAddressResponse.json()
                 console.log("fetching for checkout address", checkoutShippingAddressData)
     
-                // If there are no saved cards, then shipping state does not get updated and remains {}
+                // If there are no saved shipping, then shipping state does not get updated and remains {}
                 updateShippingState(checkoutShippingAddressData.address)
-                updateShippingInputState(checkoutShippingAddressData.address)
-                
+                updateShippingInputState(checkoutShippingAddressData.address)       
                 setShippingLoading(false) // update shippingLoading state to false so we can render the shipping info and not <></>
-                // grabPaymentLoading(true)
             } 
 
+            // Check if user has more than 1 address save to render the Saved Addresses button or not
             const retrieveAllAddresses = async() => {
                 const allSavedShippingResponse = await fetch(`${backend}/shipping/address`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': loggedIn()
-                    }
+                    },
+                    signal: signal
                 })
-        
                 const allSavedShippingData = await allSavedShippingResponse.json()
                 console.log(allSavedShippingData)
                 if(allSavedShippingData.length > 1) setMultipleShipping(true)
             }
-    
             getCheckoutShippingAddress()
             retrieveAllAddresses()
+            return function cleanUp () {
+                abortController.abort()
+            }
 
         } else {
-            setShippingLoading(false)
-           
+            setShippingLoading(false) // if guest user, we do not need to update the shipping state and just render shipping the form (the condition, !shipping.firstName || !loggedIn() will be satisfied so that would be rendered)
         }
     }, [])
 
@@ -289,6 +298,7 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
     if(shippingLoading) {
         return <></> // When the Checkout component first loads, render nothing for Shipping Component until after fetching an address. Depending if there is an address or not from the fetch, we will return something different as shown based on the conditional retuns below.
     } else if(!shipping.firstName || !loggedIn()) {
+        console.log(300)
         // If user is guest (as indicated by !loggedIn()), or logged in user does not have a shipping address (indicated by !shipping.address), we want to show the shipping form when the Next button from CheckoutItems component is clicked
         return (
             <>
@@ -319,7 +329,7 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
                 <h2>Shipping Address</h2>
                 {allSavedShipping.map((savedShipping, index) => { return (
                     <div key={index}>
-                        <p id="name"><b>{savedShipping.Name.split(", ")[0]} {savedShipping.Name.split(", ")[1]}</b></p>
+                        <p id="name"><b>{savedShipping.Name.replace(", ", " ")}</b></p>
                         <p id="line1">{savedShipping.Address.split(", ")[0]}</p>
                         <p id="line2">{savedShipping.Address.split(", ")[1] === "null" || savedShipping.Address.split(", ")[1] === "undefined" ? "" : savedShipping.Address.split(", ")[1]}</p>
                         <p id="cityStateZipcode">{savedShipping.Address.split(", ")[2]}, {savedShipping.Address.split(", ")[3]} {savedShipping.Address.split(", ")[4]}</p>
@@ -331,7 +341,7 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
         )
     } else if(addShipping || editShipping ) {
         return (
-            <Modal isOpen={showModal} onRequestClose={ closeModal } ariaHideApp={false} contentLabel="Saved Shipping">
+            <Modal isOpen={showModal} onRequestClose={ closeModal } ariaHideApp={false} contentLabel="Add or Edit Shipping">
                 <ShippingForm backend={backend} loggedIn={loggedIn} shipping={shipping} shippingInput={shippingInput} grabShippingInput={grabShippingInput} grabPaymentLoading={grabPaymentLoading} addShipping={addShipping} grabAddNewShipping={grabAddNewShipping} cartID={cartID} updateShippingState={updateShippingState} updateShippingInputState={updateShippingInputState} editShipping={editShipping} handleEditShipping={handleEditShipping} closeModal={closeModal} collapse={collapse} grabMultipleShipping={grabMultipleShipping}/> 
             </Modal>
         )
@@ -347,13 +357,15 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
                 <p id="line1">{shipping.line1}</p>
                 <p id="line2">{shipping.line2}</p>
                 <p id="cityStateZipcode">{shipping.city}, {shipping.state} {shipping.postalCode}</p>
-                {!showButtons && <button onClick={back}>Edit</button>}
+                {/* Edit button only shown if user has moved onto the Payment Method component */}
+                {!showButtons && <button onClick={back}>Edit</button>} 
+                {/* The following are shown if user is still in the Shipping component */}
                 { showButtons && (
-                <>
-                <button id="addNewAddress" onClick={openAddNewModal}>Add New</button>
-                <button id="editAddress" onClick={openEditModal}>Edit</button>
-                {multipleShipping && <button id="allAddresses" onClick={openAllAddressesModal}>All Addresses</button>}
-                </>
+                    <>
+                    <button id="addNewAddress" onClick={openAddNewModal}>Add New</button>
+                    <button id="editAddress" onClick={openEditModal}>Edit</button>
+                    {multipleShipping && <button id="allAddresses" onClick={openAllAddressesModal}>All Addresses</button>}
+                    </>
                 )}
                 {showShipping && <button onClick={collapse}>Next</button>}
             </div>
@@ -365,3 +377,8 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
 }
 
 export default Shipping
+
+// if(!loggedIn() && shipping.firstName) {
+//     grabTotalCartQuantity(0)
+//     return grabRedirect(true)
+// }

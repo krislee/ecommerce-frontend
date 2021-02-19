@@ -1,8 +1,8 @@
 import React from 'react'
+import { Redirect } from 'react-router-dom'
 
-export default function ShippingForm( { backend, loggedIn, readOnly, shipping, addShipping, shippingInput, grabShippingInput, cartID, updateShippingState, updateShippingInputState, editShipping, handleEditShipping, closeModal, collapse, back, addNewShipping, grabAddNewShipping, grabMultipleShipping }) {
+export default function ShippingForm({ backend, loggedIn, readOnly, shipping, addShipping, shippingInput, grabShippingInput, updateShippingState, updateShippingInputState, editShipping, handleEditShipping, closeModal, collapse, addNewShipping, grabAddNewShipping, grabMultipleShipping }) {
     
-
     const handleShippingChange = (event) => {
         const { name, value} = event.target
         grabShippingInput((prevShipping) => ({
@@ -11,7 +11,7 @@ export default function ShippingForm( { backend, loggedIn, readOnly, shipping, a
     }
 
     // Depending on if we are adding a shipping (indicated by addShipping state), editing a shipping (indicated by editShipping state), or saving our first address/guest user, different onSubmit form functions will run.
-    const handleNext = async (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault() // prevent the page from refreshing after form submission
         console.log("shipping input: ", shippingInput)
         if(addShipping) {
@@ -29,28 +29,32 @@ export default function ShippingForm( { backend, loggedIn, readOnly, shipping, a
 
     const addAdditionalSaveShipping = async() => {
         console.log("adding additional address")
-        const saveNewShippingResponse = await fetch(`${backend}/shipping/address?lastUsed=false&default=false&checkout=true`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': loggedIn()
-            }, 
-            body: JSON.stringify({
-                name: `${shippingInput.firstName}, ${shippingInput.lastName}`,
-                address: `${shippingInput.line1}, ${shippingInput.line2}, ${shippingInput.city}, ${shippingInput.state}, ${shippingInput.postalCode}`
+        if(loggedIn()) {
+            const saveNewShippingResponse = await fetch(`${backend}/shipping/address?lastUsed=false&default=false&checkout=true`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': loggedIn()
+                }, 
+                body: JSON.stringify({
+                    name: `${shippingInput.firstName}, ${shippingInput.lastName}`,
+                    address: `${shippingInput.line1}, ${shippingInput.line2}, ${shippingInput.city}, ${shippingInput.state}, ${shippingInput.postalCode}`
+                })
             })
-        })
-        const saveNewShippingData = await saveNewShippingResponse.json()
-        console.log(saveNewShippingData)
-        updateShippingState(saveNewShippingData.address)
-        updateShippingInputState(saveNewShippingData.address)
-        grabAddNewShipping(false)
-        grabMultipleShipping(true)
+            const saveNewShippingData = await saveNewShippingResponse.json()
+            console.log(saveNewShippingData)
+            updateShippingState(saveNewShippingData.address)
+            updateShippingInputState(saveNewShippingData.address)
+            grabAddNewShipping(false) // updates the addShipping state to represent we are no longer adding a new shipping; if false, modal won't be returned; if true, modal would be shown
+            grabMultipleShipping(true) // We can only add a new shipping if Add New button is shown. Add New button is shown if we have at least one saved address. If we only have one saved address, then Saved Shipping button would not be shown. But since we are adding a new shipping, then Saved Shipping button would definitely be shown. Saved Shipping button is shown dependent on the truthy value of MultipleShipping state
+        }  else {
+            <Redirect to="/login/buyer"></Redirect> // redirect if user decides to clear local storage
+        }
     }
 
     return (
         <>
-        <form id="form" name="form" onSubmit={handleNext}>
+        <form id="form" name="form" onSubmit={handleSubmit}>
             <input value={shippingInput.firstName || ""} name="firstName" placeholder="First Name" onChange={handleShippingChange} readOnly={readOnly} required/>
 
             <input value={shippingInput.lastName || ""} name="lastName" placeholder="Last Name" onChange={handleShippingChange} readOnly={readOnly} required/>
@@ -82,5 +86,3 @@ export default function ShippingForm( { backend, loggedIn, readOnly, shipping, a
         </>      
     )
 }
-
-// ShippingForm.defaultProps = {opacity: 1}
