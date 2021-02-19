@@ -31,19 +31,22 @@ export default function Settings({ backend, loggedIn, settingData, grabSettingDa
             const emailUpdateData = await emailUpdateResponse.json()
             console.log(emailUpdateData)
             if(!emailUpdateData.msg && !emailUpdateData.details) {
-                grabSettingData(emailUpdateData)
-                setUpdateEmailSuccess(true)
-                setEmailErrorMessage(false)
-                setEmailInvalid(false)
-                setShowEmailInput(false)
+                grabSettingData(emailUpdateData) // update email
+                setUpdateEmailSuccess(true) // show success message
+                setEmailErrorMessage(false) // do not show error message
+                setEmailInvalid(false) // do not show error message
+                setShowEmailInput(false) // hide input 
+                setEmailInput('') // empty input
             }
             if(emailUpdateData.msg) {
                 setEmailErrorMessage(true)
                 setEmailInvalid(false)
+                setEmailInput('') // empty input
             }
             if(emailUpdateData.details && emailUpdateData.details[0].message) {
                 setEmailInvalid(true)
                 setEmailErrorMessage(false)
+                setEmailInput('') // empty input
             }
         }
             
@@ -62,18 +65,21 @@ export default function Settings({ backend, loggedIn, settingData, grabSettingDa
             const resetPasswordData = await resetPasswordResponse.json()
             console.log(resetPasswordData)
             if(!resetPasswordData.msg && !resetPasswordData.details) {
-                setResetPasswordSuccess(true)
+                setResetPasswordSuccess(true) // show success message
                 setPasswordErrorMessage(false)
                 setPasswordInvalid(false)
-                setShowPasswordInput(false)
+                setShowPasswordInput(false) // hide input
+                setPasswordInput('') // empty input
             }
             if(resetPasswordData.msg) {
                 setPasswordErrorMessage(true)
                 setPasswordInvalid(false)
+                setPasswordInput('') // empty input
             }
             if(resetPasswordData.details && resetPasswordData.details[0].message) {
                 setPasswordInvalid(true)
                 setPasswordErrorMessage(false)
+                setPasswordInput('') // empty input
             }
         }
     }
@@ -93,7 +99,10 @@ export default function Settings({ backend, loggedIn, settingData, grabSettingDa
                     <div>
                         <input type="email" value={emailInput} onChange={handleEmailInputChange}/>
                         <input type="submit" onClick={handleEmailUpdate}/>
-                        <button onClick={() => setShowEmailInput(false)}>Close</button>
+                        <button onClick={() => {
+                            setShowEmailInput(false) // hide input
+                            setEmailInput('') // empty input
+                        }}>Close</button>
                     </div>
                 )} 
                 <Toast onClose={() => setEmailInvalid(false)} show={emailInvalid} delay={2000} autohide>
@@ -110,7 +119,7 @@ export default function Settings({ backend, loggedIn, settingData, grabSettingDa
 
                 <h5>Password: *****</h5>
                 <button disabled = {showEmailInput} onClick={()=> {
-                    setShowPasswordInput(true)
+                    setShowPasswordInput(true) 
                     setShowEmailInput(false)
                 }}>Reset password</button>
 
@@ -118,7 +127,10 @@ export default function Settings({ backend, loggedIn, settingData, grabSettingDa
                     <div>
                     <input type="password" value={passwordInput} onChange={handlePasswordInputChange}/>
                     <input type="submit" onClick={handleResetPassword}/>
-                    <button onClick={() => setShowPasswordInput(false)}>Close</button>
+                    <button onClick={() => {
+                        setShowPasswordInput(false) // hide input
+                        setPasswordInput('') // empty input
+                    }}>Close</button>
                     </div>
                 )}
    

@@ -15,7 +15,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function AllItems ({ loggedIn, grabURL, backend }) {
+function AllItems ({ loggedIn, grabURL, backend, totalCartQuantity, grabTotalCartQuantity }) {
     const classes = useStyles();
 
     const [footerLoading, setFooterLoading] = useState(true) // this state allows for the footer to be loaded at the SAME TIME as items being loaded in, instead of being loaded less than a second BEFORE the items are loaded in
@@ -64,7 +64,7 @@ function AllItems ({ loggedIn, grabURL, backend }) {
 
     return (
         <div className="homepage-container">
-            <NavBar />
+            {/* <NavBar totalCartQuantity={totalCartQuantity} grabTotalCartQuantity={grabTotalCartQuantity} backend={backend} loggedIn={loggedIn}/> */}
 
             <div className="display-item-container">
                 {<div className={loggedIn() ? 'itemContainerLoggedIn' : 'itemContainer'}>

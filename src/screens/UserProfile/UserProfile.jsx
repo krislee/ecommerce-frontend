@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from '../../components/NavigationBar';
-import { Redirect } from 'react-router-dom';
+import { Redirect, Link, useHistory, useLocation } from 'react-router-dom';
 import Footer from '../../components/Footer';
 import Settings from './Settings'
 import Address from './Address';
@@ -11,15 +11,17 @@ import '../../styles/UserProfile/UserProfile.css';
 import { SnackbarContent } from '@material-ui/core';
 
 
-function UserProfile ({ backend, loggedIn, orderID, grabOrderID }) {
-
+function UserProfile ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuantity }) {
+    const history = useHistory()
+    const location = useLocation()
+    console.log(location)
     // Getter and Setter to display the address component or not
-    const [addressesTabOpen, setAddressesTabOpen] = useState(false);
+    const [addressesTabOpen, setAddressesTabOpen] = useState(location.pathname=='/profile/address'? true: false);
     // Getter and Setter to display the payments component or not
-    const [paymentsTabOpen, setPaymentsTabOpen] = useState(false);
-    const [ordersTabOpen, setOrdersTabOpen] = useState(false);
-    const [settingsTabOpen, setSettingsTabOpen] = useState(true)
-    const [reviewsTabOpen, setReviewsTabOpen] = useState(false)
+    const [paymentsTabOpen, setPaymentsTabOpen] = useState(location.pathname=='/profile/payment'? true: false);
+    const [ordersTabOpen, setOrdersTabOpen] = useState(location.pathname=='/profile/order'? true: false);
+    const [settingsTabOpen, setSettingsTabOpen] = useState(location.pathname=='/profile/setting'? true: false);
+    const [reviewsTabOpen, setReviewsTabOpen] = useState(location.pathname=='/profile/review'? true: false);
 
     const [settingData, setSettingData] = useState({})
     const [addressData, setAddressData] = useState([]);
@@ -86,7 +88,7 @@ function UserProfile ({ backend, loggedIn, orderID, grabOrderID }) {
                 }
             })
             const orderData = await orderResponse.json()
-            setOrderData(orderData.orders.reverse())
+            setOrderData(orderData.orders)
             setOrdersTotal(orderData.totalPages)
             console.log(orderData.orders)
         }
@@ -156,6 +158,7 @@ function UserProfile ({ backend, loggedIn, orderID, grabOrderID }) {
         setPaymentsTabOpen(false);
         setOrdersTabOpen(false)
         setReviewsTabOpen(false)
+        history.replace({ pathname: `/profile/address`})
     }
     // Function that will handle whether the payment component is open or not
     const handleClickPayments = () => {
@@ -164,6 +167,7 @@ function UserProfile ({ backend, loggedIn, orderID, grabOrderID }) {
         setAddressesTabOpen(false);
         setOrdersTabOpen(false)
         setReviewsTabOpen(false)
+        history.replace({ pathname: `/profile/payment`})
     }
     // Function that will open the order component and hide all the other components (since we are hiding all the other components, it does not matter which component you were previously displaying)
     const handleClickOrders = () => {
@@ -172,6 +176,7 @@ function UserProfile ({ backend, loggedIn, orderID, grabOrderID }) {
         setAddressesTabOpen(false);
         setPaymentsTabOpen(false)
         setReviewsTabOpen(false)
+        history.replace({ pathname: `/profile/order`})
     }
     // Function that will open the order component and hide all the other components (since we are hiding all the other components, it does not matter which tab you were previously on)
     const handleClickReviews = () => {
@@ -180,6 +185,7 @@ function UserProfile ({ backend, loggedIn, orderID, grabOrderID }) {
         setAddressesTabOpen(false);
         setPaymentsTabOpen(false);
         setOrdersTabOpen(false)
+        history.replace({ pathname: `/profile/review`})
     }
     const handleClickSettings = () => {
         setSettingsTabOpen(true)
@@ -187,6 +193,7 @@ function UserProfile ({ backend, loggedIn, orderID, grabOrderID }) {
         setPaymentsTabOpen(false);
         setOrdersTabOpen(false)
         setReviewsTabOpen(false)
+        history.replace({ pathname: `/profile/setting`})
     }
 
     // If the user does not have a token (or logged in), users will automatically render onto the homepage because the user profile page is on accessible to users that are logged in
@@ -197,7 +204,7 @@ function UserProfile ({ backend, loggedIn, orderID, grabOrderID }) {
     } else {
         return (
             <>
-                <Navbar />
+                {/* <Navbar totalCartQuantity={totalCartQuantity} grabTotalCartQuantity={grabTotalCartQuantity} backend={backend} loggedIn={loggedIn}/> */}
                 <div className="user-profile-container">
                     {/* This bar represents the sections that users can click on to switch between the address, payments, and order components (screens) */}
                     <div className='top-bar'>
@@ -222,10 +229,12 @@ function UserProfile ({ backend, loggedIn, orderID, grabOrderID }) {
                            Reviews
                         </div>
                     </div>
+                   
                     {/* This component renders only when the profileTabOpen is open  */}
                     {settingsTabOpen && 
                         <Settings backend={backend} loggedIn={loggedIn} settingData={settingData} grabSettingData={grabSettingData} />
                     }
+                   
                     {/* This component renders only when the addressesTab is open */}
                     {addressesTabOpen && 
                         <Address 
@@ -234,6 +243,7 @@ function UserProfile ({ backend, loggedIn, orderID, grabOrderID }) {
                         defaultFirst={defaultFirst}
                         grabAddressData={grabAddressData}/>
                     }
+          
                     {/* This component renders only when the paymentsTab is open  */}
                     {paymentsTabOpen &&
                         <Payment 
@@ -242,6 +252,7 @@ function UserProfile ({ backend, loggedIn, orderID, grabOrderID }) {
                         defaultFirstPayment={defaultFirstPayment}
                         grabPaymentData={grabPaymentData}/>
                     }
+    
                     {/* This component renders only when the orderTabOpen is true  */}
                     {ordersTabOpen &&
                         <Orders 
@@ -253,6 +264,7 @@ function UserProfile ({ backend, loggedIn, orderID, grabOrderID }) {
                         // grabOrderID={grabOrderID}
                         ordersTotal={ordersTotal}/>
                     }
+
                     {reviewsTabOpen && 
                         <UserReviews 
                         backend={backend} 

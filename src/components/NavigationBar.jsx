@@ -1,18 +1,35 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import {Link, Redirect} from 'react-router-dom';
 // import Button from '../components/Button'
 import '../styles/NavigationBar.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faHome, faShoppingCart, faUser } from '@fortawesome/free-solid-svg-icons'
 import { Dropdown } from 'react-bootstrap'
+import Badge from '@material-ui/core/Badge';
+import { withStyles } from '@material-ui/core/styles';
+import IconButton from '@material-ui/core/IconButton';
+import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 
-function NavBar () {
+const StyledBadge = withStyles((theme) => ({
+  badge: {
+    right: -3,
+    top: 13,
+    border: `2px solid ${theme.palette.background.paper}`,
+    padding: '0 4px',
+  },
+}))(Badge);
+
+
+function NavBar ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuantity }) {
     const [redirect, setRedirect] = useState(false)
 
     const handleLogout = () => {
         localStorage.clear();
+        grabTotalCartQuantity(0)
         setRedirect(true)
     }
+
+
     if(redirect) {
         return <Redirect to='/'></Redirect>
     } 
@@ -26,8 +43,13 @@ function NavBar () {
                 </div>
             </Link>
             <div className="cart-profile-container">
-            <Link to="/cart">
-                <FontAwesomeIcon className="cart-icon" icon={faShoppingCart}/>
+            {/*  reload the cart page in case user clears local storage and then re-clicks on the cart icon */}
+            <Link to="/cart"  > 
+                <IconButton aria-label="cart">
+                    <StyledBadge badgeContent={totalCartQuantity} color="secondary">
+                         <FontAwesomeIcon className="cart-icon" icon={faShoppingCart}/>
+                    </StyledBadge>
+                </IconButton>
             </Link>
             {localStorage.getItem('token') ? 
             <Dropdown>
@@ -37,7 +59,7 @@ function NavBar () {
             : null}
             </Dropdown.Toggle>
             <Dropdown.Menu className="dropdown-menu">
-                <Dropdown.Item href="/profile">Account Settings</Dropdown.Item>
+                <Dropdown.Item href="/profile/setting" onClick={() => window.location.reload()}>Account Settings</Dropdown.Item>
                 <Dropdown.Item onClick={handleLogout}>Logout</Dropdown.Item>
             </Dropdown.Menu>
             </Dropdown> : 

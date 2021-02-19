@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {Redirect, useLocation} from 'react-router-dom';
+import {Redirect, useLocation, Link} from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -81,8 +81,14 @@ export default function IndividualOrder({ backend, loggedIn }) {
                 </TableHead>
                 <TableBody>
                     {orderItems.map((item, index) => (
-                    <TableRow key={index}>
-                        <TableCell component="th" scope="row">{item.Brand} {item.Name}</TableCell>
+                    <TableRow key={index}>                
+                        <TableCell component="th" scope="row">
+                            <Link className="homepage-items" to={{
+                                pathname:`/item/${item.Name}`,
+                                search: `id=${item.ItemId}`}} >
+                            {item.Brand} {item.Name}
+                            </Link>
+                        </TableCell>
                         <TableCell align="right">{item.Quantity}</TableCell>
                         <TableCell align="right">{item.TotalPrice}</TableCell>
                     </TableRow>

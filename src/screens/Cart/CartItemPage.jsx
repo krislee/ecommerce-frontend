@@ -1,14 +1,12 @@
-import React, {useState} from 'react'
-// import {Link} from 'react-router-dom';
+import React, {useEffect, useState} from 'react'
 import '../../styles/CartPage.css'
-// import NavBar from '../../components/NavigationBar'
-// import Footer from '../../components/Footer'
-// import { faKeyboard } from '@fortawesome/free-solid-svg-icons';
 
 
-export default function CartItemPage ({ backend, loggedIn, id, name, quantity, totalPrice, grabItems, grabTotalPrice}) {
 
+export default function CartItemPage ({ backend, loggedIn, id, name, quantity, totalPrice, grabItems, grabTotalPrice, grabTotalCartQuantity}) {
     const [cartQuantity, setCartQuantity] = useState(quantity)
+
+    useEffect(() => setCartQuantity(quantity), [quantity]) // resolved the deleting issue of input having the last deleted item input value
 
     const handleQuantity = (event) => {
         setCartQuantity(event.target.value)
@@ -31,7 +29,8 @@ export default function CartItemPage ({ backend, loggedIn, id, name, quantity, t
             const updateCartData = await updateCartResponse.json()
             console.log(updateCartData)
             grabItems(updateCartData.cart.Items)
-            grabTotalPrice(updateCartData.totalCartPrice)
+            grabTotalPrice(updateCartData.cart.TotalCartPrice)
+            grabTotalCartQuantity(updateCartData.cart.TotalItems)
         } else {
             const updateCartResponse = await fetch(`${backend}/buyer/electronic/cart/${event.target.id}`, {
                 method: 'PUT',
@@ -45,6 +44,7 @@ export default function CartItemPage ({ backend, loggedIn, id, name, quantity, t
             console.log(updateCartData)
             grabItems(updateCartData.cart)
             grabTotalPrice(updateCartData.totalCartPrice)
+            grabTotalCartQuantity(updateCartData.totalItems)
         }
     }
 
@@ -62,7 +62,8 @@ export default function CartItemPage ({ backend, loggedIn, id, name, quantity, t
             const deleteCartItemData = await deleteCartItemResponse.json()
             console.log(deleteCartItemData)
             grabItems(deleteCartItemData.cart.Items)
-            grabTotalPrice(deleteCartItemData.totalCartPrice)
+            grabTotalPrice(deleteCartItemData.cart.TotalCartPrice)
+            grabTotalCartQuantity(deleteCartItemData.cart.TotalItems)
         } else {
             console.log("deleting guest")
             const deleteCartItemResponse = await fetch(`${backend}/buyer/electronic/cart/${event.target.id}`, {
@@ -74,6 +75,7 @@ export default function CartItemPage ({ backend, loggedIn, id, name, quantity, t
             console.log(deleteCartItemData)
             grabItems(deleteCartItemData.cart)
             grabTotalPrice(deleteCartItemData.totalCartPrice)
+            grabTotalCartQuantity(deleteCartItemData.totalItems)
         }
     }
 

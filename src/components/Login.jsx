@@ -3,7 +3,7 @@ import {Redirect} from 'react-router-dom';
 import '../styles/Login.css'
 import Toast from 'react-bootstrap/Toast'
 
-function Login ({backend, loggedIn, grabLoginInfo, buyer, seller}) {
+function Login ({backend, loggedIn, grabLoginInfo, buyer, seller, grabTotalCartQuantity}) {
 
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -29,7 +29,7 @@ function Login ({backend, loggedIn, grabLoginInfo, buyer, seller}) {
                 setLoginError(true)
             }
             if (loginData.success === true) {
-                grabLoginInfo(loginData.token);
+                localStorage.setItem('token', loginData.token)
                 setIsLogin(true)
                 const syncCartResponse = await fetch(`${backend}/buyer/sync/cart`, {
                     method: 'POST',
@@ -42,6 +42,7 @@ function Login ({backend, loggedIn, grabLoginInfo, buyer, seller}) {
                 })
                 const syncCartData = await syncCartResponse.json()
                 console.log(syncCartData)
+                grabTotalCartQuantity(syncCartData.cart.TotalItems)
                 
             }
         }

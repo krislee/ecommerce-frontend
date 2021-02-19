@@ -48,13 +48,13 @@ export default function Orders ({ backend, loggedIn, orderData, grabOrderData, o
             {orderData.map((order, index) => {
                 return (
                     <div key={index}>
-                    {index === 0 && <h3>{ConvertDate(orderData[0].OrderDate)}</h3>}
-                    {index !==0 && ConvertDate(order.OrderDate) !== ConvertDate(orderData[index-1].OrderDate) && <h3>{ConvertDate(order.OrderDate)}</h3>}
+                    {index === 0 && <h3>{new Date((orderData[0].OrderDate)).toDateString()}</h3>}
+                    {index !==0 && new Date(order.OrderDate).toDateString() !== new Date(orderData[index-1].OrderDate).toDateString() && <h3>{new Date(order.OrderDate).toDateString()}</h3>}
                     <Link to={`/show-order?orderNumber=${order.OrderNumber}`}>
                         <Card>
                             <CardHeader
                                 title={`Order Number:  ${order.OrderNumber}`}
-                                subheader={ConvertDate(order.OrderDate)}
+                                subheader={new Date(order.OrderDate).toDateString()}
                             />
                         </Card>
                     </Link>

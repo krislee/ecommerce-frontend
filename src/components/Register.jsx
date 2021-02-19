@@ -48,7 +48,7 @@ export default function Register ({backend, loggedIn, grabLoginInfo, buyer, sell
                 setPasswordInvalid(true)
             }
             if (registerData.success === true) {
-                grabLoginInfo(registerData.token);
+                localStorage.setItem('token', registerData.token)
                 setIsRegistered(true)
                 const syncCartResponse = await fetch(`${backend}/buyer/sync/cart`, {
                     method: 'POST',

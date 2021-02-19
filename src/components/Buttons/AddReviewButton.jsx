@@ -3,10 +3,7 @@ import Modal from 'react-modal';
 import Toast from 'react-bootstrap/Toast'
 import '../../styles/Button.css'
 import ReviewForm from '../Reviews/ReviewForm'
-import { faCloudShowersHeavy } from '@fortawesome/free-solid-svg-icons';
 
-
-// name, comment, rating, id
 export default function AddReviewButton ({ backend, loggedIn, electronicID, grabReview }) {
 
     const [showReviewForm, setShowReviewForm] = useState(false)
@@ -24,9 +21,6 @@ export default function AddReviewButton ({ backend, loggedIn, electronicID, grab
 
     const submitReview = async(event) => {
         event.preventDefault()
-
-        console.log(19, commentsValue)
-        console.log(20, ratingValue)
 
         if(loggedIn()) {
             const submitReviewResponse = await fetch(`${backend}/buyer/electronic/review/${electronicID}`, {
@@ -46,7 +40,7 @@ export default function AddReviewButton ({ backend, loggedIn, electronicID, grab
             if(submitReviewData.unverifiedReviewMessage) {
                 setUnverifiedReviewError(true) // show an alert for the error if there is an error message
             } else if(submitReviewData.secondReviewMessage) {
-                setReviewError(true)
+                setReviewError(true) // show an alert for the error if there is an error message
             }else {
                 grabReview(submitReviewData) // update the review, which will re-run UseEffect to get the electronic again to get the reviews
             }
@@ -54,7 +48,7 @@ export default function AddReviewButton ({ backend, loggedIn, electronicID, grab
             setLoginToReview(true)
         }
 
-        // Reset everything when we close modal:
+        // Reset everything after we submit review
         closeReviewModal()
     }
 
