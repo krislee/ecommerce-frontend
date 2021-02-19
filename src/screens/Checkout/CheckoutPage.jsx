@@ -23,7 +23,7 @@ function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCar
     const [paymentLoading, setPaymentLoading] = useState(true)
     const [orderComplete, setOrderComplete] = useState(false)
     
-    const [prevLoggedIn, setPrevLoggedIn] = useState(localStorage.getItem('token'))
+    const [prevLoggedIn, setPrevLoggedIn] = useState('')
 
     /* ------- PAYMENT INTENT-RELATED STATES ------- */
     // const [customer, setCustomer] = useState(false);
@@ -353,8 +353,13 @@ function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCar
             const cartResponseData = await cartResponse.json()
             console.log(cartResponseData);
             if(typeof cartResponseData.cart === 'string') {
+                console.log(356)
                 // Logged in user with both saved shipping & payment method OR only with saved payment only; Logged in user with saved shipping only; Logged in user with neither shipping nor payment method 
-                if(paymentMethod.paymentMethodID || shipping.firstName || prevLoggedIn) return grabTotalCartQuantity(0) // update the Nav Bar & rerun CheckoutPage UseEffect
+                if(prevLoggedIn) {
+                    console.log(359)
+                    return grabTotalCartQuantity(0) // update the Nav Bar & rerun CheckoutPage UseEffect
+                    return setRedirect(true)
+                }
                 else {
                     grabTotalCartQuantity(0) // update the Nav Bar
                     return grabRedirect(true) // return so that we do not proceed confirming payment

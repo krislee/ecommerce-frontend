@@ -29,10 +29,7 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
 
     // Fade out the Shipping component and show the Payment Method component when Next button is clicked
     const collapse = async () => {
-        console.log("collapse", prevLoggedIn)
-        // if(!loggedIn() && shipping.firstName) return
         if(prevLoggedIn && !loggedIn()) return grabTotalCartQuantity(0)
-        grabPrevLoggedIn(localStorage.getItem('token'))
         grabShowShipping(false) // hide the Shipping component that shows the shipment details
         grabShowPayment(true) //The payment method form or payment method details  from paymentMethod component will be displayed when openCollapse state is true
         grabReadOnly(true) // disable the input fields
@@ -42,7 +39,7 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
     }
 
     const back =() => {
-        if(!loggedIn() && shipping.firstName) return
+        if(!loggedIn() && prevLoggedIn) return grabTotalCartQuantity(0)
         grabShowShipping(true) // show the Shipping component with the shipment details again
         grabShowPayment(false) // close the payment method info/form
         grabShowButtons(true) // show the Add New, Edit (the one that is associated with handleEditShipping function), and All Addresses buttons again & 
@@ -250,8 +247,8 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
             const updatePaymentIntentWithShippingData = await updatePaymentIntentWithShippingResponse.json()
             console.log(updatePaymentIntentWithShippingData)
         } else {
-            if(shipping.firstName) return // check if user is a guest because logged in user actively cleared local storage; we would know if user was previously logged in if shipping state has stored the address, since in useEffect, we store address in shipping state if user was logged in; if logged in user cleared local storage do not run the function (this only works for logged in user already has a saved shipping only or already has both saved shipping and payment method)
-            if(paymentMethod.paymentMethodID) return // if logged in user has a saved payment method only but not shipping, but then clears local storage and clicks Next on shipping, we do not want to update payment intent
+            // if(shipping.firstName) return // check if user is a guest because logged in user actively cleared local storage; we would know if user was previously logged in if shipping state has stored the address, since in useEffect, we store address in shipping state if user was logged in; if logged in user cleared local storage do not run the function (this only works for logged in user already has a saved shipping only or already has both saved shipping and payment method)
+            // if(paymentMethod.paymentMethodID) return // if logged in user has a saved payment method only but not shipping, but then clears local storage and clicks Next on shipping, we do not want to update payment intent
             if(prevLoggedIn && !loggedIn()) return // if logged in user clears local storage and then clicks next, we do not want to continue updating payment intent
 
             // Guest user fetches to this route to update payment intent to include shipping address:
