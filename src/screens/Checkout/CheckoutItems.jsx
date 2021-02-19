@@ -1,7 +1,8 @@
 import React, {useEffect, useState} from 'react'
 import { Redirect } from 'react-router-dom';
+import PaymentMethod from './PaymentMethod';
 
-export default function CheckoutItems({ backend, loggedIn, showItems, grabShowItems, grabShowShipping, grabShowButtons, grabReadOnly }) {
+export default function CheckoutItems({ backend, loggedIn, showItems, grabShowItems, grabShowShipping, grabShowButtons, grabReadOnly, grabTotalCartQuantity, shipping, prevLoggedIn, grabPrevLoggedIn, paymentMethod, grabRedirect }) {
     const [checkoutItemsLoading, setCheckoutItemsLoading] = useState(true)
     const [items, setItems] = useState([]);
     const [redirect, setRedirect] = useState(false)
@@ -24,6 +25,7 @@ export default function CheckoutItems({ backend, loggedIn, showItems, grabShowIt
                 console.log(cartItemsData)
                 
                 setItems(cartItemsData.cart.Items);
+                grabPrevLoggedIn(loggedIn())
                 setCheckoutItemsLoading(false)
             } else {
                 const cartItemsResponse = await fetch(`${backend}/buyer/cart`, {
@@ -47,7 +49,27 @@ export default function CheckoutItems({ backend, loggedIn, showItems, grabShowIt
 
     }, [])
 
-    const handleNext = () => {
+    const handleNext = async () => {
+        // logged in user cleared local storage before clicking Next button, redirect and update nav bar
+        if(prevLoggedIn && !loggedIn()) {
+            console.log(53, prevLoggedIn)
+            grabTotalCartQuantity(0)
+            return grabRedirect(true)
+        } else if(!loggedIn()) {
+            const cartResponse = await fetch(`${backend}/buyer/cart`, {
+                method: 'GET',
+                headers: {'Content-Type': 'application/json'},
+                credentials: 'include'
+            })
+            const cartResponseData = await cartResponse.json()
+            console.log(cartResponseData);
+            if(cartResponseData.cart === "No items in cart") {
+                console.log(66)
+                grabTotalCartQuantity(0)
+                setRedirect(true)
+                return
+            }
+        }
         grabShowItems(false) //hide the Next button in CheckoutItems
         grabReadOnly(true)
         grabShowButtons(true) // show the Add New, Edit, and Saved Addresses buttons for the already saved Shipping
@@ -71,7 +93,10 @@ export default function CheckoutItems({ backend, loggedIn, showItems, grabShowIt
                 </div>
                 {showItems && <button onClick={handleNext}>Next</button>}
                 </>
-            <button onClick={()=> setRedirect(true)}>Edit</button>
+            <button onClick={()=> {
+                if((!loggedIn() && shipping.firstName) || (!loggedIn() && paymentMethod.paymentMethodID) || (prevLoggedIn && !loggedIn())) grabTotalCartQuantity(0)
+                setRedirect(true)
+            }}>Edit</button>
             </>
         )
     }

@@ -31,6 +31,7 @@ function CartPage ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuantity
                 if(typeof cartItemsData.cart == 'string') {
                     // If there are no items in the cart when we first load the cart page, update data property to store {cart: "No cart available"}
                     setEmptyCart(cartItemsData);
+                    grabTotalCartQuantity(0)
                 } else {
                     console.log(34)
                     setItems(cartItemsData.cart.Items);
@@ -50,6 +51,7 @@ function CartPage ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuantity
                     console.log(48)
                     // If there are no items in the cart when we first load the cart page, update data property to store {cart: 'No items in cart'}
                     setEmptyCart(cartItemsData);
+                    grabTotalCartQuantity(0)
                 } else {
                     console.log(52)
                     // Update items state to store the list of items
@@ -79,7 +81,7 @@ function CartPage ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuantity
         return (
             <>
             <div className="cart-page-container">
-                <NavBar totalCartQuantity={totalCartQuantity} grabTotalCartQuantity={grabTotalCartQuantity}/>
+                {/* <NavBar totalCartQuantity={totalCartQuantity} grabTotalCartQuantity={grabTotalCartQuantity}/> */}
                 <div className="cart">
                     <div className="cart-items">
                         {items.map((item, index) => { return <CartItemPage backend={backend} loggedIn={loggedIn} key={index} id={item.ItemId} name={item.Name} quantity={item.Quantity} totalPrice={item.TotalPrice} grabItems={grabItems} grabTotalPrice={grabTotalPrice} grabTotalCartQuantity={grabTotalCartQuantity} /> })}

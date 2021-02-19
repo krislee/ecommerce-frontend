@@ -4,7 +4,7 @@ import Modal from 'react-modal';
 import { Redirect } from 'react-router-dom';
 // import { Accordion, Card } from 'react-bootstrap'
 
-function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, grabShowPayment, loggedOut, grabLoggedOut, shipping, grabShipping, grabBillingWithShipping, shippingInput, grabShippingInput, paymentMethod, grabCardholderName, showButtons, grabShowButtons, grabShowItems, showShipping, grabShowShipping, grabError, grabDisabled, readOnly, grabReadOnly, grabTotalCartQuantity, grabRedirect }) {
+function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, grabShowPayment, loggedOut, grabLoggedOut, shipping, grabShipping, grabBillingWithShipping, shippingInput, grabShippingInput, paymentMethod, grabCardholderName, showButtons, grabShowButtons, grabShowItems, showShipping, grabShowShipping, grabError, grabDisabled, readOnly, grabReadOnly, grabTotalCartQuantity, grabRedirect, prevLoggedIn, grabPrevLoggedIn }) {
    
     const [shippingLoading, setShippingLoading] = useState(true) // shippingLoading state is initially set to true to render <></> before updating it to false in useEffect()
     const [showModal, setShowModal] = useState(false)
@@ -29,8 +29,10 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
 
     // Fade out the Shipping component and show the Payment Method component when Next button is clicked
     const collapse = async () => {
-        console.log("collapse")
+        console.log("collapse", prevLoggedIn)
         // if(!loggedIn() && shipping.firstName) return
+        if(prevLoggedIn && !loggedIn()) return grabTotalCartQuantity(0)
+        grabPrevLoggedIn(localStorage.getItem('token'))
         grabShowShipping(false) // hide the Shipping component that shows the shipment details
         grabShowPayment(true) //The payment method form or payment method details  from paymentMethod component will be displayed when openCollapse state is true
         grabReadOnly(true) // disable the input fields
@@ -75,8 +77,6 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
                 postalCode: splitShippingAddress[4],
                 id: checkoutSavedShippingAddressData._id
             })
-
-            // grabPaymentLoading(false)
         } 
     }
 
@@ -116,7 +116,7 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
             console.log(47, "all shipping: ", allSavedShippingData)
             setAllSavedShipping(allSavedShippingData) // update allSavedShipping state from [] to store all the addresses returned from server
         } else {
-            setRedirect(true)
+            grabTotalCartQuantity(0)
         }
     }
 
@@ -136,7 +136,7 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
             updateShippingInputState(selectedShippingData.address) // update the shippingInput state so the input values would be the select address
             closeModal() // call the helper to close modal and update showSavedShipping state to false to represent we are no longer showing saved addresses after selecting one
         } else {
-            setRedirect(true)
+            grabTotalCartQuantity(0)
         }
     }
 
@@ -156,7 +156,7 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
             }
             setShowModal(false) // close modal
         } else {
-            setRedirect(true)
+            grabTotalCartQuantity(0)
         }
     }
 
@@ -167,13 +167,6 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
             setShowModal(true) // open modal
         } else {
             grabTotalCartQuantity(0)
-            // grabRedirect(true) - including this alone without grabTotalCartQuantity(0) or including this with grabTotalCartQuantity(0) causes the following error:
-            // index.js:1 Uncaught Error: The error you provided does not contain a stack trace.
-            // at S (index.js:1)
-            // at V (index.js:1)
-            // at index.js:1
-            // at index.js:1
-            // at a (index.js:1)
         }
     }
 
@@ -182,7 +175,7 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
             setEditShipping(true) // update the editShipping state to true to represent we are currently edditing a shipping
             setShowModal(true) // open modal
         } else {
-            setRedirect(true)
+            grabTotalCartQuantity(0)
         }
         
     }
@@ -193,7 +186,7 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
             setShowSavedShipping(true) // update showSavedShipping state to true to represent we are currently showing saved addresses
             handleSavedShipping() // when we open the Saved Addresses modal we want to run handleSavedShipping to fetch to the server to display all the shipping addresses user has saved
         } else {
-            setRedirect(true)
+            grabTotalCartQuantity(0)
         }
     }
 
@@ -219,7 +212,7 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
             updateShippingInputState(editShippingData.address) // Update the shippingInput state so that the input fields will also reflect the newly edited address, so when you click Edit button again the input fields are prefilled with the newly edited address
             setEditShipping(false) // update the editShipping state to true to represent we are not edditing a shipping
         } else {
-            setRedirect(true)
+            grabTotalCartQuantity(0)
         }
     }
 
@@ -257,8 +250,11 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
             const updatePaymentIntentWithShippingData = await updatePaymentIntentWithShippingResponse.json()
             console.log(updatePaymentIntentWithShippingData)
         } else {
-            if(shipping.firstName) return // check if user is a guest because user actively cleared local storage; we would know if user was previously logged in if shipping state has stored the address, since in useEffect, we store address in shipping state if user was logged in; if logged in user cleared local storage do not run the function
-            // Guest user fetches to this route:
+            if(shipping.firstName) return // check if user is a guest because logged in user actively cleared local storage; we would know if user was previously logged in if shipping state has stored the address, since in useEffect, we store address in shipping state if user was logged in; if logged in user cleared local storage do not run the function (this only works for logged in user already has a saved shipping only or already has both saved shipping and payment method)
+            if(paymentMethod.paymentMethodID) return // if logged in user has a saved payment method only but not shipping, but then clears local storage and clicks Next on shipping, we do not want to update payment intent
+            if(prevLoggedIn && !loggedIn()) return // if logged in user clears local storage and then clicks next, we do not want to continue updating payment intent
+
+            // Guest user fetches to this route to update payment intent to include shipping address:
             const updatePaymentIntentWithShippingResponse = await fetch(`${backend}/order/payment-intent`, {
                 method: 'POST',
                 headers: {
@@ -280,6 +276,10 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
             })
             const updatePaymentIntentWithShippingData = await updatePaymentIntentWithShippingResponse.json()
             console.log("guest updated payment intent", updatePaymentIntentWithShippingData)
+            if(updatePaymentIntentWithShippingData.message === "Please add an item to cart to checkout.") {
+                grabTotalCartQuantity(0);
+                return grabRedirect(true)
+            } 
         }
     }
  
@@ -338,11 +338,7 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
    
     if(shippingLoading) {
         return <></> // When the Checkout component first loads, render nothing for Shipping Component until after fetching an address. Depending if there is an address or not from the fetch, we will return something different as shown based on the conditional retuns below.
-    } 
-    // else if(redirect) {
-    //     return <Redirect to="/cart"></Redirect>
-    // }
-    else if(!shipping.firstName || !loggedIn()) {
+    } else if((loggedIn() && !shipping.firstName) || (!loggedIn() && !shipping.firstName)) {
         console.log(300)
         // If user is guest (as indicated by !loggedIn()), or logged in user does not have a shipping address (indicated by !shipping.address), we want to show the shipping form when the Next button from CheckoutItems component is clicked
         return (
@@ -387,7 +383,7 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
     } else if(addShipping || editShipping ) {
         return (
             <Modal isOpen={showModal} onRequestClose={ closeModal } ariaHideApp={false} contentLabel="Add or Edit Shipping">
-                <ShippingForm backend={backend} loggedIn={loggedIn} shipping={shipping} shippingInput={shippingInput} grabShippingInput={grabShippingInput} grabPaymentLoading={grabPaymentLoading} addShipping={addShipping} grabAddNewShipping={grabAddNewShipping} cartID={cartID} updateShippingState={updateShippingState} updateShippingInputState={updateShippingInputState} editShipping={editShipping} handleEditShipping={handleEditShipping} closeModal={closeModal} collapse={collapse} grabMultipleShipping={grabMultipleShipping} grabRedirect={grabRedirect} /> 
+                <ShippingForm backend={backend} loggedIn={loggedIn} shipping={shipping} shippingInput={shippingInput} grabShippingInput={grabShippingInput} grabPaymentLoading={grabPaymentLoading} addShipping={addShipping} grabAddNewShipping={grabAddNewShipping} cartID={cartID} updateShippingState={updateShippingState} updateShippingInputState={updateShippingInputState} editShipping={editShipping} handleEditShipping={handleEditShipping} closeModal={closeModal} collapse={collapse} grabMultipleShipping={grabMultipleShipping} grabTotalCartQuantity={grabTotalCartQuantity} /> 
             </Modal>
         )
     } else if(shipping.firstName) {

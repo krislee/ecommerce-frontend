@@ -23,6 +23,8 @@ function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCar
     const [paymentLoading, setPaymentLoading] = useState(true)
     const [orderComplete, setOrderComplete] = useState(false)
     
+    const [prevLoggedIn, setPrevLoggedIn] = useState(localStorage.getItem('token'))
+
     /* ------- PAYMENT INTENT-RELATED STATES ------- */
     // const [customer, setCustomer] = useState(false);
     const [clientSecret, setClientSecret] = useState('');
@@ -177,6 +179,8 @@ function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCar
     }
 
     /* ------- FUNCTIONS UPDATING SHIPPING-RELATED STATES  ------- */  
+
+    const grabPrevLoggedIn = (prevLoggedIn) => setPrevLoggedIn(prevLoggedIn)
 
     // update the shipping & shippingInput states whenever we Select a shipping, Add a new shipping, edit a shipping 
     const grabShipping = (shipping) => setShipping(shipping)
@@ -349,8 +353,12 @@ function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCar
             const cartResponseData = await cartResponse.json()
             console.log(cartResponseData);
             if(typeof cartResponseData.cart === 'string') {
-                grabTotalCartQuantity(0) // update the Nav Bar 
-                return grabRedirect(true) // return so that we do not proceed confirming payment
+                // Logged in user with both saved shipping & payment method OR only with saved payment only; Logged in user with saved shipping only; Logged in user with neither shipping nor payment method 
+                if(paymentMethod.paymentMethodID || shipping.firstName || prevLoggedIn) return grabTotalCartQuantity(0) // update the Nav Bar & rerun CheckoutPage UseEffect
+                else {
+                    grabTotalCartQuantity(0) // update the Nav Bar
+                    return grabRedirect(true) // return so that we do not proceed confirming payment
+                }
             }
         }
 
@@ -437,11 +445,11 @@ function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCar
             <>
             {/* <NavBar /> */}
             <div id="payment-form" >
-                <CheckoutItems backend={backend} loggedIn={loggedIn} showItems={showItems} grabShowItems={grabShowItems} grabShowShipping={grabShowShipping} grabShowButtons={grabShowButtons} grabShowPayment={grabShowPayment} grabReadOnly={grabReadOnly} grabTotalCartQuantity={grabTotalCartQuantity} grabRedirect={grabRedirect}/>
+                <CheckoutItems backend={backend} loggedIn={loggedIn} showItems={showItems} grabShowItems={grabShowItems} grabShowShipping={grabShowShipping} grabShowButtons={grabShowButtons} grabShowPayment={grabShowPayment} grabReadOnly={grabReadOnly} grabTotalCartQuantity={grabTotalCartQuantity} grabRedirect={grabRedirect} shipping={shipping} grabTotalCartQuantity={grabTotalCartQuantity} revLoggedIn={prevLoggedIn} grabPrevLoggedIn={grabPrevLoggedIn} paymentMethod={paymentMethod} grabRedirect={grabRedirect} />
 
-                <Shipping backend={backend} loggedIn={loggedIn} grabPaymentLoading={grabPaymentLoading} cartID={cartID} showPayment={showPayment} grabShowPayment={grabShowPayment} grabShowItems={grabShowItems} shipping={shipping} grabShipping={grabShipping} grabBillingWithShipping={grabBillingWithShipping} shippingInput={shippingInput} grabShippingInput={grabShippingInput} paymentMethod={paymentMethod} grabCardholderName={grabCardholderName} grabShowButtons={grabShowButtons} showButtons={showButtons} showShipping={showShipping} grabShowShipping={grabShowShipping} grabShowItems={grabShowItems} readOnly={readOnly} grabReadOnly={grabReadOnly} grabTotalCartQuantity={grabTotalCartQuantity} grabError={grabError} grabDisabled={grabDisabled} grabRedirect={grabRedirect}/>
+                <Shipping backend={backend} loggedIn={loggedIn} grabPaymentLoading={grabPaymentLoading} cartID={cartID} showPayment={showPayment} grabShowPayment={grabShowPayment} grabShowItems={grabShowItems} shipping={shipping} grabShipping={grabShipping} grabBillingWithShipping={grabBillingWithShipping} shippingInput={shippingInput} grabShippingInput={grabShippingInput} paymentMethod={paymentMethod} grabCardholderName={grabCardholderName} grabShowButtons={grabShowButtons} showButtons={showButtons} showShipping={showShipping} grabShowShipping={grabShowShipping} grabShowItems={grabShowItems} readOnly={readOnly} grabReadOnly={grabReadOnly} grabTotalCartQuantity={grabTotalCartQuantity} grabError={grabError} grabDisabled={grabDisabled} grabRedirect={grabRedirect} paymentMethod={paymentMethod} prevLoggedIn={prevLoggedIn} grabPrevLoggedIn={grabPrevLoggedIn} />
 
-                <PaymentMethod backend={backend} loggedIn={loggedIn} error={error} grabError={grabError} disabled={disabled} grabDisabled={grabDisabled} paymentLoading={paymentLoading} grabPaymentLoading={grabPaymentLoading} billing={billing} handleBillingChange={handleBillingChange} grabBilling={grabBilling} paymentMethod={paymentMethod} grabPaymentMethod={grabPaymentMethod} cardholderName={cardholderName} grabCardholderName={grabCardholderName}handleCardholderNameChange={handleCardholderNameChange} handleCardChange={handleCardChange} collectCVV={collectCVV} grabCollectCVV={grabCollectCVV} editPayment={editPayment} grabEditPayment={grabEditPayment} redisplayCardElement={redisplayCardElement} grabRedisplayCardElement={grabRedisplayCardElement} grabShowSavedCards={grabShowSavedCards} handleConfirmPayment={handleConfirmPayment} showSavedCards={showSavedCards} editExpiration={editExpiration} grabEditExpiration={grabEditExpiration} loggedOut={loggedOut} grabLoggedOut={grabLoggedOut} showPayment={showPayment} sameAsShipping={sameAsShipping} handleSameAsShipping={handleSameAsShipping} shippingInput={shippingInput} grabBillingWithShipping={grabBillingWithShipping} shipping={shipping} recheckSameAsShippingButton={recheckSameAsShippingButton} />
+                <PaymentMethod backend={backend} loggedIn={loggedIn} error={error} grabError={grabError} disabled={disabled} grabDisabled={grabDisabled} paymentLoading={paymentLoading} grabPaymentLoading={grabPaymentLoading} billing={billing} handleBillingChange={handleBillingChange} grabBilling={grabBilling} paymentMethod={paymentMethod} grabPaymentMethod={grabPaymentMethod} cardholderName={cardholderName} grabCardholderName={grabCardholderName}handleCardholderNameChange={handleCardholderNameChange} handleCardChange={handleCardChange} collectCVV={collectCVV} grabCollectCVV={grabCollectCVV} editPayment={editPayment} grabEditPayment={grabEditPayment} redisplayCardElement={redisplayCardElement} grabRedisplayCardElement={grabRedisplayCardElement} grabShowSavedCards={grabShowSavedCards} handleConfirmPayment={handleConfirmPayment} showSavedCards={showSavedCards} editExpiration={editExpiration} grabEditExpiration={grabEditExpiration} loggedOut={loggedOut} grabLoggedOut={grabLoggedOut} showPayment={showPayment} sameAsShipping={sameAsShipping} handleSameAsShipping={handleSameAsShipping} shippingInput={shippingInput} grabBillingWithShipping={grabBillingWithShipping} shipping={shipping} recheckSameAsShippingButton={recheckSameAsShippingButton} grabTotalCartQuantity={grabTotalCartQuantity}grabRedirect={grabRedirect} />
                 
             </div>         
             </>

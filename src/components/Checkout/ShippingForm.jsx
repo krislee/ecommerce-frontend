@@ -1,7 +1,7 @@
 import React from 'react'
 import { Redirect } from 'react-router-dom'
 
-export default function ShippingForm({ backend, loggedIn, readOnly, shipping, addShipping, shippingInput, grabShippingInput, updateShippingState, updateShippingInputState, editShipping, handleEditShipping, closeModal, collapse, addNewShipping, grabAddNewShipping, grabMultipleShipping, grabRedirect }) {
+export default function ShippingForm({ backend, loggedIn, readOnly, shipping, addShipping, shippingInput, grabShippingInput, updateShippingState, updateShippingInputState, editShipping, handleEditShipping, closeModal, collapse, addNewShipping, grabAddNewShipping, grabMultipleShipping, grabTotalCartQuantity }) {
     
     const handleShippingChange = (event) => {
         const { name, value} = event.target
@@ -22,7 +22,7 @@ export default function ShippingForm({ backend, loggedIn, readOnly, shipping, ad
             handleEditShipping()
         } else if(!loggedIn() || !shipping.firstName) {
             console.log("guest/first time saving next")
-            addNewShipping()
+            // addNewShipping()
             collapse()
         }
     }
@@ -48,7 +48,7 @@ export default function ShippingForm({ backend, loggedIn, readOnly, shipping, ad
             grabAddNewShipping(false) // updates the addShipping state to represent we are no longer adding a new shipping; if false, modal won't be returned; if true, modal would be shown
             grabMultipleShipping(true) // We can only add a new shipping if Add New button is shown. Add New button is shown if we have at least one saved address. If we only have one saved address, then Saved Shipping button would not be shown. But since we are adding a new shipping, then Saved Shipping button would definitely be shown. Saved Shipping button is shown dependent on the truthy value of MultipleShipping state
         } else {
-            grabRedirect(true)
+            grabTotalCartQuantity(0)
         }
     }
 
