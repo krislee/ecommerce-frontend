@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function UserReviews({ backend, loggedIn, reviewData, grabReviewData, reviewsTotal, reviewLoading, reviewsPage, grabReviewsPage }) {
+export default function UserReviews({ backend, loggedIn, reviewData, grabReviewData, reviewsTotal, reviewLoading, reviewsPage, grabReviewsPage, grabTotalCartQuantity }) {
 
     const classes = useStyles();
     const paginationClass = paginationUseStyles()
@@ -50,22 +50,31 @@ export default function UserReviews({ backend, loggedIn, reviewData, grabReviewD
 
     const openUpdateReviewModal = async (event) => {
         console.log(event.target.id)
-        const retrieveOneReviewResponse = await fetch(`${backend}/buyer/electronic/review/${event.target.id}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': loggedIn()
-            }
-        })
-        const retrieveOneReviewData = await retrieveOneReviewResponse.json()
-        console.log(retrieveOneReviewData)
+        if(loggedIn()) {
+            const retrieveOneReviewResponse = await fetch(`${backend}/buyer/electronic/review/${event.target.id}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': loggedIn()
+                }
+            })
+            const retrieveOneReviewData = await retrieveOneReviewResponse.json()
+            console.log(retrieveOneReviewData)
 
-        setRatingValue(retrieveOneReviewData.singleReview.Rating) // update the rating state --> pass to ReviewForm and Rating component inside ReviewForm component --> prefill the rating stars section
-        setCommentsValue(retrieveOneReviewData.singleReview.Comment) // update the comments --> pass to ReviewForm and Rating component --> prefill the comment section
-        setBrandName(retrieveOneReviewData.singleReview.ElectronicItem[0].Brand) // update the brand and item name to populate in the modal
-        setItemName(retrieveOneReviewData.singleReview.ElectronicItem[0].Name)
-        setReviewID(event.target.id) // reviewID state is used for the actual call to server when we click Submit button
-        setEditReviewForm(true) // open the modal
+            setRatingValue(retrieveOneReviewData.singleReview.Rating) // update the rating state --> pass to ReviewForm and Rating component inside ReviewForm component --> prefill the rating stars section
+            setCommentsValue(retrieveOneReviewData.singleReview.Comment) // update the comments --> pass to ReviewForm and Rating component --> prefill the comment section
+            setBrandName(retrieveOneReviewData.singleReview.ElectronicItem[0].Brand) // update the brand and item name to populate in the modal
+            setItemName(retrieveOneReviewData.singleReview.ElectronicItem[0].Name)
+            setReviewID(event.target.id) // reviewID state is used for the actual call to server when we click Submit button
+            setEditReviewForm(true) // open the modal
+        } else {
+            return grabTotalCartQuantity(0)
+        }
+    }
+
+    const closeEditReviewModal = () => {
+        setEditReviewForm(false)
+        if(!loggedIn()) return grabTotalCartQuantity(0)
     }
 
     const handleUpdateReview = async(event) => {
@@ -86,6 +95,8 @@ export default function UserReviews({ backend, loggedIn, reviewData, grabReviewD
             console.log(updateReviewData)
             grabReviewData(updateReviewData.allReviews.reverse()) // update the reviewData state with the new list of reviews that includes the updated review
             setEditReviewForm(false) // close modal
+        } else {
+            return grabTotalCartQuantity(0)
         }
     }
 
@@ -102,7 +113,14 @@ export default function UserReviews({ backend, loggedIn, reviewData, grabReviewD
             console.log(deletedReviewData)
             grabReviewData(deletedReviewData.allReviews.reverse()) // update the reviewData state with the new list of reviews with the deleted review gone
             setDeleteReviewForm(false) // close modal
+        } else {
+            return grabTotalCartQuantity(0)
         }
+    }
+
+    const closeDeleteReviewModal = () => {
+        setDeleteReviewForm(false)
+        if(!loggedIn()) return grabTotalCartQuantity(0)
     }
 
     const handlePageOnChange = async(event, page) => {
@@ -110,17 +128,21 @@ export default function UserReviews({ backend, loggedIn, reviewData, grabReviewD
         history.replace({
             pathname: `/profile/review?page=${page}` // when we click on the pagination number, we want to update the URL param with the clicked pagination number (represented by page)
         })
-        const allReviewsResponse = await fetch(`${backend}/buyer/all/electronic/reviews?page=${page}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': loggedIn()
-            }
-        });
-        const allReviewsData = await allReviewsResponse.json();
-        console.log(allReviewsData.allReviews);
-        grabReviewData(allReviewsData.allReviews)
-        grabReviewsPage(page)
+        if(loggedIn()) {
+            const allReviewsResponse = await fetch(`${backend}/buyer/all/electronic/reviews?page=${page}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': loggedIn()
+                }
+            });
+            const allReviewsData = await allReviewsResponse.json();
+            console.log(allReviewsData.allReviews);
+            grabReviewData(allReviewsData.allReviews)
+            grabReviewsPage(page)
+        } else {
+            return grabTotalCartQuantity(0)
+        }
     }
 
     if(reviewLoading) return null
@@ -135,8 +157,13 @@ export default function UserReviews({ backend, loggedIn, reviewData, grabReviewD
                         <p>{review.Comment}</p>
                         <button id={review._id} onClick={openUpdateReviewModal}>Update</button>
                         <button id={review._id} onClick={(event) => {
-                            setReviewID(event.target.id) // update reviewID state so that we can use the id for fetch to server when we click Yes button
-                            setDeleteReviewForm(true)
+                            if(loggedIn()) {
+                                setReviewID(event.target.id) // update reviewID state so that we can use the id for fetch to server when we click Yes button
+                                setDeleteReviewForm(true)
+                            } else {
+                                return grabTotalCartQuantity(0)
+                            }
+                            
                         }}>Delete</button>
                     </div>
                 )})}
@@ -144,19 +171,20 @@ export default function UserReviews({ backend, loggedIn, reviewData, grabReviewD
                     <Pagination showFirstButton showLastButton size="large" variant="outlined" shape="rounded" count={reviewsTotal} page={Number(reviewsPage)} siblingCount={1} boundaryCount={2} onChange={handlePageOnChange} />
                 </div>  
                 {editReviewForm && (
-                    <Modal isOpen={editReviewForm} onRequestClose={() => setEditReviewForm(false)} ariaHideApp={false} contentLabel="Edit Review">
+                    <Modal isOpen={editReviewForm} onRequestClose={closeEditReviewModal} ariaHideApp={false} contentLabel="Edit Review">
                         <form onSubmit={handleUpdateReview}>
                             <p><b>{brandName} {itemName} </b></p>
                             <ReviewForm ratingValue={ratingValue} grabRatingValue={grabRatingValue} ratingHover={ratingHover} grabRatingHover={grabRatingHover} commentsValue={commentsValue} handleCommentsChange={handleCommentsChange} />
                             <button>Submit</button>
+                            <button onClick={closeEditReviewModal}>Cancel</button>
                         </form>
                     </Modal>
                 )}
                 {deleteReviewForm && (
-                    <Modal isOpen={deleteReviewForm} onRequestClose={() => setDeleteReviewForm(false)} ariaHideApp={false} contentLabel="Delete Review">
+                    <Modal isOpen={deleteReviewForm} onRequestClose={closeDeleteReviewModal} ariaHideApp={false} contentLabel="Delete Review">
                         <p><b>Are you sure you want to delete?</b></p>
                         <button onClick={handleDeleteReview}>Yes</button>
-                        <button onClick={() => setDeleteReviewForm(false)}>Cancel</button>
+                        <button onClick={closeDeleteReviewModal}>Cancel</button>
                     </Modal>
                 )}
                 </>

@@ -153,13 +153,15 @@ function UserProfile ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuant
             fetchOrderData();
             fetchReviewsData();
             fetchSettingData();
-        } 
+        } else {
+            return grabTotalCartQuantity(0)
+        }
 
         return function cleanUp () {
             abortController.abort()
         }
 
-    }, []);
+    }, [loggedIn()]);
 
     // Function that is used to capitalize a string
     const capitalize = (string) => {
@@ -297,7 +299,7 @@ function UserProfile ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuant
                    
                     {/* This component renders only when the profileTabOpen is open  */}
                     {settingsTabOpen && 
-                        <Settings backend={backend} loggedIn={loggedIn} settingData={settingData} grabSettingData={grabSettingData} />
+                        <Settings backend={backend} loggedIn={loggedIn} settingData={settingData} grabSettingData={grabSettingData} grabTotalCartQuantity={grabTotalCartQuantity} />
                     }
                    
                     {/* This component renders only when the addressesTab is open */}
@@ -309,7 +311,8 @@ function UserProfile ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuant
                         grabAddressData={grabAddressData}
                         loggedIn={loggedIn}
                         capitalize={capitalize}
-                        capitalizeArray={capitalizeArray}/>
+                        capitalizeArray={capitalizeArray}
+                        grabTotalCartQuantity={grabTotalCartQuantity} />
                     }
           
                     {/* This component renders only when the paymentsTab is open  */}
@@ -321,7 +324,8 @@ function UserProfile ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuant
                         grabPaymentData={grabPaymentData}
                         loggedIn={loggedIn}
                         capitalize={capitalize}
-                        capitalizeArray={capitalizeArray}/>
+                        capitalizeArray={capitalizeArray} 
+                        grabTotalCartQuantity={grabTotalCartQuantity} />
                     }
     
                     {/* This component renders only when the orderTabOpen is true  */}
@@ -336,7 +340,8 @@ function UserProfile ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuant
                         // grabOrderID={grabOrderID}
                         ordersTotal={ordersTotal}
                         ordersPage={ordersPage}
-                        grabOrdersPage={grabOrdersPage} />
+                        grabOrdersPage={grabOrdersPage}
+                        grabTotalCartQuantity={grabTotalCartQuantity} />
                     }
 
                     {reviewsTabOpen && 
@@ -348,7 +353,8 @@ function UserProfile ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuant
                         grabReviewData={grabReviewData} 
                         reviewsTotal={reviewsTotal}
                         reviewsPage={reviewsPage} 
-                        grabReviewsPage={grabReviewsPage} />
+                        grabReviewsPage={grabReviewsPage}
+                        grabTotalCartQuantity={grabTotalCartQuantity} />
                     }
                     {!footerLoading && <Footer />}
                 </div>

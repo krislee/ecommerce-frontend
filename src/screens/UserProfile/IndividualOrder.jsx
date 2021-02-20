@@ -17,7 +17,7 @@ const useStyles = makeStyles({
 });
   
   
-export default function IndividualOrder({ backend, loggedIn }) {
+export default function IndividualOrder({ backend, loggedIn, grabTotalCartQuantity }) {
     const location = useLocation()
 
     const classes = useStyles();
@@ -57,8 +57,12 @@ export default function IndividualOrder({ backend, loggedIn }) {
                 setOrderShipping(orderData.order.Shipping.Address.split(", "))
                 setOrderShippingName(orderData.order.Shipping.Name.split(", "))
                 setOrderLoading(false)
-            } else {
-                setRedirect(true)
+            } 
+            else {
+                console.log(62)
+                grabTotalCartQuantity(0)
+                setOrderLoading(false)
+                return setRedirect(true)
             }
         }
         
@@ -73,12 +77,12 @@ export default function IndividualOrder({ backend, loggedIn }) {
     if(orderLoading) {
         return <></>
     } else if (redirect) {
-        return <Redirect to=""/>
+        return <Redirect to="/"></Redirect>
     }else {
         return (
             <>
             <h4>Order #: {order.OrderNumber}</h4>
-            <h6>Placed on {ConvertDate(order.OrderDate)}</h6>
+            <h6>Placed on {new Date(order.OrderDate).toDateString()}</h6>
             <div id='items'>
                 <TableContainer component={Paper}>
                 <Table className={classes.table} aria-label="simple table">

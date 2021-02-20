@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 // import Footer from '../../components/Footer';
 import Toast from 'react-bootstrap/Toast'
 
-export default function Settings({ backend, loggedIn, settingData, grabSettingData }) {
+export default function Settings({ backend, loggedIn, settingData, grabSettingData, grabTotalCartQuantity }) {
    
     // const [open, setOpen] = useState(false)
     const [emailInvalid, setEmailInvalid] = useState(false)
@@ -48,6 +48,8 @@ export default function Settings({ backend, loggedIn, settingData, grabSettingDa
                 setEmailErrorMessage(false)
                 setEmailInput('') // empty input
             }
+        } else {
+            return grabTotalCartQuantity(0)
         }
             
     }
@@ -81,6 +83,8 @@ export default function Settings({ backend, loggedIn, settingData, grabSettingDa
                 setPasswordErrorMessage(false)
                 setPasswordInput('') // empty input
             }
+        } else {
+            return grabTotalCartQuantity(0)
         }
     }
 
@@ -92,6 +96,7 @@ export default function Settings({ backend, loggedIn, settingData, grabSettingDa
             <div>
                 <h5>Email:{settingData.email} </h5>
                 <button disabled={showPasswordInput} onClick={() => {
+                    if(!loggedIn()) return grabTotalCartQuantity(0)
                     setShowEmailInput(true)
                     setShowPasswordInput(false)
                 }}>Update email</button>
@@ -100,6 +105,7 @@ export default function Settings({ backend, loggedIn, settingData, grabSettingDa
                         <input type="email" value={emailInput} onChange={handleEmailInputChange}/>
                         <input type="submit" onClick={handleEmailUpdate}/>
                         <button onClick={() => {
+                            if(!loggedIn()) return grabTotalCartQuantity(0)
                             setShowEmailInput(false) // hide input
                             setEmailInput('') // empty input
                         }}>Close</button>
@@ -119,6 +125,7 @@ export default function Settings({ backend, loggedIn, settingData, grabSettingDa
 
                 <h5>Password: *****</h5>
                 <button disabled = {showEmailInput} onClick={()=> {
+                    if(!loggedIn()) return grabTotalCartQuantity(0)
                     setShowPasswordInput(true) 
                     setShowEmailInput(false)
                 }}>Reset password</button>
@@ -128,6 +135,7 @@ export default function Settings({ backend, loggedIn, settingData, grabSettingDa
                     <input type="password" value={passwordInput} onChange={handlePasswordInputChange}/>
                     <input type="submit" onClick={handleResetPassword}/>
                     <button onClick={() => {
+                        if(!loggedIn()) return grabTotalCartQuantity(0)
                         setShowPasswordInput(false) // hide input
                         setPasswordInput('') // empty input
                     }}>Close</button>

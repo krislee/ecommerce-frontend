@@ -129,7 +129,7 @@ function App() {
             </Elements>
           </Route>
           <Route path="/show-order">
-            <IndividualOrder backend={backend} loggedIn={loggedIn} orderID={orderID}/>
+            <IndividualOrder backend={backend} loggedIn={loggedIn} orderID={orderID} grabTotalCartQuantity={grabTotalCartQuantity} />
           </Route>
           {/* SHOW ALL ITEMS/INDIVIDUAL ITEM */}
           <Route path="/shop/:pageIndex">
