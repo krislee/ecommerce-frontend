@@ -27,7 +27,7 @@ function AddCartButton ({ name, id, loggedIn, backend, quantity, grabHandleUpToT
                     })
                 });
                 const addItemData = await addItemResponse.json();
-                console.log(data)
+                console.log(addItemData)
                 grabTotalCartQuantity(addItemData.cart.TotalItems)
             } else { 
                 const addItemResponse = await fetch(`${backend}/buyer/electronic/cart/${id}`, {
