@@ -1,10 +1,5 @@
-<<<<<<< HEAD
-import React, { useState } from 'react'
-import { BrowserRouter, Switch, Route } from 'react-router-dom';
-=======
 import React, {useState, useEffect} from 'react'
 import {BrowserRouter, Switch, Route, Link, Redirect} from 'react-router-dom';
->>>>>>> main
 import './App.css';
 
 import NavBar from './components/NavigationBar'
