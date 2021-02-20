@@ -3,11 +3,14 @@ import { Redirect } from 'react-router-dom';
 import PaymentMethod from './PaymentMethod';
 
 export default function CheckoutItems({ backend, loggedIn, showItems, grabShowItems, grabShowShipping, grabShowButtons, grabReadOnly, grabTotalCartQuantity, shipping, prevLoggedIn, grabPrevLoggedIn, paymentMethod, grabRedirect }) {
+    
     const [checkoutItemsLoading, setCheckoutItemsLoading] = useState(true)
     const [items, setItems] = useState([]);
     const [redirect, setRedirect] = useState(false)
     const [checkoutItemPrevLoggedIn, setCheckoutItemPrevLoggedIn] = useState(loggedIn())
+
     useEffect(() => {
+
         const abortController = new AbortController()
         const signal = abortController.signal
 
@@ -42,7 +45,9 @@ export default function CheckoutItems({ backend, loggedIn, showItems, grabShowIt
                 setCheckoutItemsLoading(false)
             }
         }
+        
         getCheckoutItems();
+
         return function cleanUp () {
             abortController.abort()
         }

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import Navbar from '../../components/NavigationBar';
-import { Redirect, Link, useHistory, useLocation } from 'react-router-dom';
+// import Navbar from '../../components/NavigationBar';
+import { Redirect, useHistory, useLocation } from 'react-router-dom';
 import Footer from '../../components/Footer';
 import Settings from './Settings'
 import Address from './Address';
@@ -8,7 +8,6 @@ import Payment from './Payment'
 import Orders from './Orders'
 import UserReviews from './UserReviews'
 import '../../styles/UserProfile/UserProfile.css';
-import { SnackbarContent } from '@material-ui/core';
 
 
 function UserProfile ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuantity }) {
@@ -16,12 +15,12 @@ function UserProfile ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuant
     const location = useLocation()
     console.log(location)
     // Getter and Setter to display the address component or not
-    const [addressesTabOpen, setAddressesTabOpen] = useState(location.pathname=='/profile/address'? true: false);
+    const [addressesTabOpen, setAddressesTabOpen] = useState(location.pathname === '/profile/address'? true: false);
     // Getter and Setter to display the payments component or not
-    const [paymentsTabOpen, setPaymentsTabOpen] = useState(location.pathname=='/profile/payment'? true: false);
-    const [ordersTabOpen, setOrdersTabOpen] = useState(location.pathname=='/profile/order'? true: false);
-    const [settingsTabOpen, setSettingsTabOpen] = useState(location.pathname=='/profile/setting'? true: false);
-    const [reviewsTabOpen, setReviewsTabOpen] = useState(location.pathname=='/profile/review'? true: false);
+    const [paymentsTabOpen, setPaymentsTabOpen] = useState(location.pathname === '/profile/payment'? true: false);
+    const [ordersTabOpen, setOrdersTabOpen] = useState(location.pathname ==='/profile/order'? true: false);
+    const [settingsTabOpen, setSettingsTabOpen] = useState(location.pathname ==='/profile/setting'? true: false);
+    const [reviewsTabOpen, setReviewsTabOpen] = useState(location.pathname ==='/profile/review'? true: false);
 
     const [settingData, setSettingData] = useState({})
     const [addressData, setAddressData] = useState([]);
@@ -33,6 +32,10 @@ function UserProfile ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuant
     const [reviewsTotal, setReviewsTotal] = useState(null)
 
     useEffect(() => {
+
+        const abortController = new AbortController()
+        const signal = abortController.signal
+
         // Display the Profile
         async function fetchSettingData() {
             const settingResponse = await fetch (`${backend}/buyer/profile`, {
@@ -40,7 +43,8 @@ function UserProfile ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuant
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': loggedIn()
-                }
+                },
+                signal: signal
             })
             const settingData = await settingResponse.json()
             setSettingData(settingData)
@@ -53,7 +57,8 @@ function UserProfile ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuant
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': loggedIn()
-                }
+                },
+                signal: signal
             });
             const data = await resp.json();
             // The data recieved back will be reordered to make sure the default address appears first followed by the newest address on the list
@@ -61,6 +66,7 @@ function UserProfile ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuant
             // Use that data recieved back and set it to the variable addressData
             setAddressData(data);
         }
+
         // When the page renders in, we want to grab the payment data from the backend server and use that data to display different PaymentContainer components
         async function fetchPaymentData () {
             let resp = await fetch(`${backend}/order/index/payment`, {
@@ -68,7 +74,8 @@ function UserProfile ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuant
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': loggedIn()
-                }
+                },
+                signal: signal
             });
             const data = await resp.json();
             if(!data.msg) {
@@ -86,7 +93,8 @@ function UserProfile ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuant
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': loggedIn()
-                }
+                },
+                signal: signal
             })
             const orderData = await orderResponse.json()
             setOrderData(orderData.orders)
@@ -100,7 +108,8 @@ function UserProfile ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuant
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': loggedIn()
-                }
+                },
+                signal: signal
             })
             const reviewsData = await reviewsResponse.json()
             console.log(reviewsData.totalPages, reviewsData)
@@ -111,8 +120,13 @@ function UserProfile ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuant
         fetchPaymentData();
         fetchAddressData();
         fetchOrderData();
-        fetchReviewsData()
-        fetchSettingData()
+        fetchReviewsData();
+        fetchSettingData();
+
+        return function cleanUp () {
+            abortController.abort()
+        }
+
     }, []);
 
     // Function that is used to capitalize a string

@@ -17,6 +17,9 @@ function CartPage ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuantity
     const grabTotalPrice = (totalPrice) => setTotalPrice(totalPrice)
 
     useEffect(() => {
+        const abortController = new AbortController()
+        const signal = abortController.signal
+
         async function getCartItems() {
             if(loggedIn()){
                 const cartItemsResponse = await fetch(`${backend}/buyer/cart`, {
@@ -24,7 +27,8 @@ function CartPage ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuantity
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': loggedIn()
-                    }
+                    },
+                    signal: signal
                 });
                 const cartItemsData = await cartItemsResponse.json();
                 console.log(cartItemsData)
@@ -43,7 +47,8 @@ function CartPage ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuantity
                 const cartItemsResponse = await fetch(`${backend}/buyer/cart`, {
                     method: 'GET',
                     headers: { 'Content-Type': 'application/json' },
-                    credentials: 'include'
+                    credentials: 'include',
+                    signal: signal
                 });
                 const cartItemsData = await cartItemsResponse.json();
                 console.log(cartItemsData);
@@ -63,6 +68,10 @@ function CartPage ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuantity
             }
         };
         getCartItems();
+        return function cleanUp () {
+            abortController.abort()
+        }
+        
     },[])
 
    

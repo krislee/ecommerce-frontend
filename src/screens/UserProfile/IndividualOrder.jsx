@@ -31,6 +31,10 @@ export default function IndividualOrder({ backend, loggedIn }) {
     const [redirect, setRedirect] = useState(false)
 
     useEffect(() => {
+
+        const abortController = new AbortController()
+        const signal = abortController.signal
+
         const queryParams = new URLSearchParams(location.search)
         const orderID = queryParams.get('orderNumber')
 
@@ -41,7 +45,8 @@ export default function IndividualOrder({ backend, loggedIn }) {
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': loggedIn()
-                    }
+                    },
+                    signal: signal
                 })
                 console.log(orderResponse)
                 const orderData = await orderResponse.json()
@@ -57,7 +62,12 @@ export default function IndividualOrder({ backend, loggedIn }) {
             }
         }
         
-        getOrder()
+        getOrder();
+
+        return function cleanUp () {
+            abortController.abort()
+        }
+
     }, [])
 
     if(orderLoading) {
@@ -107,7 +117,7 @@ export default function IndividualOrder({ backend, loggedIn }) {
                         <div>
                             <p>{orderPayment.billingDetails.name.split(", ")[0]} {orderPayment.billingDetails.name.split(", ")[1]}</p>
                             <p>{orderPayment.billingDetails.address.line1}</p>
-                            <p>{orderPayment.billingDetails.address.line2 == "null" || orderPayment.billingDetails.address.line2 == "undefined" ? "" : orderPayment.billingDetails.address.line2}</p>
+                            <p>{orderPayment.billingDetails.address.line2 === "null" || orderPayment.billingDetails.address.line2 === "undefined" ? "" : orderPayment.billingDetails.address.line2}</p>
                             <p>{orderPayment.billingDetails.address.city}, {orderPayment.billingDetails.address.state} {orderPayment.billingDetails.address.postalCode}</p>
                         </div> 
                     </div>
@@ -116,7 +126,7 @@ export default function IndividualOrder({ backend, loggedIn }) {
                     <h4>Delivered to</h4>
                     <p><b>{orderShippingName[0]} {orderShippingName[1]}</b></p>
                     <p>{orderShipping[0]}</p>
-                    <p>{orderShipping[1] == "null" || orderShipping[1] == "undefined" ? "" : orderShipping[1]}</p>
+                    <p>{orderShipping[1] === "null" || orderShipping[1] === "undefined" ? "" : orderShipping[1]}</p>
                     <p>{orderShipping[2]}, {orderShipping[3]} {orderShipping[4]}</p>
                 </div>
             </div>

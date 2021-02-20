@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react'
+import React, { useState } from 'react'
 import {Link, Redirect} from 'react-router-dom';
 // import Button from '../components/Button'
 import '../styles/NavigationBar.css'
@@ -8,7 +8,6 @@ import { Dropdown } from 'react-bootstrap'
 import Badge from '@material-ui/core/Badge';
 import { withStyles } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
-import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 
 const StyledBadge = withStyles((theme) => ({
   badge: {

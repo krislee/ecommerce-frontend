@@ -301,8 +301,10 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
     /* --------------------- USE EFFECT -------------------- */
 
     useEffect(() => {
+
         const abortController = new AbortController()
         const signal = abortController.signal
+
         if(loggedIn()) {
             const getCheckoutShippingAddress = async() => {
                 const checkoutShippingAddressResponse = await fetch(`${backend}/shipping/checkout/address`, {
@@ -336,8 +338,10 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
                 console.log(allSavedShippingData)
                 if(allSavedShippingData.length > 1) setMultipleShipping(true)
             }
-            getCheckoutShippingAddress()
-            retrieveAllAddresses()
+
+            getCheckoutShippingAddress();
+            retrieveAllAddresses();
+            
             return function cleanUp () {
                 abortController.abort()
             }

@@ -33,9 +33,11 @@ function ItemPage ({ loggedIn, url, backend, totalCartQuantity, grabTotalCartQua
     const location = useLocation() //get the full URL which will be parsed in the else statement to get the query value if user decides to not go through the /shop page but straight to the URL
 
     useEffect(() => {
+        
+        const abortController = new AbortController()
+        const signal = abortController.signal
 
         // If the url to the backend is not empty because users directly went to the item page going through the homepage first
-
         if (url !== '') {
             async function fetchData() {
                 // fetch the url provided to go to the server backend and grab the item using a GET request
@@ -44,7 +46,8 @@ function ItemPage ({ loggedIn, url, backend, totalCartQuantity, grabTotalCartQua
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    credentials: 'include'
+                    credentials: 'include',
+                    signal: signal
                 });
                 let data = await resp.json();
                 console.log(31, data)
@@ -52,7 +55,13 @@ function ItemPage ({ loggedIn, url, backend, totalCartQuantity, grabTotalCartQua
                 setAllReviews(data.review)
                 setAvgRating(data.avgRating)
             }
+
             fetchData();
+
+            return function cleanUp () {
+                abortController.abort()
+            }
+
         } else {
 
             // If we are going to the item page not through the homepage
@@ -64,7 +73,8 @@ function ItemPage ({ loggedIn, url, backend, totalCartQuantity, grabTotalCartQua
                 let resp = await fetch(`${backend}/buyer/electronic/${electronicID}`,{
                     method: 'GET',
                     headers: { 'Content-Type': 'application/json' },
-                    credentials: 'include'
+                    credentials: 'include',
+                    signal: signal
                 });
                 let data = await resp.json();
                 console.log(49, data)
@@ -72,7 +82,12 @@ function ItemPage ({ loggedIn, url, backend, totalCartQuantity, grabTotalCartQua
                 setAllReviews(data.review)
                 setAvgRating(data.avgRating)
             }
+
             fetchData();
+
+            return function cleanUp () {
+                abortController.abort()
+            }
         }
     }, [review])
 

@@ -59,7 +59,8 @@ function PaymentMethod ({ backend, processing, loggedIn, error, grabError, disab
             }
 
             fetchPaymentMethod();
-            retrievingSavedCards()
+            retrievingSavedCards();
+            
             return function cleanUp () {
                 abortController.abort()
             }

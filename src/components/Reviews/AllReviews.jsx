@@ -13,6 +13,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function AllReviews({allReviews}) {
+    
     const classes = useStyles();
     const [reviewsLoading, setReviewsLoading] = useState(true)
 

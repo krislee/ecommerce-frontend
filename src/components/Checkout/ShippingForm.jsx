@@ -1,5 +1,4 @@
 import React from 'react'
-import { Redirect } from 'react-router-dom'
 
 export default function ShippingForm({ backend, loggedIn, readOnly, shipping, addShipping, shippingInput, grabShippingInput, updateShippingState, updateShippingInputState, editShipping, handleEditShipping, closeModal, collapse, addNewShipping, grabAddNewShipping, grabMultipleShipping, grabTotalCartQuantity }) {
     

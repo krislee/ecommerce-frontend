@@ -326,9 +326,11 @@ function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCar
         }    
 
         handleCheckout();
+
         return function cleanUp () {
             abortController.abort()
         }
+        
     }, [loggedIn()]);
 
     const handleConfirmPayment = async (event) => {

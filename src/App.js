@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react'
-import {BrowserRouter, Switch, Route, Link, Redirect} from 'react-router-dom';
+import { BrowserRouter, Switch, Route } from 'react-router-dom';
 import './App.css';
 
 import NavBar from './components/NavigationBar'
@@ -48,7 +48,7 @@ function App() {
   const grabCartID = (cartID) => setCartID(cartID)
 
   // Pass the orderID state to User Profile to pass it down to Order component, where the OrderID state gets updated when we click on an order
-  const grabOrderID = (orderID) => setOrderID(orderID)
+  // const grabOrderID = (orderID) => setOrderID(orderID)
   const grabSuccessfulPaymentIntent = (paymentIntent) => setSuccessfulPaymentIntent(paymentIntent)
 
   /* ------- CHECK IF USER IS LOGGED IN BEFORE RUNNING FUNCTIONS ------- */

@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react'
+import React, { useEffect, useState } from 'react'
 import {Link, useParams, useHistory} from 'react-router-dom';
 import Item from '../../components/Item';
 import '../../styles/Homepage.css'
@@ -26,14 +26,28 @@ function AllItems ({ loggedIn, grabURL, backend, totalCartQuantity, grabTotalCar
     const [items, setItems] = useState([]); // store all the items in items state
 
     useEffect(() => {
+        
+        const abortController = new AbortController()
+        const signal = abortController.signal
+
         async function fetchItems() {
-            const resp = await fetch(`${backend}/buyer/electronic?page=${pageIndex}`);
+            const resp = await fetch(`${backend}/buyer/electronic?page=${pageIndex}`, {
+                method: 'GET',
+                headers: { 'Content-Type' : 'application/json' },
+                signal: signal
+            });
             const data = await resp.json();
             console.log(data.allElectronic);
             setItems(data.allElectronic);
             setFooterLoading(false)
         };
+
         fetchItems();
+
+        return function cleanUp () {
+            abortController.abort()
+        }
+        
     },[])
 
     const handlePageOnChange = async(event, page) => {
