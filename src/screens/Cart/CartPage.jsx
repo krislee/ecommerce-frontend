@@ -4,8 +4,9 @@ import '../../styles/CartPage.css'
 import NavBar from '../../components/NavigationBar'
 import Footer from '../../components/Footer'
 import CartItemPage from './CartItemPage'
+import axios from 'axios';
 
-function CartPage ({ backend, loggedIn }) {
+function CartPage ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuantity }) {
 
     const [cartLoading, setCartLoading] = useState(true)
     const [items, setItems] = useState([]);
@@ -30,9 +31,12 @@ function CartPage ({ backend, loggedIn }) {
                 if(typeof cartItemsData.cart == 'string') {
                     // If there are no items in the cart when we first load the cart page, update data property to store {cart: "No cart available"}
                     setEmptyCart(cartItemsData);
+                    grabTotalCartQuantity(0)
                 } else {
+                    console.log(34)
                     setItems(cartItemsData.cart.Items);
-                    setTotalPrice(cartItemsData.totalCartPrice)
+                    setTotalPrice(cartItemsData.cart.TotalCartPrice)
+                    grabTotalCartQuantity(cartItemsData.cart.TotalItems)
                 }
                 setCartLoading(false)
             } else {
@@ -47,11 +51,13 @@ function CartPage ({ backend, loggedIn }) {
                     console.log(48)
                     // If there are no items in the cart when we first load the cart page, update data property to store {cart: 'No items in cart'}
                     setEmptyCart(cartItemsData);
+                    grabTotalCartQuantity(0)
                 } else {
                     console.log(52)
                     // Update items state to store the list of items
                     setItems(cartItemsData.cart)
                     setTotalPrice(cartItemsData.totalCartPrice)
+                    grabTotalCartQuantity(cartItemsData.totalItems)
                 }
                 setCartLoading(false)
             }
@@ -67,29 +73,26 @@ function CartPage ({ backend, loggedIn }) {
     } else if(emptyCart.cart || items.length === 0) {
         return (
             <>
-            <NavBar />
+            {/* <NavBar totalCartQuantity={totalCartQuantity} grabTotalCartQuantity={grabTotalCartQuantity} backend={backend} loggedIn={loggedIn}/> */}
             <h2 className="noItems">No Items...</h2>
             </>
         )
-    }
-    else if(items.length >0) {
+    } else if(items.length >0) {
         return (
             <>
             <div className="cart-page-container">
-                <NavBar />
+                {/* <NavBar totalCartQuantity={totalCartQuantity} grabTotalCartQuantity={grabTotalCartQuantity}/> */}
                 <div className="cart">
                     <div className="cart-items">
-                        {items.map((item, index) => { return <CartItemPage backend={backend} loggedIn={loggedIn} key={index} id={item.ItemId} name={item.Name} quantity={item.Quantity} totalPrice={item.TotalPrice} grabItems={grabItems} grabTotalPrice={grabTotalPrice} /> })}
+                        {items.map((item, index) => { return <CartItemPage backend={backend} loggedIn={loggedIn} key={index} id={item.ItemId} name={item.Name} quantity={item.Quantity} totalPrice={item.TotalPrice} grabItems={grabItems} grabTotalPrice={grabTotalPrice} grabTotalCartQuantity={grabTotalCartQuantity} /> })}
                         <p><b>Total Price: ${totalPrice}</b></p>
                     </div>
                         
-                
-                    {/* {renderRedirect()} */}
                     <Link to="/checkout">
-                    <button>Checkout</button>
+                        <button>Checkout</button>
                     </Link>
                 </div>
-                {/* <button onClick={checkout}>Checkout</button> */}
+               
             </div>
             <Footer />
             </>

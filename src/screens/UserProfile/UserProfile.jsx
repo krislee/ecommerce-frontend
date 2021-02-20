@@ -1,50 +1,50 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from '../../components/NavigationBar';
-import { Redirect } from 'react-router-dom';
+import { Redirect, Link, useHistory, useLocation } from 'react-router-dom';
 import Footer from '../../components/Footer';
-import Profile from './Profile';
+import Settings from './Settings'
 import Address from './Address';
-import Payment from './Payment';
-import Orders from './Orders';
+import Payment from './Payment'
+import Orders from './Orders'
+import UserReviews from './UserReviews'
 import '../../styles/UserProfile/UserProfile.css';
 import { SnackbarContent } from '@material-ui/core';
 
 
-function UserProfile ({ backend, loggedIn, orderID, grabOrderID }) {
-
-    /* ------- STATES ------- */
-
+function UserProfile ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuantity }) {
+    const history = useHistory()
+    const location = useLocation()
+    console.log(location)
     // Getter and Setter to display the address component or not
-    const [addressesTabOpen, setAddressesTabOpen] = useState(false);
+    const [addressesTabOpen, setAddressesTabOpen] = useState(location.pathname=='/profile/address'? true: false);
     // Getter and Setter to display the payments component or not
-    const [paymentsTabOpen, setPaymentsTabOpen] = useState(false);
-    // Getter and Setter to display the orders component or not
-    const [ordersTabOpen, setOrdersTabOpen] = useState(false);
-    // Getter and Setter to display the profiles component or not
-    const [profileTabOpen, setProfileTabOpen] = useState(true);
-    /* ------- Data used as information to load in components within the User Profile page ------- */
-    // Getter and Setter for the data pertaining to the profile
-    const [profileData, setProfileData] = useState({});
-    // Getter and Setter for the data pertaining to the address
+    const [paymentsTabOpen, setPaymentsTabOpen] = useState(location.pathname=='/profile/payment'? true: false);
+    const [ordersTabOpen, setOrdersTabOpen] = useState(location.pathname=='/profile/order'? true: false);
+    const [settingsTabOpen, setSettingsTabOpen] = useState(location.pathname=='/profile/setting'? true: false);
+    const [reviewsTabOpen, setReviewsTabOpen] = useState(location.pathname=='/profile/review'? true: false);
+
+    const [settingData, setSettingData] = useState({})
     const [addressData, setAddressData] = useState([]);
     // Getter and Setter for the data pertaining to the payments
     const [paymentData, setPaymentData] = useState([]);
-    // Getter and Setter for the data pertaining to the orders
-    const [orderData, setOrderData] = useState([]);
+    const [orderData, setOrderData] = useState([])
+    const [ordersTotal, setOrdersTotal] = useState(null)
+    const [reviewData, setReviewData] = useState([])
+    const [reviewsTotal, setReviewsTotal] = useState(null)
 
     useEffect(() => {
         // Display the Profile
-        async function fetchProfileData() {
-            const profileResponse = await fetch (`${backend}/buyer/profile`, {
+        async function fetchSettingData() {
+            const settingResponse = await fetch (`${backend}/buyer/profile`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': loggedIn()
                 }
-            });
-            const profileData = await profileResponse.json();
-            setProfileData(profileData);
-        };
+            })
+            const settingData = await settingResponse.json()
+            setSettingData(settingData)
+        }
 
         // When the page renders in, we want to grab the address data from the backend server and use that data to display different AddressContainer components
         async function fetchAddressData() {
@@ -80,23 +80,39 @@ function UserProfile ({ backend, loggedIn, orderID, grabOrderID }) {
             
         }
 
-        async function fetchOrderData () {
+        async function fetchOrderData() {
             const orderResponse = await fetch(`${backend}/complete/list/orders`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': loggedIn()
                 }
-            });
-            const orderData = await orderResponse.json();
-            setOrderData(orderData.orders);
-            console.log(orderData.orders);
-        };
+            })
+            const orderData = await orderResponse.json()
+            setOrderData(orderData.orders)
+            setOrdersTotal(orderData.totalPages)
+            console.log(orderData.orders)
+        }
+
+        async function fetchReviewsData() {
+            const reviewsResponse = await fetch(`${backend}/buyer/all/electronic/reviews`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': loggedIn()
+                }
+            })
+            const reviewsData = await reviewsResponse.json()
+            console.log(reviewsData.totalPages, reviewsData)
+            setReviewData(reviewsData.allReviews)
+            setReviewsTotal(reviewsData.totalPages)
+        }
 
         fetchPaymentData();
         fetchAddressData();
         fetchOrderData();
-        fetchProfileData();
+        fetchReviewsData()
+        fetchSettingData()
     }, []);
 
     // Function that is used to capitalize a string
@@ -144,60 +160,73 @@ function UserProfile ({ backend, loggedIn, orderID, grabOrderID }) {
 
     // Function to set data for Address in child components
     const grabAddressData = (data) => setAddressData(data);
-    // Function to set data for Payments in child components
-    const grabPaymentData = (data) => setPaymentData(data);
-    // Function to set data for Orders in child components
-    const grabOrderData = (data) => setOrderData(data);
-    // Function to set data for Profile Data in child components
-    const grabProfileData = (data) => setProfileData(data);
+    const grabPaymentData = (data) => setPaymentData(data); // Function to set data for Payments in child components
+    const grabOrderData = (data) => setOrderData(data) // pass down to Orders component to update the orderData state to contain a new list of orders. The new list of orders is given from the server when we click on the page number.
+    const grabReviewData = (data) => setReviewData(data) // pass down to UserReviews component to update the reviews state to contain a new list of reviews. When we click on a page number, the page onChange function runs, getting a new list of reviews from the server.
+    const grabSettingData = (data) => setSettingData(data)
+
+    /* ------- HANDLES WHICH COMPONENT TO DISPLAY IN THE RETURN ------- */
 
     // Function that will handle whether the address component is open or not
     const handleClickAddresses = () => {
         setAddressesTabOpen(true);
-        setProfileTabOpen(false);
+        setSettingsTabOpen(false)
         setPaymentsTabOpen(false);
-        setOrdersTabOpen(false);
+        setOrdersTabOpen(false)
+        setReviewsTabOpen(false)
+        history.replace({ pathname: `/profile/address`})
     }
-
     // Function that will handle whether the payment component is open or not
     const handleClickPayments = () => {
         setPaymentsTabOpen(true);
-        setProfileTabOpen(false);
+        setSettingsTabOpen(false)
         setAddressesTabOpen(false);
-        setOrdersTabOpen(false);
+        setOrdersTabOpen(false)
+        setReviewsTabOpen(false)
+        history.replace({ pathname: `/profile/payment`})
     }
-
-    // Function that will handle whether the order component is open or not 
+    // Function that will open the order component and hide all the other components (since we are hiding all the other components, it does not matter which component you were previously displaying)
     const handleClickOrders = () => {
-        setOrdersTabOpen(true);
-        setProfileTabOpen(false);
+        setOrdersTabOpen(true)
+        setSettingsTabOpen(false)
         setAddressesTabOpen(false);
-        setPaymentsTabOpen(false);
+        setPaymentsTabOpen(false)
+        setReviewsTabOpen(false)
+        history.replace({ pathname: `/profile/order`})
     }
-    
-    // Function that will handle whether the profile component is open or not
-    const handleClickProfile = () => {
-        setProfileTabOpen(true);
+    // Function that will open the order component and hide all the other components (since we are hiding all the other components, it does not matter which tab you were previously on)
+    const handleClickReviews = () => {
+        setReviewsTabOpen(true)
+        setSettingsTabOpen(false)
         setAddressesTabOpen(false);
         setPaymentsTabOpen(false);
-        setOrdersTabOpen(false);
+        setOrdersTabOpen(false)
+        history.replace({ pathname: `/profile/review`})
+    }
+    const handleClickSettings = () => {
+        setSettingsTabOpen(true)
+        setAddressesTabOpen(false);
+        setPaymentsTabOpen(false);
+        setOrdersTabOpen(false)
+        setReviewsTabOpen(false)
+        history.replace({ pathname: `/profile/setting`})
     }
 
     // If the user does not have a token (or logged in), users will automatically render onto the homepage because the user profile page is on accessible to users that are logged in
-    if (!localStorage.getItem('token')) {
+    if (!loggedIn()) {
         return (
             <Redirect to="/"/>
         )
     } else {
         return (
             <>
-                <Navbar />
+                {/* <Navbar totalCartQuantity={totalCartQuantity} grabTotalCartQuantity={grabTotalCartQuantity} backend={backend} loggedIn={loggedIn}/> */}
                 <div className="user-profile-container">
                     {/* This bar represents the sections that users can click on to switch between the address, payments, and order components (screens) */}
                     <div className='top-bar'>
-                         <div style={{borderLeft: '1px solid #000'}} onClick={handleClickProfile} 
-                        className={profileTabOpen === true ? "highlighted-tab" : null}>
-                            Profile
+                         <div style={{borderLeft: '1px solid #000'}} onClick={handleClickSettings} 
+                        className={settingsTabOpen === true ? "highlighted-tab" : null}>
+                            Settings
                         </div>
                         <div onClick={handleClickAddresses} 
                         className={addressesTabOpen === true ? "highlighted-tab" : null}>
@@ -211,11 +240,17 @@ function UserProfile ({ backend, loggedIn, orderID, grabOrderID }) {
                         className={ordersTabOpen === true ? "highlighted-tab" : null}>
                            Orders
                         </div>
+                        <div onClick={handleClickReviews} 
+                        className={reviewsTabOpen === true ? "highlighted-tab" : null}>
+                           Reviews
+                        </div>
                     </div>
+                   
                     {/* This component renders only when the profileTabOpen is open  */}
-                    {profileTabOpen && 
-                        <Profile backend={backend} loggedIn={loggedIn} profileData={profileData} grabProfileData={grabProfileData} />
+                    {settingsTabOpen && 
+                        <Settings backend={backend} loggedIn={loggedIn} settingData={settingData} grabSettingData={grabSettingData} />
                     }
+                   
                     {/* This component renders only when the addressesTab is open */}
                     {addressesTabOpen && 
                         <Address 
@@ -227,6 +262,7 @@ function UserProfile ({ backend, loggedIn, orderID, grabOrderID }) {
                         capitalize={capitalize}
                         capitalizeArray={capitalizeArray}/>
                     }
+          
                     {/* This component renders only when the paymentsTab is open  */}
                     {paymentsTabOpen &&
                         <Payment 
@@ -238,6 +274,7 @@ function UserProfile ({ backend, loggedIn, orderID, grabOrderID }) {
                         capitalize={capitalize}
                         capitalizeArray={capitalizeArray}/>
                     }
+    
                     {/* This component renders only when the orderTabOpen is true  */}
                     {ordersTabOpen &&
                         <Orders 
@@ -245,8 +282,18 @@ function UserProfile ({ backend, loggedIn, orderID, grabOrderID }) {
                         loggedIn={loggedIn}
                         orderData={orderData}
                         grabOrderData={grabOrderData}
-                        orderID={orderID}
-                        grabOrderID={grabOrderID} />
+                        // orderID={orderID}
+                        // grabOrderID={grabOrderID}
+                        ordersTotal={ordersTotal}/>
+                    }
+
+                    {reviewsTabOpen && 
+                        <UserReviews 
+                        backend={backend} 
+                        loggedIn={loggedIn} 
+                        reviewData={reviewData} 
+                        grabReviewData={grabReviewData} 
+                        reviewsTotal={reviewsTotal}/>
                     }
                     <Footer />
                 </div>

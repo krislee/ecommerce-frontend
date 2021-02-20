@@ -1,7 +1,7 @@
 import React from 'react';
-import '../styles/Button.css'
+import '../../styles/Button.css'
 
-function AddCartButton ({ name, id, loggedIn, backend, quantity, grabHandleUpToTwelve, grabNotANumber }) {
+function AddCartButton ({ name, id, loggedIn, backend, quantity, grabHandleUpToTwelve, grabNotANumber, grabTotalCartQuantity }) {
 
     const addItem = async (e) => {
         e.preventDefault();
@@ -16,7 +16,7 @@ function AddCartButton ({ name, id, loggedIn, backend, quantity, grabHandleUpToT
             grabHandleUpToTwelve(false);
             grabNotANumber(false);
             if(loggedIn()) {
-                const resp = await fetch(`${backend}/buyer/electronic/cart/${id}`, {
+                const addItemResponse = await fetch(`${backend}/buyer/electronic/cart/${id}`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -26,10 +26,11 @@ function AddCartButton ({ name, id, loggedIn, backend, quantity, grabHandleUpToT
                         Quantity: quantity
                     })
                 });
-                const data = await resp.json();
+                const addItemData = await addItemResponse.json();
                 console.log(data)
+                grabTotalCartQuantity(addItemData.cart.TotalItems)
             } else { 
-                const resp = await fetch(`${backend}/buyer/electronic/cart/${id}`, {
+                const addItemResponse = await fetch(`${backend}/buyer/electronic/cart/${id}`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -39,8 +40,9 @@ function AddCartButton ({ name, id, loggedIn, backend, quantity, grabHandleUpToT
                         Quantity: quantity
                     })
                 });
-                const data = await resp.json();
-                console.log(data);
+                const addItemData = await addItemResponse.json();
+                console.log(addItemData);
+                grabTotalCartQuantity(addItemData.totalItems)
             }
         }
     }

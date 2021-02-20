@@ -1,9 +1,9 @@
 import React, {useEffect, useState} from 'react'
 import {Link, useParams, useHistory} from 'react-router-dom';
-import Item from '../components/Item';
-import '../styles/Homepage.css'
-import NavBar from '../components/NavigationBar'
-import Footer from '../components/Footer'
+import Item from '../../components/Item';
+import '../../styles/Homepage.css'
+import NavBar from '../../components/NavigationBar'
+import Footer from '../../components/Footer'
 import { makeStyles } from '@material-ui/core/styles';
 import { Pagination, PaginationItem } from '@material-ui/lab';
 
@@ -13,17 +13,17 @@ const useStyles = makeStyles((theme) => ({
         marginTop: theme.spacing(2),
       },
     },
-  }));
+}));
 
-function AllItems ({ loggedIn, grabURL, backend }) {
+function AllItems ({ loggedIn, grabURL, backend, totalCartQuantity, grabTotalCartQuantity }) {
     const classes = useStyles();
+
+    const [footerLoading, setFooterLoading] = useState(true) // this state allows for the footer to be loaded at the SAME TIME as items being loaded in, instead of being loaded less than a second BEFORE the items are loaded in
 
     const {pageIndex} = useParams() // use the param from URL in the useEffect fetch to load the items automatically corresponding to that particular page; also since we still need to highlight the pagination number when we do not click on the number but by going to the page directly, we can use the param from URL to highlight the pagination number
     const history = useHistory()
 
     const [items, setItems] = useState([]); // store all the items in items state
-   
-    const [footerLoading, setFooterLoading] = useState(true) // this state allows for the footer to be loaded at the SAME TIME as items being loaded in, instead of being loaded less than a second BEFORE the items are loaded in
 
     useEffect(() => {
         async function fetchItems() {
@@ -49,8 +49,8 @@ function AllItems ({ loggedIn, grabURL, backend }) {
     const itemList = items.map((item, index) => 
         <React.Fragment key={index}>
         <Link className="homepage-items" to={{
-            pathname:"/store",
-            search: `?${item.Name}=${item._id}`
+            pathname:`/item/${item.Name}`,
+            search: `id=${item._id}`
         }}>
             <Item 
             name={item.Name}
@@ -64,7 +64,7 @@ function AllItems ({ loggedIn, grabURL, backend }) {
 
     return (
         <div className="homepage-container">
-            <NavBar />
+            {/* <NavBar totalCartQuantity={totalCartQuantity} grabTotalCartQuantity={grabTotalCartQuantity} backend={backend} loggedIn={loggedIn}/> */}
 
             <div className="display-item-container">
                 {<div className={loggedIn() ? 'itemContainerLoggedIn' : 'itemContainer'}>

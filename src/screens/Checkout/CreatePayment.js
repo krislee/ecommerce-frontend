@@ -1,8 +1,3 @@
-// import { useStripe, useElements, CardElement } from '@stripe/react-stripe-js';
-
-// const stripe = useStripe()
-// const elements = useElements()
-
 const createPaymentMethod = async (stripe,cardElement, billing, cardholderName, backend) => {
     console.log("from create payment ", billing)
     console.log("from create payment ", billing.postalCode)

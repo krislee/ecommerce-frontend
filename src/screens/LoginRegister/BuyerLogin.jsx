@@ -1,17 +1,16 @@
 import React from 'react'
 import {Link} from 'react-router-dom';
-import Button from '../../components/Button'
 import Login from '../../components/Login'
 import Footer from '../../components/Footer'
 import '../../styles/Login.css'
 
-function BuyerLogin ({backend, loggedIn, grabLoginInfo}) {
+function BuyerLogin ({backend, loggedIn, grabTotalCartQuantity }) {
     return (
         <div className="buyer-login">
             <Link to="/">
-                <Button name={'Back'}></Button>
+                <button>Back</button>
             </Link>
-            <Login backend={backend} grabLoginInfo={grabLoginInfo} loggedIn={loggedIn} buyer={true}/>
+            <Login backend={backend} loggedIn={loggedIn} buyer={true} grabTotalCartQuantity={grabTotalCartQuantity}/>
             <Footer />
         </div>
     )

@@ -13,7 +13,7 @@ import '../../styles/CheckoutPage.css';
 import {Link} from 'react-router-dom';
 
 
-function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCartID, grabSuccessfulPaymentIntent }) {
+function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCartID, grabTotalCartQuantity, grabSuccessfulPaymentIntent }) {
     // Helper to check if user is logged in
 
     /* ------- LOADING STATES ------- */
@@ -23,6 +23,8 @@ function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCar
     const [paymentLoading, setPaymentLoading] = useState(true)
     const [orderComplete, setOrderComplete] = useState(false)
     
+    const [prevLoggedIn, setPrevLoggedIn] = useState('')
+
     /* ------- PAYMENT INTENT-RELATED STATES ------- */
     // const [customer, setCustomer] = useState(false);
     const [clientSecret, setClientSecret] = useState('');
@@ -178,6 +180,8 @@ function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCar
 
     /* ------- FUNCTIONS UPDATING SHIPPING-RELATED STATES  ------- */  
 
+    const grabPrevLoggedIn = (prevLoggedIn) => setPrevLoggedIn(prevLoggedIn)
+
     // update the shipping & shippingInput states whenever we Select a shipping, Add a new shipping, edit a shipping 
     const grabShipping = (shipping) => setShipping(shipping)
     const grabShippingInput = (shippingInput) => setShippingInput(shippingInput)
@@ -203,8 +207,11 @@ function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCar
         }))
     }
     
+    const recheckSameAsShippingButton = (sameAsShipping) => setSameAsShipping(sameAsShipping)
+
     // When we click on the Same as Shipping Address checkbox, handleSameAsShipping serves as the onChange function. The checkbox is only shown in the payment method form displayed if a guest is user, logged in user does not have any saved cards, or when logged in user clicks Add New card to save more cards.
     const handleSameAsShipping = () =>{
+        console.log(208, sameAsShipping)
         setSameAsShipping(!sameAsShipping) // changes if the checkbox is checked or not
         console.log(shipping)
         // If the checkbox is checked, we want the billing state to equal to shippingInput state. 
@@ -212,8 +219,8 @@ function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCar
             setBilling({
                 firstName: shippingInput.firstName,
                 lastName: shippingInput.lastName,
-                line1: shippingInput.addressLineOne,
-                line2: shippingInput.addressLineTwo,
+                line1: shippingInput.line1,
+                line2: shippingInput.line2,
                 city: shippingInput.city,
                 state: shippingInput.state,
                 postalCode: shippingInput.zipcode,
@@ -237,10 +244,13 @@ function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCar
         grabError(event.error ? event.error.message : "");
     };
 
-    
+    const grabRedirect = (redirect) => setRedirect(redirect)
 
     /* ------- CREATE NEW OR UPDATE EXISTING PAYMENT INTENT AFTER RENDERING DOM ------- */
     useEffect(() => {
+        const abortController = new AbortController()
+        const signal = abortController.signal
+
         const handleCheckout = async () => {
             // We need to first check if user is logged in or not, since all the routes will contain different headers.
             // Then, check if there are items in the cart. We only want to create/update a payment intent when there are items in the cart (Stripe does not let you create a payment intent with 0 as the amount). When we create a payment intent, we need to attach an Idempotency-Key header to the server. The server uses the idempotency-key to know NOT to create multiple,duplicate payment intents whenever we hit /checkout route. The idempotency-key value for logged in and guest users is the cart's ID, or session cart's ID.
@@ -250,15 +260,16 @@ function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCar
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': loggedIn()
-                    }
+                    },
+                    signal: signal
                 })
                 const cartResponseData = await cartResponse.json();
                 console.log(cartResponseData);
                 // If there are no cart items, then redirect user to cart page. Also update loading state to false or else if loading state is still true, then it will return <></>.
                 if(cartResponseData.cart === "No cart available") {
-                    setRedirect(true);
-                    setLoading(false)
-                    return;
+                    grabTotalCartQuantity(0)
+                    grabRedirect(true)
+                    return setLoading(false) // need to update setLoading false or else it will always return null since loading is still true even if redirect is true
                 }
                 // If there are cart items, then create/update a payment intent. 
                 if(typeof cartResponseData.cart !== 'string'){
@@ -268,7 +279,8 @@ function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCar
                             'Content-Type': 'application/json',
                             'Idempotency-Key': cartResponseData.cart._id,
                             'Authorization': loggedIn()
-                        }
+                        },
+                        signal: signal
                     })
                     const paymentIntentData = await paymentIntentResponse.json()
                     console.log(paymentIntentData);
@@ -284,35 +296,40 @@ function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCar
                 const cartResponse = await fetch(`${backend}/buyer/cart`, {
                     method: 'GET',
                     headers: {'Content-Type': 'application/json'},
-                    credentials: 'include'
+                    credentials: 'include',
+                    signal: signal
                 })
                 const cartResponseData = await cartResponse.json()
                 console.log(cartResponseData);
                 if(cartResponseData.cart === "No items in cart") {
-                    setRedirect(true)
-                    setLoading(false)
-                    return
+                    console.log(294)
+                    grabTotalCartQuantity(0)
+                    grabRedirect(true)
+                    return setLoading(false) 
                 } else if(cartResponseData.sessionID){
-                    console.log("cookie checkout: ", document.cookie)
                     const paymentIntentResponse = await fetch(`${backend}/order/payment-intent`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
                             'Idempotency-Key': cartResponseData.sessionID
                         },
-                        credentials: 'include'
+                        credentials: 'include',
+                        signal: signal
                     })
                     const paymentIntentData = await paymentIntentResponse.json()
                     console.log(paymentIntentData);
                     setLoading(false)
-                    // setCustomer(paymentIntentData.customer)
                     setClientSecret(paymentIntentData.clientSecret)
                     grabCartID(cartResponseData.sessionID)
                 }
             }
         }    
+
         handleCheckout();
-    },[]);
+        return function cleanUp () {
+            abortController.abort()
+        }
+    }, [loggedIn()]);
 
     const handleConfirmPayment = async (event) => {
         
@@ -335,7 +352,18 @@ function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCar
             })
             const cartResponseData = await cartResponse.json()
             console.log(cartResponseData);
-            if(cartResponseData.message) return setRedirect(true)
+            if(typeof cartResponseData.cart === 'string') {
+                console.log(356)
+                // Logged in user with both saved shipping & payment method OR only with saved payment only; Logged in user with saved shipping only; Logged in user with neither shipping nor payment method 
+                if(prevLoggedIn) {
+                    console.log(359)
+                    return grabTotalCartQuantity(0) // update the Nav Bar & rerun CheckoutPage UseEffect
+                }
+                else {
+                    grabTotalCartQuantity(0) // update the Nav Bar
+                    return grabRedirect(true) // return so that we do not proceed confirming payment
+                }
+            }
         }
 
         // If logged in user (indicated by truthy customer's state) does not have any saved cards (indicated by !paymentMethod.paymentMethodID), the Checkout/Payment will show the Card Element and billing inputs. There will also be a Save Card for Future checkbox. If it is checked, then createPaymentMethod() function will run (arguments are required) with the returned object saved in newSavedCheckoutPaymentMethod variable. If logged in user did not check the Save Card for Future or if user is a guest, then newSavedCheckoutPaymentMethod variable remains as an empty obj.
@@ -364,7 +392,7 @@ function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCar
                 // If there is a CVV Element displayed because the card was previously edited but have not been used to confirm payment (indicated by collectCVV state), then the CVV value (indicated by elements.getElement(CardCvcElement)) for payment_method_options param. If there is no CVV element, then payment_method_options param would not be included in stripe.confirmCardPayment()
                 payment_method_options: (collectCVV === 'true') ? {
                     card: {
-                    cvc: elements.getElement(CardCvcElement)
+                        cvc: elements.getElement(CardCvcElement)
                     } 
                 } : undefined
             })
@@ -408,24 +436,24 @@ function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCar
         
     if(loading) {
         return <></>
-    } else if (redirect === true) {
-        return <Redirect to="/cart" />   
+    } else if (redirect) {
+        console.log(414)
+        return <Redirect to="/cart"></Redirect>
     } else if(orderComplete) {
         return (
-        <Redirect to={`/order-complete?order=${cartID}`}>
-            <OrderComplete />
-        </Redirect>
-
-    )}else {
+            <Redirect to={`/order-complete?orderNumber=${cartID}`}>
+                <OrderComplete />
+            </Redirect>
+    )} else {
         return (
             <>
             {/* <NavBar /> */}
             <div id="payment-form" >
-                <CheckoutItems backend={backend} loggedIn={loggedIn} showItems={showItems} grabShowItems={grabShowItems} grabShowShipping={grabShowShipping} grabShowButtons={grabShowButtons} grabShowPayment={grabShowPayment} grabReadOnly={grabReadOnly}/>
+                <CheckoutItems backend={backend} loggedIn={loggedIn} showItems={showItems} grabShowItems={grabShowItems} grabShowShipping={grabShowShipping} grabShowButtons={grabShowButtons} grabShowPayment={grabShowPayment} grabReadOnly={grabReadOnly} grabTotalCartQuantity={grabTotalCartQuantity} grabRedirect={grabRedirect} shipping={shipping} grabTotalCartQuantity={grabTotalCartQuantity} revLoggedIn={prevLoggedIn} grabPrevLoggedIn={grabPrevLoggedIn} paymentMethod={paymentMethod} grabRedirect={grabRedirect} />
 
-                <Shipping backend={backend} loggedIn={loggedIn} grabPaymentLoading={grabPaymentLoading} cartID={cartID} showPayment={showPayment} grabShowPayment={grabShowPayment} grabShowItems={grabShowItems} shipping={shipping} grabShipping={grabShipping} grabBillingWithShipping={grabBillingWithShipping} shippingInput={shippingInput} grabShippingInput={grabShippingInput} paymentMethod={paymentMethod} grabCardholderName={grabCardholderName} grabShowButtons={grabShowButtons} showButtons={showButtons} showShipping={showShipping} grabShowShipping={grabShowShipping} grabShowItems={grabShowItems} readOnly={readOnly} grabReadOnly={grabReadOnly}/>
+                <Shipping backend={backend} loggedIn={loggedIn} grabPaymentLoading={grabPaymentLoading} cartID={cartID} showPayment={showPayment} grabShowPayment={grabShowPayment} grabShowItems={grabShowItems} shipping={shipping} grabShipping={grabShipping} grabBillingWithShipping={grabBillingWithShipping} shippingInput={shippingInput} grabShippingInput={grabShippingInput} paymentMethod={paymentMethod} grabCardholderName={grabCardholderName} grabShowButtons={grabShowButtons} showButtons={showButtons} showShipping={showShipping} grabShowShipping={grabShowShipping} grabShowItems={grabShowItems} readOnly={readOnly} grabReadOnly={grabReadOnly} grabTotalCartQuantity={grabTotalCartQuantity} grabError={grabError} grabDisabled={grabDisabled} grabRedirect={grabRedirect} paymentMethod={paymentMethod} prevLoggedIn={prevLoggedIn} grabPrevLoggedIn={grabPrevLoggedIn} />
 
-                <PaymentMethod backend={backend} loggedIn={loggedIn} error={error} grabError={grabError} disabled={disabled} grabDisabled={grabDisabled} paymentLoading={paymentLoading} grabPaymentLoading={grabPaymentLoading} billing={billing} handleBillingChange={handleBillingChange} grabBilling={grabBilling} paymentMethod={paymentMethod} grabPaymentMethod={grabPaymentMethod} cardholderName={cardholderName} grabCardholderName={grabCardholderName}handleCardholderNameChange={handleCardholderNameChange} handleCardChange={handleCardChange} collectCVV={collectCVV} grabCollectCVV={grabCollectCVV} editPayment={editPayment} grabEditPayment={grabEditPayment} redisplayCardElement={redisplayCardElement} grabRedisplayCardElement={grabRedisplayCardElement} grabShowSavedCards={grabShowSavedCards} handleConfirmPayment={handleConfirmPayment} showSavedCards={showSavedCards} editExpiration={editExpiration} grabEditExpiration={grabEditExpiration} loggedOut={loggedOut} grabLoggedOut={grabLoggedOut} showPayment={showPayment} sameAsShipping={sameAsShipping} handleSameAsShipping={handleSameAsShipping} shippingInput={shippingInput} grabBillingWithShipping={grabBillingWithShipping} shipping={shipping} />
+                <PaymentMethod backend={backend} loggedIn={loggedIn} error={error} grabError={grabError} disabled={disabled} grabDisabled={grabDisabled} paymentLoading={paymentLoading} grabPaymentLoading={grabPaymentLoading} billing={billing} handleBillingChange={handleBillingChange} grabBilling={grabBilling} paymentMethod={paymentMethod} grabPaymentMethod={grabPaymentMethod} cardholderName={cardholderName} grabCardholderName={grabCardholderName}handleCardholderNameChange={handleCardholderNameChange} handleCardChange={handleCardChange} collectCVV={collectCVV} grabCollectCVV={grabCollectCVV} editPayment={editPayment} grabEditPayment={grabEditPayment} redisplayCardElement={redisplayCardElement} grabRedisplayCardElement={grabRedisplayCardElement} grabShowSavedCards={grabShowSavedCards} handleConfirmPayment={handleConfirmPayment} showSavedCards={showSavedCards} editExpiration={editExpiration} grabEditExpiration={grabEditExpiration} loggedOut={loggedOut} grabLoggedOut={grabLoggedOut} showPayment={showPayment} sameAsShipping={sameAsShipping} handleSameAsShipping={handleSameAsShipping} shippingInput={shippingInput} grabBillingWithShipping={grabBillingWithShipping} shipping={shipping} recheckSameAsShippingButton={recheckSameAsShippingButton} grabTotalCartQuantity={grabTotalCartQuantity}grabRedirect={grabRedirect} />
                 
             </div>         
             </>

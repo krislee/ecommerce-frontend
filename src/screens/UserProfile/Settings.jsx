@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Footer from '../../components/Footer';
 import Toast from 'react-bootstrap/Toast'
 
-export default function Profile({ backend, loggedIn, profileData, grabProfileData }) {
+export default function Settings({ backend, loggedIn, settingData, grabSettingData }) {
    
     // const [open, setOpen] = useState(false)
     const [emailInvalid, setEmailInvalid] = useState(false)
@@ -31,19 +31,22 @@ export default function Profile({ backend, loggedIn, profileData, grabProfileDat
             const emailUpdateData = await emailUpdateResponse.json()
             console.log(emailUpdateData)
             if(!emailUpdateData.msg && !emailUpdateData.details) {
-                grabProfileData(emailUpdateData)
-                setUpdateEmailSuccess(true)
-                setEmailErrorMessage(false)
-                setEmailInvalid(false)
-                setShowEmailInput(false)
+                grabSettingData(emailUpdateData) // update email
+                setUpdateEmailSuccess(true) // show success message
+                setEmailErrorMessage(false) // do not show error message
+                setEmailInvalid(false) // do not show error message
+                setShowEmailInput(false) // hide input 
+                setEmailInput('') // empty input
             }
             if(emailUpdateData.msg) {
                 setEmailErrorMessage(true)
                 setEmailInvalid(false)
+                setEmailInput('') // empty input
             }
             if(emailUpdateData.details && emailUpdateData.details[0].message) {
                 setEmailInvalid(true)
                 setEmailErrorMessage(false)
+                setEmailInput('') // empty input
             }
         }
             
@@ -62,18 +65,21 @@ export default function Profile({ backend, loggedIn, profileData, grabProfileDat
             const resetPasswordData = await resetPasswordResponse.json()
             console.log(resetPasswordData)
             if(!resetPasswordData.msg && !resetPasswordData.details) {
-                setResetPasswordSuccess(true)
+                setResetPasswordSuccess(true) // show success message
                 setPasswordErrorMessage(false)
                 setPasswordInvalid(false)
-                setShowPasswordInput(false)
+                setShowPasswordInput(false) // hide input
+                setPasswordInput('') // empty input
             }
             if(resetPasswordData.msg) {
                 setPasswordErrorMessage(true)
                 setPasswordInvalid(false)
+                setPasswordInput('') // empty input
             }
             if(resetPasswordData.details && resetPasswordData.details[0].message) {
                 setPasswordInvalid(true)
                 setPasswordErrorMessage(false)
+                setPasswordInput('') // empty input
             }
         }
     }
@@ -84,7 +90,7 @@ export default function Profile({ backend, loggedIn, profileData, grabProfileDat
     return (
         <>
             <div>
-                <h5>Email:{profileData.email} </h5>
+                <h5>Email:{settingData.email} </h5>
                 <button disabled={showPasswordInput} onClick={() => {
                     setShowEmailInput(true)
                     setShowPasswordInput(false)
@@ -93,7 +99,10 @@ export default function Profile({ backend, loggedIn, profileData, grabProfileDat
                     <div>
                         <input type="email" value={emailInput} onChange={handleEmailInputChange}/>
                         <input type="submit" onClick={handleEmailUpdate}/>
-                        <button onClick={() => setShowEmailInput(false)}>Close</button>
+                        <button onClick={() => {
+                            setShowEmailInput(false) // hide input
+                            setEmailInput('') // empty input
+                        }}>Close</button>
                     </div>
                 )} 
                 <Toast onClose={() => setEmailInvalid(false)} show={emailInvalid} delay={2000} autohide>
@@ -106,11 +115,11 @@ export default function Profile({ backend, loggedIn, profileData, grabProfileDat
                     <Toast.Body style={{backgroundColor: 'rgb(57, 172, 57)'}}>Your email is successfully changed.</Toast.Body>
                 </Toast>     
 
-                <h5>Username: {profileData.username} </h5>
+                <h5>Username: {settingData.username} </h5>
 
                 <h5>Password: *****</h5>
                 <button disabled = {showEmailInput} onClick={()=> {
-                    setShowPasswordInput(true)
+                    setShowPasswordInput(true) 
                     setShowEmailInput(false)
                 }}>Reset password</button>
 
@@ -118,7 +127,10 @@ export default function Profile({ backend, loggedIn, profileData, grabProfileDat
                     <div>
                     <input type="password" value={passwordInput} onChange={handlePasswordInputChange}/>
                     <input type="submit" onClick={handleResetPassword}/>
-                    <button onClick={() => setShowPasswordInput(false)}>Close</button>
+                    <button onClick={() => {
+                        setShowPasswordInput(false) // hide input
+                        setPasswordInput('') // empty input
+                    }}>Close</button>
                     </div>
                 )}
    
