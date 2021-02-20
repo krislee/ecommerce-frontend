@@ -12,8 +12,8 @@ import '../../styles/UserProfile/UserProfile.css';
 
 function UserProfile ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuantity }) {
     const history = useHistory()
-    const location = useLocation()
-    console.log(location)
+    const location = useLocation() // gets the full current URL
+
     // Getter and Setter to display the address component or not
     const [addressesTabOpen, setAddressesTabOpen] = useState(location.pathname === '/profile/address'? true: false);
     // Getter and Setter to display the payments component or not
@@ -26,13 +26,15 @@ function UserProfile ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuant
     const [addressData, setAddressData] = useState([]);
     // Getter and Setter for the data pertaining to the payments
     const [paymentData, setPaymentData] = useState([]);
+    const [orderLoading, setOrderLoading] = useState(true)
     const [orderData, setOrderData] = useState([])
     const [ordersTotal, setOrdersTotal] = useState(null)
+    const [ordersPage, setOrdersPage] = useState('')
     const [reviewData, setReviewData] = useState([])
     const [reviewsTotal, setReviewsTotal] = useState(null)
 
     useEffect(() => {
-
+        
         const abortController = new AbortController()
         const signal = abortController.signal
 
@@ -88,7 +90,10 @@ function UserProfile ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuant
         }
 
         async function fetchOrderData() {
-            const orderResponse = await fetch(`${backend}/complete/list/orders`, {
+            const queryParams = new URLSearchParams(location.search) // returns query obj from the full URL
+            const page = queryParams.get("page") // get the query value
+            console.log(page, typeof page)
+            const orderResponse = await fetch(`${backend}/complete/list/orders?page=${page}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -97,9 +102,15 @@ function UserProfile ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuant
                 signal: signal
             })
             const orderData = await orderResponse.json()
-            setOrderData(orderData.orders)
-            setOrdersTotal(orderData.totalPages)
             console.log(orderData.orders)
+            setOrderData(orderData.orders)
+            setOrdersTotal(orderData.totalPages) // used for pagination count in Orders component
+            if(!page) {
+                setOrdersPage(1) // user can go to /orders and still be shown the same list of orders as going to /orders/page=1, but the pagination number won't be highlighted since page is null, so set ordersPage state to 1
+            } else {
+                setOrdersPage(page) // if logged in user decides to immediately go to i.e. /orders/page=2, we need to be able to highlight the pagination number that corresponds to the url page #, 2
+            }
+            setOrderLoading(false) // do not want to show the paragraph, "No purchases yet..." if we go to the URL directly since useEffect has not ran yet, so set orderLoading to true first, to show nothing if we hit the order URL directly, and then either show "No purchases yet" or a list of orders
         }
 
         async function fetchReviewsData() {
@@ -117,11 +128,13 @@ function UserProfile ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuant
             setReviewsTotal(reviewsData.totalPages)
         }
 
-        fetchPaymentData();
-        fetchAddressData();
-        fetchOrderData();
-        fetchReviewsData();
-        fetchSettingData();
+        if(loggedIn()) {
+            fetchPaymentData();
+            fetchAddressData();
+            fetchOrderData();
+            fetchReviewsData();
+            fetchSettingData();
+        } 
 
         return function cleanUp () {
             abortController.abort()
@@ -176,6 +189,7 @@ function UserProfile ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuant
     const grabAddressData = (data) => setAddressData(data);
     const grabPaymentData = (data) => setPaymentData(data); // Function to set data for Payments in child components
     const grabOrderData = (data) => setOrderData(data) // pass down to Orders component to update the orderData state to contain a new list of orders. The new list of orders is given from the server when we click on the page number.
+    const grabOrdersPage =(data) => setOrdersPage(data) //update the ordersPage state in handlePageOnChange; ordersPage state used for Pagination 
     const grabReviewData = (data) => setReviewData(data) // pass down to UserReviews component to update the reviews state to contain a new list of reviews. When we click on a page number, the page onChange function runs, getting a new list of reviews from the server.
     const grabSettingData = (data) => setSettingData(data)
 
@@ -206,7 +220,8 @@ function UserProfile ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuant
         setAddressesTabOpen(false);
         setPaymentsTabOpen(false)
         setReviewsTabOpen(false)
-        history.replace({ pathname: `/profile/order`})
+        grabOrdersPage(1) // When we click on Orders tab, have pagination number be defaulted to 1
+        history.replace({ pathname: `/profile/order?page=1`})
     }
     // Function that will open the order component and hide all the other components (since we are hiding all the other components, it does not matter which tab you were previously on)
     const handleClickReviews = () => {
@@ -294,11 +309,14 @@ function UserProfile ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuant
                         <Orders 
                         backend={backend} 
                         loggedIn={loggedIn}
+                        orderLoading={orderLoading}
                         orderData={orderData}
                         grabOrderData={grabOrderData}
                         // orderID={orderID}
                         // grabOrderID={grabOrderID}
-                        ordersTotal={ordersTotal}/>
+                        ordersTotal={ordersTotal}
+                        ordersPage={ordersPage}
+                        grabOrdersPage={grabOrdersPage} />
                     }
 
                     {reviewsTabOpen && 

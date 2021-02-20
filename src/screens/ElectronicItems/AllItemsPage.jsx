@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import {Link, useParams, useHistory} from 'react-router-dom';
 import Item from '../../components/Item';
 import '../../styles/Homepage.css'
-import NavBar from '../../components/NavigationBar'
+// import NavBar from '../../components/NavigationBar'
 import Footer from '../../components/Footer'
 import { makeStyles } from '@material-ui/core/styles';
 import { Pagination, PaginationItem } from '@material-ui/lab';
