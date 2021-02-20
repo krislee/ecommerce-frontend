@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Footer from '../../components/Footer';
+// import Footer from '../../components/Footer';
 import Toast from 'react-bootstrap/Toast'
 
 export default function Settings({ backend, loggedIn, settingData, grabSettingData }) {
@@ -144,7 +144,7 @@ export default function Settings({ backend, loggedIn, settingData, grabSettingDa
                     <Toast.Body style={{backgroundColor: 'rgb(57, 172, 57)'}}>Your password is successfully changed.</Toast.Body>
                 </Toast>    
             </div>
-            <Footer />
+            {/* <Footer /> */}
         </>
     )
 }  

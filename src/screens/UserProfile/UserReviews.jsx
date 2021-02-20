@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
+import { useHistory } from 'react-router-dom';
+import ReviewForm from '../../components/Reviews/ReviewForm'
 import Modal from 'react-modal';
 import Rating from '@material-ui/lab/Rating';
 import { makeStyles } from '@material-ui/core/styles';
-import ReviewForm from '../../components/Reviews/ReviewForm'
 import { Pagination, PaginationItem } from '@material-ui/lab';
 
 const paginationUseStyles = makeStyles((theme) => ({
@@ -23,11 +24,13 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function UserReviews({ backend, loggedIn, reviewData, grabReviewData, reviewsTotal }) {
+export default function UserReviews({ backend, loggedIn, reviewData, grabReviewData, reviewsTotal, reviewLoading, reviewsPage, grabReviewsPage }) {
 
     const classes = useStyles();
     const paginationClass = paginationUseStyles()
-    
+
+    const history = useHistory()
+
     const [reviewID, setReviewID] = useState('') //whenever we click update or delete button update the reviewID state to contain the ID of the item we are updating or deleting - that way, we can use the reviewID value in the fetch URL parameter
     const [editReviewForm, setEditReviewForm] = useState(false) // controls opening the Edit modal when editReviewForm state is true
     const [deleteReviewForm, setDeleteReviewForm] = useState(false) // controls opening the Delete modal when editReviewForm state is true
@@ -103,6 +106,10 @@ export default function UserReviews({ backend, loggedIn, reviewData, grabReviewD
     }
 
     const handlePageOnChange = async(event, page) => {
+
+        history.replace({
+            pathname: `/profile/review?page=${page}` // when we click on the pagination number, we want to update the URL param with the clicked pagination number (represented by page)
+        })
         const allReviewsResponse = await fetch(`${backend}/buyer/all/electronic/reviews?page=${page}`, {
             method: 'GET',
             headers: {
@@ -113,8 +120,10 @@ export default function UserReviews({ backend, loggedIn, reviewData, grabReviewD
         const allReviewsData = await allReviewsResponse.json();
         console.log(allReviewsData.allReviews);
         grabReviewData(allReviewsData.allReviews)
+        grabReviewsPage(page)
     }
 
+    if(reviewLoading) return null
     return (
         <>
             {reviewData.length === 0 ? <p>Go ahead and leave a review for the items you have purchased!</p> : (
@@ -132,7 +141,7 @@ export default function UserReviews({ backend, loggedIn, reviewData, grabReviewD
                     </div>
                 )})}
                 <div className={paginationClass.root}>
-                    <Pagination showFirstButton showLastButton size="large" variant="outlined" shape="rounded" count={reviewsTotal} siblingCount={1} boundaryCount={2} onChange={handlePageOnChange} />
+                    <Pagination showFirstButton showLastButton size="large" variant="outlined" shape="rounded" count={reviewsTotal} page={Number(reviewsPage)} siblingCount={1} boundaryCount={2} onChange={handlePageOnChange} />
                 </div>  
                 {editReviewForm && (
                     <Modal isOpen={editReviewForm} onRequestClose={() => setEditReviewForm(false)} ariaHideApp={false} contentLabel="Edit Review">

@@ -26,12 +26,18 @@ function UserProfile ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuant
     const [addressData, setAddressData] = useState([]);
     // Getter and Setter for the data pertaining to the payments
     const [paymentData, setPaymentData] = useState([]);
+
     const [orderLoading, setOrderLoading] = useState(true)
     const [orderData, setOrderData] = useState([])
     const [ordersTotal, setOrdersTotal] = useState(null)
     const [ordersPage, setOrdersPage] = useState('')
+
+    const [reviewLoading, setReviewLoading] = useState(true)
     const [reviewData, setReviewData] = useState([])
     const [reviewsTotal, setReviewsTotal] = useState(null)
+    const [reviewsPage, setReviewsPage] = useState('')
+
+    const [footerLoading, setFooterLoading] = useState(true)
 
     useEffect(() => {
         
@@ -50,6 +56,7 @@ function UserProfile ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuant
             })
             const settingData = await settingResponse.json()
             setSettingData(settingData)
+            setFooterLoading(false)
         }
 
         // When the page renders in, we want to grab the address data from the backend server and use that data to display different AddressContainer components
@@ -67,6 +74,7 @@ function UserProfile ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuant
             defaultFirst(data);
             // Use that data recieved back and set it to the variable addressData
             setAddressData(data);
+            setFooterLoading(false)
         }
 
         // When the page renders in, we want to grab the payment data from the backend server and use that data to display different PaymentContainer components
@@ -86,13 +94,13 @@ function UserProfile ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuant
                 // Use that data recieved back and set it to the variable paymentData
                 setPaymentData(data.paymentMethods);
             }
-            
+            setFooterLoading(false)
         }
 
         async function fetchOrderData() {
             const queryParams = new URLSearchParams(location.search) // returns query obj from the full URL
             const page = queryParams.get("page") // get the query value
-            console.log(page, typeof page)
+
             const orderResponse = await fetch(`${backend}/complete/list/orders?page=${page}`, {
                 method: 'GET',
                 headers: {
@@ -104,17 +112,21 @@ function UserProfile ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuant
             const orderData = await orderResponse.json()
             console.log(orderData.orders)
             setOrderData(orderData.orders)
+            setOrderLoading(false) // do not want to show the paragraph, "No purchases yet..." if we go to the URL directly since useEffect has not ran yet, so set orderLoading to true first, to show nothing if we hit the order URL directly, and then either show "No purchases yet" or a list of orders
             setOrdersTotal(orderData.totalPages) // used for pagination count in Orders component
             if(!page) {
                 setOrdersPage(1) // user can go to /orders and still be shown the same list of orders as going to /orders/page=1, but the pagination number won't be highlighted since page is null, so set ordersPage state to 1
             } else {
                 setOrdersPage(page) // if logged in user decides to immediately go to i.e. /orders/page=2, we need to be able to highlight the pagination number that corresponds to the url page #, 2
             }
-            setOrderLoading(false) // do not want to show the paragraph, "No purchases yet..." if we go to the URL directly since useEffect has not ran yet, so set orderLoading to true first, to show nothing if we hit the order URL directly, and then either show "No purchases yet" or a list of orders
+            setFooterLoading(false)
         }
 
         async function fetchReviewsData() {
-            const reviewsResponse = await fetch(`${backend}/buyer/all/electronic/reviews`, {
+            const queryParams = new URLSearchParams(location.search) // returns query obj from the full URL
+            const page = queryParams.get("page") // get the query value
+
+            const reviewsResponse = await fetch(`${backend}/buyer/all/electronic/reviews?page=${page}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -125,7 +137,14 @@ function UserProfile ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuant
             const reviewsData = await reviewsResponse.json()
             console.log(reviewsData.totalPages, reviewsData)
             setReviewData(reviewsData.allReviews)
+            setReviewLoading(false)
             setReviewsTotal(reviewsData.totalPages)
+            if(!page) {
+                setReviewsPage(1) // user can go to /review and still be shown the same list of reviews as going to /review/page=1, but the pagination number won't be highlighted since page is null, so set ordersPage state to 1
+            } else {
+                setReviewsPage(page) // if logged in user decides to immediately go to i.e. /review/page=2, we need to be able to highlight the pagination number that corresponds to the url page #, 2
+            }
+            setFooterLoading(false)
         }
 
         if(loggedIn()) {
@@ -189,10 +208,11 @@ function UserProfile ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuant
     const grabAddressData = (data) => setAddressData(data);
     const grabPaymentData = (data) => setPaymentData(data); // Function to set data for Payments in child components
     const grabOrderData = (data) => setOrderData(data) // pass down to Orders component to update the orderData state to contain a new list of orders. The new list of orders is given from the server when we click on the page number.
-    const grabOrdersPage =(data) => setOrdersPage(data) //update the ordersPage state in handlePageOnChange; ordersPage state used for Pagination 
+    const grabOrdersPage =(data) => setOrdersPage(data) //update the ordersPage state in handlePageOnChange; ordersPage state is used for Pagination 
+    const grabReviewsPage = (data) => setReviewsPage(data) //update the reviewsPage state in handlePageOnChange; reviewsPage state is used for Pagination 
     const grabReviewData = (data) => setReviewData(data) // pass down to UserReviews component to update the reviews state to contain a new list of reviews. When we click on a page number, the page onChange function runs, getting a new list of reviews from the server.
     const grabSettingData = (data) => setSettingData(data)
-
+    
     /* ------- HANDLES WHICH COMPONENT TO DISPLAY IN THE RETURN ------- */
 
     // Function that will handle whether the address component is open or not
@@ -230,7 +250,7 @@ function UserProfile ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuant
         setAddressesTabOpen(false);
         setPaymentsTabOpen(false);
         setOrdersTabOpen(false)
-        history.replace({ pathname: `/profile/review`})
+        history.replace({ pathname: `/profile/review?page=1`})
     }
     const handleClickSettings = () => {
         setSettingsTabOpen(true)
@@ -323,11 +343,14 @@ function UserProfile ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuant
                         <UserReviews 
                         backend={backend} 
                         loggedIn={loggedIn} 
+                        reviewLoading={reviewLoading}
                         reviewData={reviewData} 
                         grabReviewData={grabReviewData} 
-                        reviewsTotal={reviewsTotal}/>
+                        reviewsTotal={reviewsTotal}
+                        reviewsPage={reviewsPage} 
+                        grabReviewsPage={grabReviewsPage} />
                     }
-                    <Footer />
+                    {!footerLoading && <Footer />}
                 </div>
             </>
         );

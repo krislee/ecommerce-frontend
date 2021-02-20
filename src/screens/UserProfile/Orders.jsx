@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
-import { Link, useHistory, useLocation } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 // import ConvertDate from './ConvertDate'
 import { makeStyles } from '@material-ui/core/styles';
 import { Pagination } from '@material-ui/lab';
@@ -36,7 +36,7 @@ export default function Orders ({ backend, loggedIn, orderData, grabOrderData, o
         const nextPageOrdersData = await nextPageOrdersResponse.json();
         console.log(nextPageOrdersData.orders);
         grabOrderData(nextPageOrdersData.orders) // update orderData state to contain the new list of orders
-        grabOrdersPage(page)
+        grabOrdersPage(page) // highlight the pagination number when we click on it; to do this Pagination component has a page state, whose value is a number; when you provide a page state, the number gets highlighted; since page state's value equals to ordersPage state, we need to update ordersPage state with the page # clicked
     }
 
     if(orderLoading) return null
