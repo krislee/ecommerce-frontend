@@ -24,7 +24,7 @@ import IndividualOrder from './screens/UserProfile/IndividualOrder';
 
 function App() {
 
-   /* ------- VARIABLES ------- */
+  /* ------- VARIABLES ------- */
   const stripePromise = loadStripe('pk_test_51HnnIMIYuoOQip6pUnsYnuXlHlEZDBIrXMRatY8FOKakcOsFN08ptoIPrHIthMNBo8n58lvQGNoh5bYAfJFmgc6R00ufne9cZV')
   const backend = `https://elecommerce.herokuapp.com`
 
