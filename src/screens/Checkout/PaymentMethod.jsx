@@ -88,9 +88,13 @@ function PaymentMethod ({ backend, processing, loggedIn, error, grabError, disab
     }
 
     // Listen to the month and year input changes
-    const handleEditExpiration = (event) => {
-        const { name, value } = event.target
-        grabEditExpiration((prevEditExpiration) => ({...prevEditExpiration, [name]: value }))
+    const handleEditMonthExpiration = (event) => {
+        const { value } = event.target
+        grabEditExpiration((prevEditExpiration) => ({...prevEditExpiration, ["month"]: value }))
+    }
+    const handleEditYearExpiration = (event) => {
+        const { value } = event.target
+        grabEditExpiration((prevEditExpiration) => ({...prevEditExpiration, ["year"]: value }))
     }
 
     // When Save is clicked, handleUpdatePayment() runs
@@ -271,6 +275,17 @@ function PaymentMethod ({ backend, processing, loggedIn, error, grabError, disab
         }
     }
 
+    const editingCardInputExpirationErrorDisableButton = () => {
+        return (
+            /^[0-9]*$/g.test(editExpiration.month) !== true 
+            || editExpiration.month === undefined
+            || editExpiration.month === ''
+            || /^[0-9]*$/g.test(editExpiration.year) !== true 
+            || editExpiration.year === undefined
+            || editExpiration.year === ''
+        )
+    }
+
     if(paymentLoading) {
         return <></>
     } else if(!paymentMethod.paymentMethodID) {
@@ -372,9 +387,36 @@ function PaymentMethod ({ backend, processing, loggedIn, error, grabError, disab
                 {((/^[a-z][a-z\s]*$/i.test(cardholderName) !== true)  &&  cardholderName !== "") && <div className="warning">You must enter only letters as your full name</div>}
 
                 <span className="expiration" >
-                    <input value = {editExpiration.month} type="number" name="month" placeholder="MM" min="01" max="12" maxLength="2" size="2" required={true} onChange={handleEditExpiration}/>
+                    {/* <input value = {editExpiration.month} type="number" name="month" placeholder="MM" min="01" max="12" maxLength="2" size="2" required={true} onChange={handleEditExpiration}/>
                     <span>/</span>
-                    <input value = {editExpiration.year} type="number" name="year" placeholder="YY" min="2021" max="2031"  maxLength="4" size="3" required={true} onChange={handleEditExpiration}/>
+                    <input value = {editExpiration.year} type="number" name="year" placeholder="YYYY" min="2021" max="2031"  maxLength="4" size="3" required={true} onChange={handleEditExpiration}/> */}
+                    <select value={editExpiration.month} onChange={handleEditMonthExpiration}>
+                        <option key="January" value="01">01</option>
+                        <option key="February" value="02">02</option>
+                        <option key="March"value="03">03</option>
+                        <option key="April" value="04">04</option>
+                        <option key="May" value="05">05</option>
+                        <option key="June" value="06">06</option>
+                        <option key="July" value="07">07</option>
+                        <option key="August" value="08">08</option>
+                        <option key="September" value="09">09</option>
+                        <option key="October" value="10">10</option>
+                        <option key="November" value="11">11</option>
+                        <option key="December" value="12">12</option>
+                    </select>
+                    <select value={editExpiration.year} onChange={handleEditYearExpiration}>
+                        <option key="2021" value="2021">2021</option>
+                        <option key="2022" value="2022">2022</option>
+                        <option key="2023" value="2023">2023</option>
+                        <option key="2024" value="2024">2024</option>
+                        <option key="2025" value="2025">2025</option>
+                        <option key="2026" value="2026">2026</option>
+                        <option key="2027" value="2027">2027</option>
+                        <option key="2028" value="2028">2028</option>
+                        <option key="2029" value="2029">2029</option>
+                        <option key="2030" value="2030">2030</option>
+                        <option key="2031" value="2031">2031</option>
+                    </select>
                 </span>
 
                 <div>
