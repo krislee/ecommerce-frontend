@@ -42,19 +42,6 @@ export default function OrderComplete({ backend, cartID }) {
         socket.emit('end')
     })
 
-
-    // const handleOrderDetails = async() => {
-    //     const orderID = cartID || id
-    //     const orderResponse = await fetch(`${backend}/complete/list/orders/${orderID}`)
-    //     const orderData = await orderResponse.json()
-    //     console.log(orderData)
-    //     const shipping = orderData.order.Shipping.Address.split(",")
-    //     setOrder(orderData.order)
-    //     setOrderItems(orderData.order.Items)
-    //     setOrderShipping(shipping)
-    //     setOrderPayment(orderData.payment)
-    //     setShowOrderDetails(true)
-    // }
     
     if(orderLoading && cartID) {
         return (
