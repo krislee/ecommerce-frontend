@@ -27,31 +27,31 @@ export default function OrderComplete({ backend, cartID }) {
 
     useEffect(() => {
         
-        // socket.on('completeOrder', (orderData) => {
-        //     console.log(orderData)
-        //     const shipping = orderData.order.Shipping.Address.split(",")
+        socket.on('completeOrder', (orderData) => {
+            console.log(orderData)
+            const shipping = orderData.order.Shipping.Address.split(",")
 
-        //     setOrderItems(orderData.order.Items)
-        //     setOrderShipping(shipping)
-        //     setOrderShippingName(orderData.order.Shipping.Name.replace(", ", " "))
-        //     setOrderNumber(orderData.order.OrderNumber)
-        //     setOrderPayment(orderData.payment)
-        //     setShowOrderDetails(true)
-        //     setOrderLoading(false)
-        // })
-
-        // socket.emit('end')
-
-        ws.onmessage = (event) => {
-            const orderData = event.data 
             setOrderItems(orderData.order.Items)
-            // setOrderShipping(shipping)
+            setOrderShipping(shipping)
             setOrderShippingName(orderData.order.Shipping.Name.replace(", ", " "))
             setOrderNumber(orderData.order.OrderNumber)
             setOrderPayment(orderData.payment)
             setShowOrderDetails(true)
             setOrderLoading(false)
-        }
+        })
+
+        socket.emit('end')
+
+        // ws.onmessage = (event) => {
+        //     const orderData = event.data 
+        //     setOrderItems(orderData.order.Items)
+        //     // setOrderShipping(shipping)
+        //     setOrderShippingName(orderData.order.Shipping.Name.replace(", ", " "))
+        //     setOrderNumber(orderData.order.OrderNumber)
+        //     setOrderPayment(orderData.payment)
+        //     setShowOrderDetails(true)
+        //     setOrderLoading(false)
+        // }
            
     })
 
