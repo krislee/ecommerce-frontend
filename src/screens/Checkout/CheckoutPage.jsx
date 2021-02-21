@@ -105,7 +105,12 @@ function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCar
         grabBilling(paymentMethod.billingDetails) 
         grabCollectCVV(paymentMethod.recollectCVV) 
         if(paymentMethod.cardholderName)setCardholderName(paymentMethod.cardholderName)
-        if(paymentMethod.paymentMethodID) setEditExpiration({month: paymentMethod.expDate.split("/")[0], year: paymentMethod.expDate.split("/")[1]})
+        if(paymentMethod.paymentMethodID) {
+            let expMonth
+            if(paymentMethod.expDate.split("/")[0].length === 1) expMonth = `0${paymentMethod.expDate.split("/")[0]}`
+            else expMonth = paymentMethod.expDate.split("/")[0]
+            setEditExpiration({month: expMonth, year: paymentMethod.expDate.split("/")[1]})
+        }
     }
 
     // We need to prefill the billing details input when user wants to edit the displayed, saved card's billing details and after adding a new card. To do this, we pass down billing state as prop down to Checkout/PaymentMethod and then further down to Component/BillingInput. Each Component/BillingInput inputs' value attribute will now equal to each billing state keys. The billing state keys' values have been set by running grabBilling(<payment_method_billing_details>).
