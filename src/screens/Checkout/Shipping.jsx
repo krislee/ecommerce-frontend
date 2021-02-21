@@ -126,7 +126,7 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
 
             const allSavedShippingData = await allSavedShippingResponse.json()
             console.log(47, "all shipping: ", allSavedShippingData)
-            setAllSavedShipping(allSavedShippingData) // update allSavedShipping state from [] to store all the addresses returned from server
+            setAllSavedShipping(allSavedShippingData.reverse()) // update allSavedShipping state from [] to store all the addresses returned from server
         } else {
             grabTotalCartQuantity(0)
         }

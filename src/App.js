@@ -129,7 +129,7 @@ function App() {
             </Elements>
           </Route>
           <Route path="/show-order">
-            <IndividualOrder backend={backend} loggedIn={loggedIn} orderID={orderID}/>
+            <IndividualOrder backend={backend} loggedIn={loggedIn} orderID={orderID} grabTotalCartQuantity={grabTotalCartQuantity} />
           </Route>
           {/* SHOW ALL ITEMS/INDIVIDUAL ITEM */}
           <Route path="/shop/:pageIndex">
@@ -140,7 +140,7 @@ function App() {
           </Route>
           {/* CART */}
           <Route path="/cart">
-            <CartPage backend={backend} loggedIn={loggedIn} totalCartQuantity={totalCartQuantity} grabTotalCartQuantity={grabTotalCartQuantity}/>
+            <CartPage backend={backend} loggedIn={loggedIn} totalCartQuantity={totalCartQuantity} grabTotalCartQuantity={grabTotalCartQuantity} />
           </Route>
 
           <Route path="">

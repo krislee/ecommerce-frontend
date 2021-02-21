@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import {Link, Redirect} from 'react-router-dom';
+import { Link, Redirect, useLocation } from 'react-router-dom';
 // import Button from '../components/Button'
 import '../styles/NavigationBar.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -20,30 +20,32 @@ const StyledBadge = withStyles((theme) => ({
 
 
 function NavBar ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuantity }) {
-    const [redirect, setRedirect] = useState(false)
+    // const [redirect, setRedirect] = useState(false)
+    const location = useLocation()
 
     const handleLogout = () => {
         localStorage.clear();
-        grabTotalCartQuantity(0)
-        setRedirect(true)
+        return grabTotalCartQuantity(0)
     }
 
 
-    if(redirect) {
-        return <Redirect to='/'></Redirect>
-    } 
+    // if(redirect) {
+    //     return <Redirect to='/'></Redirect>
+    // } 
 
     return (
         <div className="navbar">
             <Link to="/">
                 <div className="home-container">
-                <FontAwesomeIcon className="home" icon={faHome}/>
-                {/* <div className="home-name">Ele-Commerce</div> */}
+                    <FontAwesomeIcon className="home" icon={faHome}/>
                 </div>
             </Link>
             <div className="cart-profile-container">
             {/*  reload the cart page in case user clears local storage and then re-clicks on the cart icon */}
-            <Link to="/cart"  > 
+            <Link to={{
+                pathname: "/cart",
+                state: { prevPath: location.pathname }
+            }} > 
                 <IconButton aria-label="cart">
                     <StyledBadge badgeContent={totalCartQuantity} color="secondary">
                          <FontAwesomeIcon className="cart-icon" icon={faShoppingCart}/>
