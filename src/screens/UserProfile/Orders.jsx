@@ -52,7 +52,14 @@ export default function Orders ({ backend, loggedIn, orderData, grabOrderData, o
                     <div key={index}>
                     {index === 0 && <h3>{new Date((orderData[0].OrderDate)).toDateString()}</h3>}
                     {index !== 0 && new Date(order.OrderDate).toDateString() !== new Date(orderData[index-1].OrderDate).toDateString() && <h3>{new Date(order.OrderDate).toDateString()}</h3>}
-                    <Link to={`/show-order?orderNumber=${order.OrderNumber}`}>
+                    <Link to={{
+                        pathname: `/show-order?orderNumber=${order.OrderNumber}`,
+                        // key: uuidv4(),
+                        // state: {
+                        //     applied: true
+                        // }
+
+                    }}>
                         <Card>
                             <CardHeader
                                 title={`Order Number:  ${order.OrderNumber}`}

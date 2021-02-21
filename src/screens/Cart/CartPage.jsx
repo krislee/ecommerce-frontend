@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react'
-import {Link} from 'react-router-dom';
+import {Link, useLocation} from 'react-router-dom';
 import '../../styles/CartPage.css'
 import NavBar from '../../components/NavigationBar'
 import Footer from '../../components/Footer'
@@ -16,12 +16,15 @@ function CartPage ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuantity
     const grabItems = (items) => setItems(items)
     const grabTotalPrice = (totalPrice) => setTotalPrice(totalPrice)
 
+    const location = useLocation()
+
     useEffect(() => {
         const abortController = new AbortController()
         const signal = abortController.signal
 
         async function getCartItems() {
             if(loggedIn()){
+                console.log(location.prevPath)
                 const cartItemsResponse = await fetch(`${backend}/buyer/cart`, {
                     method: 'GET',
                     headers: {
@@ -44,6 +47,7 @@ function CartPage ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuantity
                 }
                 setCartLoading(false)
             } else {
+                console.log(location.prevPath)
                 const cartItemsResponse = await fetch(`${backend}/buyer/cart`, {
                     method: 'GET',
                     headers: { 'Content-Type': 'application/json' },
@@ -67,12 +71,13 @@ function CartPage ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuantity
                 setCartLoading(false)
             }
         };
+
         getCartItems();
         return function cleanUp () {
             abortController.abort()
         }
         
-    },[])
+    },[loggedIn(), location.prevPath])
 
    
 

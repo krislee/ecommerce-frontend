@@ -140,7 +140,7 @@ function App() {
           </Route>
           {/* CART */}
           <Route path="/cart">
-            <CartPage backend={backend} loggedIn={loggedIn} totalCartQuantity={totalCartQuantity} grabTotalCartQuantity={grabTotalCartQuantity}/>
+            <CartPage backend={backend} loggedIn={loggedIn} totalCartQuantity={totalCartQuantity} grabTotalCartQuantity={grabTotalCartQuantity} />
           </Route>
 
           <Route path="">

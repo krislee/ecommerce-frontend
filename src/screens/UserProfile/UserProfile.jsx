@@ -255,6 +255,7 @@ function UserProfile ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuant
         history.replace({ pathname: `/profile/review?page=1`})
     }
     const handleClickSettings = () => {
+        if(!loggedIn()) return grabTotalCartQuantity(0)
         setSettingsTabOpen(true)
         setAddressesTabOpen(false);
         setPaymentsTabOpen(false);
