@@ -3,7 +3,8 @@ import NavBar from '../../components/NavigationBar';
 import CircularProgress from '@material-ui/core/CircularProgress';
 // import socketIOClient from "socket.io-client";
 import { io } from "socket.io-client";
-
+var HOST = window.location.origin.replace(/^http/, 'ws')
+var ws = new WebSocket(HOST);
 export default function OrderComplete({ backend, cartID }) {
  
     const [orderLoading, setOrderLoading] = useState(true)
@@ -26,20 +27,32 @@ export default function OrderComplete({ backend, cartID }) {
 
     useEffect(() => {
         
-        socket.on('completeOrder', (orderData) => {
-            console.log(orderData)
-            const shipping = orderData.order.Shipping.Address.split(",")
+        // socket.on('completeOrder', (orderData) => {
+        //     console.log(orderData)
+        //     const shipping = orderData.order.Shipping.Address.split(",")
 
+        //     setOrderItems(orderData.order.Items)
+        //     setOrderShipping(shipping)
+        //     setOrderShippingName(orderData.order.Shipping.Name.replace(", ", " "))
+        //     setOrderNumber(orderData.order.OrderNumber)
+        //     setOrderPayment(orderData.payment)
+        //     setShowOrderDetails(true)
+        //     setOrderLoading(false)
+        // })
+
+        // socket.emit('end')
+
+        ws.onmessage = (event) => {
+            const orderData = event.data 
             setOrderItems(orderData.order.Items)
-            setOrderShipping(shipping)
+            // setOrderShipping(shipping)
             setOrderShippingName(orderData.order.Shipping.Name.replace(", ", " "))
             setOrderNumber(orderData.order.OrderNumber)
             setOrderPayment(orderData.payment)
             setShowOrderDetails(true)
             setOrderLoading(false)
-        })
-
-        socket.emit('end')
+        }
+           
     })
 
     
