@@ -57,6 +57,8 @@ function UserProfilePayment ({ backend, paymentData, grabPaymentData, defaultFir
         setCardNumberDisabled(true);
         setCardCVCDisabled(true);
         setCardExpirationDisabled(true);
+        setCardHolderInput({});
+        setBillingInput({});
     };
 
     // Function that is used to open the second modal when users plan to create
@@ -72,6 +74,8 @@ function UserProfilePayment ({ backend, paymentData, grabPaymentData, defaultFir
         setCardNumberDisabled(true);
         setCardCVCDisabled(true);
         setCardExpirationDisabled(true);
+        setCardHolderInput({});
+        setBillingInput({});
     };
 
     // Function that allows us to change the value of the input dynamically and display it on the page regarding the card information
@@ -132,7 +136,7 @@ function UserProfilePayment ({ backend, paymentData, grabPaymentData, defaultFir
             // Fetch to Stripe to create a new payment method response
             const newPaymentResponse = await stripe.createPaymentMethod({
                 type: 'card',
-                card: elements.getElement(CardElement),
+                card: elements.getElement(CardNumberElement),
                 billing_details: {
                     name: `${billingInput.firstName}, ${billingInput.lastName}`,
                     address: {

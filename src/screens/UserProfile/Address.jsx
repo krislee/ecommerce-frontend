@@ -5,9 +5,6 @@ import AddressContainer from '../../components/UserProfile/AddressContainer';
 
 function UserProfileAddress ({ backend, addressData, defaultFirst, grabAddressData, loggedIn, capitalize, capitalizeArray }) {
 
-    // Limit State to 2 characters
-    // Limit Zipcode to 5 characters for Payment, Edit Payment as well
-
     /* ------- STATES ------- */
 
     // Getter and Setter to display modal based off a boolean value
@@ -40,6 +37,7 @@ function UserProfileAddress ({ backend, addressData, defaultFirst, grabAddressDa
     // Function that is used to close the modal when the user either leaves or submits a address
     const closeModal = () => {
         setIsOpen(false);
+        setAddressInput({});
     };
 
     // Function that is used to make sure the inputs that are being put in by the user is saved to the addressInput object so we can use the object when creating a new address

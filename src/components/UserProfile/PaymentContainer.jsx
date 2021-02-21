@@ -680,6 +680,7 @@ function PaymentContainer ({ backend, payment, defaultFirstPayment, grabPaymentD
         name="editBillingZipcode" 
         placeholder="Zipcode" 
         type="text"
+        maxLength="5"
         pattern="\d*"
         onChange={handleEditBillingChange}/>
         {/* Appears when the input for zipcode has anything other than numbers */}
