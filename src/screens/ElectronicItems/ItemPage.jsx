@@ -24,9 +24,12 @@ function ItemPage ({ loggedIn, url, backend, totalCartQuantity, grabTotalCartQua
 
     const [itemInfo, setItemInfo] = useState('');
     const [quantity, setQuantity] = useState(1);
-    const [avgRating, setAvgRating] = useState(null)
-    const [review, setReview] = useState("")
-    const [allReviews, setAllReviews] = useState([])
+    const [avgRating, setAvgRating] = useState(null);
+    const [review, setReview] = useState("");
+    const [allReviews, setAllReviews] = useState([]);
+    const [upToTwelve, setUpToTwelve] = useState(false);
+    const [notANumber, setNotANumber] = useState(false);
+    const [negativeWarning, setNegativeWarning] = useState(false);
 
     const grabReview = (review) => setReview(review)
 
@@ -92,7 +95,24 @@ function ItemPage ({ loggedIn, url, backend, totalCartQuantity, grabTotalCartQua
     }, [review])
 
     const handleChangeQuantity = e => {
-        setQuantity(e.target.value)
+        if (e.target.value.includes('-')) {
+            setNegativeWarning(true);
+        } else {
+            setNegativeWarning(false);
+            if (e.target.value.length > 2) {
+                setQuantity(e.target.value.slice(0, 2))
+            } else {
+                setQuantity(e.target.value)
+            }
+        }
+    };
+
+    const grabHandleUpToTwelve = (bool) => {
+        setUpToTwelve(bool);
+    }
+
+    const grabNotANumber = (bool) => {
+        setNotANumber(bool)
     };
 
     return (
@@ -115,8 +135,11 @@ function ItemPage ({ loggedIn, url, backend, totalCartQuantity, grabTotalCartQua
                         </div>
                         <div className="input-info">
                             <div className="quantity-tag">Quantity</div>
-                            <input className="quantity-input" type="number" min="1" value={quantity} onChange={handleChangeQuantity}></input>
-                            <AddCartButton backend={backend} loggedIn={loggedIn} id={itemInfo._id} quantity={quantity} name={'Add To Cart'} grabTotalCartQuantity={grabTotalCartQuantity} />
+                            <input className="quantity-input" type="number" min="1" value={quantity} onChange={handleChangeQuantity} />
+                            {notANumber && <div className="warning">You input must be a number</div>}
+                            {negativeWarning && <div className="warning">You can't have a negative amount of items</div>}
+                            {upToTwelve && <div className="warning">You can only buy twelve items at once</div>}
+                            <AddCartButton backend={backend} loggedIn={loggedIn} id={itemInfo._id} quantity={quantity} name={'Add To Cart'} grabTotalCartQuantity={grabTotalCartQuantity} grabHandleUpToTwelve={grabHandleUpToTwelve} grabNotANumber={grabNotANumber}/>
                             <AddReviewButton backend={backend} loggedIn={loggedIn} electronicID={itemInfo._id} grabReview={grabReview} />
                         </div>
                     </div>
