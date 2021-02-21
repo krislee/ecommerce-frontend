@@ -313,6 +313,16 @@ function PaymentContainer ({ backend, payment, defaultFirstPayment, grabPaymentD
       }));
     };
 
+    const handleEditMonthUserProfileExpiration = (event) => {
+      const { value } = event.target;
+      setEditCardHolderInput((prevEditExpiration) => ({...prevEditExpiration, ["cardMonthExpDate"]: value }));
+    }
+
+    const handleEditYearUserProfileExpiration = (event) => {
+      const { value } = event.target;
+      setEditCardHolderInput((prevEditExpiration) => ({...prevEditExpiration, ["cardMonthExpYear"]: value }));
+    }
+
     // Styles pertaining to the cards used to display the payment methods
     const useStyles = makeStyles((theme) => ({
         root: {
@@ -556,22 +566,42 @@ function PaymentContainer ({ backend, payment, defaultFirstPayment, grabPaymentD
         && editCardHolderInput.cardName !== "") 
         && <div className="warning">You must enter only letters as your name</div>}
         {/* Input regarding the expiration month of the editing payment method modal */}
-        <input 
-        value={editCardHolderInput.cardMonthExpDate || ''} 
-        name="cardMonthExpDate" 
-        placeholder="Month" 
-        maxLength="2" 
-        min="1"
-        max="12"
-        type="number"
-        onChange={handleEditCardHolderNameChange}/>
+         <span className="expiration" >
+          <select value={editCardHolderInput.cardMonthExpDate || ''} onChange={handleEditMonthUserProfileExpiration}>
+              <option value="01">01</option>
+              <option value="02">02</option>
+              <option value="03">03</option>
+              <option value="04">04</option>
+              <option value="05">05</option>
+              <option value="06">06</option>
+              <option value="07">07</option>
+              <option value="08">08</option>
+              <option value="09">09</option>
+              <option value="10">10</option>
+              <option value="11">11</option>
+              <option value="12">12</option>
+          </select>
+          <select value={editCardHolderInput.cardMonthExpYear} onChange={handleEditYearUserProfileExpiration}>
+              <option value="2021">2021</option>
+              <option value="2022">2022</option>
+              <option value="2023">2023</option>
+              <option value="2024">2024</option>
+              <option value="2025">2025</option>
+              <option value="2026">2026</option>
+              <option value="2027">2027</option>
+              <option value="2028">2028</option>
+              <option value="2029">2029</option>
+              <option value="2030">2030</option>
+              <option value="2031">2031</option>
+          </select>
+          </span>
         {/* Appears when the input for the expiration month does not meet requirements like being above 12 and below 1, or if the input is left blank */}
         {((editCardHolderInput.cardMonthExpDate > 12 
         || editCardHolderInput.cardMonthExpDate < 1) 
         && editCardHolderInput.cardMonthExpDate !== "") 
         && <div className="warning">You must enter a valid month</div>}
         {/* Input regarding the expiration year of the editing payment method modal */}
-        <input 
+        {/* <input 
         value={editCardHolderInput.cardYearExpDate || ""} 
         name="cardYearExpDate"
         maxLength="4"
@@ -579,7 +609,7 @@ function PaymentContainer ({ backend, payment, defaultFirstPayment, grabPaymentD
         max={new Date().getFullYear() + 10}
         type="number"
         placeholder="Year" 
-        onChange={handleEditCardHolderNameChange}/>
+        onChange={handleEditCardHolderNameChange}/> */}
         {/* Appears when the input for the expiration month does not meet requirements like being before this current year, being above over then ten years from the current year, or if the input is left blank */}
         {((editCardHolderInput.cardYearExpDate > new Date().getFullYear() + 10 
         || editCardHolderInput.cardYearExpDate < new Date().getFullYear())

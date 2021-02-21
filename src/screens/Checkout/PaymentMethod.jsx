@@ -92,6 +92,7 @@ function PaymentMethod ({ backend, processing, loggedIn, error, grabError, disab
         const { value } = event.target
         grabEditExpiration((prevEditExpiration) => ({...prevEditExpiration, ["month"]: value }))
     }
+
     const handleEditYearExpiration = (event) => {
         const { value } = event.target
         grabEditExpiration((prevEditExpiration) => ({...prevEditExpiration, ["year"]: value }))
