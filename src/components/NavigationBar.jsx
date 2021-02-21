@@ -20,19 +20,18 @@ const StyledBadge = withStyles((theme) => ({
 
 
 function NavBar ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuantity }) {
-    const [redirect, setRedirect] = useState(false)
+    // const [redirect, setRedirect] = useState(false)
     const location = useLocation()
 
     const handleLogout = () => {
         localStorage.clear();
-        grabTotalCartQuantity(0)
-        setRedirect(true)
+        return grabTotalCartQuantity(0)
     }
 
 
-    if(redirect) {
-        return <Redirect to='/'></Redirect>
-    } 
+    // if(redirect) {
+    //     return <Redirect to='/'></Redirect>
+    // } 
 
     return (
         <div className="navbar">
