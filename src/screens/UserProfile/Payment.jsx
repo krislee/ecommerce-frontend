@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Modal from 'react-modal';
 import PaymentContainer from '../../components/UserProfile/PaymentContainer';
-import {useStripe, useElements, CardElement} from '@stripe/react-stripe-js';
+import {useStripe, useElements, CardElement, CardExpiryElement, CardCvcElement, CardNumberElement} from '@stripe/react-stripe-js';
 
 function UserProfilePayment ({ backend, paymentData, grabPaymentData, defaultFirstPayment, loggedIn, capitalize, capitalizeArray }) {
 
@@ -20,9 +20,13 @@ function UserProfilePayment ({ backend, paymentData, grabPaymentData, defaultFir
     // Getter and Setter to display a warning message regarding when the user does not fulfill requirements for the state input when creating a payment method
     const [addStateAbbreviationWarning, setAddStateAbbreviationWarning] = useState(false);
     // Getter and Setter to disable the button based on whether or not the card is valid when the user enters to create the payment method
-    const [disabled, setDisabled] = useState(true);
+    const [cardNumberDisabled, setCardNumberDisabled] = useState(true);
+    const [cardCVCDisabled, setCardCVCDisabled] = useState(true);
+    const [cardExpirationDisabled, setCardExpirationDisabled] = useState(true);
     // Getter and Setter to display an error message based on whether or not the card is valid when the user enters to create the payment method
-    const [error, setError] = useState(null);
+    const [cardNumberError, setCardNumberError] = useState(null);
+    const [cardCVCError, setCardCVCError] = useState(null);
+    const [cardExpirationError, setCardExpirationError] = useState(null);
 
     // Stripe elements
     const elements = useElements();
@@ -50,6 +54,9 @@ function UserProfilePayment ({ backend, paymentData, grabPaymentData, defaultFir
     // Function that is used to close the modal when the user either leaves or submits a address
     const closeModal = () => {
         setModalIsOpen(false);
+        setCardNumberDisabled(true);
+        setCardCVCDisabled(true);
+        setCardExpirationDisabled(true);
     };
 
     // Function that is used to open the second modal when users plan to create
@@ -62,6 +69,9 @@ function UserProfilePayment ({ backend, paymentData, grabPaymentData, defaultFir
     const closeModalTwo = () => {
         setModalIsOpen(false);
         setModalTwoIsOpen(false);
+        setCardNumberDisabled(true);
+        setCardCVCDisabled(true);
+        setCardExpirationDisabled(true);
     };
 
     // Function that allows us to change the value of the input dynamically and display it on the page regarding the card information
@@ -81,9 +91,22 @@ function UserProfilePayment ({ backend, paymentData, grabPaymentData, defaultFir
     };
 
     // Function that allows us to check on the changes made when entering card number (whether it is valid or empty) set disabled or error accordingly
-    const handleCardChange = (event) => {
-        setDisabled(event.empty);
-        setError(event.error ? event.error.message : "");
+    const handleCardNumberChange = (event) => {
+        setCardNumberDisabled(event.empty);
+        console.log(event.error);
+        setCardNumberError(event.error ? event.error.message : "");
+    };
+
+    const handleCardCVCChange = (event) => {
+        setCardCVCDisabled(event.empty);
+        console.log(event.error);
+        setCardCVCError(event.error ? event.error.message : "");
+    };
+
+    const handleCardExpirationChange = (event) => {
+        setCardExpirationDisabled(event.empty);
+        console.log(event.error);
+        setCardExpirationError(event.error ? event.error.message : "");
     };
 
     // Function that is used to handle the event when a user submits the request to make a new payment method
@@ -215,9 +238,13 @@ function UserProfilePayment ({ backend, paymentData, grabPaymentData, defaultFir
                 && cardHolderInput.cardName !== "")
                 && <div className="warning">You must enter only letters as your name</div>}
                 {/* Imported from Stripe API, this will generate the input fields for the card number, expiration date and zipcode */}
-                <CardElement onChange={handleCardChange}/>
+                <CardNumberElement onChange={handleCardNumberChange}/>
+                <CardExpiryElement onChange={handleCardExpirationChange}/>
+                <CardCvcElement onChange={handleCardCVCChange}/>
                 {/* Appears when the inputs in CardElement has an error*/}
-                <div>{error}</div>
+                <div>{cardNumberError}</div>
+                <div>{cardCVCError}</div>
+                <div>{cardExpirationError}</div>
                 {/* Users can check this box to make the payment method they are creating the default payment method */}
                 <div className="default-container" style={{margin: '1rem 0rem'}}>
                     <label htmlFor="paymentDefault">Save as default</label>
@@ -227,12 +254,18 @@ function UserProfilePayment ({ backend, paymentData, grabPaymentData, defaultFir
                 <button 
                 onClick={openModalTwo} 
                 // Button will be disabled if the input fields are not filled in (except for the address line two input field)
-                disabled={error 
-                || disabled 
-                || (/^[a-z][a-z\s]*$/i.test(cardHolderInput.cardName) !== true 
-                || cardHolderInput.cardName === "")}>
+                disabled={cardNumberError
+                || cardCVCError
+                || cardExpirationError
+                || cardCVCDisabled
+                || cardNumberDisabled
+                || cardExpirationDisabled
+                || ((/^[a-z][a-z\s]*$/i.test(cardHolderInput.cardName) !== true) 
+                || cardHolderInput.cardName === "")
+                }>
                     Next
                 </button>
+                {/* <button type="button" onClick={() => console.log(error)}>Test</button> */}
                 </form>
             </Modal>
             {/* Modal that is used to create the payment method billing address section*/}
@@ -305,6 +338,7 @@ function UserProfilePayment ({ backend, paymentData, grabPaymentData, defaultFir
                 value={billingInput.zipcode || ""} 
                 name="zipcode" 
                 placeholder="Zipcode" 
+                maxLength="5"
                 onChange={handleBillingChange}/>
                 {/* Appears when the input for zipcode has anything other than numbers */}
                 {(/[a-zA-Z]/g.test(billingInput.zipcode) === true 

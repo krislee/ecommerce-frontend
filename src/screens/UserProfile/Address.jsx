@@ -5,6 +5,9 @@ import AddressContainer from '../../components/UserProfile/AddressContainer';
 
 function UserProfileAddress ({ backend, addressData, defaultFirst, grabAddressData, loggedIn, capitalize, capitalizeArray }) {
 
+    // Limit State to 2 characters
+    // Limit Zipcode to 5 characters for Payment, Edit Payment as well
+
     /* ------- STATES ------- */
 
     // Getter and Setter to display modal based off a boolean value
@@ -86,6 +89,7 @@ function UserProfileAddress ({ backend, addressData, defaultFirst, grabAddressDa
             defaultFirst(newAddressData);
             // Assigning the data we recieve back to the variable addressData so we can use that variable which stores an array and map through it to display different AddressContainer components
             grabAddressData(newAddressData);
+            console.log(newAddressData);
             // Clearing out the object used to store the information that users put in the input fields so it's blank when users want to create a new one
             setAddressInput({});
             // Close the modal
@@ -199,6 +203,7 @@ function UserProfileAddress ({ backend, addressData, defaultFirst, grabAddressDa
                 name={"state"}
                 placeholder={"State"}
                 type={"text"}
+                maxLength="2"
                 onChange={handleAddressChange}/>
                 {/* Appears when the input for state has anything other than letters */}
                 {(/^[a-z][a-z\s]*$/i.test(addressInput.state) !== true 
