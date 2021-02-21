@@ -26,6 +26,7 @@ function CollectCard({ handleCardChange, collectCVV, handleCardholderNameChange,
         return (
             <>
             <input value={cardholderName || ""} name="name" placeholder="Name on card" onChange={handleCardholderNameChange} required/>
+            {((/^[a-z][a-z\s]*$/i.test(cardholderName) !== true)  && cardholderName !== "") && <div className="warning">You must enter only letters as your full name</div>}
             <CardElement options={cardStyle} onChange={(event) => handleCardChange(event)}/>
             </>
         )

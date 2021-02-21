@@ -8,7 +8,7 @@ import CardForm from './CardForm'
 import '../../styles/Payment.css'
 
 
-function PaymentMethod ({ backend, processing, loggedIn, error, grabError, disabled, grabDisabled,  paymentLoading, grabPaymentLoading, billing, grabBilling, handleBillingChange, paymentMethod, grabPaymentMethod, cardholderName, grabCardholderName, handleCardholderNameChange, handleCardChange, collectCVV, grabCollectCVV, editPayment, grabEditPayment, redisplayCardElement, grabRedisplayCardElement, grabShowSavedCards, handleConfirmPayment, showSavedCards, grabLoggedOut, editExpiration, grabEditExpiration, showPayment, sameAsShipping, handleSameAsShipping, shippingInput, grabBillingWithShipping, recheckSameAsShippingButton, grabTotalCartQuantity}) {
+function PaymentMethod ({ backend, processing, loggedIn, error, grabError, disabled, grabDisabled,  paymentLoading, grabPaymentLoading, billing, grabBilling, handleBillingChange, paymentMethod, grabPaymentMethod, cardholderName, grabCardholderName, handleCardholderNameChange, handleCardChange, collectCVV, grabCollectCVV, editPayment, grabEditPayment, redisplayCardElement, grabRedisplayCardElement, grabShowSavedCards, handleConfirmPayment, showSavedCards, grabLoggedOut, editExpiration, grabEditExpiration, showPayment, sameAsShipping, handleSameAsShipping, shippingInput, grabBillingWithShipping, recheckSameAsShippingButton, grabTotalCartQuantity, billingInputErrorDisableButton, billingPostalCodeInputErrorDisableButton }) {
 
     /* ------- STRIPE VARIABLES ------ */
     const elements = useElements()
@@ -153,7 +153,7 @@ function PaymentMethod ({ backend, processing, loggedIn, error, grabError, disab
 
      /* ------- ADD PAYMENT METHOD FUNCTIONS ------ */
 
-    // When Add New Card button is clicked, handleAddNew() runs
+    // When Add New Card button is clicked, handleAddNew() runs to open modal
     const handleAddNew = async () => {
         if (loggedIn()) {
             recheckSameAsShippingButton(true) // in case user unchecked the Same as Shipping button and then submit or not submit and just close the modal, we want the Same As Shipping button to still be checked when modal is open, so update the sameAsShipping state with recheckSameAsShippingButton function
@@ -169,7 +169,7 @@ function PaymentMethod ({ backend, processing, loggedIn, error, grabError, disab
         }
     }
 
-    // Click save in Add New Card modal to run saveNewCard()
+    // Click Save in Add New Card modal to run saveNewCard()
     const saveNewCard = async(event) => {
         if (loggedIn()) {
             event.preventDefault()
@@ -278,7 +278,7 @@ function PaymentMethod ({ backend, processing, loggedIn, error, grabError, disab
         return collectCVV !== 'true' && (
             <>
             <div><h2>Payment Method</h2></div>
-            {showPayment && <CardForm loggedIn={loggedIn} paymentMethod={paymentMethod} handleSubmitCardForm={handleConfirmPayment} handleCardChange={handleCardChange} handleBillingChange={handleBillingChange} handleCardholderNameChange={handleCardholderNameChange} cardholderName={cardholderName} billing={billing} grabBilling={grabBilling} collectCVV={collectCVV} redisplayCardElement={redisplayCardElement} closeAddNewModal={closeAddNewModal} disabled={disabled} error={error} sameAsShipping={sameAsShipping} handleSameAsShipping={handleSameAsShipping}/>}
+            {showPayment && <CardForm loggedIn={loggedIn} paymentMethod={paymentMethod} handleSubmitCardForm={handleConfirmPayment} handleCardChange={handleCardChange} handleBillingChange={handleBillingChange} handleCardholderNameChange={handleCardholderNameChange} cardholderName={cardholderName} billing={billing} grabBilling={grabBilling} collectCVV={collectCVV} redisplayCardElement={redisplayCardElement} closeAddNewModal={closeAddNewModal} disabled={disabled} error={error} sameAsShipping={sameAsShipping} handleSameAsShipping={handleSameAsShipping} billingInputErrorDisableButton={billingInputErrorDisableButton}  />}
             </>
         )      
 
@@ -286,7 +286,7 @@ function PaymentMethod ({ backend, processing, loggedIn, error, grabError, disab
         // When Add New Card button is clicked
         return collectCVV !== 'true' && (
             <Modal isOpen={showModal} onRequestClose={closeAddNewModal} ariaHideApp={false} contentLabel="Add Card">
-                <CardForm loggedIn={loggedIn} paymentMethod={paymentMethod} handleSubmitCardForm={saveNewCard} handleCardChange={handleCardChange} handleBillingChange={handleBillingChange} handleCardholderNameChange={handleCardholderNameChange} cardholderName={cardholderName} billing={billing} collectCVV={collectCVV} redisplayCardElement={redisplayCardElement} closeAddNewModal={closeAddNewModal} disabled={disabled} error={error} sameAsShipping={sameAsShipping} handleSameAsShipping={handleSameAsShipping} />
+                <CardForm loggedIn={loggedIn} paymentMethod={paymentMethod} handleSubmitCardForm={saveNewCard} handleCardChange={handleCardChange} handleBillingChange={handleBillingChange} handleCardholderNameChange={handleCardholderNameChange} cardholderName={cardholderName} billing={billing} collectCVV={collectCVV} redisplayCardElement={redisplayCardElement} closeAddNewModal={closeAddNewModal} disabled={disabled} error={error} sameAsShipping={sameAsShipping} handleSameAsShipping={handleSameAsShipping} billingInputErrorDisableButton={billingInputErrorDisableButton} />
             </Modal>
         )  
     } else if(paymentMethod.paymentMethodID && !editPayment) {
@@ -369,6 +369,7 @@ function PaymentMethod ({ backend, processing, loggedIn, error, grabError, disab
                 </div>
 
                 <input value={cardholderName || ""} name="name" placeholder="Name on card" onChange={handleCardholderNameChange}/>
+                {((/^[a-z][a-z\s]*$/i.test(cardholderName) !== true)  &&  cardholderName !== "") && <div className="warning">You must enter only letters as your full name</div>}
 
                 <span className="expiration" >
                     <input value = {editExpiration.month} type="number" name="month" placeholder="MM" min="01" max="12" maxLength="2" size="2" required={true} onChange={handleEditExpiration}/>
@@ -378,7 +379,7 @@ function PaymentMethod ({ backend, processing, loggedIn, error, grabError, disab
 
                 <div>
                     <BillingInput billing={billing} handleBillingChange={handleBillingChange} editPayment={editPayment} />
-                    <button>Save</button>
+                    <button disabled={ billingInputErrorDisableButton() || billingPostalCodeInputErrorDisableButton() }>Save</button>
                     <button onClick={closeEditModal}>Close</button>
                 </div>
                 </form>
