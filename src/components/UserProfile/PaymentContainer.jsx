@@ -320,7 +320,8 @@ function PaymentContainer ({ backend, payment, defaultFirstPayment, grabPaymentD
 
     const handleEditYearUserProfileExpiration = (event) => {
       const { value } = event.target;
-      setEditCardHolderInput((prevEditExpiration) => ({...prevEditExpiration, ["cardMonthExpYear"]: value }));
+      console.log(event.target.value);
+      setEditCardHolderInput((prevEditExpiration) => ({...prevEditExpiration, ["cardYearExpDate"]: value }));
     }
 
     // Styles pertaining to the cards used to display the payment methods
@@ -581,7 +582,7 @@ function PaymentContainer ({ backend, payment, defaultFirstPayment, grabPaymentD
               <option value="11">11</option>
               <option value="12">12</option>
           </select>
-          <select value={editCardHolderInput.cardMonthExpYear} onChange={handleEditYearUserProfileExpiration}>
+          <select value={editCardHolderInput.cardYearExpDate} onChange={handleEditYearUserProfileExpiration}>
               <option value="2021">2021</option>
               <option value="2022">2022</option>
               <option value="2023">2023</option>
