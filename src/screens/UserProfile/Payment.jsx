@@ -242,9 +242,11 @@ function UserProfilePayment ({ backend, paymentData, grabPaymentData, defaultFir
                 && cardHolderInput.cardName !== "")
                 && <div className="warning">You must enter only letters as your name</div>}
                 {/* Imported from Stripe API, this will generate the input fields for the card number, expiration date and zipcode */}
-                <CardNumberElement onChange={handleCardNumberChange}/>
-                <CardExpiryElement onChange={handleCardExpirationChange}/>
-                <CardCvcElement onChange={handleCardCVCChange}/>
+                <div style={{marginTop: '1rem'}}>
+                    <CardNumberElement onChange={handleCardNumberChange}/>
+                    <CardExpiryElement onChange={handleCardExpirationChange}/>
+                    <CardCvcElement onChange={handleCardCVCChange}/>
+                </div>
                 {/* Appears when the inputs in CardElement has an error*/}
                 <div>{cardNumberError}</div>
                 <div>{cardCVCError}</div>
@@ -332,6 +334,8 @@ function UserProfilePayment ({ backend, paymentData, grabPaymentData, defaultFir
                 value={billingInput.state || ""} 
                 name="state" 
                 placeholder="State" 
+                type="text"
+                maxLength="2"
                 onChange={handleBillingChange}/>
                 {/* Appears when the input for state has anything other than letters */}
                 {(/^[a-z][a-z\s]*$/i.test(billingInput.state) !== true 
