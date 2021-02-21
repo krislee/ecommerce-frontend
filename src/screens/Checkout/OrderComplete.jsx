@@ -23,7 +23,7 @@ export default function OrderComplete({ backend, cartID }) {
     // const socketRef = useRef()
     const socket = io.connect('wss://elecommerce.herokuapp.com',  { transports: ['websocket', 'polling', 'flashsocket'] })
     console.log(typeof cartID, cartID)
-    socket.emit('join', {cartID: cartID})
+    // socket.emit('join', {cartID: cartID})
 
     useEffect(() => {
         
