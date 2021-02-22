@@ -331,11 +331,13 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
             || (/^[a-z][a-z\s]*$/i.test(editAddress.city) !== true 
             || editAddress.city === "")
             || (/^[a-z][a-z\s]*$/i.test(editAddress.state) !== true 
-            || editAddress.state === "")
-            || editAddress.state.length !== 2
+            || editAddress.state === undefined
+            || editAddress.state === ""
+            || editAddress.state.length !== 2)
             || (/[a-zA-Z]/g.test(editAddress.zipcode) === true 
-            || editAddress.zipcode === ""
-            || editAddress.zipcode.length !== 5)}>
+            || editAddress.zipcode === undefined
+            || editAddress.zipcode === "")
+            || editAddress.zipcode.length !== 5}>
             Submit</button>
             </div>
             </form>
