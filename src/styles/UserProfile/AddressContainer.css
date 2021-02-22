@@ -35,9 +35,10 @@
 
 .update-address {
     position: relative;
-    top: 40%;
+    top: 45%;
     display: flex;
     width: 30%;
+    font-size: 14px;
     justify-content: space-between;
 }
 

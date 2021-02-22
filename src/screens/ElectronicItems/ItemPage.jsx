@@ -135,7 +135,7 @@ function ItemPage ({ loggedIn, url, backend, totalCartQuantity, grabTotalCartQua
                         </div>
                         <div className="input-info">
                             <div className="quantity-tag">Quantity</div>
-                            <input className="quantity-input" type="number" min="1" value={quantity} onChange={handleChangeQuantity} />
+                            <input className="quantity-input" type="number" min="1" max="12" value={quantity} onChange={handleChangeQuantity} />
                             {notANumber && <div className="warning">You input must be a number</div>}
                             {negativeWarning && <div className="warning">You can't have a negative amount of items</div>}
                             {upToTwelve && <div className="warning">You can only buy twelve items at once</div>}

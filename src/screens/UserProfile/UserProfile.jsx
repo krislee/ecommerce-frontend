@@ -193,8 +193,6 @@ function UserProfile ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuant
 
     // Function that is used to reorder the data so that default is first and to also make the newest data come first on the list 
     const defaultFirstPayment = (data) => {
-        // Reverses the order of the data so the newest data will be first and the oldest will be last
-        data.reverse(); 
         // If the data that is returned has a object with the property of defaultPayment being true, then run 
         if (data.findIndex(payment => payment.default === true) !== -1 && data.length !== 0) {
             // Find the index of the object that has the default payment information

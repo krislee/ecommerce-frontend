@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import '../../styles/UserProfile/AddressContainer.css'
 import Modal from 'react-modal';
 import Input from '../Input'
+import { Redirect } from 'react-router-dom';
 
-function AddressContainer ({ index, address, backend, grabAddressData, defaultFirst, capitalize, capitalizeArray, loggedIn }) {
+function AddressContainer ({ index, address, backend, grabAddressData, defaultFirst, capitalize, capitalizeArray, loggedIn, grabTotalCartQuantity }) {
 
     /* ------- STATES ------- */
 
@@ -13,6 +14,7 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
     const [isDeleteModalIsOpen,setIsDeleteModalOpen] = useState(false);
     // Getter and Setter to store an object that will later be used to determine what users enter into inputs specifically regarding the editing address function
     const [editAddress, setEditAddress] = useState({});
+    const [redirect, setRedirect] = useState(false);
 
     // Styles for the Modal
     const customStyles = {
@@ -99,7 +101,9 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
         // Prevents the page from refreshing
         e.preventDefault();
         // If the user does fulfill the requirements for the all the inputs
-        // Creating a variable that tells the server we are EDITING the information for a specific address, which is identified from the e.target.id
+        if (loggedIn()) {
+            console.log('hello')
+            // Creating a variable that tells the server we are EDITING the information for a specific address, which is identified from the e.target.id
         const editAddressResponse = await fetch(`${backend}/shipping/address/${e.target.id}`, {
             method: 'PUT',
             headers: {
@@ -114,6 +118,7 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
         });
         // Data regarding the addresses that is received back from the request to the backend server when editing is finished to receive updated version of the data
         const editAddressData = await editAddressResponse.json();
+        console.log(editAddressData);
         // Being passed down as a prop from the parent component of UserProfile, we are able to reorder the data so it will display the default address first on the list followed by the newest
         defaultFirst(editAddressData);
         // Being passed down as a prop from the parent component of UserProfile, we are able to the set the data that we received back from the response of the server to the variable AddressData, so we can reuse that data to map through and display the different AddressContainer components
@@ -122,6 +127,10 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
         setEditAddress({});
         // Close the modal after all of this function is finished so user will return back on the regular screen
         setIsEditModalOpen(false);
+        } else {
+            grabTotalCartQuantity(0);
+            setRedirect(true);
+        }
     };
 
     // Function that handles the editing of the default status (and not the contents of the address)
@@ -195,176 +204,182 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
 
     // Returning only if the address is not blank
     if (address) {
-        return (
-            <>
-            <div key={index} className="one-address-container">
-                {/* We find the person's name on top of the card */}
-                    <div className="person-name">{name}</div>
-                    {/* Next we put the address line one */}
-                    <div className="address">
-                        {/* We wrap it around curly braces so that the information that renders is based off of whether or not there is a second line to the address */}
-                        {(newAddress[1] === ' Undefined' || newAddress[1] === null  )
-                        ? addressLineWithSecondAddress : addressLineWithoutSecondAddress }
-                    </div>
-                    <div className="address">
-                        {/* We wrap it around curly braces so that the information that renders is based off of whether or not there is a second line to the address */}
-                        {(newAddress[1] === ' undefined' ||  newAddress[1] === null)
-                        ? secondAddressLineWithSecondAddress : secondAddressLineWithoutSecondAddress }
-                    </div>
-                    {/* This badge labeled Default only appears if the address is the default address based off the condition defaultAddress, which is a boolean */}
-                    {defaultAddress && <div className="default-indicator">Default</div>}
-                    {/* Styles had to be rendered differently based on whether or not the address is the default because the badge would push the edit and delete buttons down */}
-                    <div 
-                    className={defaultAddress ? 
-                    "update-address-default" : "update-address"}>
-                        <div id={address._id} onClick={openEditModal}>Edit</div>
-                        <div id={address._id} onClick={openDeleteModal}>Delete</div>
-                    </div>
-            </div>
-            {/* Modal that is used to edit the address */}
-            <Modal
-            isOpen={isEditModalIsOpen}
-            onRequestClose={closeModal}
-            style={customStyles}
-            contentLabel="Edit Your Address"
-            >
-            <form 
-            className="form" 
-            id={address._id} 
-            onSubmit={handleEditAddress}>
-            <h2>Edit Your Address</h2>
-            {/* Input regarding the first name of the editing address modal */}
-            <Input 
-            value={editAddress.firstName || ""} 
-            name={"firstName"} 
-            placeholder={"First Name"} 
-            type={"text"} 
-            onChange={handleEditAddressChange}/>
-            {/* Appears when the input for first name has anything other than letters */}
-            {(/^[a-z][a-z\s]*$/i.test(editAddress.firstName) !== true 
-            && editAddress.firstName !== "") 
-            && <div className="warning">You must enter only letters as your first name</div>}
-            {/* Input regarding the last name of the editing address modal */}
-            <Input 
-            value={editAddress.lastName || ""} 
-            name={"lastName"} 
-            placeholder={"Last Name"} 
-            type={"text"} 
-            onChange={handleEditAddressChange}/>
-            {/* Appears when the input for last name has anything other than letters */}
-            {(/^[a-z][a-z\s]*$/i.test(editAddress.lastName) !== true 
-            && editAddress.lastName !== "") 
-            && <div className="warning">You must enter only letters as your last name</div>}
-            {/* Input regarding the first address line of the editing address modal */}
-            <Input 
-            value={editAddress.addressLineOne || ""} 
-            name={"addressLineOne"} 
-            placeholder={"Address Line One"} 
-            type={"text"} 
-            onChange={handleEditAddressChange}/>
-            {/* Appears when the input for first address line has no input */}
-            {editAddress.addressLineOne === "" 
-            && <div className="warning">You must enter an address</div>}
-            {/* Input regarding the second address line of the editing address modal */}
-            <Input 
-            value={editAddress.addressLineTwo || ""} 
-            name={"addressLineTwo"} 
-            placeholder={"Address Line Two"} 
-            type={"text"} 
-            onChange={handleEditAddressChange}/>
-            {/* Input regarding the city of the editing address modal */}
-            <Input 
-            value={editAddress.city || ""} 
-            name={"city"} 
-            placeholder={"City"} 
-            type={"text"} 
-            onChange={handleEditAddressChange}/>
-            {/* Appears when the input for city has anything other than letters */}
-            {(/^[a-z][a-z\s]*$/i.test(editAddress.city) !== true 
-            && editAddress.city !== "") 
-            && <div className="warning">You must enter only letters as your city</div>}
-            {/* Input regarding the state of the editing address modal */}
-            <Input 
-            value={editAddress.state || ""} 
-            name={"state"} 
-            placeholder={"State"} 
-            type={"text"} 
-            maxLength={"2"}
-            onChange={handleEditAddressChange}/>
-            {/* Appears when the input for state has anything other than letters */}
-            {(/^[a-z][a-z\s]*$/i.test(editAddress.state) !== true 
-            && editAddress.state !== "") 
-            && <div className="warning">You must enter only letters as your state</div>}
-            {/* Input regarding the zipcode of the editing address modal */}
-            <Input 
-            value={editAddress.zipcode || ""} 
-            name={"zipcode"} 
-            placeholder={"Zipcode"}
-            onChange={handleEditAddressChange} 
-            type={"text"} 
-            maxLength={"5"} />
-            {/* Appears when the input for zipcode has anything other than numbers */}
-            {(/[a-zA-Z]/g.test(editAddress.zipcode) === true 
-            && editAddress.zipcode !== "") 
-            && <div className="warning">You must enter only numbers as your zip code</div>}
-            {/* Appears when the input for zipcode has not met the five digit count length */}
-            <div 
-            className="submit-default-button-container" 
-            style={{marginTop: '1rem'}}>
-            {/* Based off whether or not defaultAddress is true or false, we display the button that allows users to remove default if the address is the default, or the button to make the address a default if it is not currently the default address */}
-            {!defaultAddress ? <div className="update-default-container">
-                <button id={address._id} onClick={handleEditAddressDefaultStatus}>Make Default</button>
-                </div> :
-                <div>
-                <button id={address._id} onClick={handleEditAddressDefaultStatus}>Remove Default</button>
-            </div>}
-            {/* Button will be disabled if the input fields are not filled in (except for the address line two input field) */}
-            <button id={address._id}
-            type="submit"
-            value="Submit"
-            disabled={
-            (/^[a-z][a-z\s]*$/i.test(editAddress.firstName) !== true 
-            || editAddress.firstName === "")
-            || (/^[a-z][a-z\s]*$/i.test(editAddress.lastName) !== true 
-            || editAddress.lastName === "")
-            || editAddress.addressLineOne === ""
-            || (/^[a-z][a-z\s]*$/i.test(editAddress.city) !== true 
-            || editAddress.city === "")
-            || (/^[a-z][a-z\s]*$/i.test(editAddress.state) !== true 
-            || editAddress.state === undefined
-            || editAddress.state === ""
-            || editAddress.state.length !== 2)
-            || (/[a-zA-Z]/g.test(editAddress.zipcode) === true 
-            || editAddress.zipcode === undefined
-            || editAddress.zipcode === "")
-            || editAddress.zipcode.length !== 5}>
-            Submit</button>
-            </div>
-            </form>
-            </Modal>
-            {/* Modal used to delete the address */}
-            <Modal
-            isOpen={isDeleteModalIsOpen}
-            onRequestClose={closeModal}
-            style={customStyles}
-            contentLabel="Edit Your Address"
-            >
-            <form className="form" id="delete-address-form">
-            <div style={{'marginBottom':'1rem'}}>Are you sure you want to delete this address?</div>
-            <div className="submit-default-button-container">
-            <button id={address._id} 
-            type="submit"
-            form="delete-address-form"
-            value="Submit"
-            // When user clicks to submit, the address will be deleted
-            onClick={handleDeleteAddress}>
-            Delete</button>
-            <button onClick={closeModal}>Cancel</button>
-            </div>
-            </form>
-            </Modal>
-            </>
-        );
+        if (redirect) {
+            return (
+                <Redirect to="/"/>
+            )
+        } else {
+            return (
+                <>
+                <div key={index} className="one-address-container">
+                    {/* We find the person's name on top of the card */}
+                        <div className="person-name">{name}</div>
+                        {/* Next we put the address line one */}
+                        <div className="address">
+                            {/* We wrap it around curly braces so that the information that renders is based off of whether or not there is a second line to the address */}
+                            {(newAddress[1] === ' Undefined' || newAddress[1] === null  )
+                            ? addressLineWithSecondAddress : addressLineWithoutSecondAddress }
+                        </div>
+                        <div className="address">
+                            {/* We wrap it around curly braces so that the information that renders is based off of whether or not there is a second line to the address */}
+                            {(newAddress[1] === ' undefined' ||  newAddress[1] === null)
+                            ? secondAddressLineWithSecondAddress : secondAddressLineWithoutSecondAddress }
+                        </div>
+                        {/* This badge labeled Default only appears if the address is the default address based off the condition defaultAddress, which is a boolean */}
+                        {defaultAddress && <div className="default-indicator">Default</div>}
+                        {/* Styles had to be rendered differently based on whether or not the address is the default because the badge would push the edit and delete buttons down */}
+                        <div 
+                        className={defaultAddress ? 
+                        "update-address-default" : "update-address"}>
+                            <div id={address._id} onClick={openEditModal}>Edit</div>
+                            <div id={address._id} onClick={openDeleteModal}>Delete</div>
+                        </div>
+                </div>
+                {/* Modal that is used to edit the address */}
+                <Modal
+                isOpen={isEditModalIsOpen}
+                onRequestClose={closeModal}
+                style={customStyles}
+                contentLabel="Edit Your Address"
+                >
+                <form 
+                className="form" 
+                id={address._id} 
+                onSubmit={handleEditAddress}>
+                <h2>Edit Your Address</h2>
+                {/* Input regarding the first name of the editing address modal */}
+                <Input 
+                value={editAddress.firstName || ""} 
+                name={"firstName"} 
+                placeholder={"First Name"} 
+                type={"text"} 
+                onChange={handleEditAddressChange}/>
+                {/* Appears when the input for first name has anything other than letters */}
+                {(/^[a-z][a-z\s]*$/i.test(editAddress.firstName) !== true 
+                && editAddress.firstName !== "") 
+                && <div className="warning">You must enter only letters as your first name</div>}
+                {/* Input regarding the last name of the editing address modal */}
+                <Input 
+                value={editAddress.lastName || ""} 
+                name={"lastName"} 
+                placeholder={"Last Name"} 
+                type={"text"} 
+                onChange={handleEditAddressChange}/>
+                {/* Appears when the input for last name has anything other than letters */}
+                {(/^[a-z][a-z\s]*$/i.test(editAddress.lastName) !== true 
+                && editAddress.lastName !== "") 
+                && <div className="warning">You must enter only letters as your last name</div>}
+                {/* Input regarding the first address line of the editing address modal */}
+                <Input 
+                value={editAddress.addressLineOne || ""} 
+                name={"addressLineOne"} 
+                placeholder={"Address Line One"} 
+                type={"text"} 
+                onChange={handleEditAddressChange}/>
+                {/* Appears when the input for first address line has no input */}
+                {editAddress.addressLineOne === "" 
+                && <div className="warning">You must enter an address</div>}
+                {/* Input regarding the second address line of the editing address modal */}
+                <Input 
+                value={editAddress.addressLineTwo || ""} 
+                name={"addressLineTwo"} 
+                placeholder={"Address Line Two"} 
+                type={"text"} 
+                onChange={handleEditAddressChange}/>
+                {/* Input regarding the city of the editing address modal */}
+                <Input 
+                value={editAddress.city || ""} 
+                name={"city"} 
+                placeholder={"City"} 
+                type={"text"} 
+                onChange={handleEditAddressChange}/>
+                {/* Appears when the input for city has anything other than letters */}
+                {(/^[a-z][a-z\s]*$/i.test(editAddress.city) !== true 
+                && editAddress.city !== "") 
+                && <div className="warning">You must enter only letters as your city</div>}
+                {/* Input regarding the state of the editing address modal */}
+                <Input 
+                value={editAddress.state || ""} 
+                name={"state"} 
+                placeholder={"State"} 
+                type={"text"} 
+                maxLength={"2"}
+                onChange={handleEditAddressChange}/>
+                {/* Appears when the input for state has anything other than letters */}
+                {(/^[a-z][a-z\s]*$/i.test(editAddress.state) !== true 
+                && editAddress.state !== "") 
+                && <div className="warning">You must enter only letters as your state</div>}
+                {/* Input regarding the zipcode of the editing address modal */}
+                <Input 
+                value={editAddress.zipcode || ""} 
+                name={"zipcode"} 
+                placeholder={"Zipcode"}
+                onChange={handleEditAddressChange} 
+                type={"text"} 
+                maxLength={"5"} />
+                {/* Appears when the input for zipcode has anything other than numbers */}
+                {(/[a-zA-Z]/g.test(editAddress.zipcode) === true 
+                && editAddress.zipcode !== "") 
+                && <div className="warning">You must enter only numbers as your zip code</div>}
+                {/* Appears when the input for zipcode has not met the five digit count length */}
+                <div 
+                className="submit-default-button-container" 
+                style={{marginTop: '1rem'}}>
+                {/* Based off whether or not defaultAddress is true or false, we display the button that allows users to remove default if the address is the default, or the button to make the address a default if it is not currently the default address */}
+                {!defaultAddress ? <div className="update-default-container">
+                    <button id={address._id} onClick={handleEditAddressDefaultStatus}>Make Default</button>
+                    </div> :
+                    <div>
+                    <button id={address._id} onClick={handleEditAddressDefaultStatus}>Remove Default</button>
+                </div>}
+                {/* Button will be disabled if the input fields are not filled in (except for the address line two input field) */}
+                <button id={address._id}
+                type="submit"
+                value="Submit"
+                disabled={
+                (/^[a-z][a-z\s]*$/i.test(editAddress.firstName) !== true 
+                || editAddress.firstName === "")
+                || (/^[a-z][a-z\s]*$/i.test(editAddress.lastName) !== true 
+                || editAddress.lastName === "")
+                || editAddress.addressLineOne === ""
+                || (/^[a-z][a-z\s]*$/i.test(editAddress.city) !== true 
+                || editAddress.city === "")
+                || (/^[a-z][a-z\s]*$/i.test(editAddress.state) !== true 
+                || editAddress.state === undefined
+                || editAddress.state === ""
+                || editAddress.state.length !== 2)
+                || (/[a-zA-Z]/g.test(editAddress.zipcode) === true 
+                || editAddress.zipcode === undefined
+                || editAddress.zipcode === "")
+                || editAddress.zipcode.length !== 5}>
+                Submit</button>
+                </div>
+                </form>
+                </Modal>
+                {/* Modal used to delete the address */}
+                <Modal
+                isOpen={isDeleteModalIsOpen}
+                onRequestClose={closeModal}
+                style={customStyles}
+                contentLabel="Edit Your Address"
+                >
+                <form className="form" id="delete-address-form">
+                <div style={{'marginBottom':'1rem'}}>Are you sure you want to delete this address?</div>
+                <div className="submit-default-button-container">
+                <button id={address._id} 
+                type="submit"
+                form="delete-address-form"
+                value="Submit"
+                // When user clicks to submit, the address will be deleted
+                onClick={handleDeleteAddress}>
+                Delete</button>
+                <button onClick={closeModal}>Cancel</button>
+                </div>
+                </form>
+                </Modal>
+                </>
+            );
+        };
     };
 };
 
