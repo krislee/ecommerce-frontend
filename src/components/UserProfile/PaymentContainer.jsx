@@ -13,7 +13,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Button from '@material-ui/core/Button';
 
 function PaymentContainer ({ backend, payment, defaultFirstPayment, grabPaymentData, capitalize, capitalizeArray, loggedIn }) {
-
+    let disableButton
     /* ------- STATES ------- */
 
     // Getter and Setter to expand the cards (dropdown)
@@ -157,7 +157,7 @@ function PaymentContainer ({ backend, payment, defaultFirstPayment, grabPaymentD
               line2: editBillingInput.editBillingSecondAddressLine,
               city: editBillingInput.editBillingCity,
               state: editBillingInput.editBillingState.toUpperCase(),
-              postal_code: editBillingInput.editBillingZipcode,
+              postalCode: editBillingInput.editBillingZipcode,
               country: 'US',
               name: `${editBillingInput.editBillingFirstName} ${editBillingInput.editBillingLastName}`
             },
@@ -248,7 +248,7 @@ function PaymentContainer ({ backend, payment, defaultFirstPayment, grabPaymentD
         // Close the card dropdown since it was opened
         handleExpandClick();
         // Close the modal after all of this function is finished so user will return back on the regular screen
-        closeEditModalTwo();
+        closeDeleteModal();
       };
     };
 
@@ -700,6 +700,7 @@ function PaymentContainer ({ backend, payment, defaultFirstPayment, grabPaymentD
         name="editBillingState" 
         placeholder="State" 
         type="text"
+        maxLength="2"
         onChange={handleEditBillingChange}/>
         {/* Appears when the input for state has anything other than letters */}
         {(/^[a-z][a-z\s]*$/i.test(editBillingInput.editBillingState) !== true 
@@ -726,8 +727,9 @@ function PaymentContainer ({ backend, payment, defaultFirstPayment, grabPaymentD
         && <div className="warning">Please enter your state as an abbreviation (ex. CA, NY)</div>}
         {/* Button will be disabled if the input fields are not filled in (except for the address line two input field) */}
         <button 
+        form="form"
         style={{marginTop: '1rem'}}
-        onClick={handleEditPaymentSubmit} 
+        onClick={handleEditPaymentSubmit}
         disabled={(/^[a-z][a-z\s]*$/i.test(editBillingInput.editBillingFirstName) !== true 
         || editBillingInput.editBillingFirstName === "") 
         || (/^[a-z][a-z\s]*$/i.test(editBillingInput.editBillingLastName) !== true 

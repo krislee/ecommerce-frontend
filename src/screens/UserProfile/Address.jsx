@@ -3,7 +3,7 @@ import Modal from 'react-modal';
 import Input from '../../components/Input';
 import AddressContainer from '../../components/UserProfile/AddressContainer';
 
-function UserProfileAddress ({ backend, addressData, defaultFirst, grabAddressData, loggedIn, capitalize, capitalizeArray }) {
+function UserProfileAddress ({ backend, addressData, defaultFirst, grabAddressData, loggedIn, capitalize, capitalizeArray, grabTotalCartQuantity }) {
 
     /* ------- STATES ------- */
 
@@ -49,6 +49,7 @@ function UserProfileAddress ({ backend, addressData, defaultFirst, grabAddressDa
     const handleSubmitAddress = async (event) => {
         // Prevents the page from refreshing
         event.preventDefault();
+        if (loggedIn()) {
         // Grabbing the DOM element with the ID of address-default (which is the checkbox that is used by users to indicate whether or not they want said address to be default or not)
         const checkbox = document.getElementById('address-default');
         // We check if the checkbox is checked or not, and this will return a boolean
@@ -77,6 +78,9 @@ function UserProfileAddress ({ backend, addressData, defaultFirst, grabAddressDa
         setAddressInput({});
         // Close the modal
         setIsOpen(false);
+        } else {
+            return grabTotalCartQuantity(0);
+        }
     }
 
     // Function that creates AddressContainer components based off the array set in addressData
@@ -95,7 +99,8 @@ function UserProfileAddress ({ backend, addressData, defaultFirst, grabAddressDa
                 defaultFirst={defaultFirst}
                 loggedIn={loggedIn}
                 capitalize={capitalize}
-                capitalizeArray={capitalizeArray}/>
+                capitalizeArray={capitalizeArray}
+                grabTotalCartQuantity={grabTotalCartQuantity}/>
             );
         };
     });

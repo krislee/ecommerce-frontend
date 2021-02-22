@@ -27,6 +27,8 @@ function UserProfilePayment ({ backend, paymentData, grabPaymentData, defaultFir
     const [cardNumberError, setCardNumberError] = useState(null);
     const [cardCVCError, setCardCVCError] = useState(null);
     const [cardExpirationError, setCardExpirationError] = useState(null);
+    const [disabledOnSubmit, setDisabledOnSubmit] = useState(false);
+    
 
     // Stripe elements
     const elements = useElements();
@@ -49,6 +51,7 @@ function UserProfilePayment ({ backend, paymentData, grabPaymentData, defaultFir
     // Function that is used to open the modal when users plan to create
     const openModal = () => {
         setModalIsOpen(true);
+        // setDisabledOnSubmit(false);
     };
 
     // Function that is used to close the modal when the user either leaves or submits a address
@@ -59,12 +62,16 @@ function UserProfilePayment ({ backend, paymentData, grabPaymentData, defaultFir
         setCardExpirationDisabled(true);
         setCardHolderInput({});
         setBillingInput({});
-    };
+        setCardNumberError(null);
+        setCardCVCError(null);
+        setCardExpirationError(null);
+        };
 
     // Function that is used to open the second modal when users plan to create
     const openModalTwo = (e) => {
         e.preventDefault();
         setModalTwoIsOpen(true);
+        // setDisabledOnSubmit(false);
     };
 
     // Function that is used to close the second modal when the user either leaves or submits a address
@@ -76,6 +83,10 @@ function UserProfilePayment ({ backend, paymentData, grabPaymentData, defaultFir
         setCardExpirationDisabled(true);
         setCardHolderInput({});
         setBillingInput({});
+        setCardNumberError(null);
+        setCardCVCError(null);
+        setCardExpirationError(null);
+        setDisabledOnSubmit(false);
     };
 
     // Function that allows us to change the value of the input dynamically and display it on the page regarding the card information
@@ -117,6 +128,7 @@ function UserProfilePayment ({ backend, paymentData, grabPaymentData, defaultFir
     const handleCreatePayment = async (e) => {
         // Prevents the page from refreshing
         e.preventDefault();
+        setDisabledOnSubmit(true);
         // If the user does not fulfill the requirements for the zipcode input
         if (billingInput.zipcode.length !== 5) {
             setAddZipcodeWarning(true);
@@ -244,13 +256,12 @@ function UserProfilePayment ({ backend, paymentData, grabPaymentData, defaultFir
                 {/* Imported from Stripe API, this will generate the input fields for the card number, expiration date and zipcode */}
                 <div style={{marginTop: '1rem'}}>
                     <CardNumberElement onChange={handleCardNumberChange}/>
+                    <div className="warning">{cardNumberError}</div>
                     <CardExpiryElement onChange={handleCardExpirationChange}/>
+                    <div className="warning">{cardExpirationError}</div>
                     <CardCvcElement onChange={handleCardCVCChange}/>
-                </div>
-                {/* Appears when the inputs in CardElement has an error*/}
-                <div>{cardNumberError}</div>
-                <div>{cardCVCError}</div>
-                <div>{cardExpirationError}</div>
+                    <div className="warning">{cardCVCError}</div>
+                </div>         
                 {/* Users can check this box to make the payment method they are creating the default payment method */}
                 <div className="default-container" style={{margin: '1rem 0rem'}}>
                     <label htmlFor="paymentDefault">Save as default</label>
@@ -267,7 +278,8 @@ function UserProfilePayment ({ backend, paymentData, grabPaymentData, defaultFir
                 || cardNumberDisabled
                 || cardExpirationDisabled
                 || ((/^[a-z][a-z\s]*$/i.test(cardHolderInput.cardName) !== true) 
-                || cardHolderInput.cardName === "")
+                || cardHolderInput.cardName === ""
+                || cardHolderInput.cardName === undefined)
                 }>
                     Next
                 </button>
@@ -374,6 +386,7 @@ function UserProfilePayment ({ backend, paymentData, grabPaymentData, defaultFir
                 || billingInput.state === undefined)
                 || (/[a-zA-Z]/g.test(billingInput.zipcode) === true 
                 || billingInput.zipcode === "")
+                || disabledOnSubmit
                 }>
                     Submit
                 </button>
