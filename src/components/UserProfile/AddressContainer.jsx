@@ -219,7 +219,7 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
                     {/* Next we put the address line one */}
                     <div className="address">
                         {/* We wrap it around curly braces so that the information that renders is based off of whether or not there is a second line to the address */}
-                        {(newAddress[1] !== ' undefined' || newAddress[1] !== null )
+                        {(newAddress[1] === ' Undefined' || newAddress[1] === null  )
                         ? addressLineWithSecondAddress : addressLineWithoutSecondAddress }
                     </div>
                     <div className="address">
