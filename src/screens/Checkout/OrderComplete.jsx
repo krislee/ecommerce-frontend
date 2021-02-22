@@ -5,7 +5,9 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import { io } from "socket.io-client";
 // var HOST = window.location.origin.replace(/^http/, 'ws')
 // var ws = new WebSocket(HOST);
+
 const socket = io.connect('wss://elecommerce.herokuapp.com',  { transports: ['websocket', 'polling', 'flashsocket'] })
+
 export default function OrderComplete({ backend, cartID }) {
  
     const [orderLoading, setOrderLoading] = useState(true)
@@ -27,41 +29,33 @@ export default function OrderComplete({ backend, cartID }) {
 
     // socket.emit('join', {cartID: cartID})
 
+    // useEffect(() => {
+    //     // socket.on('connect', () => console.log(29, socket.socket.sessionid))
+    //     socket.on('socketID', (socketID, fn) => {
+    //         console.log(33, socketID)
+    //         fn({socketID: socketID, cartID: cartID})
+    //         setOrderLoading(false)
+    //     })
+    // }, [])
+
     useEffect(() => {
-        // socket.on('connect', () => console.log(29, socket.socket.sessionid))
-        socket.on('socketID', (socketID, fn) => {
-            console.log(33, socketID)
-            fn({socketID: socketID, cartID: cartID})
+        // socket.on('socketID', (socketID) => console.log(42, socketID))
+        socket.on('completeOrder', (orderData) => {
+            console.log(44, orderData)
+            const shipping = orderData.order.Shipping.Address.split(",")
+
+            setOrderItems(orderData.order.Items)
+            setOrderShipping(shipping)
+            setOrderShippingName(orderData.order.Shipping.Name.replace(", ", " "))
+            setOrderNumber(orderData.order.OrderNumber)
+            setOrderPayment(orderData.payment)
+            setShowOrderDetails(true)
             setOrderLoading(false)
         })
-    
-        
-        // socket.emit('end')
 
-        // ws.onmessage = (event) => {
-        //     const orderData = event.data 
-        //     setOrderItems(orderData.order.Items)
-        //     // setOrderShipping(shipping)
-        //     setOrderShippingName(orderData.order.Shipping.Name.replace(", ", " "))
-        //     setOrderNumber(orderData.order.OrderNumber)
-        //     setOrderPayment(orderData.payment)
-        //     setShowOrderDetails(true)
-        //     setOrderLoading(false)
-        // }
-           
+        socket.emit('end')
     }, [])
 
-    socket.on('receivedOrder', (orderData) => {
-        console.log(51, orderData)
-        setOrderItems(orderData.order.Items)
-        // setOrderShipping(shipping)
-        setOrderShippingName(orderData.order.Shipping.Name.replace(", ", " "))
-        setOrderNumber(orderData.order.OrderNumber)
-        setOrderPayment(orderData.payment)
-        setShowOrderDetails(true)
-        setOrderLoading(false)
-    })
-    
     if(orderLoading && cartID) {
         return (
             <>
