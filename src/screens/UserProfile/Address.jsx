@@ -12,9 +12,6 @@ function UserProfileAddress ({ backend, addressData, defaultFirst, grabAddressDa
     // Getter and Setter to store an object that will later be used to determine what users enter into inputs specifically regarding the adding address function
     const [addressInput, setAddressInput] = useState({});
     // Getter and setter to display a warning message regarding when the user does not fulfill requirements for the zipcode input when creating an address
-    const [addZipcodeAddressWarning, setAddZipcodeAddressWarning] = useState(false);
-    // Getter and setter to display a warning message regarding when the user does not fulfill requirements for the state input when creating an address
-    const [addStateAbbreviationAddressWarning, setAddStateAbbreviationAddressWarning] = useState(false);
 
     // Style for the Modal
     const customStyles = {
@@ -52,47 +49,34 @@ function UserProfileAddress ({ backend, addressData, defaultFirst, grabAddressDa
     const handleSubmitAddress = async (event) => {
         // Prevents the page from refreshing
         event.preventDefault();
-        // If the user does not fulfill the requirements for the zipcode input
-        if (addressInput.zipcode.length !== 5) {
-            setAddZipcodeAddressWarning(true);
-            setAddStateAbbreviationAddressWarning(false);
-        // If the user does not fulfill the requirements for the state input
-        } else if (addressInput.state.length !== 2) {
-            setAddZipcodeAddressWarning(false);
-            setAddStateAbbreviationAddressWarning(true);
-        // If the user does fulfill the requirements for the all the inputs
-        } else {
-            setAddZipcodeAddressWarning(false);
-            setAddStateAbbreviationAddressWarning(false);
-            // Grabbing the DOM element with the ID of address-default (which is the checkbox that is used by users to indicate whether or not they want said address to be default or not)
-            const checkbox = document.getElementById('address-default');
-            // We check if the checkbox is checked or not, and this will return a boolean
-            const check = checkbox.checked
-            // Fetching to the backend server to make a request to create a new address and using string interopolation to dynamically set the address to request whether or not the address will be a default address or not
-            const newAddressResponse = await fetch(`${backend}/shipping/address?lastUse=false&default=${check}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': loggedIn()
-                },
-                // Using the addressInput object, we are able to grab the values and use these values to generate what user wants for the name and address of the address they are trying to create
-                body: JSON.stringify({
-                    name: `${addressInput.firstName}, ${addressInput.lastName}`,
-                    address: `${addressInput.addressLineOne}, ${addressInput.addressLineTwo}, ${addressInput.city}, ${addressInput.state}, ${addressInput.zipcode}`
-                })
-            });
-            // Data regarding the addresses that is received back from the request to the backend server when creating is finished to receive updated version of the data
-            const newAddressData = await newAddressResponse.json();
-            // Make sure that data we recieve back is ordered so that the default will be first followed by newest address added
-            defaultFirst(newAddressData);
-            // Assigning the data we recieve back to the variable addressData so we can use that variable which stores an array and map through it to display different AddressContainer components
-            grabAddressData(newAddressData);
-            console.log(newAddressData);
-            // Clearing out the object used to store the information that users put in the input fields so it's blank when users want to create a new one
-            setAddressInput({});
-            // Close the modal
-            setIsOpen(false);
-        }
+        // Grabbing the DOM element with the ID of address-default (which is the checkbox that is used by users to indicate whether or not they want said address to be default or not)
+        const checkbox = document.getElementById('address-default');
+        // We check if the checkbox is checked or not, and this will return a boolean
+        const check = checkbox.checked
+        // Fetching to the backend server to make a request to create a new address and using string interopolation to dynamically set the address to request whether or not the address will be a default address or not
+        const newAddressResponse = await fetch(`${backend}/shipping/address?lastUse=false&default=${check}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': loggedIn()
+            },
+            // Using the addressInput object, we are able to grab the values and use these values to generate what user wants for the name and address of the address they are trying to create
+            body: JSON.stringify({
+                name: `${addressInput.firstName}, ${addressInput.lastName}`,
+                address: `${addressInput.addressLineOne}, ${addressInput.addressLineTwo}, ${addressInput.city}, ${addressInput.state}, ${addressInput.zipcode}`
+            })
+        });
+        // Data regarding the addresses that is received back from the request to the backend server when creating is finished to receive updated version of the data
+        const newAddressData = await newAddressResponse.json();
+        // Make sure that data we recieve back is ordered so that the default will be first followed by newest address added
+        defaultFirst(newAddressData);
+        // Assigning the data we recieve back to the variable addressData so we can use that variable which stores an array and map through it to display different AddressContainer components
+        grabAddressData(newAddressData);
+        console.log(newAddressData);
+        // Clearing out the object used to store the information that users put in the input fields so it's blank when users want to create a new one
+        setAddressInput({});
+        // Close the modal
+        setIsOpen(false);
     }
 
     // Function that creates AddressContainer components based off the array set in addressData
@@ -228,12 +212,6 @@ function UserProfileAddress ({ backend, addressData, defaultFirst, grabAddressDa
                     type={"checkbox"} 
                     id={"address-default"}/>
                 </div>
-                {/* Appears when the input for zipcode has not met the five digit count length */}
-                {addZipcodeAddressWarning 
-                && <div className="warning">You must enter five digits as your zip code</div>}
-                {/* Appears when the input for state has not met the two digit count length */}
-                {addStateAbbreviationAddressWarning 
-                && <div className="warning">Please enter your state as an abbreviation (ex. CA, NY)</div>}
                 {/* Button will be disabled if the input fields are not filled in (except for the address line two input field) */}
                 <button 
                 onClick={handleSubmitAddress} 
@@ -243,12 +221,16 @@ function UserProfileAddress ({ backend, addressData, defaultFirst, grabAddressDa
                 || (/^[a-z][a-z\s]*$/i.test(addressInput.lastName) !== true 
                 || addressInput.lastName === undefined)
                 || addressInput.addressLineOne === undefined
+                || addressInput.addressLineOne === ""
                 || (/^[a-z][a-z\s]*$/i.test(addressInput.city) !== true 
                 || addressInput.city === undefined)
                 || (/^[a-z][a-z\s]*$/i.test(addressInput.state) !== true 
                 || addressInput.state === undefined)
+                || addressInput.state.length !== 2 
                 || (/[a-zA-Z]/g.test(addressInput.zipcode) === true 
-                || addressInput.zipcode === undefined)
+                || addressInput.zipcode === undefined
+                || addressInput.zipcode === "")
+                || addressInput.zipcode.length !== 5
                 }>Submit</button>
                 </form>
                 </Modal>

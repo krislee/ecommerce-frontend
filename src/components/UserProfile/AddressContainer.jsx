@@ -13,10 +13,6 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
     const [isDeleteModalIsOpen,setIsDeleteModalOpen] = useState(false);
     // Getter and Setter to store an object that will later be used to determine what users enter into inputs specifically regarding the editing address function
     const [editAddress, setEditAddress] = useState({});
-    // Getter and Setter to display a warning message regarding when the user does not fulfill requirements for the zipcode input when editing an address
-    const [editZipcodeAddressWarning, setEditZipcodeAddressWarning] = useState(false);
-    // Getter and Setter to display a warning message regarding when the user does not fulfill requirements for the state input when editing an address
-    const [editStateAbbreviationAddressWarning, setEditStateAbbreviationAddressWarning] = useState(false);
 
     // Styles for the Modal
     const customStyles = {
@@ -102,42 +98,30 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
     const handleEditAddress = async(e) => {
         // Prevents the page from refreshing
         e.preventDefault();
-        // If the user does not fulfill the requirements for the zipcode input
-        if (editAddress.zipcode.length !== 5) {
-            setEditZipcodeAddressWarning(true);
-            setEditStateAbbreviationAddressWarning(false);
-        // If the user does not fulfill the requirements for the state input
-        } else if (editAddress.state.length !== 2) {
-            setEditZipcodeAddressWarning(false);
-            setEditStateAbbreviationAddressWarning(true);
-        } else {
-            // If the user does fulfill the requirements for the all the inputs
-            setEditZipcodeAddressWarning(false);
-            setEditStateAbbreviationAddressWarning(false);
-            // Creating a variable that tells the server we are EDITING the information for a specific address, which is identified from the e.target.id
-            const editAddressResponse = await fetch(`${backend}/shipping/address/${e.target.id}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': loggedIn()
-                },
-                // For our body, we need to have a value for both the address and name, and we use the values received back from the inputs to do so
-                body: JSON.stringify({
-                    address: `${editAddress.addressLineOne}, ${editAddress.addressLineTwo}, ${editAddress.city}, ${editAddress.state}, ${editAddress.zipcode}`,
-                    name: `${editAddress.firstName}, ${editAddress.lastName}`
-                })
-            });
-            // Data regarding the addresses that is received back from the request to the backend server when editing is finished to receive updated version of the data
-            const editAddressData = await editAddressResponse.json();
-            // Being passed down as a prop from the parent component of UserProfile, we are able to reorder the data so it will display the default address first on the list followed by the newest
-            defaultFirst(editAddressData);
-            // Being passed down as a prop from the parent component of UserProfile, we are able to the set the data that we received back from the response of the server to the variable AddressData, so we can reuse that data to map through and display the different AddressContainer components
-            grabAddressData(editAddressData);
-            // Empty the object of the address inputs so that new ones can replace it later on without any duplication errors
-            setEditAddress({});
-            // Close the modal after all of this function is finished so user will return back on the regular screen
-            setIsEditModalOpen(false);
-        };
+        // If the user does fulfill the requirements for the all the inputs
+        // Creating a variable that tells the server we are EDITING the information for a specific address, which is identified from the e.target.id
+        const editAddressResponse = await fetch(`${backend}/shipping/address/${e.target.id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': loggedIn()
+            },
+            // For our body, we need to have a value for both the address and name, and we use the values received back from the inputs to do so
+            body: JSON.stringify({
+                address: `${editAddress.addressLineOne}, ${editAddress.addressLineTwo}, ${editAddress.city}, ${editAddress.state}, ${editAddress.zipcode}`,
+                name: `${editAddress.firstName}, ${editAddress.lastName}`
+            })
+        });
+        // Data regarding the addresses that is received back from the request to the backend server when editing is finished to receive updated version of the data
+        const editAddressData = await editAddressResponse.json();
+        // Being passed down as a prop from the parent component of UserProfile, we are able to reorder the data so it will display the default address first on the list followed by the newest
+        defaultFirst(editAddressData);
+        // Being passed down as a prop from the parent component of UserProfile, we are able to the set the data that we received back from the response of the server to the variable AddressData, so we can reuse that data to map through and display the different AddressContainer components
+        grabAddressData(editAddressData);
+        // Empty the object of the address inputs so that new ones can replace it later on without any duplication errors
+        setEditAddress({});
+        // Close the modal after all of this function is finished so user will return back on the regular screen
+        setIsEditModalOpen(false);
     };
 
     // Function that handles the editing of the default status (and not the contents of the address)
@@ -305,6 +289,7 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
             name={"state"} 
             placeholder={"State"} 
             type={"text"} 
+            maxLength={"2"}
             onChange={handleEditAddressChange}/>
             {/* Appears when the input for state has anything other than letters */}
             {(/^[a-z][a-z\s]*$/i.test(editAddress.state) !== true 
@@ -323,11 +308,6 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
             && editAddress.zipcode !== "") 
             && <div className="warning">You must enter only numbers as your zip code</div>}
             {/* Appears when the input for zipcode has not met the five digit count length */}
-            {editZipcodeAddressWarning 
-            && <div className="warning">You must enter five digits as your zip code</div>}
-            {/* Appears when the input for state has not met the two digit count length */}
-            {editStateAbbreviationAddressWarning 
-            && <div className="warning">Please enter your state as an abbreviation (ex. CA, NY)</div>}
             <div 
             className="submit-default-button-container" 
             style={{marginTop: '1rem'}}>
@@ -352,8 +332,10 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
             || editAddress.city === "")
             || (/^[a-z][a-z\s]*$/i.test(editAddress.state) !== true 
             || editAddress.state === "")
+            || editAddress.state.length !== 2
             || (/[a-zA-Z]/g.test(editAddress.zipcode) === true 
-            || editAddress.zipcode === "")}>
+            || editAddress.zipcode === ""
+            || editAddress.zipcode.length !== 5)}>
             Submit</button>
             </div>
             </form>

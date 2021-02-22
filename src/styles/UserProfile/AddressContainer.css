@@ -11,7 +11,7 @@
 }
 
 .person-name {
-    font-size: 16px;
+    font-size: 14px;
     font-weight: bold;
     cursor: default;
 }
@@ -24,14 +24,13 @@
 
 .default-indicator{
     /* position: absolute; */
-    margin-top: 1rem;
+    margin-top: 0.5rem;
     border-radius: 1rem;
     background-color: #61e053;
-    width: 5rem;
+    width: 4rem;
     text-align: center;
-    font-size: 14px;
+    font-size: 12px;
     cursor: default;
-    top: 60%;
 }
 
 .update-address {
@@ -44,9 +43,10 @@
 
 .update-address-default {
     position: relative;
-    top: 19%;
+    top: 30%;
     display: flex;
-    width: 30%;
+    width: 25%;
+    font-size: 14px;
     justify-content: space-between;
 }
 
