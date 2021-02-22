@@ -366,7 +366,7 @@ function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCar
     }, [loggedIn()]);
 
     const handleConfirmPayment = async (event) => {
-        
+
         grabDisabled(true) // Disable Confirm Payment button once we hit it
         setProcessing(true) // Create a spinner by updating processing state to true
         // We don't want to let default form submission happen here, which would refresh the page.
@@ -428,7 +428,8 @@ function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCar
                     card: {
                         cvc: elements.getElement(CardCvcElement)
                     } 
-                } : undefined
+                } : undefined,
+                // metadata: {socketId: socketId}
             })
         } else { // The following code runs if there are no saved cards because user is a guest or logged in user never saved a card
             console.log(135, paymentMethod)

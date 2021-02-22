@@ -3,8 +3,9 @@ import NavBar from '../../components/NavigationBar';
 import CircularProgress from '@material-ui/core/CircularProgress';
 // import socketIOClient from "socket.io-client";
 import { io } from "socket.io-client";
-var HOST = window.location.origin.replace(/^http/, 'ws')
-var ws = new WebSocket(HOST);
+// var HOST = window.location.origin.replace(/^http/, 'ws')
+// var ws = new WebSocket(HOST);
+const socket = io.connect('wss://elecommerce.herokuapp.com',  { transports: ['websocket', 'polling', 'flashsocket'] })
 export default function OrderComplete({ backend, cartID }) {
  
     const [orderLoading, setOrderLoading] = useState(true)
@@ -16,31 +17,26 @@ export default function OrderComplete({ backend, cartID }) {
     const [orderPayment, setOrderPayment] = useState({})
     const [orderNumber, setOrderNumber] = useState('')
 
+    const [socketID, setSocketID] = useState('')
+
     const currentURL = window.location.href;
     const indexOfEqualSign = currentURL.split('=');
     const id=indexOfEqualSign[indexOfEqualSign.length - 1];
 
     // const socketRef = useRef()
-    const socket = io.connect('wss://elecommerce.herokuapp.com',  { transports: ['websocket', 'polling', 'flashsocket'] })
-    console.log(typeof cartID, cartID)
+
     // socket.emit('join', {cartID: cartID})
 
     useEffect(() => {
-        
-        socket.on('completeOrder', (orderData) => {
-            console.log(orderData)
-            const shipping = orderData.order.Shipping.Address.split(",")
-
-            setOrderItems(orderData.order.Items)
-            setOrderShipping(shipping)
-            setOrderShippingName(orderData.order.Shipping.Name.replace(", ", " "))
-            setOrderNumber(orderData.order.OrderNumber)
-            setOrderPayment(orderData.payment)
-            setShowOrderDetails(true)
+        // socket.on('connect', () => console.log(29, socket.socket.sessionid))
+        socket.on('socketID', (socketID, fn) => {
+            console.log(33, socketID)
+            fn({socketID: socketID, cartID: cartID})
             setOrderLoading(false)
         })
-
-        socket.emit('end')
+    
+        
+        // socket.emit('end')
 
         // ws.onmessage = (event) => {
         //     const orderData = event.data 
@@ -53,8 +49,18 @@ export default function OrderComplete({ backend, cartID }) {
         //     setOrderLoading(false)
         // }
            
-    })
+    }, [])
 
+    socket.on('receivedOrder', (orderData) => {
+        console.log(51, orderData)
+        setOrderItems(orderData.order.Items)
+        // setOrderShipping(shipping)
+        setOrderShippingName(orderData.order.Shipping.Name.replace(", ", " "))
+        setOrderNumber(orderData.order.OrderNumber)
+        setOrderPayment(orderData.payment)
+        setShowOrderDetails(true)
+        setOrderLoading(false)
+    })
     
     if(orderLoading && cartID) {
         return (
