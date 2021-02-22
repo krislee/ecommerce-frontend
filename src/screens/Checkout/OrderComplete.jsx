@@ -2,13 +2,12 @@ import React, { useEffect, useState, useRef } from 'react';
 import NavBar from '../../components/NavigationBar';
 import CircularProgress from '@material-ui/core/CircularProgress';
 // import socketIOClient from "socket.io-client";
-import { io } from "socket.io-client";
 // var HOST = window.location.origin.replace(/^http/, 'ws')
 // var ws = new WebSocket(HOST);
 
-const socket = io.connect('wss://elecommerce.herokuapp.com',  { transports: ['websocket', 'polling', 'flashsocket'] })
+// const socket = io.connect('wss://elecommerce.herokuapp.com',  { transports: ['websocket', 'polling', 'flashsocket'] })
 
-export default function OrderComplete({ backend, cartID }) {
+export default function OrderComplete({ backend, cartID, socketContainer }) {
  
     const [orderLoading, setOrderLoading] = useState(true)
     const [showOrderDetails, setShowOrderDetails] = useState(false)
@@ -25,22 +24,10 @@ export default function OrderComplete({ backend, cartID }) {
     const indexOfEqualSign = currentURL.split('=');
     const id=indexOfEqualSign[indexOfEqualSign.length - 1];
 
-    // const socketRef = useRef()
-
-    // socket.emit('join', {cartID: cartID})
-
-    // useEffect(() => {
-    //     // socket.on('connect', () => console.log(29, socket.socket.sessionid))
-    //     socket.on('socketID', (socketID, fn) => {
-    //         console.log(33, socketID)
-    //         fn({socketID: socketID, cartID: cartID})
-    //         setOrderLoading(false)
-    //     })
-    // }, [])
-
     useEffect(() => {
+        console.log(socketContainer)
         // socket.on('socketID', (socketID) => console.log(42, socketID))
-        socket.on('completeOrder', (orderData) => {
+        socketContainer.on('completeOrder', (orderData) => {
             console.log(44, orderData)
             const shipping = orderData.order.Shipping.Address.split(",")
 
@@ -53,7 +40,7 @@ export default function OrderComplete({ backend, cartID }) {
             setOrderLoading(false)
         })
 
-        socket.emit('end')
+        // socket.emit('end')
     }, [])
 
     if(orderLoading && cartID) {
@@ -104,3 +91,16 @@ export default function OrderComplete({ backend, cartID }) {
         )
     }
 }
+
+    // const socketRef = useRef()
+
+    // socket.emit('join', {cartID: cartID})
+
+    // useEffect(() => {
+    //     // socket.on('connect', () => console.log(29, socket.socket.sessionid))
+    //     socket.on('socketID', (socketID, fn) => {
+    //         console.log(33, socketID)
+    //         fn({socketID: socketID, cartID: cartID})
+    //         setOrderLoading(false)
+    //     })
+    // }, [])

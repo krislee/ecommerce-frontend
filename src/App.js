@@ -21,6 +21,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 // Font for Roboto
 import 'fontsource-roboto';
 import IndividualOrder from './screens/UserProfile/IndividualOrder';
+import { Socket } from 'socket.io-client';
 
 function App() {
 
@@ -36,6 +37,8 @@ function App() {
 
   const [successfulPaymentIntent, setSuccessfulPaymentIntent] = useState({})
 
+  const [socketContainer, setSocketContainer] = useState(null)
+
   /* ------- UPDATE STATES ------- */
 
   // Update loggedOut state if loggedIn() returns null whenever we call loggedIn function in our useEffects or on<Event> functions
@@ -50,6 +53,9 @@ function App() {
   // Pass the orderID state to User Profile to pass it down to Order component, where the OrderID state gets updated when we click on an order
   // const grabOrderID = (orderID) => setOrderID(orderID)
   const grabSuccessfulPaymentIntent = (paymentIntent) => setSuccessfulPaymentIntent(paymentIntent)
+
+
+  const grabSocketContainer = (socketContainer) => setSocketContainer(socketContainer)
 
   /* ------- CHECK IF USER IS LOGGED IN BEFORE RUNNING FUNCTIONS ------- */
    const loggedIn = () => localStorage.getItem('token')
@@ -101,11 +107,11 @@ function App() {
           {/* CHECKOUT */}
           <Route path="/checkout">
             <Elements stripe={stripePromise}>
-              <Checkout backend={backend} loggedIn={loggedIn} loggedOut={loggedOut} grabLoggedOut={grabLoggedOut} cartID={cartID}grabCartID={grabCartID} grabSuccessfulPaymentIntent={grabSuccessfulPaymentIntent} grabTotalCartQuantity={grabTotalCartQuantity} />
+              <Checkout backend={backend} loggedIn={loggedIn} loggedOut={loggedOut} grabLoggedOut={grabLoggedOut} cartID={cartID}grabCartID={grabCartID} grabSuccessfulPaymentIntent={grabSuccessfulPaymentIntent} grabTotalCartQuantity={grabTotalCartQuantity} grabSocketContainer={grabSocketContainer}/>
             </Elements>
           </Route>
           <Route path="/order-complete">
-            <OrderComplete backend={backend} cartID={cartID} />
+            <OrderComplete backend={backend} cartID={cartID} socketContainer={socketContainer} />
           </Route>
           {/* LOGIN/REGISTRATION */}
           <Route path="/login/buyer">

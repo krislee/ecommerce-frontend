@@ -10,10 +10,11 @@ import OrderComplete from './OrderComplete'
 
 import createPaymentMethod from './CreatePayment'
 import '../../styles/CheckoutPage.css';
-import {Link} from 'react-router-dom';
+import { io } from "socket.io-client";
 
+const socket = io.connect('wss://elecommerce.herokuapp.com',  { transports: ['websocket', 'polling', 'flashsocket'] })
 
-function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCartID, grabTotalCartQuantity, grabSuccessfulPaymentIntent }) {
+function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCartID, grabTotalCartQuantity, grabSuccessfulPaymentIntent, grabSocketContainer }) {
     // Helper to check if user is logged in
 
     /* ------- LOADING STATES ------- */
@@ -278,6 +279,8 @@ function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCar
         )
     }
 
+    grabSocketContainer(socket)
+
     /* ------- CREATE NEW OR UPDATE EXISTING PAYMENT INTENT AFTER RENDERING DOM ------- */
     useEffect(() => {
         const abortController = new AbortController()
@@ -321,7 +324,7 @@ function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCar
                     // setCustomer(paymentIntentData.customer); // Update customer's state. The customer state will dictate if we should show the Save Card for Future Purchase checkbox, if we should run the function when the Save Card checkbox is checked, which stripe.confirmCardPayment() to run.
                     setClientSecret(paymentIntentData.clientSecret) // need the client secret in order to call stripe.confirmCardPayment(); the client secret will be the same if we are updating a payment intent
                     grabCartID(cartResponseData.cart._id) // When we click Next in the ShippingForm component, we update the payment intent to include the shipping address. To update the PI, we need the Idempotency-Key header, in which its value is the cart ID. So after fetching the server for the cart, update the cartID to the id of the cart, and pass down cartID state to ShippingForm component.
-                    
+                    socket.emit('cartID', {cartID: cartResponseData.cart._id})
                 } 
             } else {
                 // We want to always include a credentials: 'include' header, so that the session ID will be sent back in the request headers to the server. 
@@ -476,9 +479,7 @@ function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCar
         return <Redirect to="/cart"></Redirect>
     } else if(orderComplete) {
         return (
-            <Redirect to={`/order-complete?orderNumber=${cartID}`}>
-                <OrderComplete />
-            </Redirect>
+            <Redirect to={`/order-complete?orderNumber=${cartID}`}></Redirect>
     )} else {
         return (
             <>
