@@ -38,6 +38,7 @@ export default function Orders ({ backend, loggedIn, orderData, grabOrderData, o
             grabOrderData(nextPageOrdersData.orders) // update orderData state to contain the new list of orders
             grabOrdersPage(page) // highlight the pagination number when we click on it; to do this Pagination component has a page state, whose value is a number; when you provide a page state, the number gets highlighted; since page state's value equals to ordersPage state, we need to update ordersPage state with the page # clicked
         } else {
+            console.log(41)
             return grabTotalCartQuantity(0)
         }
     }
@@ -54,11 +55,6 @@ export default function Orders ({ backend, loggedIn, orderData, grabOrderData, o
                     {index !== 0 && new Date(order.OrderDate).toDateString() !== new Date(orderData[index-1].OrderDate).toDateString() && <h3>{new Date(order.OrderDate).toDateString()}</h3>}
                     <Link to={{
                         pathname: `/show-order?orderNumber=${order.OrderNumber}`,
-                        // key: uuidv4(),
-                        // state: {
-                        //     applied: true
-                        // }
-
                     }}>
                         <Card>
                             <CardHeader

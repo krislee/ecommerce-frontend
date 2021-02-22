@@ -68,6 +68,7 @@ export default function UserReviews({ backend, loggedIn, reviewData, grabReviewD
             setReviewID(event.target.id) // reviewID state is used for the actual call to server when we click Submit button
             setEditReviewForm(true) // open the modal
         } else {
+            console.log(71)
             return grabTotalCartQuantity(0)
         }
     }
