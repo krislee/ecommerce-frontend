@@ -12,7 +12,7 @@ import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Button from '@material-ui/core/Button';
 
-function PaymentContainer ({ backend, payment, defaultFirstPayment, grabPaymentData, capitalize, capitalizeArray, loggedIn }) {
+function PaymentContainer ({ backend, payment, defaultFirstPayment, grabPaymentData, capitalize, capitalizeArray, loggedIn, grabRedirect }) {
     /* ------- STATES ------- */
 
     // Getter and Setter to expand the cards (dropdown)
@@ -52,165 +52,177 @@ function PaymentContainer ({ backend, payment, defaultFirstPayment, grabPaymentD
     const openEditModal = async (e) => {
       // Prevents the page from refreshing
       e.preventDefault();
-      // Fetching to the backend to GET the information related to the particular payment method this container is rendering
-      const onePaymentResponse = await fetch(`${backend}/order/show/payment/${cardID}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': loggedIn()
-        }
-      });
-      // Data regarding the payment methods that is received back from the request to the backend server
-      const paymentData = await onePaymentResponse.json();
-      const capitalizedName = [];
-      // Name is put through the function to capitalize both the first and last name
-      const name = capitalizeArray(paymentData.cardholderName.split(" "), capitalizedName);
-      // Expiration date of the card for the payment method
-      const expDate = paymentData.expDate;
-      // Split the expiration date
-      const expDateSplit = expDate.split('/');
-      // Use the split expiration date to check whether or not we should add a zero in front of the month to format it properly
-      const expDateMonthConversion = () => {
-        if (expDateSplit[0].length === 1){
-          return `0${expDateSplit[0]}`
-        } else {
-          return expDateSplit[0]
+      if (loggedIn()) {
+        // Fetching to the backend to GET the information related to the particular payment method this container is rendering
+        const onePaymentResponse = await fetch(`${backend}/order/show/payment/${cardID}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': loggedIn()
+          }
+        });
+        // Data regarding the payment methods that is received back from the request to the backend server
+        const paymentData = await onePaymentResponse.json();
+        const capitalizedName = [];
+        // Name is put through the function to capitalize both the first and last name
+        const name = capitalizeArray(paymentData.cardholderName.split(" "), capitalizedName);
+        // Expiration date of the card for the payment method
+        const expDate = paymentData.expDate;
+        // Split the expiration date
+        const expDateSplit = expDate.split('/');
+        // Use the split expiration date to check whether or not we should add a zero in front of the month to format it properly
+        const expDateMonthConversion = () => {
+          if (expDateSplit[0].length === 1){
+            return `0${expDateSplit[0]}`
+          } else {
+            return expDateSplit[0]
+          };
         };
-      };
-      // Prefill the inputs regarding the first edit modal for the payment methods with the information received back from paymentData
-      setEditCardHolderInput({
-        cardName: `${name}`,
-        cardMonthExpDate: expDateMonthConversion(),
-        cardYearExpDate: expDateSplit[1]
-      });
-      // Billing details is an object within the paymentData object
-      const billingDetails = paymentData.billingDetails;
-      // Address for the billing details
-      const billingDetailsAddress = billingDetails.address;
-      // Replace the name so that it does not contain a comma in between
-      const billingDetailsName = billingDetails.name.replace (/,/g, "");
-      // Capitalize first name incase user enters a name that is not capitalized
-      const firstName = capitalize(billingDetailsName.split(" ")[0]);
-      // Capitalize last name incase user enters a name that is not capitalized
-      const lastName = capitalize(billingDetailsName.split(" ")[1]);
-      // Define arrays that will be used to capitalize strings with multiple words (like full name, or addresses)
-      const [capitalizedFirstAddressLine, capitalizedSecondAddressLine, capitalizedCity] = [[], [], []];
-      // Capitalize the first line of address
-      const firstAddressLine = capitalizeArray(billingDetailsAddress.line1.split(" "), capitalizedFirstAddressLine);
-      // Check to see if there is a second line of address, and if there is, then capitalize the the second line of address
-      const secondAddressLineCheck = () => {
-        if (billingDetailsAddress.line2 === 'undefined' || billingDetailsAddress.line2 === null) {
-          return '';
-        } else {
-          const secondAddressLine = capitalizeArray(billingDetailsAddress.line2.split(" "), capitalizedSecondAddressLine)
-          return secondAddressLine;
+        // Prefill the inputs regarding the first edit modal for the payment methods with the information received back from paymentData
+        setEditCardHolderInput({
+          cardName: `${name}`,
+          cardMonthExpDate: expDateMonthConversion(),
+          cardYearExpDate: expDateSplit[1]
+        });
+        // Billing details is an object within the paymentData object
+        const billingDetails = paymentData.billingDetails;
+        // Address for the billing details
+        const billingDetailsAddress = billingDetails.address;
+        // Replace the name so that it does not contain a comma in between
+        const billingDetailsName = billingDetails.name.replace (/,/g, "");
+        // Capitalize first name incase user enters a name that is not capitalized
+        const firstName = capitalize(billingDetailsName.split(" ")[0]);
+        // Capitalize last name incase user enters a name that is not capitalized
+        const lastName = capitalize(billingDetailsName.split(" ")[1]);
+        // Define arrays that will be used to capitalize strings with multiple words (like full name, or addresses)
+        const [capitalizedFirstAddressLine, capitalizedSecondAddressLine, capitalizedCity] = [[], [], []];
+        // Capitalize the first line of address
+        const firstAddressLine = capitalizeArray(billingDetailsAddress.line1.split(" "), capitalizedFirstAddressLine);
+        // Check to see if there is a second line of address, and if there is, then capitalize the the second line of address
+        const secondAddressLineCheck = () => {
+          if (billingDetailsAddress.line2 === 'undefined' || billingDetailsAddress.line2 === null) {
+            return '';
+          } else {
+            const secondAddressLine = capitalizeArray(billingDetailsAddress.line2.split(" "), capitalizedSecondAddressLine)
+            return secondAddressLine;
+          };
         };
+        // Capitalize the city name
+        const city = capitalizeArray(billingDetailsAddress.city.split(" "), capitalizedCity);
+        // Grabbing the state from the billingDetailsAddress object
+        const state = billingDetailsAddress.state;
+        // Grabbing the zipcode from the billingDetailsAddress object
+        const zipcode = billingDetailsAddress.postalCode;
+        // Prefill the inputs regarding the second edit modal for the payment methods with the information received back from paymentData and specifically the billingDetails object
+        setEditBillingInput({
+          editBillingFirstName: `${firstName}`,
+          editBillingLastName: `${lastName}`,
+          editBillingFirstAddressLine: `${firstAddressLine}`,
+          editBillingSecondAddressLine: secondAddressLineCheck(),
+          editBillingCity: `${city}`,
+          editBillingState: `${state}`,
+          editBillingZipcode: `${zipcode}`,
+        });
+        // After all the inputs have been prefilled, the modal will open
+        setEditModalIsOpen(true);
+      } else {
+        grabRedirect();
       };
-      // Capitalize the city name
-      const city = capitalizeArray(billingDetailsAddress.city.split(" "), capitalizedCity);
-      // Grabbing the state from the billingDetailsAddress object
-      const state = billingDetailsAddress.state;
-      // Grabbing the zipcode from the billingDetailsAddress object
-      const zipcode = billingDetailsAddress.postalCode;
-      // Prefill the inputs regarding the second edit modal for the payment methods with the information received back from paymentData and specifically the billingDetails object
-      setEditBillingInput({
-        editBillingFirstName: `${firstName}`,
-        editBillingLastName: `${lastName}`,
-        editBillingFirstAddressLine: `${firstAddressLine}`,
-        editBillingSecondAddressLine: secondAddressLineCheck(),
-        editBillingCity: `${city}`,
-        editBillingState: `${state}`,
-        editBillingZipcode: `${zipcode}`,
-      });
-      // After all the inputs have been prefilled, the modal will open
-      setEditModalIsOpen(true);
     };
 
     // Function that handles the editing of payment methods
     const handleEditPaymentSubmit = async (e) => {
       // Prevents the page from refreshing
       e.preventDefault();
-      // Creating a variable that tells the server we are EDITING the information for a specific payment method, which is identified from the cardID we recieve from the data of payment (passed down from the Payment parent component)
-      setDisabledOnSubmitEditPaymentModal(true);
-      setOverlayClickCloseEditPaymentModal(false);
-      const editPaymentResponse = await fetch(`${backend}/order/update/payment/${cardID}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': loggedIn()
-        },
-        // For our body, we need to have a value for both the payment information and billing address information, and we use the values received back from the inputs to do so
-        body: JSON.stringify({
-          billingDetails: {
-            line1: editBillingInput.editBillingFirstAddressLine,
-            line2: editBillingInput.editBillingSecondAddressLine,
-            city: editBillingInput.editBillingCity,
-            state: editBillingInput.editBillingState.toUpperCase(),
-            postalCode: editBillingInput.editBillingZipcode,
-            country: 'US',
-            name: `${editBillingInput.editBillingFirstName} ${editBillingInput.editBillingLastName}`
+      if (loggedIn()) {
+        // Creating a variable that tells the server we are EDITING the information for a specific payment method, which is identified from the cardID we recieve from the data of payment (passed down from the Payment parent component)
+        setDisabledOnSubmitEditPaymentModal(true);
+        setOverlayClickCloseEditPaymentModal(false);
+        const editPaymentResponse = await fetch(`${backend}/order/update/payment/${cardID}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': loggedIn()
           },
-          name: editCardHolderInput.cardName,
-          recollectCVV: false,
-          expMonth: editCardHolderInput.cardMonthExpDate,
-          expYear: editCardHolderInput.cardYearExpDate
-        })
-      });
-      // Data regarding the payment methods that is received back from the request to the backend server when editing is finished to receive updated version of the data
-      const editPaymentData = await editPaymentResponse.json();
-      // Being passed down as a prop from the parent component of UserProfile, we are able to reorder the data so it will display the default payment first on the list followed by the newest
-      defaultFirstPayment(editPaymentData.paymentMethods);
-      // Being passed down as a prop from the parent component of UserProfile, we are able to the set the data that we received back from the response of the server to the variable PaymentData, so we can reuse that data to map through and display the different PaymentContainer components
-      grabPaymentData(editPaymentData.paymentMethods);
-      // Empty the object of the billing information inputs so that new ones can replace it later on without any duplication errors
-      setEditBillingInput({});
-      // Empty the object of the payment information inputs so that new ones can replace it later on without any duplication errors
-      setEditCardHolderInput({});
-      // Close the card dropdown since it was opened
-      handleExpandClick();
-      // Close the modal after all of this function is finished so user will return back on the regular screen
-      closeEditModalTwo();
+          // For our body, we need to have a value for both the payment information and billing address information, and we use the values received back from the inputs to do so
+          body: JSON.stringify({
+            billingDetails: {
+              line1: editBillingInput.editBillingFirstAddressLine,
+              line2: editBillingInput.editBillingSecondAddressLine,
+              city: editBillingInput.editBillingCity,
+              state: editBillingInput.editBillingState.toUpperCase(),
+              postalCode: editBillingInput.editBillingZipcode,
+              country: 'US',
+              name: `${editBillingInput.editBillingFirstName} ${editBillingInput.editBillingLastName}`
+            },
+            name: editCardHolderInput.cardName,
+            recollectCVV: false,
+            expMonth: editCardHolderInput.cardMonthExpDate,
+            expYear: editCardHolderInput.cardYearExpDate
+          })
+        });
+        // Data regarding the payment methods that is received back from the request to the backend server when editing is finished to receive updated version of the data
+        const editPaymentData = await editPaymentResponse.json();
+        // Being passed down as a prop from the parent component of UserProfile, we are able to reorder the data so it will display the default payment first on the list followed by the newest
+        defaultFirstPayment(editPaymentData.paymentMethods);
+        // Being passed down as a prop from the parent component of UserProfile, we are able to the set the data that we received back from the response of the server to the variable PaymentData, so we can reuse that data to map through and display the different PaymentContainer components
+        grabPaymentData(editPaymentData.paymentMethods);
+        // Empty the object of the billing information inputs so that new ones can replace it later on without any duplication errors
+        setEditBillingInput({});
+        // Empty the object of the payment information inputs so that new ones can replace it later on without any duplication errors
+        setEditCardHolderInput({});
+        // Close the card dropdown since it was opened
+        handleExpandClick();
+        // Close the modal after all of this function is finished so user will return back on the regular screen
+        closeEditModalTwo();
+      } else {
+        grabRedirect();
+      };
     };
 
     // // Function that handles the editing of the default status (and not the contents of the payment method)
     const handleEditPaymentDefaultStatus = async (e) => {
       // Prevents the page from refreshing
       e.preventDefault();
-      // Fetching to a server to make a request to update the default status based off of the current default status. We fetch to different backend URLs based off whether or not the card is true or false in the first place
-      if (defaultCard) {
-        // Removing the default status
-        const removePaymentDefaultStatusResponse = await fetch(`${backend}/order/default/payment/${cardID}?default=false`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': loggedIn()
-          }
-        });
-        // Data regarding the payment methods that is received back from the request to the backend server when editing default is finished to receive updated version of the data
-        const removePaymentDefaultStatusData = await removePaymentDefaultStatusResponse.json();
-        // Being passed down as a prop from the parent component of UserProfile, we are able to reorder the data so it will display the default payment method first on the list followed by the newest
-        defaultFirstPayment(removePaymentDefaultStatusData.paymentMethods);
-        // Being passed down as a prop from the parent component of UserProfile, we are able to the set the data that we received back from the response of the server to the variable PaymentData, so we can reuse that data to map through and display the different PaymentContainer components
-        grabPaymentData(removePaymentDefaultStatusData.paymentMethods);
-        // Close the card dropdown since it was opened
-        handleExpandClick();
+      if (loggedIn()) {
+        // Fetching to a server to make a request to update the default status based off of the current default status. We fetch to different backend URLs based off whether or not the card is true or false in the first place
+        if (defaultCard) {
+          // Removing the default status
+          const removePaymentDefaultStatusResponse = await fetch(`${backend}/order/default/payment/${cardID}?default=false`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': loggedIn()
+            }
+          });
+          // Data regarding the payment methods that is received back from the request to the backend server when editing default is finished to receive updated version of the data
+          const removePaymentDefaultStatusData = await removePaymentDefaultStatusResponse.json();
+          // Being passed down as a prop from the parent component of UserProfile, we are able to reorder the data so it will display the default payment method first on the list followed by the newest
+          defaultFirstPayment(removePaymentDefaultStatusData.paymentMethods);
+          // Being passed down as a prop from the parent component of UserProfile, we are able to the set the data that we received back from the response of the server to the variable PaymentData, so we can reuse that data to map through and display the different PaymentContainer components
+          grabPaymentData(removePaymentDefaultStatusData.paymentMethods);
+          // Close the card dropdown since it was opened
+          handleExpandClick();
+        } else {
+          // Adding the default status
+          const addPaymentDefaultStatusResponse = await fetch(`${backend}/order/default/payment/${cardID}?default=true`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': loggedIn()
+            }
+          });
+          // Data regarding the payment methods that is received back from the request to the backend server when editing default is finished to receive updated version of the data
+          const addPaymentDefaultStatusData = await addPaymentDefaultStatusResponse.json();
+          // Being passed down as a prop from the parent component of UserProfile, we are able to reorder the data so it will display the default payment method first on the list followed by the newest
+          defaultFirstPayment(addPaymentDefaultStatusData.paymentMethods);
+          // Being passed down as a prop from the parent component of UserProfile, we are able to the set the data that we received back from the response of the server to the variable PaymentData, so we can reuse that data to map through and display the different PaymentContainer components
+          grabPaymentData(addPaymentDefaultStatusData.paymentMethods);
+          // Close the card dropdown since it was opened
+          handleExpandClick();
+        };
       } else {
-        // Adding the default status
-        const addPaymentDefaultStatusResponse = await fetch(`${backend}/order/default/payment/${cardID}?default=true`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': loggedIn()
-          }
-        });
-        // Data regarding the payment methods that is received back from the request to the backend server when editing default is finished to receive updated version of the data
-        const addPaymentDefaultStatusData = await addPaymentDefaultStatusResponse.json();
-        // Being passed down as a prop from the parent component of UserProfile, we are able to reorder the data so it will display the default payment method first on the list followed by the newest
-        defaultFirstPayment(addPaymentDefaultStatusData.paymentMethods);
-        // Being passed down as a prop from the parent component of UserProfile, we are able to the set the data that we received back from the response of the server to the variable PaymentData, so we can reuse that data to map through and display the different PaymentContainer components
-        grabPaymentData(addPaymentDefaultStatusData.paymentMethods);
-        // Close the card dropdown since it was opened
-        handleExpandClick();
+        grabRedirect();
       };
     };
     
@@ -218,10 +230,10 @@ function PaymentContainer ({ backend, payment, defaultFirstPayment, grabPaymentD
     const handleDeletePayment = async (e) => {
       // Prevents the page from refreshing
       e.preventDefault();
-      setDisabledOnSubmitDeletePaymentModal(true);
-      setOverlayClickCloseDeletePaymentModal(false);
-      // Fetching to a server to make a request to delete an payment method
       if (loggedIn()) {
+        setDisabledOnSubmitDeletePaymentModal(true);
+        setOverlayClickCloseDeletePaymentModal(false);
+        // Fetching to a server to make a request to delete an payment method
         const deletePaymentResponse = await fetch(`${backend}/order/payment/${cardID}`, {
           method: 'DELETE',
           headers: {
@@ -239,84 +251,107 @@ function PaymentContainer ({ backend, payment, defaultFirstPayment, grabPaymentD
         handleExpandClick();
         // Close the modal after all of this function is finished so user will return back on the regular screen
         closeDeleteModal();
+      } else {
+        grabRedirect();
       };
     };
 
     // Function used to close the modal by setting the edit modal condition to false
     const closeEditModal = () => {
-      setEditModalIsOpen(false);
+      if (loggedIn()) {
+        setEditModalIsOpen(false);
+      } else {
+        grabRedirect();
+      };
     };
 
     // Function that runs when the second edit modal is trying to be activated
     const openEditModalTwo = (e) => {
       // Prevents the page from refreshing
       e.preventDefault();
-      // If the year of expiration is the same as the current year, we have to check whether or not the month has passed
-      if (Number(editCardHolderInput.cardYearExpDate) === new Date().getFullYear()){
-        // If the month is the current or a month that will come in the future, we continue onto the second modal. If not, then we display a warning message saying that the month entered is not valid as it has already passed
-        if (Number(editCardHolderInput.cardMonthExpDate) >= new Date().getMonth() + 1) {
+      if (loggedIn()) {
+        // If the year of expiration is the same as the current year, we have to check whether or not the month has passed
+        if (Number(editCardHolderInput.cardYearExpDate) === new Date().getFullYear()){
+          // If the month is the current or a month that will come in the future, we continue onto the second modal. If not, then we display a warning message saying that the month entered is not valid as it has already passed
+          if (Number(editCardHolderInput.cardMonthExpDate) >= new Date().getMonth() + 1) {
+            setEditModalTwoIsOpen(true);
+            setInvalidExpirationDate(false);
+          } else {
+            setInvalidExpirationDate(true);
+          };
+        } else {
           setEditModalTwoIsOpen(true);
           setInvalidExpirationDate(false);
-        } else {
-          setInvalidExpirationDate(true);
         };
       } else {
-        setEditModalTwoIsOpen(true);
-        setInvalidExpirationDate(false);
+        grabRedirect();
       };
     };
 
     // Function used to close the modal by setting the second edit modal condition to false
     const closeEditModalTwo = () => {
-      setEditModalTwoIsOpen(false);
-      setEditModalIsOpen(false);
-      setDisabledOnSubmitEditPaymentModal(false);
-      setOverlayClickCloseEditPaymentModal(true);
+      if (loggedIn()) {
+        setEditModalTwoIsOpen(false);
+        setEditModalIsOpen(false);
+        setDisabledOnSubmitEditPaymentModal(false);
+        setOverlayClickCloseEditPaymentModal(true);
+      } else {
+        grabRedirect();
+      }
     };
 
     // Function to open the modal regarding deletion of an payment methods
     const openDeleteModal = () => {
-      setDeletePaymentModalIsOpen(true);
+      if (loggedIn()) {
+        setDeletePaymentModalIsOpen(true);
+      } else {
+        grabRedirect();
+      };
     };
 
     // Function used to close the modal by setting the delete modal condition to false
     const closeDeleteModal = () => {
-      setDeletePaymentModalIsOpen(false);
-      setOverlayClickCloseDeletePaymentModal(true);
-      setDisabledOnSubmitDeletePaymentModal(false);
+      if (loggedIn()) {
+        setDeletePaymentModalIsOpen(false);
+        setOverlayClickCloseDeletePaymentModal(true);
+        setDisabledOnSubmitDeletePaymentModal(false);
+      } else {
+        grabRedirect();
+      };
     };
 
     // Function used to expand the card dropdown when the card is dropped and to also close it when the card dropdown was already in a state of being expanded
     const handleExpandClick = () => {
+      if (loggedIn()) {
         setExpanded(!expanded);
+      } else {
+        grabRedirect();
+      };
     };
 
     // Function that allows us to change the value of the input dynamically and display it on the page regarding the card information
     const handleEditCardHolderNameChange = (e) => {
-      const { name, value } = e.target;
-      setEditCardHolderInput((prevEditCardHolder) => ({
-          ...prevEditCardHolder, [name] : value
-      }));
+      if (loggedIn()) {
+        const { name, value } = e.target;
+        setEditCardHolderInput((prevEditCardHolder) => ({
+            ...prevEditCardHolder, [name] : value
+        }));
+      } else {
+        grabRedirect();
+      };
     };
 
     // Function that allows us to change the value of the input dynamically and display it on the page regarding the billing address information
     const handleEditBillingChange = (e) => {
-      const { name, value } = e.target;
-      setEditBillingInput((prevEditBilling) => ({
-          ...prevEditBilling, [name] : value
-      }));
+      if (loggedIn()) {
+        const { name, value } = e.target;
+        setEditBillingInput((prevEditBilling) => ({
+            ...prevEditBilling, [name] : value
+        }));
+      } else {
+        grabRedirect();
+      };
     };
-
-    // const handleEditMonthUserProfileExpiration = (event) => {
-    //   const { value } = event.target;
-    //   setEditCardHolderInput((prevEditExpiration) => ({...prevEditExpiration, ["cardMonthExpDate"]: value }));
-    // }
-
-    // const handleEditYearUserProfileExpiration = (event) => {
-    //   const { value } = event.target;
-    //   console.log(event.target.value);
-    //   setEditCardHolderInput((prevEditExpiration) => ({...prevEditExpiration, ["cardYearExpDate"]: value }));
-    // }
 
     // Styles pertaining to the cards used to display the payment methods
     const useStyles = makeStyles((theme) => ({

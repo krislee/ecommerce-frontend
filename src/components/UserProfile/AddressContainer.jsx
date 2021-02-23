@@ -4,7 +4,7 @@ import Modal from 'react-modal';
 import Input from '../Input'
 import { Redirect } from 'react-router-dom';
 
-function AddressContainer ({ index, address, backend, grabAddressData, defaultFirst, capitalize, capitalizeArray, loggedIn, grabTotalCartQuantity, grabRedirect }) {
+function AddressContainer ({ index, address, backend, grabAddressData, defaultFirst, capitalize, capitalizeArray, loggedIn, grabRedirect }) {
 
     /* ------- STATES ------- */
 

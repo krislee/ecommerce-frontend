@@ -47,77 +47,110 @@ function UserProfilePayment ({ backend, paymentData, grabPaymentData, defaultFir
 
     // Function that is used to open the modal when users plan to create
     const openModal = () => {
-        setModalIsOpen(true);
+        if (loggedIn()) {
+            setModalIsOpen(true);
+        } else {
+            grabRedirect();
+        };
     };
 
     // Function that is used to close the modal when the user either leaves or submits a address
     const closeModal = () => {
-        setModalIsOpen(false);
-        setCardNumberDisabled(true);
-        setCardCVCDisabled(true);
-        setCardExpirationDisabled(true);
-        setCardHolderInput({});
-        setBillingInput({});
-        setCardNumberError(null);
-        setCardCVCError(null);
-        setCardExpirationError(null);
+        if (loggedIn()) {
+            setModalIsOpen(false);
+            setCardNumberDisabled(true);
+            setCardCVCDisabled(true);
+            setCardExpirationDisabled(true);
+            setCardHolderInput({});
+            setBillingInput({});
+            setCardNumberError(null);
+            setCardCVCError(null);
+            setCardExpirationError(null);
+        } else {
+            grabRedirect();
         };
+    };
 
     // Function that is used to open the second modal when users plan to create
     const openModalTwo = (e) => {
         e.preventDefault();
-        setModalTwoIsOpen(true);
+        if (loggedIn()) {
+            setModalTwoIsOpen(true);
+        } else {
+            grabRedirect();
+        };
     };
 
     // Function that is used to close the second modal when the user either leaves or submits a address
     const closeModalTwo = () => {
-        setModalIsOpen(false);
-        setModalTwoIsOpen(false);
-        setCardNumberDisabled(true);
-        setCardCVCDisabled(true);
-        setCardExpirationDisabled(true);
-        setCardHolderInput({});
-        setBillingInput({});
-        setCardNumberError(null);
-        setCardCVCError(null);
-        setCardExpirationError(null);
-        setDisabledOnSubmitAddPaymentModal(false);
-        setOverlayClickCloseAddPaymentModal(true);
+        if (loggedIn()) {
+            setModalIsOpen(false);
+            setModalTwoIsOpen(false);
+            setCardNumberDisabled(true);
+            setCardCVCDisabled(true);
+            setCardExpirationDisabled(true);
+            setCardHolderInput({});
+            setBillingInput({});
+            setCardNumberError(null);
+            setCardCVCError(null);
+            setCardExpirationError(null);
+            setDisabledOnSubmitAddPaymentModal(false);
+            setOverlayClickCloseAddPaymentModal(true);
+        } else {
+            grabRedirect();
+        };
     };
 
     // Function that allows us to change the value of the input dynamically and display it on the page regarding the card information
     const handleCardHolderNameChange = (e) => {
-        const { name, value } = e.target;
-        setCardHolderInput((prevCardHolder) => ({
-            ...prevCardHolder, [name] : value
-        }));
+        if (loggedIn()) {
+            const { name, value } = e.target;
+            setCardHolderInput((prevCardHolder) => ({
+                ...prevCardHolder, [name] : value
+            }));
+        } else {
+            grabRedirect();
+        };
     };
 
     // Function that allows us to change the value of the input dynamically and display it on the page regarding the billing address information
     const handleBillingChange = (e) => {
-        const { name, value } = e.target;
-        setBillingInput((prevBilling) => ({
-            ...prevBilling, [name] : value
-        }));
+        if (loggedIn()) {
+            const { name, value } = e.target;
+            setBillingInput((prevBilling) => ({
+                ...prevBilling, [name] : value
+            }));
+        } else {
+            grabRedirect();
+        };
     };
 
     // Function that allows us to check on the changes made when entering card number (whether it is valid or empty) set disabled or error accordingly
     const handleCardNumberChange = (event) => {
-        setCardNumberDisabled(event.empty);
-        console.log(event.error);
-        setCardNumberError(event.error ? event.error.message : "");
+        if (loggedIn()) {
+            setCardNumberDisabled(event.empty);
+            setCardNumberError(event.error ? event.error.message : "");
+        } else {
+            grabRedirect();
+        };
     };
 
     const handleCardCVCChange = (event) => {
-        setCardCVCDisabled(event.empty);
-        console.log(event.error);
-        setCardCVCError(event.error ? event.error.message : "");
+        if (loggedIn()) {
+            setCardCVCDisabled(event.empty);
+            setCardCVCError(event.error ? event.error.message : "");
+        } else {
+            grabRedirect();
+        };
     };
 
     const handleCardExpirationChange = (event) => {
-        setCardExpirationDisabled(event.empty);
-        console.log(event.error);
-        setCardExpirationError(event.error ? event.error.message : "");
+        if (loggedIn()) { 
+            setCardExpirationDisabled(event.empty);
+            setCardExpirationError(event.error ? event.error.message : "");
+        } else {
+            grabRedirect();
+        };
     };
 
     // Function that is used to handle the event when a user submits the request to make a new payment method
@@ -125,56 +158,60 @@ function UserProfilePayment ({ backend, paymentData, grabPaymentData, defaultFir
         // Prevents the page from refreshing
         e.preventDefault();
         // Sets the button to disabled to not create duplicate payments
-        setOverlayClickCloseAddPaymentModal(false);
-        setDisabledOnSubmitAddPaymentModal(true);
-        // We grab the checkbox that has the ID payment-default
-        const checkbox = document.getElementById('payment-default');
-        // We check whether or not the checkbox is checked (which indicates whether or not they want to make the payment method the default payment method)
-        const check = checkbox.checked
-        // Fetch to Stripe to create a new payment method response
-        const newPaymentResponse = await stripe.createPaymentMethod({
-            type: 'card',
-            card: elements.getElement(CardNumberElement),
-            billing_details: {
-                name: `${billingInput.firstName}, ${billingInput.lastName}`,
-                address: {
-                    city: `${billingInput.city}`,
-                    country: `US`,
-                    line1: `${billingInput.lineOne}`,
-                    line2: `${billingInput.lineTwo}`,
-                    postal_code: `${billingInput.zipcode}`,
-                    state: `${billingInput.state}`
+        if (loggedIn()) {
+            setOverlayClickCloseAddPaymentModal(false);
+            setDisabledOnSubmitAddPaymentModal(true);
+            // We grab the checkbox that has the ID payment-default
+            const checkbox = document.getElementById('payment-default');
+            // We check whether or not the checkbox is checked (which indicates whether or not they want to make the payment method the default payment method)
+            const check = checkbox.checked
+            // Fetch to Stripe to create a new payment method response
+            const newPaymentResponse = await stripe.createPaymentMethod({
+                type: 'card',
+                card: elements.getElement(CardNumberElement),
+                billing_details: {
+                    name: `${billingInput.firstName}, ${billingInput.lastName}`,
+                    address: {
+                        city: `${billingInput.city}`,
+                        country: `US`,
+                        line1: `${billingInput.lineOne}`,
+                        line2: `${billingInput.lineTwo}`,
+                        postal_code: `${billingInput.zipcode}`,
+                        state: `${billingInput.state}`
+                    }
+                },
+                metadata: {
+                    cardholder_name: `${cardHolderInput.cardName}`,
+                    recollect_cvv: false
                 }
-            },
-            metadata: {
-                cardholder_name: `${cardHolderInput.cardName}`,
-                recollect_cvv: false
-            }
-        });
-        // Creating a payment method based on the stripe response back and fetching it to the backend server
-        const savePaymentMethodToCustomerResponse = await fetch(`${backend}/order/payment?checkout=false`, {
-            method: 'POST',
-            headers: {
-                'Content-Type' : 'application/json',
-                'Authorization': loggedIn()
-            },
-            body: JSON.stringify({
-                paymentMethodID: `${newPaymentResponse.paymentMethod.id}`,
-                default: check
-            })
-        });
-        // Data regarding the payment methods that is received back from the request to the backend server when creating is finished to receive updated version of the data
-        const savePaymentMethodToCustomerData = await savePaymentMethodToCustomerResponse.json();
-        // Make sure that data we recieve back is ordered so that the default will be first followed by newest payment method added
-        defaultFirstPayment(savePaymentMethodToCustomerData.paymentMethods);
-        // Assigning the data we recieve back to the variable paymentData so we can use that variable which stores an array and map through it to display different PaymentContainer components
-        grabPaymentData(savePaymentMethodToCustomerData.paymentMethods);
-        // Clearing out the object used to store the information that users put in the input fields so it's blank when users want to create a new one
-        setCardHolderInput({});
-        // Clearing out the object used to store the information that users put in the input fields so it's blank when users want to create a new one
-        setBillingInput({});
-        // Close the modal
-        closeModalTwo();
+            });
+            // Creating a payment method based on the stripe response back and fetching it to the backend server
+            const savePaymentMethodToCustomerResponse = await fetch(`${backend}/order/payment?checkout=false`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type' : 'application/json',
+                    'Authorization': loggedIn()
+                },
+                body: JSON.stringify({
+                    paymentMethodID: `${newPaymentResponse.paymentMethod.id}`,
+                    default: check
+                })
+            });
+            // Data regarding the payment methods that is received back from the request to the backend server when creating is finished to receive updated version of the data
+            const savePaymentMethodToCustomerData = await savePaymentMethodToCustomerResponse.json();
+            // Make sure that data we recieve back is ordered so that the default will be first followed by newest payment method added
+            defaultFirstPayment(savePaymentMethodToCustomerData.paymentMethods);
+            // Assigning the data we recieve back to the variable paymentData so we can use that variable which stores an array and map through it to display different PaymentContainer components
+            grabPaymentData(savePaymentMethodToCustomerData.paymentMethods);
+            // Clearing out the object used to store the information that users put in the input fields so it's blank when users want to create a new one
+            setCardHolderInput({});
+            // Clearing out the object used to store the information that users put in the input fields so it's blank when users want to create a new one
+            setBillingInput({});
+            // Close the modal
+            closeModalTwo();
+        } else {
+            grabRedirect();
+        };
     };
 
     // Function that creates PaymentContainer components based off the array set in paymentData
@@ -193,6 +230,7 @@ function UserProfilePayment ({ backend, paymentData, grabPaymentData, defaultFir
                 capitalize={capitalize}
                 capitalizeArray={capitalizeArray}
                 loggedIn={loggedIn}
+                grabRedirect={grabRedirect}
                 />
             );
         };
