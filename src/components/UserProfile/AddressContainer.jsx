@@ -328,7 +328,7 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
                 type={"text"} 
                 maxLength={"5"} />
                 {/* Appears when the input for zipcode has anything other than numbers */}
-                {(/[a-zA-Z]/g.test(editAddress.zipcode) === true 
+                {(/^[0-9]+$/.test(editAddress.zipcode) !== true 
                 && editAddress.zipcode !== "") 
                 && <div className="warning">You must enter only numbers as your zip code</div>}
                 {/* Appears when the input for zipcode has not met the five digit count length */}
@@ -358,7 +358,7 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
                 || editAddress.state === undefined
                 || editAddress.state === ""
                 || editAddress.state.length !== 2)
-                || (/[a-zA-Z]/g.test(editAddress.zipcode) === true 
+                || (/^[0-9]+$/.test(editAddress.zipcode) !== true 
                 || editAddress.zipcode === undefined
                 || editAddress.zipcode === "")
                 || editAddress.zipcode.length !== 5}>

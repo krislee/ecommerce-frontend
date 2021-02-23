@@ -15,10 +15,6 @@ function UserProfilePayment ({ backend, paymentData, grabPaymentData, defaultFir
     const [cardHolderInput, setCardHolderInput] = useState({});
     // Getter and Setter to store an object that will later be used to determine what users enter into inputs specifically regarding the creating payment function on the second edit modal (for billing information)
     const [billingInput, setBillingInput] = useState({});
-    // Getter and Setter to display a warning message regarding when the user does not fulfill requirements for the zipcode input when creating a payment method
-    const [addZipcodeWarning, setAddZipcodeWarning] = useState(false);
-    // Getter and Setter to display a warning message regarding when the user does not fulfill requirements for the state input when creating a payment method
-    const [addStateAbbreviationWarning, setAddStateAbbreviationWarning] = useState(false);
     // Getter and Setter to disable the button based on whether or not the card is valid when the user enters to create the payment method
     const [cardNumberDisabled, setCardNumberDisabled] = useState(true);
     const [cardCVCDisabled, setCardCVCDisabled] = useState(true);
@@ -27,7 +23,8 @@ function UserProfilePayment ({ backend, paymentData, grabPaymentData, defaultFir
     const [cardNumberError, setCardNumberError] = useState(null);
     const [cardCVCError, setCardCVCError] = useState(null);
     const [cardExpirationError, setCardExpirationError] = useState(null);
-    const [disabledOnSubmit, setDisabledOnSubmit] = useState(false);
+    const [disabledOnSubmitAddPaymentModal, setDisabledOnSubmitAddPaymentModal] = useState(false);
+    const [overlayClickCloseAddPaymentModal, setOverlayClickCloseAddPaymentModal] = useState(true);
     
 
     // Stripe elements
@@ -51,7 +48,6 @@ function UserProfilePayment ({ backend, paymentData, grabPaymentData, defaultFir
     // Function that is used to open the modal when users plan to create
     const openModal = () => {
         setModalIsOpen(true);
-        // setDisabledOnSubmit(false);
     };
 
     // Function that is used to close the modal when the user either leaves or submits a address
@@ -71,7 +67,6 @@ function UserProfilePayment ({ backend, paymentData, grabPaymentData, defaultFir
     const openModalTwo = (e) => {
         e.preventDefault();
         setModalTwoIsOpen(true);
-        // setDisabledOnSubmit(false);
     };
 
     // Function that is used to close the second modal when the user either leaves or submits a address
@@ -86,7 +81,8 @@ function UserProfilePayment ({ backend, paymentData, grabPaymentData, defaultFir
         setCardNumberError(null);
         setCardCVCError(null);
         setCardExpirationError(null);
-        setDisabledOnSubmit(false);
+        setDisabledOnSubmitAddPaymentModal(false);
+        setOverlayClickCloseAddPaymentModal(true);
     };
 
     // Function that allows us to change the value of the input dynamically and display it on the page regarding the card information
@@ -128,68 +124,57 @@ function UserProfilePayment ({ backend, paymentData, grabPaymentData, defaultFir
     const handleCreatePayment = async (e) => {
         // Prevents the page from refreshing
         e.preventDefault();
-        setDisabledOnSubmit(true);
-        // If the user does not fulfill the requirements for the zipcode input
-        if (billingInput.zipcode.length !== 5) {
-            setAddZipcodeWarning(true);
-            setAddStateAbbreviationWarning(false);
-        // If the user does not fulfill the requirements for the state input
-        } else if (billingInput.state.length !== 2) {
-            setAddZipcodeWarning(false);
-            setAddStateAbbreviationWarning(true);
-        } else {
-            // If the user does fulfill the requirements for the all the inputs
-            setAddZipcodeWarning(false);
-            setAddStateAbbreviationWarning(false);
-            // We grab the checkbox that has the ID payment-default
-            const checkbox = document.getElementById('payment-default');
-            // We check whether or not the checkbox is checked (which indicates whether or not they want to make the payment method the default payment method)
-            const check = checkbox.checked
-            // Fetch to Stripe to create a new payment method response
-            const newPaymentResponse = await stripe.createPaymentMethod({
-                type: 'card',
-                card: elements.getElement(CardNumberElement),
-                billing_details: {
-                    name: `${billingInput.firstName}, ${billingInput.lastName}`,
-                    address: {
-                        city: `${billingInput.city}`,
-                        country: `US`,
-                        line1: `${billingInput.lineOne}`,
-                        line2: `${billingInput.lineTwo}`,
-                        postal_code: `${billingInput.zipcode}`,
-                        state: `${billingInput.state}`
-                    }
-                },
-                metadata: {
-                    cardholder_name: `${cardHolderInput.cardName}`,
-                    recollect_cvv: false
+        // Sets the button to disabled to not create duplicate payments
+        setOverlayClickCloseAddPaymentModal(false);
+        setDisabledOnSubmitAddPaymentModal(true);
+        // We grab the checkbox that has the ID payment-default
+        const checkbox = document.getElementById('payment-default');
+        // We check whether or not the checkbox is checked (which indicates whether or not they want to make the payment method the default payment method)
+        const check = checkbox.checked
+        // Fetch to Stripe to create a new payment method response
+        const newPaymentResponse = await stripe.createPaymentMethod({
+            type: 'card',
+            card: elements.getElement(CardNumberElement),
+            billing_details: {
+                name: `${billingInput.firstName}, ${billingInput.lastName}`,
+                address: {
+                    city: `${billingInput.city}`,
+                    country: `US`,
+                    line1: `${billingInput.lineOne}`,
+                    line2: `${billingInput.lineTwo}`,
+                    postal_code: `${billingInput.zipcode}`,
+                    state: `${billingInput.state}`
                 }
-            });
-            // Creating a payment method based on the stripe response back and fetching it to the backend server
-            const savePaymentMethodToCustomerResponse = await fetch(`${backend}/order/payment?checkout=false`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type' : 'application/json',
-                    'Authorization': loggedIn()
-                },
-                body: JSON.stringify({
-                    paymentMethodID: `${newPaymentResponse.paymentMethod.id}`,
-                    default: check
-                })
-            });
-            // Data regarding the payment methods that is received back from the request to the backend server when creating is finished to receive updated version of the data
-            const savePaymentMethodToCustomerData = await savePaymentMethodToCustomerResponse.json();
-            // Make sure that data we recieve back is ordered so that the default will be first followed by newest payment method added
-            defaultFirstPayment(savePaymentMethodToCustomerData.paymentMethods);
-            // Assigning the data we recieve back to the variable paymentData so we can use that variable which stores an array and map through it to display different PaymentContainer components
-            grabPaymentData(savePaymentMethodToCustomerData.paymentMethods);
-            // Clearing out the object used to store the information that users put in the input fields so it's blank when users want to create a new one
-            setCardHolderInput({});
-            // Clearing out the object used to store the information that users put in the input fields so it's blank when users want to create a new one
-            setBillingInput({});
-            // Close the modal
-            closeModalTwo();
-        };
+            },
+            metadata: {
+                cardholder_name: `${cardHolderInput.cardName}`,
+                recollect_cvv: false
+            }
+        });
+        // Creating a payment method based on the stripe response back and fetching it to the backend server
+        const savePaymentMethodToCustomerResponse = await fetch(`${backend}/order/payment?checkout=false`, {
+            method: 'POST',
+            headers: {
+                'Content-Type' : 'application/json',
+                'Authorization': loggedIn()
+            },
+            body: JSON.stringify({
+                paymentMethodID: `${newPaymentResponse.paymentMethod.id}`,
+                default: check
+            })
+        });
+        // Data regarding the payment methods that is received back from the request to the backend server when creating is finished to receive updated version of the data
+        const savePaymentMethodToCustomerData = await savePaymentMethodToCustomerResponse.json();
+        // Make sure that data we recieve back is ordered so that the default will be first followed by newest payment method added
+        defaultFirstPayment(savePaymentMethodToCustomerData.paymentMethods);
+        // Assigning the data we recieve back to the variable paymentData so we can use that variable which stores an array and map through it to display different PaymentContainer components
+        grabPaymentData(savePaymentMethodToCustomerData.paymentMethods);
+        // Clearing out the object used to store the information that users put in the input fields so it's blank when users want to create a new one
+        setCardHolderInput({});
+        // Clearing out the object used to store the information that users put in the input fields so it's blank when users want to create a new one
+        setBillingInput({});
+        // Close the modal
+        closeModalTwo();
     };
 
     // Function that creates PaymentContainer components based off the array set in paymentData
@@ -288,6 +273,7 @@ function UserProfilePayment ({ backend, paymentData, grabPaymentData, defaultFir
             </Modal>
             {/* Modal that is used to create the payment method billing address section*/}
             <Modal
+                shouldCloseOnOverlayClick={overlayClickCloseAddPaymentModal}
                 isOpen={modalTwoIsOpen}
                 onRequestClose={closeModalTwo}
                 style={customStyles}
@@ -361,15 +347,9 @@ function UserProfilePayment ({ backend, paymentData, grabPaymentData, defaultFir
                 maxLength="5"
                 onChange={handleBillingChange}/>
                 {/* Appears when the input for zipcode has anything other than numbers */}
-                {(/[a-zA-Z]/g.test(billingInput.zipcode) === true 
+                {(/^[0-9]+$/.test(billingInput.zipcode) !== true 
                 && billingInput.zipcode !== undefined) 
                 && <div className="warning">You must enter only numbers as your zip code</div>}
-                {/* Appears when the input for zipcode has not met the five digit count length */}
-                {addZipcodeWarning 
-                && <div className="warning">You must enter five digits as your zip code</div>}
-                {/* Appears when the input for state has not met the two digit count length */}
-                {addStateAbbreviationWarning 
-                && <div className="warning">Please enter your state as an abbreviation (ex. CA, NY)</div>}
                 {/* Button will be disabled if the input fields are not filled in (except for the address line two input field) */}
                 <button 
                 style={{marginTop: '1rem'}}
@@ -383,10 +363,12 @@ function UserProfilePayment ({ backend, paymentData, grabPaymentData, defaultFir
                 || (/^[a-z ,.'-]+$/i.test(billingInput.city) !== true 
                 || billingInput.city === undefined)
                 || (/^[a-z][a-z\s]*$/i.test(billingInput.state) !== true 
-                || billingInput.state === undefined)
-                || (/[a-zA-Z]/g.test(billingInput.zipcode) === true 
+                || billingInput.state === undefined
+                || billingInput.state.length !== 2)
+                || (/^[0-9]+$/.test(billingInput.zipcode) !== true 
                 || billingInput.zipcode === "")
-                || disabledOnSubmit
+                || billingInput.zipcode.length !== 5
+                || disabledOnSubmitAddPaymentModal
                 }>
                     Submit
                 </button>

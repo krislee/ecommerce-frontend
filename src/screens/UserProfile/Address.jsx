@@ -206,7 +206,7 @@ function UserProfileAddress ({ backend, addressData, defaultFirst, grabAddressDa
                 maxLength={"5"} 
                 pattern={"\d*"}/>
                 {/* Appears when the input for zipcode has anything other than numbers */}
-                {(/[a-zA-Z]/g.test(addressInput.zipcode) === true 
+                {(/^[0-9]+$/.test(addressInput.zipcode) !== true 
                 && addressInput.zipcode !== undefined) 
                 && <div className="warning">You must enter only numbers as your zip code</div>}
                 {/* Section where users can check off whether or not they want the address being created to become the default address */}
@@ -232,7 +232,7 @@ function UserProfileAddress ({ backend, addressData, defaultFirst, grabAddressDa
                 || (/^[a-z][a-z\s]*$/i.test(addressInput.state) !== true 
                 || addressInput.state === undefined)
                 || addressInput.state.length !== 2 
-                || (/[a-zA-Z]/g.test(addressInput.zipcode) === true 
+                || (/^[0-9]+$/.test(addressInput.zipcode) !== true 
                 || addressInput.zipcode === undefined
                 || addressInput.zipcode === "")
                 || addressInput.zipcode.length !== 5
