@@ -4,18 +4,26 @@ import Toast from 'react-bootstrap/Toast'
 
 export default function Settings({ backend, loggedIn, settingData, grabSettingData, grabTotalCartQuantity, grabRedirect }) {
    
-    // const [open, setOpen] = useState(false)
+    // EMAIL/PASSWORD SUBMISSION ERRORS 
     const [emailInvalid, setEmailInvalid] = useState(false)
     const [emailErrorMessage, setEmailErrorMessage] = useState(false)
     const [passwordInvalid, setPasswordInvalid] = useState(false)
     const [passwordErrorMessage, setPasswordErrorMessage] = useState(false)
 
-    const [showEmailInput, setShowEmailInput] = useState(false)
-    const [showPasswordInput, setShowPasswordInput] = useState(false)
-    const [emailInput, setEmailInput] = useState('')
-    const [passwordInput, setPasswordInput] = useState('')
+    // EMAIL/PASSWORD SUBMISSION SUCCESS
     const [resetPasswordSuccess, setResetPasswordSuccess] = useState(false)
     const [updateEmailSuccess, setUpdateEmailSuccess] = useState(false)
+
+    // INPUT VALUES 
+    const [emailInput, setEmailInput] = useState('')
+    const [passwordInput, setPasswordInput] = useState('')
+
+    // SHOW EMAIL/PASSWORD FORM
+    const [showEmailInput, setShowEmailInput] = useState(false)
+    const [showPasswordInput, setShowPasswordInput] = useState(false)
+
+    const [disableForm, setDisableForm] = useState(true)
+    
 
   
     const handleEmailUpdate = async(event) => {
@@ -58,6 +66,7 @@ export default function Settings({ backend, loggedIn, settingData, grabSettingDa
 
     const handleResetPassword = async(event) => {
         event.preventDefault()
+
         if(loggedIn()) {
             const resetPasswordResponse = await fetch(`${backend}/buyer/profile`, {
                 method: 'PUT',
@@ -129,8 +138,12 @@ export default function Settings({ backend, loggedIn, settingData, grabSettingDa
         }
     }
 
-    const handlePasswordInputChange = e => setPasswordInput(e.target.value)
+    const handlePasswordInputChange = e => {
+        setPasswordInput(e.target.value)
+    }
     const handleEmailInputChange = e => setEmailInput(e.target.value)
+
+
 
     return (
         <>
@@ -138,11 +151,11 @@ export default function Settings({ backend, loggedIn, settingData, grabSettingDa
                 <h5>Username: {settingData.username} </h5>
 
                 <h5>Password: *****</h5>
-                <button disabled = {showEmailInput} onClick={openChangePasswordForm}>Reset password</button>
+                <button disabled = {showEmailInput} onClick={openChangePasswordForm}>Change password</button>
                 {showPasswordInput && (
                     <form>
                         <input type="password" value={passwordInput} onChange={handlePasswordInputChange}/>
-                        <input type="submit" onClick={handleResetPassword}/>
+                        <input type="submit" disabled={!passwordInput.length} onClick={handleResetPassword}/>
                         <button onClick={closeChangePasswordForm}>Close</button>
                     </form>
                 )}
@@ -162,7 +175,7 @@ export default function Settings({ backend, loggedIn, settingData, grabSettingDa
                 {showEmailInput && (
                     <form>
                         <input type="email" value={emailInput} onChange={handleEmailInputChange}/>
-                        <input type="submit" onClick={handleEmailUpdate}/>
+                        <input type="submit" disabled={!emailInput} onClick={handleEmailUpdate}/>
                         <button onClick={closeChangeEmailForm}>Close</button>
                     </form>
                 )} 

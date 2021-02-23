@@ -3,7 +3,7 @@ import Modal from 'react-modal';
 import Input from '../../components/Input';
 import AddressContainer from '../../components/UserProfile/AddressContainer';
 
-function UserProfileAddress ({ backend, addressData, defaultFirst, grabAddressData, loggedIn, capitalize, capitalizeArray, grabTotalCartQuantity }) {
+function UserProfileAddress ({ backend, addressData, defaultFirst, grabAddressData, loggedIn, capitalize, capitalizeArray, grabTotalCartQuantity, grabRedirect }) {
 
     /* ------- STATES ------- */
 
