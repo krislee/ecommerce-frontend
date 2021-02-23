@@ -563,7 +563,7 @@ function PaymentContainer ({ backend, payment, defaultFirstPayment, grabPaymentD
         placeholder="Card Name"
         onChange={handleEditCardHolderNameChange}/>
         {/* Appears when the input for full name has anything other than letters */}
-        {(/^[a-z][a-z\s]*$/i.test(editCardHolderInput.cardName) !== true 
+        {(/^[a-z ,.'-]+$/i.test(editCardHolderInput.cardName) !== true 
         && editCardHolderInput.cardName !== "") 
         && <div className="warning">You must enter only letters as your name</div>}
         {/* Input regarding the expiration month of the editing payment method modal */}
@@ -624,7 +624,7 @@ function PaymentContainer ({ backend, payment, defaultFirstPayment, grabPaymentD
         style={{marginTop: "1rem"}}
         // Button will be disabled if the input fields are not filled in (except for the address line two input field)
         disabled={
-          (/^[a-z][a-z\s]*$/i.test(editCardHolderInput.cardName) !== true 
+          (/^[a-z ,.'-]+$/i.test(editCardHolderInput.cardName) !== true 
           || editCardHolderInput.cardName === "") 
           || ((editCardHolderInput.cardMonthExpDate > 12 
           || editCardHolderInput.cardMonthExpDate < 1)
@@ -654,7 +654,7 @@ function PaymentContainer ({ backend, payment, defaultFirstPayment, grabPaymentD
         type="text"
         onChange={handleEditBillingChange}/>
         {/* Appears when the input for first name has anything other than letters */}
-        {(/^[a-z][a-z\s]*$/i.test(editBillingInput.editBillingFirstName) !== true 
+        {(/^[a-z ,.'-]+$/i.test(editBillingInput.editBillingFirstName) !== true 
         && editBillingInput.editBillingFirstName !== "") 
         && <div className="warning">You must enter only letters as your first name</div>}
         {/* Input regarding the last name of the editing payment method billing address modal */}
@@ -665,7 +665,7 @@ function PaymentContainer ({ backend, payment, defaultFirstPayment, grabPaymentD
         type="text"
         onChange={handleEditBillingChange}/>
         {/* Appears when the input for last name has anything other than letters */}
-        {(/^[a-z][a-z\s]*$/i.test(editBillingInput.editBillingLastName) !== true 
+        {(/^[a-z ,.'-]+$/i.test(editBillingInput.editBillingLastName) !== true 
         && editBillingInput.editBillingLastName !== "") 
         && <div className="warning">You must enter only letters as your last name</div>}
         {/* Input regarding the first address line of the editing payment method billing address modal */}
@@ -691,7 +691,7 @@ function PaymentContainer ({ backend, payment, defaultFirstPayment, grabPaymentD
         type="text"
         onChange={handleEditBillingChange}/>
         {/* Appears when the input for city has anything other than letters */}
-        {(/^[a-z][a-z\s]*$/i.test(editBillingInput.editBillingCity) !== true 
+        {(/^[a-z ,.'-]+$/i.test(editBillingInput.editBillingCity) !== true 
         && editBillingInput.editBillingCity !== "") 
         && <div className="warning">You must enter only letters as your city</div>}
         {/* Input regarding the state of the editing payment method billing address modal */}  
@@ -730,12 +730,12 @@ function PaymentContainer ({ backend, payment, defaultFirstPayment, grabPaymentD
         form="form"
         style={{marginTop: '1rem'}}
         onClick={handleEditPaymentSubmit}
-        disabled={(/^[a-z][a-z\s]*$/i.test(editBillingInput.editBillingFirstName) !== true 
+        disabled={(/^[a-z ,.'-]+$/i.test(editBillingInput.editBillingFirstName) !== true 
         || editBillingInput.editBillingFirstName === "") 
-        || (/^[a-z][a-z\s]*$/i.test(editBillingInput.editBillingLastName) !== true 
+        || (/^[a-z ,.'-]+$/i.test(editBillingInput.editBillingLastName) !== true 
         || editBillingInput.editBillingLastName === "") 
         || editBillingInput.editBillingFirstAddressLine === "" 
-        || (/^[a-z][a-z\s]*$/i.test(editBillingInput.editBillingCity) !== true 
+        || (/^[a-z ,.'-]+$/i.test(editBillingInput.editBillingCity) !== true 
         || editBillingInput.editBillingCity === "") 
         || (/^[a-z][a-z\s]*$/i.test(editBillingInput.editBillingState) !== true 
         || editBillingInput.editBillingState === "") 

@@ -183,6 +183,16 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
     const [capitalizedName, capitalizedFirstAddressLine, capitalizedSecondAddressLine, capitalizedCity] = [[], [], [], []];
     // Capitalize the full name even if users enter it lowercased
     const name = capitalizeArray(address.Name.replace(/,/g, '').split(' '), capitalizedName);
+    // Function that will shorten the length of the full name if the name is too long to fit in the container without interfering with the styling
+    const shortenName = (name) => {
+        // If the name is longer than 25 characters, then we split it into an array and splice it to only bring back the first 25 characters and rejoin.
+        if (name.length > 25) {
+            return `${name.split("").splice(0, 25).join("")}...`;
+        } else {
+            // If name is not above 25 characters, then we return the name
+            return name;
+        };
+    };
     const newAddress = address.Address.split(',')
     // Capitalize the address line one even if users enter it lowercased
     const firstAddressLine = capitalizeArray(newAddress[0].split(" "), capitalizedFirstAddressLine);
@@ -213,7 +223,7 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
                 <>
                 <div key={index} className="one-address-container">
                     {/* We find the person's name on top of the card */}
-                        <div className="person-name">{name}</div>
+                        <div className="person-name">{shortenName(name)}</div>
                         {/* Next we put the address line one */}
                         <div className="address">
                             {/* We wrap it around curly braces so that the information that renders is based off of whether or not there is a second line to the address */}
@@ -255,7 +265,7 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
                 type={"text"} 
                 onChange={handleEditAddressChange}/>
                 {/* Appears when the input for first name has anything other than letters */}
-                {(/^[a-z][a-z\s]*$/i.test(editAddress.firstName) !== true 
+                {(/^[a-z ,.'-]+$/i.test(editAddress.firstName) !== true 
                 && editAddress.firstName !== "") 
                 && <div className="warning">You must enter only letters as your first name</div>}
                 {/* Input regarding the last name of the editing address modal */}
@@ -266,7 +276,7 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
                 type={"text"} 
                 onChange={handleEditAddressChange}/>
                 {/* Appears when the input for last name has anything other than letters */}
-                {(/^[a-z][a-z\s]*$/i.test(editAddress.lastName) !== true 
+                {(/^[a-z ,.'-]+$/i.test(editAddress.lastName) !== true 
                 && editAddress.lastName !== "") 
                 && <div className="warning">You must enter only letters as your last name</div>}
                 {/* Input regarding the first address line of the editing address modal */}
@@ -294,7 +304,7 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
                 type={"text"} 
                 onChange={handleEditAddressChange}/>
                 {/* Appears when the input for city has anything other than letters */}
-                {(/^[a-z][a-z\s]*$/i.test(editAddress.city) !== true 
+                {(/^[a-z ,.'-]+$/i.test(editAddress.city) !== true 
                 && editAddress.city !== "") 
                 && <div className="warning">You must enter only letters as your city</div>}
                 {/* Input regarding the state of the editing address modal */}
@@ -337,12 +347,12 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
                 type="submit"
                 value="Submit"
                 disabled={
-                (/^[a-z][a-z\s]*$/i.test(editAddress.firstName) !== true 
+                (/^[a-z ,.'-]+$/i.test(editAddress.firstName) !== true 
                 || editAddress.firstName === "")
-                || (/^[a-z][a-z\s]*$/i.test(editAddress.lastName) !== true 
+                || (/^[a-z ,.'-]+$/i.test(editAddress.lastName) !== true 
                 || editAddress.lastName === "")
                 || editAddress.addressLineOne === ""
-                || (/^[a-z][a-z\s]*$/i.test(editAddress.city) !== true 
+                || (/^[a-z ,.'-]+$/i.test(editAddress.city) !== true 
                 || editAddress.city === "")
                 || (/^[a-z][a-z\s]*$/i.test(editAddress.state) !== true 
                 || editAddress.state === undefined

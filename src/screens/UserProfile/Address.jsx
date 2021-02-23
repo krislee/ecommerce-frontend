@@ -142,7 +142,7 @@ function UserProfileAddress ({ backend, addressData, defaultFirst, grabAddressDa
                 type={"text"}
                 onChange={handleAddressChange}/>
                 {/* Appears when the input for first name has anything other than letters */}
-                {(/^[a-z][a-z\s]*$/i.test(addressInput.firstName) !== true 
+                {(/^[a-z ,.'-]+$/i.test(addressInput.firstName) !== true 
                 && addressInput.firstName !== "") 
                 && <div className="warning">You must enter only letters as your first name</div>}
                 {/* Input regarding the last name of the adding address modal */}
@@ -153,7 +153,7 @@ function UserProfileAddress ({ backend, addressData, defaultFirst, grabAddressDa
                 type={"text"}
                 onChange={handleAddressChange}/>
                 {/* Appears when the input for last name has anything other than letters */}
-                {(/^[a-z][a-z\s]*$/i.test(addressInput.lastName) !== true 
+                {(/^[a-z ,.'-]+$/i.test(addressInput.lastName) !== true 
                 && addressInput.lastName !== "") 
                 && <div className="warning">You must enter only letters as your last name</div>}
                 {/* Input regarding the first address line of the adding address modal */}
@@ -181,7 +181,7 @@ function UserProfileAddress ({ backend, addressData, defaultFirst, grabAddressDa
                 type={"text"}
                 onChange={handleAddressChange}/>
                 {/* Appears when the input for city has anything other than letters */}
-                {(/^[a-z][a-z\s]*$/i.test(addressInput.city) !== true 
+                {(/^[a-z ,.'-]+$/i.test(addressInput.city) !== true 
                 && addressInput.city !== "") 
                 && <div className="warning">You must enter only letters as your city</div>}
                 {/* Input regarding the state of the adding address modal */}
@@ -221,13 +221,13 @@ function UserProfileAddress ({ backend, addressData, defaultFirst, grabAddressDa
                 <button 
                 onClick={handleSubmitAddress} 
                 disabled={
-                (/^[a-z][a-z\s]*$/i.test(addressInput.firstName) !== true 
+                (/^[a-z ,.'-]+$/i.test(addressInput.firstName) !== true 
                 || addressInput.firstName === undefined)
-                || (/^[a-z][a-z\s]*$/i.test(addressInput.lastName) !== true 
+                || (/^[a-z ,.'-]+$/i.test(addressInput.lastName) !== true 
                 || addressInput.lastName === undefined)
                 || addressInput.addressLineOne === undefined
                 || addressInput.addressLineOne === ""
-                || (/^[a-z][a-z\s]*$/i.test(addressInput.city) !== true 
+                || (/^[a-z ,.'-]+$/i.test(addressInput.city) !== true 
                 || addressInput.city === undefined)
                 || (/^[a-z][a-z\s]*$/i.test(addressInput.state) !== true 
                 || addressInput.state === undefined)

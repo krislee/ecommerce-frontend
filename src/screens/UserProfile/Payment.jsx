@@ -250,7 +250,7 @@ function UserProfilePayment ({ backend, paymentData, grabPaymentData, defaultFir
                 placeholder="Card Name" 
                 onChange={handleCardHolderNameChange}/>
                 {/* Appears when the input for full name has anything other than letters */}
-                {(/^[a-z][a-z\s]*$/i.test(cardHolderInput.cardName) !== true 
+                {(/^[a-z ,.'-]+$/i.test(cardHolderInput.cardName) !== true 
                 && cardHolderInput.cardName !== "")
                 && <div className="warning">You must enter only letters as your name</div>}
                 {/* Imported from Stripe API, this will generate the input fields for the card number, expiration date and zipcode */}
@@ -277,7 +277,7 @@ function UserProfilePayment ({ backend, paymentData, grabPaymentData, defaultFir
                 || cardCVCDisabled
                 || cardNumberDisabled
                 || cardExpirationDisabled
-                || ((/^[a-z][a-z\s]*$/i.test(cardHolderInput.cardName) !== true) 
+                || ((/^[a-z ,.'-]+$/i.test(cardHolderInput.cardName) !== true) 
                 || cardHolderInput.cardName === ""
                 || cardHolderInput.cardName === undefined)
                 }>
@@ -303,7 +303,7 @@ function UserProfilePayment ({ backend, paymentData, grabPaymentData, defaultFir
                 placeholder="First Name" 
                 onChange={handleBillingChange}/>
                 {/* Appears when the input for first name has anything other than letters */}
-                {(/^[a-z][a-z\s]*$/i.test(billingInput.firstName) !== true 
+                {(/^[a-z ,.'-]+$/i.test(billingInput.firstName) !== true 
                 && billingInput.firstName !== "") 
                 && <div className="warning">You must enter only letters as your first name</div>}
                 {/* Input regarding the last name of the creating payment method billing address modal */}
@@ -313,7 +313,7 @@ function UserProfilePayment ({ backend, paymentData, grabPaymentData, defaultFir
                 placeholder="Last Name" 
                 onChange={handleBillingChange}/>
                 {/* Appears when the input for last name has anything other than letters */}
-                {(/^[a-z][a-z\s]*$/i.test(billingInput.lastName) !== true 
+                {(/^[a-z ,.'-]+$/i.test(billingInput.lastName) !== true 
                 && billingInput.lastName !== "") 
                 && <div className="warning">You must enter only letters as your last name</div>}
                 {/* Input regarding the first address line of the creating payment method billing address modal */}
@@ -338,7 +338,7 @@ function UserProfilePayment ({ backend, paymentData, grabPaymentData, defaultFir
                 placeholder="City" 
                 onChange={handleBillingChange}/>
                 {/* Appears when the input for city has anything other than letters */}
-                {(/^[a-z][a-z\s]*$/i.test(billingInput.city) !== true 
+                {(/^[a-z ,.'-]+$/i.test(billingInput.city) !== true 
                 && billingInput.city !== "") 
                 && <div className="warning">You must enter only letters as your city</div>}
                 {/* Input regarding the state of the creating payment method billing address modal */}
@@ -375,12 +375,12 @@ function UserProfilePayment ({ backend, paymentData, grabPaymentData, defaultFir
                 style={{marginTop: '1rem'}}
                 onClick={handleCreatePayment} 
                 disabled={
-                (/^[a-z][a-z\s]*$/i.test(billingInput.firstName) !== true 
+                (/^[a-z ,.'-]+$/i.test(billingInput.firstName) !== true 
                 || billingInput.firstName === undefined)
-                || (/^[a-z][a-z\s]*$/i.test(billingInput.lastName) !== true 
+                || (/^[a-z ,.'-]+$/i.test(billingInput.lastName) !== true 
                 || billingInput.lastName === undefined)
                 || billingInput.lineOne === undefined
-                || (/^[a-z][a-z\s]*$/i.test(billingInput.city) !== true 
+                || (/^[a-z ,.'-]+$/i.test(billingInput.city) !== true 
                 || billingInput.city === undefined)
                 || (/^[a-z][a-z\s]*$/i.test(billingInput.state) !== true 
                 || billingInput.state === undefined)
