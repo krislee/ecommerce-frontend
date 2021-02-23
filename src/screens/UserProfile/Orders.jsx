@@ -54,7 +54,8 @@ export default function Orders ({ backend, loggedIn, orderData, grabOrderData, o
                     {index === 0 && <h3>{new Date((orderData[0].OrderDate)).toDateString()}</h3>}
                     {index !== 0 && new Date(order.OrderDate).toDateString() !== new Date(orderData[index-1].OrderDate).toDateString() && <h3>{new Date(order.OrderDate).toDateString()}</h3>}
                     <Link to={{
-                        pathname: `/show-order?orderNumber=${order.OrderNumber}`,
+                        pathname: "/order",
+                        search: `orderNumber=${order.OrderNumber}`,
                     }}>
                         <Card>
                             <CardHeader

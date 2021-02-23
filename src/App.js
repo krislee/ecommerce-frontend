@@ -14,13 +14,15 @@ import CartPage from './screens/Cart/CartPage';
 import Checkout from './screens/Checkout/CheckoutPage'
 import UserProfile from './screens/UserProfile/UserProfile'
 import OrderComplete from './screens/Checkout/OrderComplete'
+import IndividualOrder from './screens/UserProfile/IndividualOrder';
+import NoMatchPage from './screens/NoMatch'
 // STRIPE
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
 import 'bootstrap/dist/css/bootstrap.min.css';
 // Font for Roboto
 import 'fontsource-roboto';
-import IndividualOrder from './screens/UserProfile/IndividualOrder';
+
 
 function App() {
 
@@ -91,12 +93,12 @@ function App() {
       }
     };
     getCartItems();
-},[])
+},[totalCartQuantity])
 
   return (
     <div className="App">
       <BrowserRouter>
-      <NavBar totalCartQuantity={totalCartQuantity} grabTotalCartQuantity={grabTotalCartQuantity} />
+        <NavBar totalCartQuantity={totalCartQuantity} grabTotalCartQuantity={grabTotalCartQuantity} />
         <Switch>
           {/* CHECKOUT */}
           <Route path="/checkout">
@@ -128,7 +130,7 @@ function App() {
               />
             </Elements>
           </Route>
-          <Route path="/show-order">
+          <Route path="/order">
             <IndividualOrder backend={backend} loggedIn={loggedIn} orderID={orderID} grabTotalCartQuantity={grabTotalCartQuantity} />
           </Route>
           {/* SHOW ALL ITEMS/INDIVIDUAL ITEM */}
@@ -146,6 +148,8 @@ function App() {
           <Route path="">
             <Homepage backend={backend} loggedIn={loggedIn} totalCartQuantity={totalCartQuantity} grabTotalCartQuantity={grabTotalCartQuantity}/>
           </Route>
+
+          <Route component={NoMatchPage} />
         </Switch>
       </BrowserRouter>
       

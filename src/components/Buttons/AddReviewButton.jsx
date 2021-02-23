@@ -1,26 +1,36 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Modal from 'react-modal';
 import Toast from 'react-bootstrap/Toast'
 import '../../styles/Button.css'
 import ReviewForm from '../Reviews/ReviewForm'
+import { Redirect } from 'react-router-dom';
 
 export default function AddReviewButton ({ backend, loggedIn, electronicID, grabReview }) {
 
     const [showReviewForm, setShowReviewForm] = useState(false)
+    const [disableSubmit, setDisableSubmit] = useState(false)
+
+    // ERROR STATES WHEN CREATING REVIEWS
     const [reviewError, setReviewError] = useState(false)
     const [unverifiedReviewError, setUnverifiedReviewError] = useState(false)
     const [loginToReview, setLoginToReview] = useState(false)
+
+    // RATING AND COMMENTS STATES
     const [ratingValue, setRatingValue] = useState(5);
     const [ratingHover, setRatingHover] = useState(-1);
     const [commentsValue, setCommentsValue] = useState("")
+
 
     const grabRatingValue = (rating) => setRatingValue(rating)
     const grabRatingHover =(rating) => setRatingHover(rating)
 
     const handleCommentsChange = (event) => setCommentsValue(event.target.value)
 
+
     const submitReview = async(event) => {
         event.preventDefault()
+
+        setDisableSubmit(true) // disable button after clicking submit once (we do not want to submit more than once)
 
         if(loggedIn()) {
             const submitReviewResponse = await fetch(`${backend}/buyer/electronic/review/${electronicID}`, {
@@ -57,6 +67,7 @@ export default function AddReviewButton ({ backend, loggedIn, electronicID, grab
         setShowReviewForm(false) // close the modal
         grabRatingValue(5) // reset rating to be 5 stars
         setCommentsValue("") //clear comments
+        setDisableSubmit(false)
     }
 
     return(
@@ -66,7 +77,7 @@ export default function AddReviewButton ({ backend, loggedIn, electronicID, grab
         <Modal isOpen={showReviewForm} onRequestClose={closeReviewModal} ariaHideApp={false} contentLabel="Create Review">
             <form onSubmit={submitReview}>
                 <ReviewForm ratingValue={ratingValue} grabRatingValue={grabRatingValue} ratingHover={ratingHover} grabRatingHover={grabRatingHover} commentsValue={commentsValue} handleCommentsChange={handleCommentsChange}/>
-                <button>Submit</button>
+                <button disabled={ !commentsValue || disableSubmit }>Submit</button>
                 <button type="button" onClick={closeReviewModal}>Close</button>
             </form>
         </Modal>
@@ -82,7 +93,7 @@ export default function AddReviewButton ({ backend, loggedIn, electronicID, grab
         <Toast onClose={() => setLoginToReview(false)} show={loginToReview} delay={3000} autohide>
             <Toast.Body>Please login to review.</Toast.Body>
         </Toast>
-      
+        
         </>
     )
 }

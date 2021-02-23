@@ -30,6 +30,8 @@ function ItemPage ({ loggedIn, url, backend, totalCartQuantity, grabTotalCartQua
     const [upToTwelve, setUpToTwelve] = useState(false);
     const [notANumber, setNotANumber] = useState(false);
     const [negativeWarning, setNegativeWarning] = useState(false);
+    
+    const [prevLoggedIn, setPrevLoggedIn] = useState(localStorage.getItem('token')) // when we first load the item page check if user is logged in, storing the token value or null value to prevLoggedIn state, which then passes to AddCartButton; if user then clears the local storage once the item page is loaded, we will not be able to add an item (view at AddCartButton component)
 
     const grabReview = (review) => setReview(review)
 
@@ -39,6 +41,8 @@ function ItemPage ({ loggedIn, url, backend, totalCartQuantity, grabTotalCartQua
         
         const abortController = new AbortController()
         const signal = abortController.signal
+
+        if(!loggedIn()) grabTotalCartQuantity(0) // If user clears local storage, and then clicks on the item from the individual order receipt, we need to update the shopping badge icon in the nav bar
 
         // If the url to the backend is not empty because users directly went to the item page going through the homepage first
         if (url !== '') {
@@ -94,26 +98,32 @@ function ItemPage ({ loggedIn, url, backend, totalCartQuantity, grabTotalCartQua
         }
     }, [review])
 
-    const handleChangeQuantity = e => {
-        if (e.target.value.includes('-')) {
-            setNegativeWarning(true);
-        } else {
-            setNegativeWarning(false);
-            if (e.target.value.length > 2) {
-                setQuantity(e.target.value.slice(0, 2))
-            } else {
-                setQuantity(e.target.value)
-            }
-        }
-    };
+    // const handleChangeQuantity = e => {
+    //     if (e.target.value.includes('-')) {
+    //         setNegativeWarning(true);
+    //     } else {
+    //         setNegativeWarning(false);
+    //         if (e.target.value.length > 2) {
+    //             setQuantity(e.target.value.slice(0, 2))
+    //         } else {
+    //             setQuantity(e.target.value)
+    //         }
+    //     }
+    // };
 
-    const grabHandleUpToTwelve = (bool) => {
-        setUpToTwelve(bool);
+    // const grabHandleUpToTwelve = (bool) => {
+    //     setUpToTwelve(bool);
+    // }
+
+    // const grabNotANumber = (bool) => {
+    //     setNotANumber(bool)
+    // };
+
+    const handleAddItemQuantity = (event) => {
+        const { value } = event.target
+        console.log(value)
+        setQuantity(value)
     }
-
-    const grabNotANumber = (bool) => {
-        setNotANumber(bool)
-    };
 
     return (
         // Name, price, description, add to cart
@@ -128,18 +138,32 @@ function ItemPage ({ loggedIn, url, backend, totalCartQuantity, grabTotalCartQua
                         <div>
                             <div className="name">{itemInfo.Name}</div>
                             <div className={classes.root}>
-                                <Rating name="size-small" value={avgRating} size="small" precision={0.25} readOnly/>
+                                <Rating name="size-small" value={avgRating} size="small" precision={0.1} readOnly/>
                             </div>
                             <div className="price">Price: ${itemInfo.Price}</div>
                             <div className="description">Description: {itemInfo.Description}</div>
                         </div>
                         <div className="input-info">
                             <div className="quantity-tag">Quantity</div>
-                            <input className="quantity-input" type="number" min="1" max="12" value={quantity} onChange={handleChangeQuantity} />
+                            <select value={quantity} onChange={handleAddItemQuantity}>
+                                <option value={1}>01</option>
+                                <option value={2}>02</option>
+                                <option value={3}>03</option>
+                                <option value={4}>04</option>
+                                <option value={5}>05</option>
+                                <option value={6}>06</option>
+                                <option value={7}>07</option>
+                                <option value={8}>08</option>
+                                <option value={9}>09</option>
+                                <option value={10}>10</option>
+                            </select>
+                            {/* <input className="quantity-input" type="number" min="1" max="12" value={quantity} onChange={handleChangeQuantity} />
                             {notANumber && <div className="warning">You input must be a number</div>}
                             {negativeWarning && <div className="warning">You can't have a negative amount of items</div>}
-                            {upToTwelve && <div className="warning">You can only buy twelve items at once</div>}
-                            <AddCartButton backend={backend} loggedIn={loggedIn} id={itemInfo._id} quantity={quantity} name={'Add To Cart'} grabTotalCartQuantity={grabTotalCartQuantity} grabHandleUpToTwelve={grabHandleUpToTwelve} grabNotANumber={grabNotANumber}/>
+                            {upToTwelve && <div className="warning">You can only buy twelve items at once</div>} */}
+                            <AddCartButton backend={backend} loggedIn={loggedIn} id={itemInfo._id} quantity={quantity} name={'Add To Cart'} grabTotalCartQuantity={grabTotalCartQuantity}  prevLoggedIn={prevLoggedIn} 
+                            // grabHandleUpToTwelve={grabHandleUpToTwelve} grabNotANumber={grabNotANumber}
+                            />
                             <AddReviewButton backend={backend} loggedIn={loggedIn} electronicID={itemInfo._id} grabReview={grabReview} />
                         </div>
                     </div>

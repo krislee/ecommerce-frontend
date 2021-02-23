@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {Redirect, useLocation, Link} from 'react-router-dom';
+import {Redirect, useLocation, useParams, Link} from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -30,14 +30,15 @@ export default function IndividualOrder({ backend, loggedIn, grabTotalCartQuanti
     const [orderShippingName, setOrderShippingName] = useState([])
     const [redirect, setRedirect] = useState(false)
 
+    // const {orderNumber} = useParams()
+    const queryParams = new URLSearchParams(location.search)
+    const orderID = queryParams.get('orderNumber')
+
     useEffect(() => {
 
         const abortController = new AbortController()
         const signal = abortController.signal
-
-        const queryParams = new URLSearchParams(location.search)
-        const orderID = queryParams.get('orderNumber')
-
+        
         const getOrder = async() => {
             if(loggedIn()) {
                 const orderResponse = await fetch(`${backend}/complete/list/orders/${orderID}`, {
@@ -60,8 +61,9 @@ export default function IndividualOrder({ backend, loggedIn, grabTotalCartQuanti
             } 
             else {
                 console.log(62)
-                grabTotalCartQuantity(0)
-                setOrderLoading(false)
+                // If user has the URL link for the individual order, and tries to go to it directly, then user will be redirected to homepage and nav bar shopping badge icon will be updated
+                grabTotalCartQuantity(0) // update shopping badge icon
+                setOrderLoading(false) // need to set it to false in order for the condition, else if(redirect), to be hit
                 return setRedirect(true)
             }
         }

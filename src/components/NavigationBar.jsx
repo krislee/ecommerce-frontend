@@ -8,6 +8,7 @@ import { Dropdown } from 'react-bootstrap'
 import Badge from '@material-ui/core/Badge';
 import { withStyles } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
+import { v4 as uuidv4 } from 'uuid';
 
 const StyledBadge = withStyles((theme) => ({
   badge: {
@@ -20,23 +21,28 @@ const StyledBadge = withStyles((theme) => ({
 
 
 function NavBar ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuantity }) {
-    // const [redirect, setRedirect] = useState(false)
+    const [redirect, setRedirect] = useState(false)
     const location = useLocation()
-
+    console.log(location)
     const handleLogout = () => {
         localStorage.clear();
-        return grabTotalCartQuantity(0)
+        grabTotalCartQuantity(0)
+        // grabRedirect(true)
     }
 
 
     // if(redirect) {
-    //     return <Redirect to='/'></Redirect>
+    //     return <Redirect to='/login/buyer'></Redirect>
     // } 
 
     return (
         <div className="navbar">
-            <Link to="/">
-                <div className="home-container">
+            <Link to={{
+                pathname: "/",
+                key: uuidv4(),
+                state: {prevPath: location.pathname }
+            }}>
+                <div className="home-container" >
                     <FontAwesomeIcon className="home" icon={faHome}/>
                 </div>
             </Link>
@@ -44,6 +50,7 @@ function NavBar ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuantity }
             {/*  reload the cart page in case user clears local storage and then re-clicks on the cart icon */}
             <Link to={{
                 pathname: "/cart",
+                key: uuidv4(),
                 state: { prevPath: location.pathname }
             }} > 
                 <IconButton aria-label="cart">

@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import ReviewForm from '../../components/Reviews/ReviewForm'
 import Modal from 'react-modal';
 import Rating from '@material-ui/lab/Rating';
 import { makeStyles } from '@material-ui/core/styles';
-import { Pagination, PaginationItem } from '@material-ui/lab';
+import { Pagination } from '@material-ui/lab';
+
 
 const paginationUseStyles = makeStyles((theme) => ({
     root: {
@@ -172,7 +173,12 @@ export default function UserReviews({ backend, loggedIn, reviewData, grabReviewD
                 <>
                 {reviewData.map((review, index) => { return (
                     <div className={classes.root} key={index} >
-                        <p><b>{review.ElectronicItem[0].Brand} {review.ElectronicItem[0].Name}</b></p>
+                        <Link to={{
+                            pathname:`/item/${review.ElectronicItem[0].Name}`,
+                            search: `id=${review.ElectronicItem[0]._id}`
+                        }}>
+                            <p><b>{review.ElectronicItem[0].Brand} {review.ElectronicItem[0].Name}</b></p>
+                        </Link>
                         <Rating name="size-small" value={review.Rating} size="small" readOnly/>
                         <p>{review.Comment}</p>
                         <button id={review._id} onClick={openUpdateReviewModal}>Update</button>
@@ -187,7 +193,7 @@ export default function UserReviews({ backend, loggedIn, reviewData, grabReviewD
                         <form onSubmit={handleUpdateReview}>
                             <p><b>{brandName} {itemName} </b></p>
                             <ReviewForm ratingValue={ratingValue} grabRatingValue={grabRatingValue} ratingHover={ratingHover} grabRatingHover={grabRatingHover} commentsValue={commentsValue} handleCommentsChange={handleCommentsChange} />
-                            <button>Submit</button>
+                            <button disabled={!commentsValue}>Submit</button>
                             <button onClick={closeEditReviewModal}>Cancel</button>
                         </form>
                     </Modal>

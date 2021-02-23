@@ -6,7 +6,7 @@ import Footer from '../../components/Footer'
 import CartItemPage from './CartItemPage'
 import axios from 'axios';
 
-function CartPage ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuantity }) {
+function CartPage ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuantity } ) {
 
     const [cartLoading, setCartLoading] = useState(true)
     const [items, setItems] = useState([]);
@@ -16,7 +16,7 @@ function CartPage ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuantity
     const grabItems = (items) => setItems(items)
     const grabTotalPrice = (totalPrice) => setTotalPrice(totalPrice)
 
-    const location = useLocation()
+    // const location = useLocation()
 
     useEffect(() => {
         const abortController = new AbortController()
@@ -24,7 +24,7 @@ function CartPage ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuantity
 
         async function getCartItems() {
             if(loggedIn()){
-                console.log(location.prevPath)
+                // console.log(location.state.prevPath)
                 const cartItemsResponse = await fetch(`${backend}/buyer/cart`, {
                     method: 'GET',
                     headers: {
@@ -47,7 +47,7 @@ function CartPage ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuantity
                 }
                 setCartLoading(false)
             } else {
-                console.log(location.prevPath)
+                // console.log(location.state.prevPath)
                 const cartItemsResponse = await fetch(`${backend}/buyer/cart`, {
                     method: 'GET',
                     headers: { 'Content-Type': 'application/json' },
@@ -77,7 +77,7 @@ function CartPage ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuantity
             abortController.abort()
         }
         
-    },[loggedIn(), location.prevPath])
+    },[loggedIn(), totalCartQuantity])
 
    
 

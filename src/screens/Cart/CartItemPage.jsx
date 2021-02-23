@@ -6,21 +6,29 @@ import '../../styles/CartPage.css'
 export default function CartItemPage ({ backend, loggedIn, id, name, quantity, totalPrice, grabItems, grabTotalPrice, grabTotalCartQuantity}) {
     const [cartQuantity, setCartQuantity] = useState(quantity)
     const [prevLoggedIn, setPrevLoggedIn] = useState('')
+    const [itemID, setItemID] = useState('')
 
     useEffect(() => {
         setPrevLoggedIn(loggedIn())
         setCartQuantity(quantity)
-    }, [quantity])
+    }, [quantity]) 
 
-    const handleQuantity = (event) => {
-        setCartQuantity(event.target.value)
+    const handleUpdateItemQuantity = async (event) => {
+        const { value, id } = event.target
+        setCartQuantity(value)
+        setItemID(id)
     }
 
-    const handleUpdateCartItem = async(event) => {
+    useEffect(() => {
+        if(itemID) handleUpdateCartItem(itemID)
+    }, [itemID])
+
+    const handleUpdateCartItem = async(itemID) => {
         if(loggedIn()) {
-            console.log(event.target.id)
+            // console.log(event.target.id)
             console.log(cartQuantity)
-            const updateCartResponse = await fetch(`${backend}/buyer/electronic/cart/${event.target.id}`, {
+            console.log(itemID)
+            const updateCartResponse = await fetch(`${backend}/buyer/electronic/cart/${itemID}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -38,7 +46,7 @@ export default function CartItemPage ({ backend, loggedIn, id, name, quantity, t
         } else {
             if(prevLoggedIn) return grabTotalCartQuantity(0)
             console.log("updating guest")
-            const updateCartResponse = await fetch(`${backend}/buyer/electronic/cart/${event.target.id}`, {
+            const updateCartResponse = await fetch(`${backend}/buyer/electronic/cart/${itemID}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
@@ -89,7 +97,19 @@ export default function CartItemPage ({ backend, loggedIn, id, name, quantity, t
     return (
         <div>
             <p>{name}</p>
-            <input type="number" min="1" value={cartQuantity} onChange={handleQuantity}/>
+            {/* <input type="number" min="1" value={cartQuantity} onChange={handleQuantity}/> */}
+            <select id={id} value={cartQuantity} onChange={handleUpdateItemQuantity}>
+                <option value={1}>01</option>
+                <option value={2}>02</option>
+                <option value={3}>03</option>
+                <option value={4}>04</option>
+                <option value={5}>05</option>
+                <option value={6}>06</option>
+                <option value={7}>07</option>
+                <option value={8}>08</option>
+                <option value={9}>09</option>
+                <option value={10}>10</option>
+            </select>
             <p>${totalPrice}</p>
             <button id={id} onClick={handleUpdateCartItem}>Update</button>
             <button id={id} onClick={handleDeleteCartItem}>Delete</button>

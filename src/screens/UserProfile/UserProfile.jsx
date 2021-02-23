@@ -9,7 +9,6 @@ import Orders from './Orders'
 import UserReviews from './UserReviews'
 import '../../styles/UserProfile/UserProfile.css';
 
-
 function UserProfile ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuantity }) {
     const history = useHistory()
     const location = useLocation() // gets the full current URL
@@ -36,6 +35,7 @@ function UserProfile ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuant
     const [reviewData, setReviewData] = useState([])
     const [reviewsTotal, setReviewsTotal] = useState(null)
     const [reviewsPage, setReviewsPage] = useState('')
+    const [redirectToReview, setRedirectToReview] = useState(false)
 
     const [redirect, setRedirect] = useState(false)
     const [footerLoading, setFooterLoading] = useState(true)
@@ -147,7 +147,7 @@ function UserProfile ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuant
             }
             setFooterLoading(false)
         }
-
+        
         if(loggedIn()) {
             fetchPaymentData();
             fetchAddressData();
