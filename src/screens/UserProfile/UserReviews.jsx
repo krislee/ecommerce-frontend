@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function UserReviews({ backend, loggedIn, reviewData, grabReviewData, reviewsTotal, reviewLoading, reviewsPage, grabReviewsPage, grabTotalCartQuantity }) {
+export default function UserReviews({ backend, loggedIn, reviewData, grabReviewData, reviewsTotal, reviewLoading, reviewsPage, grabReviewsPage, grabTotalCartQuantity, grabRedirect }) {
 
     const classes = useStyles();
     const paginationClass = paginationUseStyles()
@@ -69,13 +69,17 @@ export default function UserReviews({ backend, loggedIn, reviewData, grabReviewD
             setEditReviewForm(true) // open the modal
         } else {
             console.log(71)
-            return grabTotalCartQuantity(0)
+            grabTotalCartQuantity(0)
+            grabRedirect(true)
         }
     }
 
     const closeEditReviewModal = () => {
         setEditReviewForm(false)
-        if(!loggedIn()) return grabTotalCartQuantity(0)
+        if(!loggedIn()) {
+            grabTotalCartQuantity(0)
+            grabRedirect(true)
+        }
     }
 
     const handleUpdateReview = async(event) => {
@@ -97,7 +101,8 @@ export default function UserReviews({ backend, loggedIn, reviewData, grabReviewD
             grabReviewData(updateReviewData.allReviews.reverse()) // update the reviewData state with the new list of reviews that includes the updated review
             setEditReviewForm(false) // close modal
         } else {
-            return grabTotalCartQuantity(0)
+            grabTotalCartQuantity(0)
+            grabRedirect(true)
         }
     }
 
@@ -115,13 +120,26 @@ export default function UserReviews({ backend, loggedIn, reviewData, grabReviewD
             grabReviewData(deletedReviewData.allReviews.reverse()) // update the reviewData state with the new list of reviews with the deleted review gone
             setDeleteReviewForm(false) // close modal
         } else {
-            return grabTotalCartQuantity(0)
+            grabTotalCartQuantity(0)
+            grabRedirect(true)
         }
     }
 
+    const openDeleteReviewModal = (event) => {
+        if(loggedIn()) {
+            setReviewID(event.target.id) // update reviewID state so that we can use the id for fetch to server when we click Yes button
+            setDeleteReviewForm(true)
+        } else {
+            grabTotalCartQuantity(0)
+            grabRedirect(true)
+        }
+    }
     const closeDeleteReviewModal = () => {
         setDeleteReviewForm(false)
-        if(!loggedIn()) return grabTotalCartQuantity(0)
+        if(!loggedIn()) {
+            grabTotalCartQuantity(0)
+            grabRedirect(true)
+        }
     }
 
     const handlePageOnChange = async(event, page) => {
@@ -142,7 +160,8 @@ export default function UserReviews({ backend, loggedIn, reviewData, grabReviewD
             grabReviewData(allReviewsData.allReviews)
             grabReviewsPage(page)
         } else {
-            return grabTotalCartQuantity(0)
+            grabTotalCartQuantity(0)
+            grabRedirect(true)
         }
     }
 
@@ -157,15 +176,7 @@ export default function UserReviews({ backend, loggedIn, reviewData, grabReviewD
                         <Rating name="size-small" value={review.Rating} size="small" readOnly/>
                         <p>{review.Comment}</p>
                         <button id={review._id} onClick={openUpdateReviewModal}>Update</button>
-                        <button id={review._id} onClick={(event) => {
-                            if(loggedIn()) {
-                                setReviewID(event.target.id) // update reviewID state so that we can use the id for fetch to server when we click Yes button
-                                setDeleteReviewForm(true)
-                            } else {
-                                return grabTotalCartQuantity(0)
-                            }
-                            
-                        }}>Delete</button>
+                        <button id={review._id} onClick={openDeleteReviewModal}>Delete</button>
                     </div>
                 )})}
                 <div className={paginationClass.root}>

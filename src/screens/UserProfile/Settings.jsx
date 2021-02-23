@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 // import Footer from '../../components/Footer';
 import Toast from 'react-bootstrap/Toast'
 
-export default function Settings({ backend, loggedIn, settingData, grabSettingData, grabTotalCartQuantity }) {
+export default function Settings({ backend, loggedIn, settingData, grabSettingData, grabTotalCartQuantity, grabRedirect }) {
    
     // const [open, setOpen] = useState(false)
     const [emailInvalid, setEmailInvalid] = useState(false)
@@ -18,7 +18,8 @@ export default function Settings({ backend, loggedIn, settingData, grabSettingDa
     const [updateEmailSuccess, setUpdateEmailSuccess] = useState(false)
 
   
-    const handleEmailUpdate = async() => {
+    const handleEmailUpdate = async(event) => {
+        event.preventDefault()
         if(loggedIn()) {
             const emailUpdateResponse = await fetch(`${backend}/buyer/profile`, {
                 method: 'PUT',
@@ -49,12 +50,14 @@ export default function Settings({ backend, loggedIn, settingData, grabSettingDa
                 setEmailInput('') // empty input
             }
         } else {
-            return grabTotalCartQuantity(0)
+            grabTotalCartQuantity(0)
+            grabRedirect(true)
         }
             
     }
 
-    const handleResetPassword = async() => {
+    const handleResetPassword = async(event) => {
+        event.preventDefault()
         if(loggedIn()) {
             const resetPasswordResponse = await fetch(`${backend}/buyer/profile`, {
                 method: 'PUT',
@@ -84,7 +87,45 @@ export default function Settings({ backend, loggedIn, settingData, grabSettingDa
                 setPasswordInput('') // empty input
             }
         } else {
-            return grabTotalCartQuantity(0)
+            grabTotalCartQuantity(0)
+            grabRedirect(true)
+        }
+    }
+
+    const openChangeEmailForm = () => {
+        setShowEmailInput(true)
+        setShowPasswordInput(false)
+        if(!loggedIn()) {
+            grabTotalCartQuantity(0)
+            grabRedirect(true)
+        }
+    }
+
+    const closeChangeEmailForm = () => {
+        setShowEmailInput(false) // hide input
+        setEmailInput('') // empty input
+        if(!loggedIn()) {
+            grabTotalCartQuantity(0)
+            grabRedirect(true)
+        }
+                            
+    }
+
+    const openChangePasswordForm = () => {
+        setShowPasswordInput(true) 
+        setShowEmailInput(false)
+        if(!loggedIn()) {
+            grabTotalCartQuantity(0)
+            grabRedirect(true)
+        }
+    }
+
+    const closeChangePasswordForm = () => {
+        setShowPasswordInput(false) // hide input
+        setPasswordInput('') // empty input
+        if(!loggedIn()) {
+            grabTotalCartQuantity(0)
+            grabRedirect(true)
         }
     }
 
@@ -94,22 +135,36 @@ export default function Settings({ backend, loggedIn, settingData, grabSettingDa
     return (
         <>
             <div>
+                <h5>Username: {settingData.username} </h5>
+
+                <h5>Password: *****</h5>
+                <button disabled = {showEmailInput} onClick={openChangePasswordForm}>Reset password</button>
+                {showPasswordInput && (
+                    <form>
+                        <input type="password" value={passwordInput} onChange={handlePasswordInputChange}/>
+                        <input type="submit" onClick={handleResetPassword}/>
+                        <button onClick={closeChangePasswordForm}>Close</button>
+                    </form>
+                )}
+
+                <Toast onClose={() => setPasswordInvalid(false)} show={passwordInvalid} delay={3000} autohide>
+                    <Toast.Body style={{backgroundColor: 'rgb(255, 51, 51)'}}>Your password must be at least 8 characters long.</Toast.Body>
+                </Toast>  
+                <Toast onClose={() => setPasswordErrorMessage(false)} show={passwordErrorMessage} delay={3000} autohide>
+                    <Toast.Body style={{backgroundColor: 'rgb(255, 51, 51)'}}> Your password cannot be your 5 most recently used passwords.</Toast.Body>
+                </Toast>  
+                <Toast onClose={() => setResetPasswordSuccess(false)} show={resetPasswordSuccess} delay={3000} autohide>
+                    <Toast.Body style={{backgroundColor: 'rgb(57, 172, 57)'}}>Your password is successfully changed.</Toast.Body>
+                </Toast>    
+
                 <h5>Email:{settingData.email} </h5>
-                <button disabled={showPasswordInput} onClick={() => {
-                    if(!loggedIn()) return grabTotalCartQuantity(0)
-                    setShowEmailInput(true)
-                    setShowPasswordInput(false)
-                }}>Update email</button>
+                <button disabled={showPasswordInput} onClick={openChangeEmailForm}>Update email</button>
                 {showEmailInput && (
-                    <div>
+                    <form>
                         <input type="email" value={emailInput} onChange={handleEmailInputChange}/>
                         <input type="submit" onClick={handleEmailUpdate}/>
-                        <button onClick={() => {
-                            if(!loggedIn()) return grabTotalCartQuantity(0)
-                            setShowEmailInput(false) // hide input
-                            setEmailInput('') // empty input
-                        }}>Close</button>
-                    </div>
+                        <button onClick={closeChangeEmailForm}>Close</button>
+                    </form>
                 )} 
                 <Toast onClose={() => setEmailInvalid(false)} show={emailInvalid} delay={2000} autohide>
                     <Toast.Body style={{backgroundColor: 'rgb(255, 51, 51)'}}>Must be a valid email.</Toast.Body>
@@ -120,37 +175,6 @@ export default function Settings({ backend, loggedIn, settingData, grabSettingDa
                 <Toast onClose={() => setUpdateEmailSuccess(false)} show={updateEmailSuccess} delay={2000} autohide>
                     <Toast.Body style={{backgroundColor: 'rgb(57, 172, 57)'}}>Your email is successfully changed.</Toast.Body>
                 </Toast>     
-
-                <h5>Username: {settingData.username} </h5>
-
-                <h5>Password: *****</h5>
-                <button disabled = {showEmailInput} onClick={()=> {
-                    if(!loggedIn()) return grabTotalCartQuantity(0)
-                    setShowPasswordInput(true) 
-                    setShowEmailInput(false)
-                }}>Reset password</button>
-
-                {showPasswordInput && (
-                    <div>
-                    <input type="password" value={passwordInput} onChange={handlePasswordInputChange}/>
-                    <input type="submit" onClick={handleResetPassword}/>
-                    <button onClick={() => {
-                        if(!loggedIn()) return grabTotalCartQuantity(0)
-                        setShowPasswordInput(false) // hide input
-                        setPasswordInput('') // empty input
-                    }}>Close</button>
-                    </div>
-                )}
-   
-                <Toast onClose={() => setPasswordInvalid(false)} show={passwordInvalid} delay={3000} autohide>
-                    <Toast.Body style={{backgroundColor: 'rgb(255, 51, 51)'}}>Your password must be at least 8 characters long.</Toast.Body>
-                </Toast>  
-                <Toast onClose={() => setPasswordErrorMessage(false)} show={passwordErrorMessage} delay={3000} autohide>
-                    <Toast.Body style={{backgroundColor: 'rgb(255, 51, 51)'}}> Your password cannot be your 5 most recently used passwords.</Toast.Body>
-                </Toast>  
-                <Toast onClose={() => setResetPasswordSuccess(false)} show={resetPasswordSuccess} delay={3000} autohide>
-                    <Toast.Body style={{backgroundColor: 'rgb(57, 172, 57)'}}>Your password is successfully changed.</Toast.Body>
-                </Toast>    
             </div>
             {/* <Footer /> */}
         </>

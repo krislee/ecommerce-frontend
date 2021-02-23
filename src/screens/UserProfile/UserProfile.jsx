@@ -37,6 +37,7 @@ function UserProfile ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuant
     const [reviewsTotal, setReviewsTotal] = useState(null)
     const [reviewsPage, setReviewsPage] = useState('')
 
+    const [redirect, setRedirect] = useState(false)
     const [footerLoading, setFooterLoading] = useState(true)
 
     useEffect(() => {
@@ -212,7 +213,8 @@ function UserProfile ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuant
     const grabReviewsPage = (data) => setReviewsPage(data) //update the reviewsPage state in handlePageOnChange; reviewsPage state is used for Pagination 
     const grabReviewData = (data) => setReviewData(data) // pass down to UserReviews component to update the reviews state to contain a new list of reviews. When we click on a page number, the page onChange function runs, getting a new list of reviews from the server.
     const grabSettingData = (data) => setSettingData(data)
-    
+    const grabRedirect= (data) => setRedirect(data)
+
     /* ------- HANDLES WHICH COMPONENT TO DISPLAY IN THE RETURN ------- */
 
     // Function that will handle whether the address component is open or not
@@ -253,7 +255,6 @@ function UserProfile ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuant
         history.replace({ pathname: `/profile/review?page=1`})
     }
     const handleClickSettings = () => {
-        if(!loggedIn()) return grabTotalCartQuantity(0)
         setSettingsTabOpen(true)
         setAddressesTabOpen(false);
         setPaymentsTabOpen(false);
@@ -263,7 +264,7 @@ function UserProfile ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuant
     }
 
     // If the user does not have a token (or logged in), users will automatically render onto the homepage because the user profile page is on accessible to users that are logged in
-    if (!loggedIn()) {
+    if (!loggedIn() || redirect) {
         return (
             <Redirect to="/"/>
         )
@@ -298,7 +299,7 @@ function UserProfile ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuant
                    
                     {/* This component renders only when the profileTabOpen is open  */}
                     {settingsTabOpen && 
-                        <Settings backend={backend} loggedIn={loggedIn} settingData={settingData} grabSettingData={grabSettingData} grabTotalCartQuantity={grabTotalCartQuantity} />
+                        <Settings backend={backend} loggedIn={loggedIn} settingData={settingData} grabSettingData={grabSettingData} grabTotalCartQuantity={grabTotalCartQuantity} grabRedirect={grabRedirect} />
                     }
                    
                     {/* This component renders only when the addressesTab is open */}
@@ -311,7 +312,8 @@ function UserProfile ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuant
                         loggedIn={loggedIn}
                         capitalize={capitalize}
                         capitalizeArray={capitalizeArray}
-                        grabTotalCartQuantity={grabTotalCartQuantity} />
+                        grabTotalCartQuantity={grabTotalCartQuantity}
+                        grabRedirect={grabRedirect} />
                     }
           
                     {/* This component renders only when the paymentsTab is open  */}
@@ -324,7 +326,8 @@ function UserProfile ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuant
                         loggedIn={loggedIn}
                         capitalize={capitalize}
                         capitalizeArray={capitalizeArray} 
-                        grabTotalCartQuantity={grabTotalCartQuantity} />
+                        grabTotalCartQuantity={grabTotalCartQuantity}
+                        grabRedirect={grabRedirect} />
                     }
     
                     {/* This component renders only when the orderTabOpen is true  */}
@@ -340,7 +343,8 @@ function UserProfile ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuant
                         ordersTotal={ordersTotal}
                         ordersPage={ordersPage}
                         grabOrdersPage={grabOrdersPage}
-                        grabTotalCartQuantity={grabTotalCartQuantity} />
+                        grabTotalCartQuantity={grabTotalCartQuantity}
+                        grabRedirect={grabRedirect} />
                     }
 
                     {reviewsTabOpen && 
@@ -353,7 +357,8 @@ function UserProfile ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuant
                         reviewsTotal={reviewsTotal}
                         reviewsPage={reviewsPage} 
                         grabReviewsPage={grabReviewsPage}
-                        grabTotalCartQuantity={grabTotalCartQuantity} />
+                        grabTotalCartQuantity={grabTotalCartQuantity} 
+                        grabRedirect={grabRedirect} />
                     }
                     {!footerLoading && <Footer />}
                 </div>
