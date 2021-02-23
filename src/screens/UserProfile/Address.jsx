@@ -12,6 +12,8 @@ function UserProfileAddress ({ backend, addressData, defaultFirst, grabAddressDa
     // Getter and Setter to store an object that will later be used to determine what users enter into inputs specifically regarding the adding address function
     const [addressInput, setAddressInput] = useState({});
     // Getter and setter to display a warning message regarding when the user does not fulfill requirements for the zipcode input when creating an address
+    const [disabledOnSubmitAddAddressModal, setDisabledOnSubmitAddAddressModal] = useState(false);
+    const [overlayClickCloseAddAddressModal, setOverlayClickCloseAddAddressModal] = useState(true);
 
     // Style for the Modal
     const customStyles = {
@@ -35,6 +37,8 @@ function UserProfileAddress ({ backend, addressData, defaultFirst, grabAddressDa
     const closeModal = () => {
         setIsOpen(false);
         setAddressInput({});
+        setOverlayClickCloseAddAddressModal(true);
+        setDisabledOnSubmitAddAddressModal(false);
     };
 
     // Function that is used to make sure the inputs that are being put in by the user is saved to the addressInput object so we can use the object when creating a new address
@@ -50,6 +54,8 @@ function UserProfileAddress ({ backend, addressData, defaultFirst, grabAddressDa
         // Prevents the page from refreshing
         event.preventDefault();
         if (loggedIn()) {
+        setDisabledOnSubmitAddAddressModal(true);
+        setOverlayClickCloseAddAddressModal(false);
         // Grabbing the DOM element with the ID of address-default (which is the checkbox that is used by users to indicate whether or not they want said address to be default or not)
         const checkbox = document.getElementById('address-default');
         // We check if the checkbox is checked or not, and this will return a boolean
@@ -77,7 +83,7 @@ function UserProfileAddress ({ backend, addressData, defaultFirst, grabAddressDa
         // Clearing out the object used to store the information that users put in the input fields so it's blank when users want to create a new one
         setAddressInput({});
         // Close the modal
-        setIsOpen(false);
+        closeModal();
         } else {
             return grabTotalCartQuantity(0);
         }
@@ -127,6 +133,7 @@ function UserProfileAddress ({ backend, addressData, defaultFirst, grabAddressDa
             </>}
             {/* Modal that specifically pertains to the adding new addresses */}
             <Modal
+                shouldCloseOnOverlayClick={overlayClickCloseAddAddressModal}
                 isOpen={modalIsOpen}
                 onRequestClose={closeModal}
                 style={customStyles}
@@ -236,6 +243,7 @@ function UserProfileAddress ({ backend, addressData, defaultFirst, grabAddressDa
                 || addressInput.zipcode === undefined
                 || addressInput.zipcode === "")
                 || addressInput.zipcode.length !== 5
+                || disabledOnSubmitAddAddressModal
                 }>Submit</button>
                 </form>
                 </Modal>

@@ -15,6 +15,10 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
     // Getter and Setter to store an object that will later be used to determine what users enter into inputs specifically regarding the editing address function
     const [editAddress, setEditAddress] = useState({});
     const [redirect, setRedirect] = useState(false);
+    const [disabledOnSubmitEditAddressModal, setDisabledOnSubmitEditAddressModal] = useState(false);
+    const [overlayClickCloseEditAddressModal, setOverlayClickCloseEditAddressModal] = useState(true);
+    const [disabledOnSubmitDeleteAddressModal, setDisabledOnSubmitDeleteAddressModal] = useState(false);
+    const [overlayClickCloseDeleteAddressModal, setOverlayClickCloseDeleteAddressModal] = useState(true);
 
     // Styles for the Modal
     const customStyles = {
@@ -86,6 +90,10 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
     const closeModal = () => {
         setIsEditModalOpen(false);
         setIsDeleteModalOpen(false);
+        setDisabledOnSubmitEditAddressModal(false);
+        setOverlayClickCloseEditAddressModal(true);
+        setDisabledOnSubmitDeleteAddressModal(false);
+        setOverlayClickCloseDeleteAddressModal(true);
     };
 
     // Function that allows us to change the value of the input dynamically and display it on the page regarding the address
@@ -102,7 +110,8 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
         e.preventDefault();
         // If the user does fulfill the requirements for the all the inputs
         if (loggedIn()) {
-            console.log('hello')
+            setDisabledOnSubmitEditAddressModal(true);
+            setOverlayClickCloseEditAddressModal(false);
             // Creating a variable that tells the server we are EDITING the information for a specific address, which is identified from the e.target.id
         const editAddressResponse = await fetch(`${backend}/shipping/address/${e.target.id}`, {
             method: 'PUT',
@@ -118,7 +127,6 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
         });
         // Data regarding the addresses that is received back from the request to the backend server when editing is finished to receive updated version of the data
         const editAddressData = await editAddressResponse.json();
-        console.log(editAddressData);
         // Being passed down as a prop from the parent component of UserProfile, we are able to reorder the data so it will display the default address first on the list followed by the newest
         defaultFirst(editAddressData);
         // Being passed down as a prop from the parent component of UserProfile, we are able to the set the data that we received back from the response of the server to the variable AddressData, so we can reuse that data to map through and display the different AddressContainer components
@@ -126,7 +134,7 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
         // Empty the object of the address inputs so that new ones can replace it later on without any duplication errors
         setEditAddress({});
         // Close the modal after all of this function is finished so user will return back on the regular screen
-        setIsEditModalOpen(false);
+        closeModal();
         } else {
             grabTotalCartQuantity(0);
             setRedirect(true);
@@ -161,6 +169,8 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
         e.preventDefault();
         // Fetching to a server to make a request to delete an address
         if (loggedIn()) {
+            setDisabledOnSubmitDeleteAddressModal(true);
+            setOverlayClickCloseDeleteAddressModal(false);
             const deleteResponse = await fetch(`${backend}/shipping/address/${e.target.id}`, {
                 method: 'DELETE',
                 headers: {
@@ -173,7 +183,7 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
             // Being passed down as a prop from the parent component of UserProfile, we are able to reorder the data so it will display the default address first on the list followed by the newest
             defaultFirst(deleteAddressData);
             // Being passed down as a prop from the parent component of UserProfile, we are able to the set the data that we received back from the response of the server to the variable AddressData, so we can reuse that data to map through and display the different AddressContainer components
-            setIsDeleteModalOpen(false);
+            closeModal();
             // Close the modal after all of this function is finished so user will end up back on the regular screen
             grabAddressData(deleteAddressData);
         };
@@ -247,6 +257,7 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
                 </div>
                 {/* Modal that is used to edit the address */}
                 <Modal
+                shouldCloseOnOverlayClick={overlayClickCloseEditAddressModal}
                 isOpen={isEditModalIsOpen}
                 onRequestClose={closeModal}
                 style={customStyles}
@@ -361,13 +372,15 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
                 || (/^[0-9]+$/.test(editAddress.zipcode) !== true 
                 || editAddress.zipcode === undefined
                 || editAddress.zipcode === "")
-                || editAddress.zipcode.length !== 5}>
+                || editAddress.zipcode.length !== 5
+                || disabledOnSubmitEditAddressModal}>
                 Submit</button>
                 </div>
                 </form>
                 </Modal>
                 {/* Modal used to delete the address */}
                 <Modal
+                shouldCloseOnOverlayClick={overlayClickCloseDeleteAddressModal}
                 isOpen={isDeleteModalIsOpen}
                 onRequestClose={closeModal}
                 style={customStyles}
@@ -381,9 +394,12 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
                 form="delete-address-form"
                 value="Submit"
                 // When user clicks to submit, the address will be deleted
-                onClick={handleDeleteAddress}>
+                onClick={handleDeleteAddress}
+                disabled={disabledOnSubmitDeleteAddressModal}>
                 Delete</button>
-                <button onClick={closeModal}>Cancel</button>
+                <button 
+                onClick={closeModal}
+                disabled={disabledOnSubmitDeleteAddressModal}>Cancel</button>
                 </div>
                 </form>
                 </Modal>

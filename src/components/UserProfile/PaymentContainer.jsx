@@ -748,6 +748,7 @@ function PaymentContainer ({ backend, payment, defaultFirstPayment, grabPaymentD
           >Delete</button>
           <button 
           onClick={closeDeleteModal}
+          disabled={disabledOnSubmitDeletePaymentModal}
           >Cancel</button>
           </div>
         </form>
