@@ -23,7 +23,6 @@ const StyledBadge = withStyles((theme) => ({
 function NavBar ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuantity }) {
     const [redirect, setRedirect] = useState(false)
     const location = useLocation()
-    console.log(location)
     const handleLogout = () => {
         localStorage.clear();
         grabTotalCartQuantity(0)

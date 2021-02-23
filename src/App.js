@@ -34,9 +34,6 @@ function App() {
   const [url, setURL] = useState('');
   const [loggedOut, setLoggedOut] = useState(false)
   const [cartID, setCartID] = useState('')
-  const [orderID, setOrderID] = useState("")
-
-  const [successfulPaymentIntent, setSuccessfulPaymentIntent] = useState({})
 
   /* ------- UPDATE STATES ------- */
 
@@ -46,12 +43,9 @@ function App() {
   // grabURL gets passed to Homepage then to Item component. Item component receives both the itemURL and grabURL, and when we click on the item, grabURL is called to update the url state at App component with the itemURL. The url state gets passed to ItemPage component, which will let us fetch using that url. Using the url state to fetch to the server means we are going to the item page THROUGH the homepage.
   const grabURL = (url) => setURL(url);
 
-  // Update the cartID state after fetching for the cart items in checkout to store the logged in or guest session cart's ID
+  // Update the cartID state after fetching for the cart items in checkout to store the logged in or guest session cart's ID. The cartID is needed to find the order in OrderComplete component since cartID is the order number.
   const grabCartID = (cartID) => setCartID(cartID)
 
-  // Pass the orderID state to User Profile to pass it down to Order component, where the OrderID state gets updated when we click on an order
-  // const grabOrderID = (orderID) => setOrderID(orderID)
-  const grabSuccessfulPaymentIntent = (paymentIntent) => setSuccessfulPaymentIntent(paymentIntent)
 
   /* ------- CHECK IF USER IS LOGGED IN BEFORE RUNNING FUNCTIONS ------- */
    const loggedIn = () => localStorage.getItem('token')
@@ -103,7 +97,7 @@ function App() {
           {/* CHECKOUT */}
           <Route path="/checkout">
             <Elements stripe={stripePromise}>
-              <Checkout backend={backend} loggedIn={loggedIn} loggedOut={loggedOut} grabLoggedOut={grabLoggedOut} cartID={cartID}grabCartID={grabCartID} grabSuccessfulPaymentIntent={grabSuccessfulPaymentIntent} grabTotalCartQuantity={grabTotalCartQuantity} />
+              <Checkout backend={backend} loggedIn={loggedIn} loggedOut={loggedOut} grabLoggedOut={grabLoggedOut} cartID={cartID}grabCartID={grabCartID} grabTotalCartQuantity={grabTotalCartQuantity} />
             </Elements>
           </Route>
           <Route path="/order-complete">
@@ -125,13 +119,11 @@ function App() {
           {/* USER PROFILE */}
           <Route path="/profile">
             <Elements stripe={stripePromise}>
-              <UserProfile backend={backend} loggedIn={loggedIn} totalCartQuantity={totalCartQuantity} grabTotalCartQuantity={grabTotalCartQuantity}
-              // orderID={orderID} grabOrderID={grabOrderID} 
-              />
+              <UserProfile backend={backend} loggedIn={loggedIn} totalCartQuantity={totalCartQuantity} grabTotalCartQuantity={grabTotalCartQuantity} />
             </Elements>
           </Route>
           <Route path="/order">
-            <IndividualOrder backend={backend} loggedIn={loggedIn} orderID={orderID} grabTotalCartQuantity={grabTotalCartQuantity} />
+            <IndividualOrder backend={backend} loggedIn={loggedIn} grabTotalCartQuantity={grabTotalCartQuantity} />
           </Route>
           {/* SHOW ALL ITEMS/INDIVIDUAL ITEM */}
           <Route path="/shop/:pageIndex">

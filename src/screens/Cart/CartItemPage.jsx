@@ -1,33 +1,32 @@
+import { Link } from 'react-router-dom'
 import React, {useEffect, useState} from 'react'
 import '../../styles/CartPage.css'
 
 
-
-export default function CartItemPage ({ backend, loggedIn, id, name, quantity, totalPrice, grabItems, grabTotalPrice, grabTotalCartQuantity}) {
+export default function CartItemPage ({ backend, loggedIn, id, name, quantity, totalPrice, grabItems, grabTotalPrice, grabTotalCartQuantity }) {
     const [cartQuantity, setCartQuantity] = useState(quantity)
     const [prevLoggedIn, setPrevLoggedIn] = useState('')
     const [itemID, setItemID] = useState('')
 
-    useEffect(() => {
-        setPrevLoggedIn(loggedIn())
-        setCartQuantity(quantity)
-    }, [quantity]) 
+    // useEffect(() => {
+    //     setPrevLoggedIn(loggedIn())
+    //     setCartQuantity(quantity)
+    // }, [quantity]) 
 
     const handleUpdateItemQuantity = async (event) => {
         const { value, id } = event.target
-        setCartQuantity(value)
+        setCartQuantity(Number(value))
         setItemID(id)
     }
 
     useEffect(() => {
-        if(itemID) handleUpdateCartItem(itemID)
-    }, [itemID])
+        setPrevLoggedIn(loggedIn())
+        console.log(23, cartQuantity)
+        if(itemID && cartQuantity) handleUpdateCartItem(itemID)
+    }, [cartQuantity])
 
     const handleUpdateCartItem = async(itemID) => {
         if(loggedIn()) {
-            // console.log(event.target.id)
-            console.log(cartQuantity)
-            console.log(itemID)
             const updateCartResponse = await fetch(`${backend}/buyer/electronic/cart/${itemID}`, {
                 method: 'PUT',
                 headers: {
@@ -39,7 +38,8 @@ export default function CartItemPage ({ backend, loggedIn, id, name, quantity, t
                 })
             })
             const updateCartData = await updateCartResponse.json()
-            console.log(updateCartData)
+            console.log(38, "UPDATE CART", updateCartData)
+            // if(!updateCartData.cart) return
             grabItems(updateCartData.cart.Items)
             grabTotalPrice(updateCartData.cart.TotalCartPrice)
             grabTotalCartQuantity(updateCartData.cart.TotalItems)
@@ -78,6 +78,7 @@ export default function CartItemPage ({ backend, loggedIn, id, name, quantity, t
             grabItems(deleteCartItemData.cart.Items)
             grabTotalPrice(deleteCartItemData.cart.TotalCartPrice)
             grabTotalCartQuantity(deleteCartItemData.cart.TotalItems)
+            // setCartQuantity(0)
         } else {
             if(prevLoggedIn) return grabTotalCartQuantity(0)
             console.log("deleting guest")
@@ -91,12 +92,18 @@ export default function CartItemPage ({ backend, loggedIn, id, name, quantity, t
             grabItems(deleteCartItemData.cart)
             grabTotalPrice(deleteCartItemData.totalCartPrice)
             grabTotalCartQuantity(deleteCartItemData.totalItems)
+            setCartQuantity(0)
         }
     }
 
     return (
         <div>
-            <p>{name}</p>
+            <Link className="homepage-items" to={{
+                pathname:`/item/${name}`,
+                search: `id=${id}`
+            }}>
+                <div>{name}</div>
+            </Link>
             {/* <input type="number" min="1" value={cartQuantity} onChange={handleQuantity}/> */}
             <select id={id} value={cartQuantity} onChange={handleUpdateItemQuantity}>
                 <option value={1}>01</option>
@@ -111,7 +118,6 @@ export default function CartItemPage ({ backend, loggedIn, id, name, quantity, t
                 <option value={10}>10</option>
             </select>
             <p>${totalPrice}</p>
-            <button id={id} onClick={handleUpdateCartItem}>Update</button>
             <button id={id} onClick={handleDeleteCartItem}>Delete</button>
         </div>
     )

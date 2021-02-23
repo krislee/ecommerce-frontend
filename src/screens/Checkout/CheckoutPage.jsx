@@ -13,7 +13,7 @@ import '../../styles/CheckoutPage.css';
 import {Link} from 'react-router-dom';
 
 
-function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCartID, grabTotalCartQuantity, grabSuccessfulPaymentIntent }) {
+function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCartID, grabTotalCartQuantity }) {
     // Helper to check if user is logged in
 
     /* ------- LOADING STATES ------- */

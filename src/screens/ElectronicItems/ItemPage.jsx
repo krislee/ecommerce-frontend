@@ -8,6 +8,7 @@ import Footer from '../../components/Footer'
 import AllReviews from '../../components/Reviews/AllReviews'
 import Rating from '@material-ui/lab/Rating';
 import { makeStyles } from '@material-ui/core/styles';
+import Toast from 'react-bootstrap/Toast'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -27,14 +28,18 @@ function ItemPage ({ loggedIn, url, backend, totalCartQuantity, grabTotalCartQua
     const [avgRating, setAvgRating] = useState(null);
     const [review, setReview] = useState("");
     const [allReviews, setAllReviews] = useState([]);
-    const [upToTwelve, setUpToTwelve] = useState(false);
-    const [notANumber, setNotANumber] = useState(false);
-    const [negativeWarning, setNegativeWarning] = useState(false);
-    
+
+    const [showAddItemAlert, setShowAddItemAlert] = useState(false)
+    const [showAddItemDifferenceAlert, setShowAddItemDifferenceAlert] = useState(false)
+    const [differenceQuantity, setDifferenceQuantity] = useState(0)
+
     const [prevLoggedIn, setPrevLoggedIn] = useState(localStorage.getItem('token')) // when we first load the item page check if user is logged in, storing the token value or null value to prevLoggedIn state, which then passes to AddCartButton; if user then clears the local storage once the item page is loaded, we will not be able to add an item (view at AddCartButton component)
 
     const grabReview = (review) => setReview(review)
-
+    const grabShowAddItemAlert = (showAddItemAlert) => setShowAddItemAlert(showAddItemAlert)
+    const grabShowAddItemDifferenceAlert = (showAddItemDifferenceAlert) => setShowAddItemDifferenceAlert(showAddItemDifferenceAlert)
+    const grabDifferenceQuantity = (differenceQuantity) => setDifferenceQuantity(differenceQuantity)
+    
     const location = useLocation() //get the full URL which will be parsed in the else statement to get the query value if user decides to not go through the /shop page but straight to the URL
 
     useEffect(() => {
@@ -98,31 +103,10 @@ function ItemPage ({ loggedIn, url, backend, totalCartQuantity, grabTotalCartQua
         }
     }, [review])
 
-    // const handleChangeQuantity = e => {
-    //     if (e.target.value.includes('-')) {
-    //         setNegativeWarning(true);
-    //     } else {
-    //         setNegativeWarning(false);
-    //         if (e.target.value.length > 2) {
-    //             setQuantity(e.target.value.slice(0, 2))
-    //         } else {
-    //             setQuantity(e.target.value)
-    //         }
-    //     }
-    // };
-
-    // const grabHandleUpToTwelve = (bool) => {
-    //     setUpToTwelve(bool);
-    // }
-
-    // const grabNotANumber = (bool) => {
-    //     setNotANumber(bool)
-    // };
-
     const handleAddItemQuantity = (event) => {
         const { value } = event.target
-        console.log(value)
-        setQuantity(value)
+        console.log(value, typeof value)
+        setQuantity(parseInt(value))
     }
 
     return (
@@ -161,9 +145,17 @@ function ItemPage ({ loggedIn, url, backend, totalCartQuantity, grabTotalCartQua
                             {notANumber && <div className="warning">You input must be a number</div>}
                             {negativeWarning && <div className="warning">You can't have a negative amount of items</div>}
                             {upToTwelve && <div className="warning">You can only buy twelve items at once</div>} */}
-                            <AddCartButton backend={backend} loggedIn={loggedIn} id={itemInfo._id} quantity={quantity} name={'Add To Cart'} grabTotalCartQuantity={grabTotalCartQuantity}  prevLoggedIn={prevLoggedIn} 
-                            // grabHandleUpToTwelve={grabHandleUpToTwelve} grabNotANumber={grabNotANumber}
-                            />
+  
+                            <Toast onClose={() => setShowAddItemAlert(false)} show={showAddItemAlert} delay={3000} autohide>
+                                    <Toast.Body>The maximum quantity of this item has already been added to your cart.</Toast.Body>
+                            </Toast>
+
+                            <Toast onClose={() => setShowAddItemDifferenceAlert(false)} show={showAddItemDifferenceAlert} delay={3000} autohide>
+                                    <Toast.Body>{differenceQuantity} item(s) has been moved to your cart. You have now reached the maximum quantity of 10 for this item.`</Toast.Body>
+                            </Toast>
+                  
+                        <AddCartButton backend={backend} loggedIn={loggedIn} id={itemInfo._id} quantity={quantity} name={'Add To Cart'} grabTotalCartQuantity={grabTotalCartQuantity}  prevLoggedIn={prevLoggedIn} grabShowAddItemAlert={grabShowAddItemAlert} differenceQuantity={differenceQuantity} grabDifferenceQuantity={grabDifferenceQuantity} grabShowAddItemDifferenceAlert={grabShowAddItemDifferenceAlert} />
+
                             <AddReviewButton backend={backend} loggedIn={loggedIn} electronicID={itemInfo._id} grabReview={grabReview} />
                         </div>
                     </div>
