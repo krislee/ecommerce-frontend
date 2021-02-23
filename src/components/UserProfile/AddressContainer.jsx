@@ -4,7 +4,7 @@ import Modal from 'react-modal';
 import Input from '../Input'
 import { Redirect } from 'react-router-dom';
 
-function AddressContainer ({ index, address, backend, grabAddressData, defaultFirst, capitalize, capitalizeArray, loggedIn, grabTotalCartQuantity }) {
+function AddressContainer ({ index, address, backend, grabAddressData, defaultFirst, capitalize, capitalizeArray, loggedIn, grabTotalCartQuantity, grabRedirect }) {
 
     /* ------- STATES ------- */
 
@@ -36,72 +36,88 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
     // Function that runs when the edit modal opens
     const openEditModal = async (e) => {
         // Fetching to the backend to GET the information related to the particular address this container is rendering
-        const oneAddressResponse = await fetch(`${backend}/shipping/address/${e.target.id}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': loggedIn()
-            }
-        });
-        // Data regarding the addresses that is received back from the request to the backend server
-        const oneAddressData = await oneAddressResponse.json();
-        // Splitting the name with the comma so we get an array back
-        const name = oneAddressData.address.Name.split(", ");
-        // Splitting the address with the comma so we get an array back
-        const address = oneAddressData.address.Address.split(", ");
-        // Function that sets the input values equal to the data received back
-        const checkForAddressLineTwo = () => {
-            // Define arrays that will be used to capitalize strings with multiple words (like full name, or addresses)
-            const [capitalizedAddressLineOneEditModal, capitalizedAddressLineTwoEditModal, capitalizedCityEditModal] = [[], [], []];
-            // Our condition is make sure that we prefill data in the input based off whether or not there is an addressLineTwo, since it is not required
-            if (address[1] === "undefined"){
-                setEditAddress({
-                    firstName: capitalize(name[0]),
-                    lastName: capitalize(name[1]),
-                    addressLineOne: capitalizeArray(address[0].split(" "), capitalizedAddressLineOneEditModal),
-                    addressLineTwo: "",
-                    city: capitalizeArray(address[2].split(" "), capitalizedCityEditModal),
-                    state: address[3].toUpperCase(),
-                    zipcode: address[4]
-                })
-            } else {
-                setEditAddress({
-                    firstName: capitalize(name[0]),
-                    lastName: capitalize(name[1]),
-                    addressLineOne: capitalizeArray(address[0].split(" "), capitalizedAddressLineOneEditModal),
-                    addressLineTwo: capitalizeArray(address[1].split(" "), capitalizedAddressLineTwoEditModal),
-                    city: capitalizeArray(address[2].split(" "), capitalizedCityEditModal),
-                    state: address[3].toUpperCase(),
-                    zipcode: address[4]
-                });
+        if (loggedIn()) {
+            const oneAddressResponse = await fetch(`${backend}/shipping/address/${e.target.id}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': loggedIn()
+                }
+            });
+            // Data regarding the addresses that is received back from the request to the backend server
+            const oneAddressData = await oneAddressResponse.json();
+            // Splitting the name with the comma so we get an array back
+            const name = oneAddressData.address.Name.split(", ");
+            // Splitting the address with the comma so we get an array back
+            const address = oneAddressData.address.Address.split(", ");
+            // Function that sets the input values equal to the data received back
+            const checkForAddressLineTwo = () => {
+                // Define arrays that will be used to capitalize strings with multiple words (like full name, or addresses)
+                const [capitalizedAddressLineOneEditModal, capitalizedAddressLineTwoEditModal, capitalizedCityEditModal] = [[], [], []];
+                // Our condition is make sure that we prefill data in the input based off whether or not there is an addressLineTwo, since it is not required
+                if (address[1] === "undefined"){
+                    setEditAddress({
+                        firstName: capitalize(name[0]),
+                        lastName: capitalize(name[1]),
+                        addressLineOne: capitalizeArray(address[0].split(" "), capitalizedAddressLineOneEditModal),
+                        addressLineTwo: "",
+                        city: capitalizeArray(address[2].split(" "), capitalizedCityEditModal),
+                        state: address[3].toUpperCase(),
+                        zipcode: address[4]
+                    })
+                } else {
+                    setEditAddress({
+                        firstName: capitalize(name[0]),
+                        lastName: capitalize(name[1]),
+                        addressLineOne: capitalizeArray(address[0].split(" "), capitalizedAddressLineOneEditModal),
+                        addressLineTwo: capitalizeArray(address[1].split(" "), capitalizedAddressLineTwoEditModal),
+                        city: capitalizeArray(address[2].split(" "), capitalizedCityEditModal),
+                        state: address[3].toUpperCase(),
+                        zipcode: address[4]
+                    });
+                };
             };
+            checkForAddressLineTwo();
+            // After we finish inputting the data from the fetch request, we display the modal so we set the condition of the edit modal to true
+            setIsEditModalOpen(true);
+        } else {
+            grabRedirect();
         };
-        checkForAddressLineTwo();
-        // After we finish inputting the data from the fetch request, we display the modal so we set the condition of the edit modal to true
-        setIsEditModalOpen(true);
     };
 
     // Function to open the modal regarding deletion of an address
     const openDeleteModal = () => {
-        setIsDeleteModalOpen(true);
+        if (loggedIn()) {
+            setIsDeleteModalOpen(true);
+        } else {
+            grabRedirect();
+        };
     };
 
     // Function used to close the modal by setting the edit and delete modal condition to false
     const closeModal = () => {
-        setIsEditModalOpen(false);
-        setIsDeleteModalOpen(false);
-        setDisabledOnSubmitEditAddressModal(false);
-        setOverlayClickCloseEditAddressModal(true);
-        setDisabledOnSubmitDeleteAddressModal(false);
-        setOverlayClickCloseDeleteAddressModal(true);
+        if (loggedIn()) {
+            setIsEditModalOpen(false);
+            setIsDeleteModalOpen(false);
+            setDisabledOnSubmitEditAddressModal(false);
+            setOverlayClickCloseEditAddressModal(true);
+            setDisabledOnSubmitDeleteAddressModal(false);
+            setOverlayClickCloseDeleteAddressModal(true);
+        } else {
+            grabRedirect();
+        };
     };
 
     // Function that allows us to change the value of the input dynamically and display it on the page regarding the address
     const handleEditAddressChange = (e) => {
-        const { name, value } = e.target;
-        setEditAddress((prevAddress) => ({
-            ...prevAddress, [name] : value
-        }));
+        if (loggedIn()) {
+            const { name, value } = e.target;
+            setEditAddress((prevAddress) => ({
+                ...prevAddress, [name] : value
+            }));
+        } else {
+            grabRedirect();
+        };
     };
 
     // Function that handles the editing of the addresses (not the default part)
@@ -113,54 +129,57 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
             setDisabledOnSubmitEditAddressModal(true);
             setOverlayClickCloseEditAddressModal(false);
             // Creating a variable that tells the server we are EDITING the information for a specific address, which is identified from the e.target.id
-        const editAddressResponse = await fetch(`${backend}/shipping/address/${e.target.id}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': loggedIn()
-            },
-            // For our body, we need to have a value for both the address and name, and we use the values received back from the inputs to do so
-            body: JSON.stringify({
-                address: `${editAddress.addressLineOne}, ${editAddress.addressLineTwo}, ${editAddress.city}, ${editAddress.state}, ${editAddress.zipcode}`,
-                name: `${editAddress.firstName}, ${editAddress.lastName}`
-            })
-        });
-        // Data regarding the addresses that is received back from the request to the backend server when editing is finished to receive updated version of the data
-        const editAddressData = await editAddressResponse.json();
-        // Being passed down as a prop from the parent component of UserProfile, we are able to reorder the data so it will display the default address first on the list followed by the newest
-        defaultFirst(editAddressData);
-        // Being passed down as a prop from the parent component of UserProfile, we are able to the set the data that we received back from the response of the server to the variable AddressData, so we can reuse that data to map through and display the different AddressContainer components
-        grabAddressData(editAddressData);
-        // Empty the object of the address inputs so that new ones can replace it later on without any duplication errors
-        setEditAddress({});
-        // Close the modal after all of this function is finished so user will return back on the regular screen
-        closeModal();
+            const editAddressResponse = await fetch(`${backend}/shipping/address/${e.target.id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': loggedIn()
+                },
+                // For our body, we need to have a value for both the address and name, and we use the values received back from the inputs to do so
+                body: JSON.stringify({
+                    address: `${editAddress.addressLineOne}, ${editAddress.addressLineTwo}, ${editAddress.city}, ${editAddress.state}, ${editAddress.zipcode}`,
+                    name: `${editAddress.firstName}, ${editAddress.lastName}`
+                })
+            });
+            // Data regarding the addresses that is received back from the request to the backend server when editing is finished to receive updated version of the data
+            const editAddressData = await editAddressResponse.json();
+            // Being passed down as a prop from the parent component of UserProfile, we are able to reorder the data so it will display the default address first on the list followed by the newest
+            defaultFirst(editAddressData);
+            // Being passed down as a prop from the parent component of UserProfile, we are able to the set the data that we received back from the response of the server to the variable AddressData, so we can reuse that data to map through and display the different AddressContainer components
+            grabAddressData(editAddressData);
+            // Empty the object of the address inputs so that new ones can replace it later on without any duplication errors
+            setEditAddress({});
+            // Close the modal after all of this function is finished so user will return back on the regular screen
+            closeModal();
         } else {
-            grabTotalCartQuantity(0);
-            setRedirect(true);
-        }
+            grabRedirect();
+        };
     };
 
     // Function that handles the editing of the default status (and not the contents of the address)
     const handleEditAddressDefaultStatus = async(e) => {
         // Prevents the page from refreshing
         e.preventDefault();
-        // Fetching to a server to make a request to update the default status based off of the current default status. If the default status is true, then it will turn into false, and vice versa.
-        const editDefaultResponse = await fetch(`${backend}/shipping/default/address/${e.target.id}?default=${!defaultAddress}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': loggedIn()
-            }
-        });
-        // Data regarding the addresses that is received back from the request to the backend server when editing default is finished to receive updated version of the data
-        const editDefaultData = await editDefaultResponse.json();
-        // Being passed down as a prop from the parent component of UserProfile, we are able to reorder the data so it will display the default address first on the list followed by the newest
-        defaultFirst(editDefaultData);
-        // Being passed down as a prop from the parent component of UserProfile, we are able to the set the data that we received back from the response of the server to the variable AddressData, so we can reuse that data to map through and display the different AddressContainer components
-        grabAddressData(editDefaultData);
-        // Close the modal after all of this function is finished so user will end up back on the regular screen
-        setIsEditModalOpen(false);
+        if (loggedIn()) {
+            // Fetching to a server to make a request to update the default status based off of the current default status. If the default status is true, then it will turn into false, and vice versa.
+            const editDefaultResponse = await fetch(`${backend}/shipping/default/address/${e.target.id}?default=${!defaultAddress}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': loggedIn()
+                }
+            });
+            // Data regarding the addresses that is received back from the request to the backend server when editing default is finished to receive updated version of the data
+            const editDefaultData = await editDefaultResponse.json();
+            // Being passed down as a prop from the parent component of UserProfile, we are able to reorder the data so it will display the default address first on the list followed by the newest
+            defaultFirst(editDefaultData);
+            // Being passed down as a prop from the parent component of UserProfile, we are able to the set the data that we received back from the response of the server to the variable AddressData, so we can reuse that data to map through and display the different AddressContainer components
+            grabAddressData(editDefaultData);
+            // Close the modal after all of this function is finished so user will end up back on the regular screen
+            setIsEditModalOpen(false);
+        } else {
+            grabRedirect();
+        };
     };
 
     // Function that handles the deleting of addresses
@@ -186,6 +205,8 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
             closeModal();
             // Close the modal after all of this function is finished so user will end up back on the regular screen
             grabAddressData(deleteAddressData);
+        } else {
+            grabRedirect();
         };
     };
 

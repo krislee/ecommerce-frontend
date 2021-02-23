@@ -30,23 +30,36 @@ function UserProfileAddress ({ backend, addressData, defaultFirst, grabAddressDa
 
     // Function that is used to open the modal when users plan to create
     const openModal = () => {
-        setIsOpen(true);
+        if (loggedIn()) {
+            setIsOpen(true);
+        }
+        else {
+            grabRedirect();
+        };
     };
 
     // Function that is used to close the modal when the user either leaves or submits a address
     const closeModal = () => {
-        setIsOpen(false);
-        setAddressInput({});
-        setOverlayClickCloseAddAddressModal(true);
-        setDisabledOnSubmitAddAddressModal(false);
+        if (loggedIn()) {
+            setIsOpen(false);
+            setAddressInput({});
+            setOverlayClickCloseAddAddressModal(true);
+            setDisabledOnSubmitAddAddressModal(false);
+        } else {
+            grabRedirect();
+        };
     };
 
     // Function that is used to make sure the inputs that are being put in by the user is saved to the addressInput object so we can use the object when creating a new address
     const handleAddressChange = (e) => {
-        const { name, value } = e.target
+        if (loggedIn()) {
+            const { name, value } = e.target
         setAddressInput((prevAddress) => ({
             ...prevAddress, [name] : value
         }));
+        } else {
+            grabRedirect();
+        }
     };
 
     // Function that is used to handle the event when a user submits the request to make a new address
@@ -85,7 +98,7 @@ function UserProfileAddress ({ backend, addressData, defaultFirst, grabAddressDa
         // Close the modal
         closeModal();
         } else {
-            return grabTotalCartQuantity(0);
+            grabRedirect();
         }
     }
 
@@ -106,7 +119,8 @@ function UserProfileAddress ({ backend, addressData, defaultFirst, grabAddressDa
                 loggedIn={loggedIn}
                 capitalize={capitalize}
                 capitalizeArray={capitalizeArray}
-                grabTotalCartQuantity={grabTotalCartQuantity}/>
+                grabTotalCartQuantity={grabTotalCartQuantity}
+                grabRedirect={grabRedirect}/>
             );
         };
     });
