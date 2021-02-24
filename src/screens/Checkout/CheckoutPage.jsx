@@ -14,7 +14,7 @@ import '../../styles/CheckoutPage.css';
 
 const socket = io.connect('wss://elecommerce.herokuapp.com',  { transports: ['websocket', 'polling', 'flashsocket'] }) // connect to socket outside function because we want to connect to the socket only one time; if inside the function, then it will reconnect at every render; reconnecting more than once will give us multiple socket IDs
 
-function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCartID, grabTotalCartQuantity }) {
+function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCartID, grabTotalCartQuantity, grabSocketContainer }) {
     // Helper to check if user is logged in
 
     /* ------- LOADING STATES ------- */
@@ -24,7 +24,7 @@ function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCar
     const [paymentLoading, setPaymentLoading] = useState(true)
     const [orderComplete, setOrderComplete] = useState(false)
     
-    const [prevLoggedIn, setPrevLoggedIn] = useState('')
+    const [prevLoggedIn, setPrevLoggedIn] = useState(loggedIn())
 
     /* ------- PAYMENT INTENT-RELATED STATES ------- */
     // const [customer, setCustomer] = useState(false);

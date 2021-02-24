@@ -26,7 +26,9 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
 
     // Fade out the Shipping component and show the Payment Method component when Next button is clicked
     const collapse = async () => {
-        if(prevLoggedIn && !loggedIn()) return grabTotalCartQuantity(0)
+        // To differentiate between a guest user vs logged in user who cleared local storage checking out, we need to identify if user was ever logged in right when user goes to /checkout path. If user was logged in when the checkout page first loads, then prevLoggedIn state has a truthy value. 
+        if(prevLoggedIn && !loggedIn()) return grabTotalCartQuantity(0) // logged in user (indicated by prevLoggedIn state) who cleared local storage needs to be redirected to cart page, and update nav bar
+
         grabShowShipping(false) // hide the Shipping component that shows the shipment details
         grabShowPayment(true) //The payment method form or payment method details  from paymentMethod component will be displayed when openCollapse state is true
         grabReadOnly(true) // disable the input fields
@@ -37,7 +39,7 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
 
     const back = async () => {
         if(!loggedIn() && prevLoggedIn) return grabTotalCartQuantity(0) // if logged in user cleared local storage and clicked Edit in shipping component
-        if(!loggedIn() && !prevLoggedIn) { // check if guest user cleared cookies(indicated by empty cart) before running any other code
+        if(!loggedIn()) { // Check if guest user cleared cookies. If cookies are cleared, meaning no items in the cart(no cart property on req.session in the backend),before clicking Next on the Shipping component then refresh the page and update nav bar
             const cartResponse = await fetch(`${backend}/buyer/cart`, {
                 method: 'GET',
                 headers: { 'Content-Type': 'application/json' },
@@ -259,9 +261,7 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
             const updatePaymentIntentWithShippingData = await updatePaymentIntentWithShippingResponse.json()
             console.log(updatePaymentIntentWithShippingData)
         } else {
-            // if(shipping.firstName) return // check if user is a guest because logged in user actively cleared local storage; we would know if user was previously logged in if shipping state has stored the address, since in useEffect, we store address in shipping state if user was logged in; if logged in user cleared local storage do not run the function (this only works for logged in user already has a saved shipping only or already has both saved shipping and payment method)
-            // if(paymentMethod.paymentMethodID) return // if logged in user has a saved payment method only but not shipping, but then clears local storage and clicks Next on shipping, we do not want to update payment intent
-            if(prevLoggedIn && !loggedIn()) return // if logged in user clears local storage and then clicks next, we do not want to continue updating payment intent
+            if(prevLoggedIn && !loggedIn()) return // if logged in user, who does not have any shipping address saved, clears local storage and then clicks next, we do not want to continue updating payment intent; 
 
             // Guest user fetches to this route to update payment intent to include shipping address:
             const updatePaymentIntentWithShippingResponse = await fetch(`${backend}/order/payment-intent`, {
@@ -352,7 +352,6 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
     if(shippingLoading) {
         return <></> // When the Checkout component first loads, render nothing for Shipping Component until after fetching an address. Depending if there is an address or not from the fetch, we will return something different as shown based on the conditional retuns below.
     } else if((loggedIn() && !shipping.firstName) || (!loggedIn() && !shipping.firstName)) {
-        console.log(300)
         // If user is guest (as indicated by !loggedIn()), or logged in user does not have a shipping address (indicated by !shipping.address), we want to show the shipping form when the Next button from CheckoutItems component is clicked
         return (
             <>
