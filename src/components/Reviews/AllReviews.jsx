@@ -22,7 +22,6 @@ export default function AllReviews({allReviews}) {
     useEffect(() => {
         if(allReviews.length) {
             setReviewsLoading(false);
-            console.log(allReviews);
         }
     }, [allReviews])
 
@@ -33,11 +32,8 @@ export default function AllReviews({allReviews}) {
             {allReviews.length && (
                 allReviews.map((review, index) => { 
                     if (review.Comment.length > 250) {
-                        console.log(review.Comment.length);
-                        let comment = review.Comment
-                        console.log(comment.split(" ").length);
-                        console.log(comment.split(" ").splice(0, 50).join(" "));
-                        let newComment = `${comment.split(" ").splice(0, 50).join(" ")}...`
+                        let comment = review.Comment;
+                        let newComment = `${comment.split(" ").splice(0, 50).join(" ")}...`;
                         return (
                             <div className={classes.root} key={index}>
                                 <h5>{review.Name}</h5>

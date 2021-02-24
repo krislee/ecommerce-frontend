@@ -27,9 +27,7 @@ function ItemPage ({ loggedIn, url, backend, totalCartQuantity, grabTotalCartQua
     const [avgRating, setAvgRating] = useState(null);
     const [review, setReview] = useState("");
     const [allReviews, setAllReviews] = useState([]);
-    const [upToTwelve, setUpToTwelve] = useState(false);
-    const [notANumber, setNotANumber] = useState(false);
-    const [negativeWarning, setNegativeWarning] = useState(false);
+    const [nameOfItemLength, setNameOfItemLength] = useState(0);
     
     const [prevLoggedIn, setPrevLoggedIn] = useState(localStorage.getItem('token')) // when we first load the item page check if user is logged in, storing the token value or null value to prevLoggedIn state, which then passes to AddCartButton; if user then clears the local storage once the item page is loaded, we will not be able to add an item (view at AddCartButton component)
 
@@ -59,10 +57,10 @@ function ItemPage ({ loggedIn, url, backend, totalCartQuantity, grabTotalCartQua
                 let data = await resp.json();
                 console.log(31, data)
                 setItemInfo(data.electronicItem);
+                setNameOfItemLength(data.electronicItem.Name.length);
                 setAllReviews(data.review)
                 setAvgRating(data.avgRating)
             }
-
             fetchData();
 
             return function cleanUp () {
@@ -86,43 +84,32 @@ function ItemPage ({ loggedIn, url, backend, totalCartQuantity, grabTotalCartQua
                 let data = await resp.json();
                 console.log(49, data)
                 setItemInfo(data.electronicItem);
+                setNameOfItemLength(data.electronicItem.Name.length);
                 setAllReviews(data.review)
                 setAvgRating(data.avgRating)
             }
 
             fetchData();
-
+            nameOfItem();
             return function cleanUp () {
                 abortController.abort()
             }
         }
-    }, [review])
-
-    // const handleChangeQuantity = e => {
-    //     if (e.target.value.includes('-')) {
-    //         setNegativeWarning(true);
-    //     } else {
-    //         setNegativeWarning(false);
-    //         if (e.target.value.length > 2) {
-    //             setQuantity(e.target.value.slice(0, 2))
-    //         } else {
-    //             setQuantity(e.target.value)
-    //         }
-    //     }
-    // };
-
-    // const grabHandleUpToTwelve = (bool) => {
-    //     setUpToTwelve(bool);
-    // }
-
-    // const grabNotANumber = (bool) => {
-    //     setNotANumber(bool)
-    // };
+    }, [review]);
 
     const handleAddItemQuantity = (event) => {
-        const { value } = event.target
-        console.log(value)
-        setQuantity(value)
+        const { value } = event.target;
+        console.log(value);
+        setQuantity(value);
+    };
+
+
+    const nameOfItem = () => {
+        if (nameOfItemLength < 50) {
+            console.log(nameOfItemLength);
+        } else {
+            console.log(nameOfItemLength);
+        }
     }
 
     return (
@@ -136,7 +123,9 @@ function ItemPage ({ loggedIn, url, backend, totalCartQuantity, grabTotalCartQua
                 <div className="right-side-item-page">
                     <div className="item-logistics">
                         <div>
+                            
                             <div className="name">{itemInfo.Name}</div>
+                        
                             <div className={classes.root}>
                                 <Rating name="size-small" value={avgRating} size="small" precision={0.1} readOnly/>
                             </div>
