@@ -36,7 +36,7 @@ export default function OrderComplete({ backend, loggedIn, cartID, socketContain
                     setOrderLoading(false)
 
                     socketContainer.emit('end', {cartID: cartID}) // end socket connect
-                    socketContainer.disconnect(true)
+                    // socketContainer.disconnect(true)
                 })
 
                 // socketContainer.emit('end', {cartID: cartID}) // end socket connect
