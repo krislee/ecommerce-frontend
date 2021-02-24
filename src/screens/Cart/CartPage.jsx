@@ -6,7 +6,7 @@ import Footer from '../../components/Footer'
 import CartItemPage from './CartItemPage'
 import axios from 'axios';
 
-function CartPage ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuantity } ) {
+function CartPage ({ backend, loggedIn, cartQuantity, grabCartQuantity, totalCartQuantity, grabTotalCartQuantity } ) {
 
     const [cartLoading, setCartLoading] = useState(true)
     const [items, setItems] = useState([]);
@@ -98,7 +98,7 @@ function CartPage ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuantity
                 {/* <NavBar totalCartQuantity={totalCartQuantity} grabTotalCartQuantity={grabTotalCartQuantity}/> */}
                 <div className="cart">
                     <div className="cart-items">
-                        {items.map((item, index) => { return <CartItemPage backend={backend} loggedIn={loggedIn} key={index} id={item.ItemId} name={item.Name} quantity={item.Quantity} totalPrice={item.TotalPrice} grabItems={grabItems} grabTotalPrice={grabTotalPrice} grabTotalCartQuantity={grabTotalCartQuantity} /> })}
+                        {items.map((item) => { return <CartItemPage backend={backend} loggedIn={loggedIn} key={item.ItemId} id={item.ItemId} name={item.Name} quantity={item.Quantity} totalPrice={item.TotalPrice} grabItems={grabItems} grabTotalPrice={grabTotalPrice} grabTotalCartQuantity={grabTotalCartQuantity} cartQuantity={cartQuantity} grabCartQuantity={grabCartQuantity} /> })}
                         <p><b>Total Price: ${totalPrice}</b></p>
                     </div>
                         

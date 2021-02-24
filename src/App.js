@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react'
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
-import './App.css';
 
+// COMPONENTS
 import NavBar from './components/NavigationBar'
 import Homepage from './screens/Homepage'
 import AllItems from './screens/ElectronicItems/AllItemsPage'
@@ -19,9 +19,10 @@ import NoMatchPage from './screens/NoMatch'
 // STRIPE
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
+// CSS
+import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-// Font for Roboto
-import 'fontsource-roboto';
+import 'fontsource-roboto'; // Font for Roboto
 
 
 function App() {
@@ -34,9 +35,6 @@ function App() {
   const [url, setURL] = useState('');
   const [loggedOut, setLoggedOut] = useState(false)
   const [cartID, setCartID] = useState('')
-  const [orderID, setOrderID] = useState("")
-
-  const [successfulPaymentIntent, setSuccessfulPaymentIntent] = useState({})
 
   /* ------- UPDATE STATES ------- */
 
@@ -46,19 +44,21 @@ function App() {
   // grabURL gets passed to Homepage then to Item component. Item component receives both the itemURL and grabURL, and when we click on the item, grabURL is called to update the url state at App component with the itemURL. The url state gets passed to ItemPage component, which will let us fetch using that url. Using the url state to fetch to the server means we are going to the item page THROUGH the homepage.
   const grabURL = (url) => setURL(url);
 
-  // Update the cartID state after fetching for the cart items in checkout to store the logged in or guest session cart's ID
+  // Update the cartID state after fetching for the cart items in checkout to store the logged in or guest session cart's ID. The cartID is needed to find the order in OrderComplete component since cartID is the order number.
   const grabCartID = (cartID) => setCartID(cartID)
 
-  // Pass the orderID state to User Profile to pass it down to Order component, where the OrderID state gets updated when we click on an order
-  // const grabOrderID = (orderID) => setOrderID(orderID)
-  const grabSuccessfulPaymentIntent = (paymentIntent) => setSuccessfulPaymentIntent(paymentIntent)
 
   /* ------- CHECK IF USER IS LOGGED IN BEFORE RUNNING FUNCTIONS ------- */
-   const loggedIn = () => localStorage.getItem('token')
+  const loggedIn = () => localStorage.getItem('token')
 
-  /* ------- NAV BAR UPDATE ------- */
+  /* ------- SOCKET TO BE PASSED FROM CHECKOUTPAGE TO OREDERCOMPLETE COMPONENT ------- */
+  const [socketContainer, setSocketContainer] = useState(null)
+  const grabSocketContainer = (socketContainer) => setSocketContainer(socketContainer)
+
+  /* ------- NAV BAR SHOPPING CART BADGE UPDATE ------- */
   const [totalCartQuantity, setTotalCartQuantity] = useState(0)
   const grabTotalCartQuantity = (totalCartQuantity) => setTotalCartQuantity(totalCartQuantity)
+
 
   useEffect(() => {
     async function getCartItems() {
@@ -95,20 +95,24 @@ function App() {
     getCartItems();
 },[totalCartQuantity])
 
+
+
   return (
     <div className="App">
       <BrowserRouter>
         <NavBar totalCartQuantity={totalCartQuantity} grabTotalCartQuantity={grabTotalCartQuantity} />
         <Switch>
+
           {/* CHECKOUT */}
           <Route path="/checkout">
             <Elements stripe={stripePromise}>
-              <Checkout backend={backend} loggedIn={loggedIn} loggedOut={loggedOut} grabLoggedOut={grabLoggedOut} cartID={cartID}grabCartID={grabCartID} grabSuccessfulPaymentIntent={grabSuccessfulPaymentIntent} grabTotalCartQuantity={grabTotalCartQuantity} />
+              <Checkout backend={backend} loggedIn={loggedIn} loggedOut={loggedOut} grabLoggedOut={grabLoggedOut} cartID={cartID}grabCartID={grabCartID} grabTotalCartQuantity={grabTotalCartQuantity} grabSocketContainer={grabSocketContainer} />
             </Elements>
           </Route>
           <Route path="/order-complete">
-            <OrderComplete backend={backend} cartID={cartID} />
+            <OrderComplete backend={backend} loggedIn={loggedIn} cartID={cartID} socketContainer={socketContainer} grabTotalCartQuantity={grabTotalCartQuantity} />
           </Route>
+
           {/* LOGIN/REGISTRATION */}
           <Route path="/login/buyer">
             <BuyerLogin backend={backend} loggedIn={loggedIn} grabTotalCartQuantity={grabTotalCartQuantity}/>
@@ -122,34 +126,39 @@ function App() {
           <Route path="/register/seller">
             <SellerRegister backend={backend} loggedIn={loggedIn} />
           </Route>
+
           {/* USER PROFILE */}
           <Route path="/profile">
             <Elements stripe={stripePromise}>
-              <UserProfile backend={backend} loggedIn={loggedIn} totalCartQuantity={totalCartQuantity} grabTotalCartQuantity={grabTotalCartQuantity}
-              // orderID={orderID} grabOrderID={grabOrderID} 
-              />
+              <UserProfile backend={backend} loggedIn={loggedIn} totalCartQuantity={totalCartQuantity} grabTotalCartQuantity={grabTotalCartQuantity} />
             </Elements>
           </Route>
           <Route path="/order">
-            <IndividualOrder backend={backend} loggedIn={loggedIn} orderID={orderID} grabTotalCartQuantity={grabTotalCartQuantity} />
+            <IndividualOrder backend={backend} loggedIn={loggedIn} grabTotalCartQuantity={grabTotalCartQuantity} />
           </Route>
-          {/* SHOW ALL ITEMS/INDIVIDUAL ITEM */}
+
+          {/* SHOW ALL ELECTRONIC ITEMS */}
           <Route path="/shop/:pageIndex">
             <AllItems grabURL={grabURL} backend={backend} loggedIn={loggedIn} totalCartQuantity={totalCartQuantity} grabTotalCartQuantity={grabTotalCartQuantity} />
           </Route>
+
+          {/* VIEW ONE ELECTRONIC ITEM */}
           <Route path='/item'> 
             <ItemPage url={url} backend={backend} loggedIn={loggedIn} totalCartQuantity={totalCartQuantity} grabTotalCartQuantity={grabTotalCartQuantity}/>
           </Route>
+
           {/* CART */}
           <Route path="/cart">
             <CartPage backend={backend} loggedIn={loggedIn} totalCartQuantity={totalCartQuantity} grabTotalCartQuantity={grabTotalCartQuantity} />
           </Route>
 
+          {/* HOMEPAGE */}
           <Route path="">
             <Homepage backend={backend} loggedIn={loggedIn} totalCartQuantity={totalCartQuantity} grabTotalCartQuantity={grabTotalCartQuantity}/>
           </Route>
 
           <Route component={NoMatchPage} />
+          
         </Switch>
       </BrowserRouter>
       

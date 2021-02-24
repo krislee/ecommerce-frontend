@@ -1,48 +1,86 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import NavBar from '../../components/NavigationBar';
 import CircularProgress from '@material-ui/core/CircularProgress';
-// import socketIOClient from "socket.io-client";
-import { io } from "socket.io-client";
+import { useLocation, Link } from 'react-router-dom';
+import Modal from 'react-modal';
 
-export default function OrderComplete({ backend, cartID }) {
+export default function OrderComplete({ backend, loggedIn, cartID, socketContainer, grabTotalCartQuantity }) {
  
     const [orderLoading, setOrderLoading] = useState(true)
-    const [showOrderDetails, setShowOrderDetails] = useState(false)
-    // const [order, setOrder] = useState({})
+    const [showRedirectModal, setShowRedirectModal] = useState(false)
+
     const [orderItems, setOrderItems] = useState([])
     const [orderShipping, setOrderShipping] = useState([])
     const [orderShippingName, setOrderShippingName] = useState('')
     const [orderPayment, setOrderPayment] = useState({})
     const [orderNumber, setOrderNumber] = useState('')
 
-    const currentURL = window.location.href;
-    const indexOfEqualSign = currentURL.split('=');
-    const id=indexOfEqualSign[indexOfEqualSign.length - 1];
-
-    // const socketRef = useRef()
-    const socket = io.connect('wss://elecommerce.herokuapp.com',  { transports: ['websocket', 'polling', 'flashsocket'] })
-    console.log(typeof cartID, cartID)
-    socket.emit('join', {cartID: cartID})
+    const location = useLocation()
 
     useEffect(() => {
+        const abortController = new AbortController()
+        const signal = abortController.signal
+
+        const getOrderConfirmation = async() => {
+            if(cartID) {
+                // socket sends event, called completeOrder, with the data which pertains to order info
+                socketContainer.on('completeOrder', (orderData) => {
+                    console.log(44, orderData)
+
+                    const shipping = orderData.order.Shipping.Address.split(",")
+                    setOrderItems(orderData.order.Items)
+                    setOrderShipping(shipping)
+                    setOrderShippingName(orderData.order.Shipping.Name.replace(", ", " "))
+                    setOrderNumber(orderData.order.OrderNumber)
+                    setOrderPayment(orderData.payment)
+                    setOrderLoading(false)
+
+                    socketContainer.emit('end', {cartID: cartID}) // end socket connect
+                    // socketContainer.disconnect(true)
+                })
+
+                // socketContainer.emit('end', {cartID: cartID}) // end socket connect
+
+                // socketContainer.disconnect(true)
+            } else {
+            
+                // If user wants to see the order receipt after order is complete at anytime, then we need to parse the URL query to get the order number. However, user needs to be logged in to see the order since it would not be safe for anyone with the URL can view the order. So if guest made an order, then guest can only view the order confirmation right after confirming payment.
+                if(loggedIn()) {
+                    const queryObj = new URLSearchParams(location.search)
+                    const orderNumber = queryObj.get('orderNumber')
+                    console.log(orderNumber)
+                    
+                        const completeOrderResponse = await fetch(`${backend}/complete/list/orders/${orderNumber}`, {
+                            method: 'GET',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': loggedIn()
+                            },
+                            signal: signal
+                        })
+                        const completeOrderData = await completeOrderResponse.json()
+                        console.log(completeOrderData)
         
-        socket.on('completeOrder', (orderData) => {
-            console.log(orderData)
-            const shipping = orderData.order.Shipping.Address.split(",")
+                        const shipping = completeOrderData.order.Shipping.Address.split(",")
+                        setOrderItems(completeOrderData.order.Items)
+                        setOrderShipping(shipping)
+                        setOrderShippingName(completeOrderData.order.Shipping.Name.replace(", ", " "))
+                        setOrderNumber(completeOrderData.order.OrderNumber)
+                        setOrderPayment(completeOrderData.payment)
+                        setOrderLoading(false)
+                } else {
+                    return setShowRedirectModal(true)
+                }
+            }
+        }
+        
+        getOrderConfirmation()  
+        return function cleanUp () {
+            abortController.abort()
+        }
 
-            setOrderItems(orderData.order.Items)
-            setOrderShipping(shipping)
-            setOrderShippingName(orderData.order.Shipping.Name.replace(", ", " "))
-            setOrderNumber(orderData.order.OrderNumber)
-            setOrderPayment(orderData.payment)
-            setShowOrderDetails(true)
-            setOrderLoading(false)
-        })
+    }, [])
 
-        socket.emit('end')
-    })
-
-    
     if(orderLoading && cartID) {
         return (
             <>
@@ -50,16 +88,21 @@ export default function OrderComplete({ backend, cartID }) {
             <CircularProgress />
             </>
         )
-    } 
-    else {
+    } else if (showRedirectModal) {
+        return (
+            <Modal isOpen={showRedirectModal} ariaHideApp={false} contentLabel="Page cannot be shown">
+                Looks like this page does not exist or requires you to log in. Click <Link to="/">here</Link> to return to homepage.
+            </Modal>
+        )
+    } else if(orderLoading) {
+        return null
+    } else {
         return (
         
             <>
                 <NavBar />
                 <h2>Thank you for your purchase! </h2>
                 <h3>Order #: {orderNumber}</h3>
-                {/* { !showOrderDetails ? <button onClick={handleOrderDetails}>Order Details</button> : <button onClick={()=> setShowOrderDetails(!showOrderDetails)}>Close</button> }
-                { showOrderDetails && ( */}
                     
                 <div>
                     <h4>Items</h4>
@@ -84,10 +127,20 @@ export default function OrderComplete({ backend, cartID }) {
                     <p>{orderPayment.billingDetails.address.line2 === "null" || orderPayment.billingDetails.address.line2 === "undefined" ? "" : orderPayment.billingDetails.address.line2}</p>
                     <p>{orderPayment.billingDetails.address.city}, {orderPayment.billingDetails.address.state} {orderPayment.billingDetails.address.postalCode}</p>
                 </div>
-                {/* )} */}
-                
             </>
-        
         )
     }
 }
+
+    // const socketRef = useRef()
+
+    // socket.emit('join', {cartID: cartID})
+
+    // useEffect(() => {
+    //     // socket.on('connect', () => console.log(29, socket.socket.sessionid))
+    //     socket.on('socketID', (socketID, fn) => {
+    //         console.log(33, socketID)
+    //         fn({socketID: socketID, cartID: cartID})
+    //         setOrderLoading(false)
+    //     })
+    // }, [])

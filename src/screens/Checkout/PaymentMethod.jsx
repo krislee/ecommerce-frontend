@@ -88,14 +88,9 @@ function PaymentMethod ({ backend, processing, loggedIn, error, grabError, disab
     }
 
     // Listen to the month and year input changes
-    const handleEditMonthExpiration = (event) => {
-        const { value } = event.target
-        grabEditExpiration((prevEditExpiration) => ({...prevEditExpiration, ["month"]: value }))
-    }
-
-    const handleEditYearExpiration = (event) => {
-        const { value } = event.target
-        grabEditExpiration((prevEditExpiration) => ({...prevEditExpiration, ["year"]: value }))
+    const handleEditExpiration = (event) => {
+        const { name, value } = event.target
+        grabEditExpiration((prevEditExpiration) => ({...prevEditExpiration, [name]: value }))
     }
 
     // When Save is clicked, handleUpdatePayment() runs
@@ -276,7 +271,13 @@ function PaymentMethod ({ backend, processing, loggedIn, error, grabError, disab
         }
     }
 
-
+    // Test if the postal code is only numbers; function will return true if test fails
+    const postalCodeErrors = () => {
+       return (
+           (/^\d+$/g.test(editExpiration.month) !== true && editExpiration.month !== undefined)
+           || (/^\d+$/g.test(editExpiration.year) !== true && editExpiration.month !== undefined)
+        )
+    }
 
     if(paymentLoading) {
         return <></>
@@ -378,39 +379,19 @@ function PaymentMethod ({ backend, processing, loggedIn, error, grabError, disab
                 <input value={cardholderName || ""} name="name" placeholder="Name on card" onChange={handleCardholderNameChange}/>
                 {((/^[a-z][a-z\s]*$/i.test(cardholderName) !== true)  &&  cardholderName !== "") && <div className="warning">You must enter only letters as your full name</div>}
 
+                <input value={cardholderName || ""} name="name" placeholder="Name on card" onChange={handleCardholderNameChange}/>
+                {((/^[a-z][a-z\s]*$/i.test(cardholderName) !== true)  &&  cardholderName !== "") && <div className="warning">You must enter only letters as your full name</div>}
+
                 <span className="expiration" >
-                    <select value={editExpiration.month} onChange={handleEditMonthExpiration}>
-                        <option value="01">01</option>
-                        <option value="02">02</option>
-                        <option value="03">03</option>
-                        <option value="04">04</option>
-                        <option value="05">05</option>
-                        <option value="06">06</option>
-                        <option value="07">07</option>
-                        <option value="08">08</option>
-                        <option value="09">09</option>
-                        <option value="10">10</option>
-                        <option value="11">11</option>
-                        <option value="12">12</option>
-                    </select>
-                    <select value={editExpiration.year} onChange={handleEditYearExpiration}>
-                        <option value="2021">2021</option>
-                        <option value="2022">2022</option>
-                        <option value="2023">2023</option>
-                        <option value="2024">2024</option>
-                        <option value="2025">2025</option>
-                        <option value="2026">2026</option>
-                        <option value="2027">2027</option>
-                        <option value="2028">2028</option>
-                        <option value="2029">2029</option>
-                        <option value="2030">2030</option>
-                        <option value="2031">2031</option>
-                    </select>
+                    <input value = {editExpiration.month} type="number" name="month" placeholder="MM" min="01" max="12" maxLength="2" size="2" required={true} onChange={handleEditExpiration}/>
+                    <span>/</span>
+                    <input value = {editExpiration.year} type="number" name="year" placeholder="YY" min="2021" max="2031"  maxLength="4" size="3" required={true} onChange={handleEditExpiration}/>
                 </span>
+                { postalCodeErrors () && <div className="warning">You must enter only numbers for your zip code</div> }
 
                 <div>
                     <BillingInput billing={billing} handleBillingChange={handleBillingChange} editPayment={editPayment} />
-                    <button disabled={ billingInputErrorDisableButton() || billingPostalCodeInputErrorDisableButton() }>Save</button>
+                    <button disabled={ billingInputErrorDisableButton() || billingPostalCodeInputErrorDisableButton() || postalCodeErrors() }>Save</button>
                     <button onClick={closeEditModal}>Close</button>
                 </div>
                 </form>

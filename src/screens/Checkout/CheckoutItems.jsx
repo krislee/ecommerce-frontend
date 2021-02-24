@@ -7,7 +7,7 @@ export default function CheckoutItems({ backend, loggedIn, showItems, grabShowIt
     const [checkoutItemsLoading, setCheckoutItemsLoading] = useState(true)
     const [items, setItems] = useState([]);
     const [redirect, setRedirect] = useState(false)
-    const [checkoutItemPrevLoggedIn, setCheckoutItemPrevLoggedIn] = useState(loggedIn())
+    // const [checkoutItemPrevLoggedIn, setCheckoutItemPrevLoggedIn] = useState(loggedIn())
 
     useEffect(() => {
 
@@ -56,7 +56,7 @@ export default function CheckoutItems({ backend, loggedIn, showItems, grabShowIt
 
     const handleNext = async () => {
         // logged in user cleared local storage before clicking Next button, redirect and update nav bar
-        if(checkoutItemPrevLoggedIn && !loggedIn()) {
+        if(prevLoggedIn && !loggedIn()) {
             return grabTotalCartQuantity(0) // triggers Checkout useEffect and App useEffect
         } else if(!loggedIn()) { // check if guest user cleared cookies before clicking Next button; if so, redirect and update nav bar
             const cartResponse = await fetch(`${backend}/buyer/cart`, {
@@ -97,7 +97,7 @@ export default function CheckoutItems({ backend, loggedIn, showItems, grabShowIt
                 {showItems && <button onClick={handleNext}>Next</button>}
                 </>
             <button onClick={()=> {
-                if((checkoutItemPrevLoggedIn && !loggedIn())) return grabTotalCartQuantity(0)
+                if((prevLoggedIn&& !loggedIn())) return grabTotalCartQuantity(0)
                 else setRedirect(true)
             }}>Edit</button>
             </>
