@@ -20,12 +20,20 @@ export default function CartItemPage ({ backend, loggedIn, id, name, quantity, t
     }
 
     useEffect(() => {
+        const abortController = new AbortController()
+        const signal = abortController.signal
+
         setPrevLoggedIn(loggedIn())
         console.log(23, cartQuantity)
-        if(itemID && cartQuantity) handleUpdateCartItem(itemID)
+        if(itemID && cartQuantity) handleUpdateCartItem(itemID, signal)
+
+        return function cleanUp () {
+            abortController.abort()
+        }
+
     }, [cartQuantity])
 
-    const handleUpdateCartItem = async(itemID) => {
+    const handleUpdateCartItem = async(itemID, signal) => {
         if(loggedIn()) {
             const updateCartResponse = await fetch(`${backend}/buyer/electronic/cart/${itemID}`, {
                 method: 'PUT',
@@ -35,7 +43,8 @@ export default function CartItemPage ({ backend, loggedIn, id, name, quantity, t
                 },
                 body: JSON.stringify({
                     Quantity: cartQuantity
-                })
+                }),
+                signal: signal
             })
             const updateCartData = await updateCartResponse.json()
             console.log(38, "UPDATE CART", updateCartData)
@@ -92,7 +101,6 @@ export default function CartItemPage ({ backend, loggedIn, id, name, quantity, t
             grabItems(deleteCartItemData.cart)
             grabTotalPrice(deleteCartItemData.totalCartPrice)
             grabTotalCartQuantity(deleteCartItemData.totalItems)
-            setCartQuantity(0)
         }
     }
 

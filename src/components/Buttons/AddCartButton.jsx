@@ -46,8 +46,9 @@ function AddCartButton ({ name, id, loggedIn, backend, quantity, differenceQuant
             difference = 0
 
         } else { 
-            // If user was previously logged in as indicated by prevLoggedIn state (prevLoggedIn state value is retrieved from local storage once item page is loaded), but then clears local storage after item page is loaded as checked by loggedIn(), then we will reload the page.
-            if(prevLoggedIn && !loggedIn())return window.location.href = window.location.href
+            // If user was previously logged in as indicated by prevLoggedIn state (prevLoggedIn state value is retrieved from local storage once item page is loaded), but then clears local storage after item page is loaded as checked by loggedIn(), then we will update the nav bar.
+            if(prevLoggedIn && !loggedIn()) grabTotalCartQuantity(0)
+            // if(prevLoggedIn && !loggedIn())return window.location.href = window.location.href // This does cause user who clicks log out on item page instead of clearing local storage, the page would refresh when trying to click on Add to Cart the first time after clicking log out
 
             // Check how many of that item is already in the cart:
             const itemQuantityResponse = await fetch(`${backend}/buyer/cart-item/${id}`, {
@@ -63,7 +64,7 @@ function AddCartButton ({ name, id, loggedIn, backend, quantity, differenceQuant
             let difference
             if(itemQuantityData.item && itemQuantityData.item.length !== 0 && (itemQuantityData.item[0].Quantity + parseInt(quantity) > 10)) {
                 if(itemQuantityData.item[0].Quantity < 10) { // If there is less than 10 of that item in the cart, and user is adding more of that item but will cause the item quantity to exceed 10, we will add only the difference to get to 10 of that item
-                    difference = 10-itemQuantityData.item.Items[0].Quantity
+                    difference = 10-itemQuantityData.item[0].Quantity
                     grabDifferenceQuantity(difference) 
                     grabShowAddItemDifferenceAlert(true)
                 } else {

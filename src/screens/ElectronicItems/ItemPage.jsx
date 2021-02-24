@@ -156,7 +156,7 @@ function ItemPage ({ loggedIn, url, backend, totalCartQuantity, grabTotalCartQua
                   
                         <AddCartButton backend={backend} loggedIn={loggedIn} id={itemInfo._id} quantity={quantity} name={'Add To Cart'} grabTotalCartQuantity={grabTotalCartQuantity}  prevLoggedIn={prevLoggedIn} grabShowAddItemAlert={grabShowAddItemAlert} differenceQuantity={differenceQuantity} grabDifferenceQuantity={grabDifferenceQuantity} grabShowAddItemDifferenceAlert={grabShowAddItemDifferenceAlert} />
 
-                            <AddReviewButton backend={backend} loggedIn={loggedIn} electronicID={itemInfo._id} grabReview={grabReview} />
+                            <AddReviewButton backend={backend} loggedIn={loggedIn} electronicID={itemInfo._id} grabReview={grabReview} grabTotalCartQuantity={grabTotalCartQuantity} />
                         </div>
                     </div>
                 </div>

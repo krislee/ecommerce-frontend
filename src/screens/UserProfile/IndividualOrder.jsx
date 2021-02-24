@@ -49,7 +49,6 @@ export default function IndividualOrder({ backend, loggedIn, grabTotalCartQuanti
                     },
                     signal: signal
                 })
-                console.log(orderResponse)
                 const orderData = await orderResponse.json()
                 console.log(orderData)
                 setOrder(orderData.order)
@@ -74,7 +73,7 @@ export default function IndividualOrder({ backend, loggedIn, grabTotalCartQuanti
             abortController.abort()
         }
 
-    }, [])
+    }, [loggedIn()]) // when we click log out, the loggedIn() in dependency array will allow for redirecting
 
     if(orderLoading) {
         return <></>

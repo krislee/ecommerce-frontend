@@ -52,7 +52,9 @@ function NavBar ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuantity }
                 key: uuidv4(),
                 state: { prevPath: location.pathname }
             }} > 
-                <IconButton aria-label="cart">
+                <IconButton aria-label="cart" onClick={() => {
+                    if(location.pathname === '/cart') return grabTotalCartQuantity(0) // if logged in user cleared local storage, and is already on the cart page, we want to reload the page and update nav bar
+                }}>
                     <StyledBadge badgeContent={totalCartQuantity} color="secondary">
                          <FontAwesomeIcon className="cart-icon" icon={faShoppingCart}/>
                     </StyledBadge>

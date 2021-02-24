@@ -5,7 +5,7 @@ import '../../styles/Button.css'
 import ReviewForm from '../Reviews/ReviewForm'
 import { Redirect } from 'react-router-dom';
 
-export default function AddReviewButton ({ backend, loggedIn, electronicID, grabReview }) {
+export default function AddReviewButton ({ backend, loggedIn, electronicID, grabReview, grabTotalCartQuantity }) {
 
     const [showReviewForm, setShowReviewForm] = useState(false)
     const [disableSubmit, setDisableSubmit] = useState(false)
@@ -24,7 +24,13 @@ export default function AddReviewButton ({ backend, loggedIn, electronicID, grab
     const grabRatingValue = (rating) => setRatingValue(rating)
     const grabRatingHover =(rating) => setRatingHover(rating)
 
-    const handleCommentsChange = (event) => setCommentsValue(event.target.value)
+    const handleCommentsChange = (event) => {
+        if(!loggedIn()) {
+            closeReviewModal()
+            return grabTotalCartQuantity(0)
+        }
+        setCommentsValue(event.target.value)
+    }
 
 
     const submitReview = async(event) => {
@@ -56,23 +62,31 @@ export default function AddReviewButton ({ backend, loggedIn, electronicID, grab
             }
         } else {
             setLoginToReview(true)
+            grabTotalCartQuantity(0) // reloads the page, and updates nav bar if user is logged out/cleared local storage when trying to click Submit for adding Review
         }
 
         // Reset everything after we submit review
         closeReviewModal()
     }
-
+ 
     const closeReviewModal = () => {
         // Reset everything:
         setShowReviewForm(false) // close the modal
         grabRatingValue(5) // reset rating to be 5 stars
         setCommentsValue("") //clear comments
         setDisableSubmit(false)
+        if(!loggedIn()) grabTotalCartQuantity(0)
     }
 
     return(
         <>
-        {!showReviewForm && <button onClick={() => setShowReviewForm(true)}>Write a review</button>}
+        {!showReviewForm && <button onClick={() => {
+            if(!loggedIn()) {
+                setLoginToReview(true)
+                return grabTotalCartQuantity(0)
+            }
+            setShowReviewForm(true)
+        }}>Write a review</button>}
         
         <Modal isOpen={showReviewForm} onRequestClose={closeReviewModal} ariaHideApp={false} contentLabel="Create Review">
             <form onSubmit={submitReview}>
