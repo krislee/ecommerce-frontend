@@ -100,7 +100,7 @@ function App() {
   return (
     <div className="App">
       <BrowserRouter>
-        <NavBar totalCartQuantity={totalCartQuantity} grabTotalCartQuantity={grabTotalCartQuantity} />
+        <NavBar totalCartQuantity={totalCartQuantity} grabTotalCartQuantity={grabTotalCartQuantity} socketContainer={socketContainer}/>
         <Switch>
 
           {/* CHECKOUT */}
