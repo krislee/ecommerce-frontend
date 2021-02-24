@@ -4,7 +4,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import { useLocation, Link } from 'react-router-dom';
 import Modal from 'react-modal';
 
-export default function OrderComplete({ backend, loggedIn, cartID, socketContainer }) {
+export default function OrderComplete({ backend, loggedIn, cartID, socketContainer, grabTotalCartQuantity }) {
  
     const [orderLoading, setOrderLoading] = useState(true)
     const [showRedirectModal, setShowRedirectModal] = useState(false)
@@ -34,9 +34,14 @@ export default function OrderComplete({ backend, loggedIn, cartID, socketContain
                     setOrderNumber(orderData.order.OrderNumber)
                     setOrderPayment(orderData.payment)
                     setOrderLoading(false)
+
+                    socketContainer.emit('end', {cartID: cartID}) // end socket connect
+                    socketContainer.disconnect(true)
                 })
 
-                socketContainer.emit('end') // end socket connect
+                // socketContainer.emit('end', {cartID: cartID}) // end socket connect
+
+                // socketContainer.disconnect(true)
             } else {
             
                 // If user wants to see the order receipt after order is complete at anytime, then we need to parse the URL query to get the order number. However, user needs to be logged in to see the order since it would not be safe for anyone with the URL can view the order. So if guest made an order, then guest can only view the order confirmation right after confirming payment.
