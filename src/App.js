@@ -110,7 +110,7 @@ function App() {
             </Elements>
           </Route>
           <Route path="/order-complete">
-            <OrderComplete backend={backend} cartID={cartID} socketContainer={socketContainer}/>
+            <OrderComplete backend={backend} loggedIn={loggedIn} cartID={cartID} socketContainer={socketContainer}/>
           </Route>
 
           {/* LOGIN/REGISTRATION */}

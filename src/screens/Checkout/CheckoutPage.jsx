@@ -362,6 +362,7 @@ function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCar
                     setLoading(false)
                     setClientSecret(paymentIntentData.clientSecret)
                     grabCartID(cartResponseData.sessionID)
+                    socket.emit('cartID', {cartID: cartResponseData.sessionID})
                 }
             }
         }    

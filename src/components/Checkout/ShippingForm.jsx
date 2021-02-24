@@ -64,7 +64,7 @@ export default function ShippingForm({ backend, loggedIn, readOnly, shipping, ad
             || shippingInput.city === undefined)
             || (/^[a-z][a-z\s]*$/i.test(shippingInput.state) !== true 
             || shippingInput.state === undefined)
-            || (/^[0-9]*$/g.test(shippingInput.postalCode) !== true 
+            || (/^d+$/.test(shippingInput.postalCode) !== true 
             || shippingInput.postalCode === undefined
             || shippingInput.postalCode === ''
         )
@@ -90,7 +90,7 @@ export default function ShippingForm({ backend, loggedIn, readOnly, shipping, ad
             {((/^[a-z][a-z\s]*$/i.test(shippingInput.state) !== true) && shippingInput.state !== "") && <div className="warning">You must enter only letters as your state</div>}
 
             <input value={shippingInput.postalCode || ""} name="postalCode" placeholder="Zipcode" onChange={handleShippingChange} maxLength="5" readOnly={readOnly} required />
-            {((/[a-zA-Z]/g.test(shippingInput.postalCode) === true) && shippingInput.postalCode !== undefined) && <div className="warning">You must enter only numbers as your zip code</div>}
+            {((/^d+$/g.test(shippingInput.postalCode) !== true) && shippingInput.postalCode !== undefined) && <div className="warning">You must enter only numbers as your zip code</div>}
 
             {(loggedIn() && !shipping.firstName) && (
                 <>
@@ -104,7 +104,7 @@ export default function ShippingForm({ backend, loggedIn, readOnly, shipping, ad
             <button form="form" disabled={disableButton()}>Save</button> 
             <button type="button" onClick={closeModal}>Cancel</button>
             </>
-        ) : <button form="form" disabled={readOnly || disableButton()}>Next</button>   
+        ) : <button form="form" disabled={readOnly}>Next</button>   
         }
         </>      
     )
