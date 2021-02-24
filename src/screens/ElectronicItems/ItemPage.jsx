@@ -105,63 +105,65 @@ function ItemPage ({ loggedIn, url, backend, totalCartQuantity, grabTotalCartQua
 
 
     const nameOfItem = () => {
-        if (nameOfItemLength < 50) {
-            console.log(nameOfItemLength);
+        if (nameOfItemLength < 20) {
+            return itemInfo.Name
         } else {
-            console.log(nameOfItemLength);
+            return `${itemInfo.Name.split(" ").splice(0, 8).join(" ")}...`
         }
     }
 
-    return (
-        // Name, price, description, add to cart
-        <div className="item-page">
-            {/* <NavBar totalCartQuantity={totalCartQuantity} grabTotalCartQuantity={grabTotalCartQuantity} backend={backend} loggedIn={loggedIn}/> */}
-            <div className="item-info">
-                <div className="left-side-item-page">
-                    <div className="item-image">Image of Item Here</div>
-                </div>
-                <div className="right-side-item-page">
-                    <div className="item-logistics">
-                        <div>
-                            
-                            <div className="name">{itemInfo.Name}</div>
-                        
-                            <div className={classes.root}>
-                                <Rating name="size-small" value={avgRating} size="small" precision={0.1} readOnly/>
+    if (!itemInfo) {
+        return null
+    } else {
+        return (
+            // Name, price, description, add to cart
+            <div className="item-page">
+                {/* <NavBar totalCartQuantity={totalCartQuantity} grabTotalCartQuantity={grabTotalCartQuantity} backend={backend} loggedIn={loggedIn}/> */}
+                <div className="item-info">
+                    <div className="left-side-item-page">
+                        <div className="item-image">Image of Item Here</div>
+                    </div>
+                    <div className="right-side-item-page">
+                        <div className="item-logistics">
+                            <div>
+                                <div className="name">{nameOfItem()}</div>
+                                <div className={classes.root}>
+                                    <Rating name="size-small" value={avgRating} size="small" precision={0.1} readOnly/>
+                                </div>
+                                <div className="price">Price: ${itemInfo.Price}</div>
+                                <div className="description">Description: {itemInfo.Description}</div>
                             </div>
-                            <div className="price">Price: ${itemInfo.Price}</div>
-                            <div className="description">Description: {itemInfo.Description}</div>
-                        </div>
-                        <div className="input-info">
-                            <div className="quantity-tag">Quantity</div>
-                            <select value={quantity} onChange={handleAddItemQuantity}>
-                                <option value={1}>01</option>
-                                <option value={2}>02</option>
-                                <option value={3}>03</option>
-                                <option value={4}>04</option>
-                                <option value={5}>05</option>
-                                <option value={6}>06</option>
-                                <option value={7}>07</option>
-                                <option value={8}>08</option>
-                                <option value={9}>09</option>
-                                <option value={10}>10</option>
-                            </select>
-                            {/* <input className="quantity-input" type="number" min="1" max="12" value={quantity} onChange={handleChangeQuantity} />
-                            {notANumber && <div className="warning">You input must be a number</div>}
-                            {negativeWarning && <div className="warning">You can't have a negative amount of items</div>}
-                            {upToTwelve && <div className="warning">You can only buy twelve items at once</div>} */}
-                            <AddCartButton backend={backend} loggedIn={loggedIn} id={itemInfo._id} quantity={quantity} name={'Add To Cart'} grabTotalCartQuantity={grabTotalCartQuantity}  prevLoggedIn={prevLoggedIn} 
-                            // grabHandleUpToTwelve={grabHandleUpToTwelve} grabNotANumber={grabNotANumber}
-                            />
-                            <AddReviewButton backend={backend} loggedIn={loggedIn} electronicID={itemInfo._id} grabReview={grabReview} />
+                            <div className="input-info">
+                                <div className="quantity-tag">Quantity</div>
+                                <select value={quantity} onChange={handleAddItemQuantity}>
+                                    <option value={1}>01</option>
+                                    <option value={2}>02</option>
+                                    <option value={3}>03</option>
+                                    <option value={4}>04</option>
+                                    <option value={5}>05</option>
+                                    <option value={6}>06</option>
+                                    <option value={7}>07</option>
+                                    <option value={8}>08</option>
+                                    <option value={9}>09</option>
+                                    <option value={10}>10</option>
+                                </select>
+                                {/* <input className="quantity-input" type="number" min="1" max="12" value={quantity} onChange={handleChangeQuantity} />
+                                {notANumber && <div className="warning">You input must be a number</div>}
+                                {negativeWarning && <div className="warning">You can't have a negative amount of items</div>}
+                                {upToTwelve && <div className="warning">You can only buy twelve items at once</div>} */}
+                                <AddCartButton backend={backend} loggedIn={loggedIn} id={itemInfo._id} quantity={quantity} name={'Add To Cart'} grabTotalCartQuantity={grabTotalCartQuantity}  prevLoggedIn={prevLoggedIn} 
+                                // grabHandleUpToTwelve={grabHandleUpToTwelve} grabNotANumber={grabNotANumber}
+                                />
+                                <AddReviewButton backend={backend} loggedIn={loggedIn} electronicID={itemInfo._id} grabReview={grabReview} />
+                            </div>
                         </div>
                     </div>
                 </div>
+                <AllReviews backend={backend} allReviews={allReviews} />
+                <Footer />
             </div>
-            <AllReviews backend={backend} allReviews={allReviews} />
-            <Footer />
-        </div>
-    )
+        )
+    }
 }
 
 export default ItemPage
