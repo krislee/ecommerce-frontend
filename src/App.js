@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react'
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
-import './App.css';
 
+// COMPONENTS
 import NavBar from './components/NavigationBar'
 import Homepage from './screens/Homepage'
 import AllItems from './screens/ElectronicItems/AllItemsPage'
@@ -19,9 +19,10 @@ import NoMatchPage from './screens/NoMatch'
 // STRIPE
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
+// CSS
+import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-// Font for Roboto
-import 'fontsource-roboto';
+import 'fontsource-roboto'; // Font for Roboto
 
 
 function App() {
@@ -48,11 +49,16 @@ function App() {
 
 
   /* ------- CHECK IF USER IS LOGGED IN BEFORE RUNNING FUNCTIONS ------- */
-   const loggedIn = () => localStorage.getItem('token')
+  const loggedIn = () => localStorage.getItem('token')
 
-  /* ------- NAV BAR UPDATE ------- */
+  /* ------- SOCKET TO BE PASSED FROM CHECKOUTPAGE TO OREDERCOMPLETE COMPONENT ------- */
+  const [socketContainer, setSocketContainer] = useState(null)
+  const grabSocketContainer = (socketContainer) => setSocketContainer(socketContainer)
+
+  /* ------- NAV BAR SHOPPING CART BADGE UPDATE ------- */
   const [totalCartQuantity, setTotalCartQuantity] = useState(0)
   const grabTotalCartQuantity = (totalCartQuantity) => setTotalCartQuantity(totalCartQuantity)
+
 
   useEffect(() => {
     async function getCartItems() {
@@ -89,20 +95,24 @@ function App() {
     getCartItems();
 },[totalCartQuantity])
 
+
+
   return (
     <div className="App">
       <BrowserRouter>
         <NavBar totalCartQuantity={totalCartQuantity} grabTotalCartQuantity={grabTotalCartQuantity} />
         <Switch>
+
           {/* CHECKOUT */}
           <Route path="/checkout">
             <Elements stripe={stripePromise}>
-              <Checkout backend={backend} loggedIn={loggedIn} loggedOut={loggedOut} grabLoggedOut={grabLoggedOut} cartID={cartID}grabCartID={grabCartID} grabTotalCartQuantity={grabTotalCartQuantity} />
+              <Checkout backend={backend} loggedIn={loggedIn} loggedOut={loggedOut} grabLoggedOut={grabLoggedOut} cartID={cartID}grabCartID={grabCartID} grabTotalCartQuantity={grabTotalCartQuantity} grabSocketContainer={grabSocketContainer} />
             </Elements>
           </Route>
           <Route path="/order-complete">
-            <OrderComplete backend={backend} cartID={cartID} />
+            <OrderComplete backend={backend} cartID={cartID} socketContainer={socketContainer}/>
           </Route>
+
           {/* LOGIN/REGISTRATION */}
           <Route path="/login/buyer">
             <BuyerLogin backend={backend} loggedIn={loggedIn} grabTotalCartQuantity={grabTotalCartQuantity}/>
@@ -116,6 +126,7 @@ function App() {
           <Route path="/register/seller">
             <SellerRegister backend={backend} loggedIn={loggedIn} />
           </Route>
+
           {/* USER PROFILE */}
           <Route path="/profile">
             <Elements stripe={stripePromise}>
@@ -125,23 +136,29 @@ function App() {
           <Route path="/order">
             <IndividualOrder backend={backend} loggedIn={loggedIn} grabTotalCartQuantity={grabTotalCartQuantity} />
           </Route>
-          {/* SHOW ALL ITEMS/INDIVIDUAL ITEM */}
+
+          {/* SHOW ALL ELECTRONIC ITEMS */}
           <Route path="/shop/:pageIndex">
             <AllItems grabURL={grabURL} backend={backend} loggedIn={loggedIn} totalCartQuantity={totalCartQuantity} grabTotalCartQuantity={grabTotalCartQuantity} />
           </Route>
+
+          {/* VIEW ONE ELECTRONIC ITEM */}
           <Route path='/item'> 
             <ItemPage url={url} backend={backend} loggedIn={loggedIn} totalCartQuantity={totalCartQuantity} grabTotalCartQuantity={grabTotalCartQuantity}/>
           </Route>
+
           {/* CART */}
           <Route path="/cart">
             <CartPage backend={backend} loggedIn={loggedIn} totalCartQuantity={totalCartQuantity} grabTotalCartQuantity={grabTotalCartQuantity} />
           </Route>
 
+          {/* HOMEPAGE */}
           <Route path="">
             <Homepage backend={backend} loggedIn={loggedIn} totalCartQuantity={totalCartQuantity} grabTotalCartQuantity={grabTotalCartQuantity}/>
           </Route>
 
           <Route component={NoMatchPage} />
+          
         </Switch>
       </BrowserRouter>
       

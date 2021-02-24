@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Redirect } from 'react-router-dom';
 import {useStripe, useElements, CardElement, CardCvcElement} from '@stripe/react-stripe-js';
+import { io } from "socket.io-client";
 
-import NavBar from '../../components/NavigationBar';
 import Shipping from './Shipping'
 import PaymentMethod from './PaymentMethod'
 import CheckoutItems from './CheckoutItems'
@@ -10,8 +10,9 @@ import OrderComplete from './OrderComplete'
 
 import createPaymentMethod from './CreatePayment'
 import '../../styles/CheckoutPage.css';
-import {Link} from 'react-router-dom';
 
+
+const socket = io.connect('wss://elecommerce.herokuapp.com',  { transports: ['websocket', 'polling', 'flashsocket'] }) // connect to socket outside function because we want to connect to the socket only one time; if inside the function, then it will reconnect at every render; reconnecting more than once will give us multiple socket IDs
 
 function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCartID, grabTotalCartQuantity }) {
     // Helper to check if user is logged in
@@ -201,6 +202,10 @@ function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCar
     const grabShowButtons = (showButtons) => setShowButtons(showButtons)
     const grabReadOnly = (readOnly) => setReadOnly(readOnly)
 
+    /* ------- PASSING SOCKET FROM CHECKOUT TO ORDER COMPLETE VIA APP ------- */  
+
+    grabSocketContainer(socket)
+
     /* ------- LISTEN TO INPUT CHANGES TO UPDATE STATES ------- */  
 
     // handleBillingChange() gets passed down as prop to Checkout/PaymentMethod, and then to Component/BillingInput
@@ -249,7 +254,8 @@ function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCar
         grabError(event.error ? event.error.message : "");
     };
 
-    const grabRedirect = (redirect) => setRedirect(redirect)
+    /* ------- REDIRECT TO CART PAGE ------- */  
+    const grabRedirect = (redirect) => setRedirect(redirect) // aside from using redirect state at CheckoutPage component, redirect state is also passed down to the 2 other child components (CheckoutItems and Shipping) to be used for users who cleared local storage.
 
     const billingInputErrorDisableButton = () => {
         console.log(billing)
@@ -277,6 +283,8 @@ function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCar
             || billing.postalCode === ''
         )
     }
+
+
 
     /* ------- CREATE NEW OR UPDATE EXISTING PAYMENT INTENT AFTER RENDERING DOM ------- */
     useEffect(() => {
@@ -322,6 +330,7 @@ function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCar
                     setClientSecret(paymentIntentData.clientSecret) // need the client secret in order to call stripe.confirmCardPayment(); the client secret will be the same if we are updating a payment intent
                     grabCartID(cartResponseData.cart._id) // When we click Next in the ShippingForm component, we update the payment intent to include the shipping address. To update the PI, we need the Idempotency-Key header, in which its value is the cart ID. So after fetching the server for the cart, update the cartID to the id of the cart, and pass down cartID state to ShippingForm component.
                     
+                    socket.emit('cartID', {cartID: cartResponseData.cart._id}) // send the cartID to the socket; the cartID will be store alongside the socket id at the database by our server since we want the socket to send the order info at webhook and webhook has access to the cartID; so by storing cartID with the socket id, we can find the socket id by using the cartID at webhook; we need the socket id to send the order info to a particular client
                 } 
             } else {
                 // We want to always include a credentials: 'include' header, so that the session ID will be sent back in the request headers to the server. 

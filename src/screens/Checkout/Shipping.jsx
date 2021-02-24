@@ -4,11 +4,10 @@ import Modal from 'react-modal';
 import { Redirect } from 'react-router-dom';
 // import { Accordion, Card } from 'react-bootstrap'
 
-function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, grabShowPayment, loggedOut, grabLoggedOut, shipping, grabShipping, grabBillingWithShipping, shippingInput, grabShippingInput, paymentMethod, grabCardholderName, showButtons, grabShowButtons, grabShowItems, showShipping, grabShowShipping, grabError, grabDisabled, readOnly, grabReadOnly, grabTotalCartQuantity, grabRedirect, prevLoggedIn, grabPrevLoggedIn }) {
+function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, grabShowPayment, shipping, grabShipping, grabBillingWithShipping, shippingInput, grabShippingInput, paymentMethod, grabCardholderName, showButtons, grabShowButtons, showShipping, grabShowShipping, grabError, grabDisabled, grabReadOnly, grabTotalCartQuantity, grabRedirect, prevLoggedIn }) {
    
     const [shippingLoading, setShippingLoading] = useState(true) // shippingLoading state is initially set to true to render <></> before updating it to false in useEffect()
     const [showModal, setShowModal] = useState(false)
-    const [redirect, setRedirect] = useState(false)
 
     // addShipping state to represent if we are currently adding a new shipping address to addresses logged in user has already saved
     const [addShipping, setAddShipping] = useState(false)
@@ -18,8 +17,6 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
     const [showSavedShipping, setShowSavedShipping] = useState(false)
     // editShipping state represents if we are currently editing an address
     const [editShipping, setEditShipping] = useState(false)
-    // const [readOnly, setReadOnly] = useState(false) // disable the inputs after clicking Next
-    // const [showButtons, setShowButtons] = useState(false) //when we click Next button an Edit (sort of like a back button) appears. When the Edit button is clicked, showButtons state gets updated to true to display 3 other buttons: Add New, Edit, and Saved Shipping
     const [multipleShipping, setMultipleShipping] = useState(false) //multipleShipping state is initially false but will update to true in UseEffect if there is more than 1 saved address coming back from the server or after adding a new address at checkout
 
 
