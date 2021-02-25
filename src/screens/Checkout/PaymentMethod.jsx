@@ -14,7 +14,7 @@ function PaymentMethod ({ backend, processing, loggedIn, error, grabError, disab
     const elements = useElements()
     const stripe = useStripe()
 
-
+    const [processingPayment, setProcessingPayment] = useState(false) // for saved cards users processingPayment truthy state will disable the Confirm Payment button  
     const [savedCards, setSavedCards] = useState([])
     const [showModal, setShowModal] = useState(false)
     const [multipleSavedCards, setMultipleSavedCards] = useState(false)
@@ -271,11 +271,12 @@ function PaymentMethod ({ backend, processing, loggedIn, error, grabError, disab
         }
     }
 
-    // Test if the postal code is only numbers; function will return true if test fails
-    const postalCodeErrors = () => {
+    // Test if the expiration is only numbers; function will return true if test fails
+    const editExpirationError = () => {
+        console.log(/^[0-9]*$/g.test(editExpiration.month))
        return (
-           (/^\d+$/g.test(editExpiration.month) !== true && editExpiration.month !== undefined)
-           || (/^\d+$/g.test(editExpiration.year) !== true && editExpiration.month !== undefined)
+           (/^[0-9]*$/g.test(editExpiration.month) !== true && editExpiration.month !== '')
+           || (/^[0-9]*$/g.test(editExpiration.year) !== true && editExpiration.month !== '')
         )
     }
 
@@ -286,7 +287,7 @@ function PaymentMethod ({ backend, processing, loggedIn, error, grabError, disab
         return collectCVV !== 'true' && (
             <>
             <div><h2>Payment Method</h2></div>
-            {showPayment && <CardForm loggedIn={loggedIn} paymentMethod={paymentMethod} handleSubmitCardForm={handleConfirmPayment} handleCardChange={handleCardChange} handleBillingChange={handleBillingChange} handleCardholderNameChange={handleCardholderNameChange} cardholderName={cardholderName} billing={billing} grabBilling={grabBilling} collectCVV={collectCVV} redisplayCardElement={redisplayCardElement} closeAddNewModal={closeAddNewModal} disabled={disabled} error={error} sameAsShipping={sameAsShipping} handleSameAsShipping={handleSameAsShipping} billingInputErrorDisableButton={billingInputErrorDisableButton}  />}
+            {showPayment && <CardForm loggedIn={loggedIn} paymentMethod={paymentMethod} handleSubmitCardForm={handleConfirmPayment} handleCardChange={handleCardChange} handleBillingChange={handleBillingChange} handleCardholderNameChange={handleCardholderNameChange} cardholderName={cardholderName} billing={billing} grabBilling={grabBilling} collectCVV={collectCVV} redisplayCardElement={redisplayCardElement} closeAddNewModal={closeAddNewModal} disabled={disabled} error={error} sameAsShipping={sameAsShipping} handleSameAsShipping={handleSameAsShipping} billingInputErrorDisableButton={billingInputErrorDisableButton} processing={processing} />}
             </>
         )      
 
@@ -351,7 +352,10 @@ function PaymentMethod ({ backend, processing, loggedIn, error, grabError, disab
                 - A CVC Element is only displayed if there is a saved card with a "true" recollectCVV property) 
                 2) error when typing in the Card/CVV Element */}
                 {(!editPayment && !redisplayCardElement && !showSavedCards) ? (
-                    <button disabled={ (disabled && paymentMethod.recollectCVV === "true") || error }  id="submit" onClick={handleConfirmPayment} >
+                    <button disabled={ (disabled && paymentMethod.recollectCVV === "true") || error || processingPayment }  id="submit" onClick={(event) => {
+                        setProcessingPayment(true)
+                        handleConfirmPayment(event)
+                    }} >
                         <span id="button-text">
                             {processing ? (<div className="spinner" id="spinner"></div>) : ("Confirm Payment")}
                         </span>
@@ -377,21 +381,18 @@ function PaymentMethod ({ backend, processing, loggedIn, error, grabError, disab
                 </div>
 
                 <input value={cardholderName || ""} name="name" placeholder="Name on card" onChange={handleCardholderNameChange}/>
-                {((/^[a-z][a-z\s]*$/i.test(cardholderName) !== true)  &&  cardholderName !== "") && <div className="warning">You must enter only letters as your full name</div>}
-
-                <input value={cardholderName || ""} name="name" placeholder="Name on card" onChange={handleCardholderNameChange}/>
-                {((/^[a-z][a-z\s]*$/i.test(cardholderName) !== true)  &&  cardholderName !== "") && <div className="warning">You must enter only letters as your full name</div>}
+                {(/^[a-z ,.'-]+$/i.test(cardholderName) !== true  &&  cardholderName !== "") && <div className="warning">You must enter only letters as your full name</div>}
 
                 <span className="expiration" >
-                    <input value = {editExpiration.month} type="number" name="month" placeholder="MM" min="01" max="12" maxLength="2" size="2" required={true} onChange={handleEditExpiration}/>
+                    <input value = {editExpiration.month} type="number" name="month" placeholder="MM" maxLength="2" size="2" required={true} onChange={handleEditExpiration}/>
                     <span>/</span>
-                    <input value = {editExpiration.year} type="number" name="year" placeholder="YY" min="2021" max="2031"  maxLength="4" size="3" required={true} onChange={handleEditExpiration}/>
+                    <input value = {editExpiration.year} type="number" name="year" placeholder="YY" maxLength="4" size="3" required={true} onChange={handleEditExpiration}/>
                 </span>
-                { postalCodeErrors () && <div className="warning">You must enter only numbers for your zip code</div> }
+                { editExpirationError() && <div className="warning">You must enter only numbers for your expiration date</div> }
 
                 <div>
                     <BillingInput billing={billing} handleBillingChange={handleBillingChange} editPayment={editPayment} />
-                    <button disabled={ billingInputErrorDisableButton() || billingPostalCodeInputErrorDisableButton() || postalCodeErrors() }>Save</button>
+                    <button disabled={ billingInputErrorDisableButton() || billingPostalCodeInputErrorDisableButton() || editExpirationError() }>Save</button>
                     <button onClick={closeEditModal}>Close</button>
                 </div>
                 </form>

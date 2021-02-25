@@ -1,19 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import NavBar from '../../components/NavigationBar';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { useLocation, Link } from 'react-router-dom';
+import { useLocation, Link, Redirect } from 'react-router-dom';
 import Modal from 'react-modal';
 
-export default function OrderComplete({ backend, loggedIn, cartID, socketContainer, grabTotalCartQuantity }) {
+export default function OrderComplete({ backend, loggedIn, cartID, socket, grabTotalCartQuantity, totalCartQuantity }) {
  
     const [orderLoading, setOrderLoading] = useState(true)
     const [showRedirectModal, setShowRedirectModal] = useState(false)
+    const [redirect, setRedirect] = useState(false)
 
     const [orderItems, setOrderItems] = useState([])
     const [orderShipping, setOrderShipping] = useState([])
     const [orderShippingName, setOrderShippingName] = useState('')
     const [orderPayment, setOrderPayment] = useState({})
     const [orderNumber, setOrderNumber] = useState('')
+    const [prevLoggedIn, setPrevLoggedIn] = useState(loggedIn())
 
     const location = useLocation()
 
@@ -23,25 +25,22 @@ export default function OrderComplete({ backend, loggedIn, cartID, socketContain
 
         const getOrderConfirmation = async() => {
             if(cartID) {
+                
                 // socket sends event, called completeOrder, with the data which pertains to order info
-                socketContainer.on('completeOrder', (orderData) => {
+                socket.on('completeOrder', (orderData) => {
                     console.log(44, orderData)
 
-                    const shipping = orderData.order.Shipping.Address.split(",")
+                    grabTotalCartQuantity(0) // update nav bar shopping cart badge icon to 0 after order; grabTotalCartQuantity() needs to be called inside socket.on('completeOrder) because if we get data back then that means the webhook function successfully carried out, including deleting cart
                     setOrderItems(orderData.order.Items)
+                    const shipping = orderData.order.Shipping.Address.split(", ")
                     setOrderShipping(shipping)
                     setOrderShippingName(orderData.order.Shipping.Name.replace(", ", " "))
                     setOrderNumber(orderData.order.OrderNumber)
                     setOrderPayment(orderData.payment)
                     setOrderLoading(false)
-
-                    socketContainer.emit('end', {cartID: cartID}) // end socket connect
-                    // socketContainer.disconnect(true)
+                    socket.emit('end', {cartID: cartID}) // end socket connect
                 })
-
-                // socketContainer.emit('end', {cartID: cartID}) // end socket connect
-
-                // socketContainer.disconnect(true)
+                if(!loggedIn()) setRedirect(true)
             } else {
             
                 // If user wants to see the order receipt after order is complete at anytime, then we need to parse the URL query to get the order number. However, user needs to be logged in to see the order since it would not be safe for anyone with the URL can view the order. So if guest made an order, then guest can only view the order confirmation right after confirming payment.
@@ -68,7 +67,12 @@ export default function OrderComplete({ backend, loggedIn, cartID, socketContain
                         setOrderNumber(completeOrderData.order.OrderNumber)
                         setOrderPayment(completeOrderData.payment)
                         setOrderLoading(false)
+                       
                 } else {
+                    if(prevLoggedIn && !loggedIn()) {
+                        grabTotalCartQuantity(0)
+                        return setRedirect(true)
+                    }
                     return setShowRedirectModal(true)
                 }
             }
@@ -79,7 +83,7 @@ export default function OrderComplete({ backend, loggedIn, cartID, socketContain
             abortController.abort()
         }
 
-    }, [])
+    }, [loggedIn()])
 
     if(orderLoading && cartID) {
         return (
@@ -94,13 +98,13 @@ export default function OrderComplete({ backend, loggedIn, cartID, socketContain
                 Looks like this page does not exist or requires you to log in. Click <Link to="/">here</Link> to return to homepage.
             </Modal>
         )
+    } else if (redirect) {
+        return <Redirect to="/"></Redirect>
     } else if(orderLoading) {
         return null
     } else {
         return (
-        
             <>
-                <NavBar />
                 <h2>Thank you for your purchase! </h2>
                 <h3>Order #: {orderNumber}</h3>
                     
@@ -117,7 +121,7 @@ export default function OrderComplete({ backend, loggedIn, cartID, socketContain
                     {/* <p>{order.Shipping.Name.split(", ")[0]} {order.Shipping.Name.split(", ")[1]} </p> */}
                     <p>{orderShippingName}</p>
                     <p>{orderShipping[0]}</p>
-                    <p>{orderShipping[1] === "null" || orderShipping[1] === "undefined" ? "" : orderShipping[1]}</p>
+                    <p>{orderShipping[1] === "null" ? "" : orderShipping[1]}</p>
                     <p>{orderShipping[2]}, {orderShipping[3]} {orderShipping[4]} </p>
                     
                     <h4>Billing Details</h4>
@@ -144,3 +148,5 @@ export default function OrderComplete({ backend, loggedIn, cartID, socketContain
     //         setOrderLoading(false)
     //     })
     // }, [])
+
+    // http://localhost:3000/order-complete?orderNumber=6037007eaa771e00154481b0

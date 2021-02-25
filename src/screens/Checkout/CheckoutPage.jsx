@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Redirect } from 'react-router-dom';
+import { Redirect, useHistory } from 'react-router-dom';
 import {useStripe, useElements, CardElement, CardCvcElement} from '@stripe/react-stripe-js';
-import { io } from "socket.io-client";
 
 import Shipping from './Shipping'
 import PaymentMethod from './PaymentMethod'
@@ -12,11 +11,9 @@ import createPaymentMethod from './CreatePayment'
 import '../../styles/CheckoutPage.css';
 
 
-const socket = io.connect('wss://elecommerce.herokuapp.com',  { transports: ['websocket', 'polling', 'flashsocket'] }) // connect to socket outside function because we want to connect to the socket only one time; if inside the function, then it will reconnect at every render; reconnecting more than once will give us multiple socket IDs
-
-function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCartID, grabTotalCartQuantity, grabSocketContainer }) {
-    // Helper to check if user is logged in
-
+function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCartID, grabTotalCartQuantity, socket }) {
+    const history = useHistory()
+    
     /* ------- LOADING STATES ------- */
     // The loading states determine what you will see when you hit the "/checkout" route the first time
     const [redirect, setRedirect] = useState(false);
@@ -204,7 +201,7 @@ function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCar
 
     /* ------- PASSING SOCKET FROM CHECKOUT TO ORDER COMPLETE VIA APP ------- */  
 
-    grabSocketContainer(socket)
+    // grabSocketContainer(socket)
 
     /* ------- LISTEN TO INPUT CHANGES TO UPDATE STATES ------- */  
 
@@ -260,23 +257,30 @@ function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCar
     const billingInputErrorDisableButton = () => {
         console.log(billing)
         console.log(cardholderName)
+        console.log(/^[a-z][a-z\s]*$/i.test(cardholderName))
         return (
             /^[a-z][a-z\s]*$/i.test(cardholderName) !== true 
             || cardholderName === undefined
+            || cardholderName === ''
             || /^[a-z][a-z\s]*$/i.test(billing.firstName) !== true 
             || billing.firstName === undefined
+            || billing.firstName === ''
             || /^[a-z][a-z\s]*$/i.test(billing.lastName) !== true 
             || billing.lastName === undefined
+            || billing.lastName === ''
             || billing.line1 === undefined
             || billing.line1 === ''
             || /^[a-z][a-z\s]*$/i.test(billing.city) !== true 
             || billing.city === undefined
+            || billing.city === ''
             || /^[a-z][a-z\s]*$/i.test(billing.state) !== true 
             || billing.state === undefined
+            || billing.state === ''
         )
     }
 
     const billingPostalCodeInputErrorDisableButton = () => {
+        console.log(/^[0-9]*$/g.test(billing.postalCode))
         return (
             /^[0-9]*$/g.test(billing.postalCode) !== true 
             || billing.postalCode === undefined
@@ -472,7 +476,7 @@ function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCar
         } else if(confirmCardResult.paymentIntent.status === 'succeeded'){
             // The payment has been processed!
             console.log('succeeded')
-            // grabSuccessfulPaymentIntent(confirmCardResult.paymentIntent)
+            // setDisabled(true)
             setProcessing(false) // Stop the spinner
             setOrderComplete(true) //redirect to OrderComplete component
         }
@@ -485,9 +489,7 @@ function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCar
         return <Redirect to="/cart"></Redirect>
     } else if(orderComplete) {
         return (
-            <Redirect to={`/order-complete?orderNumber=${cartID}`}>
-                <OrderComplete />
-            </Redirect>
+            <Redirect to={`/order-complete?orderNumber=${cartID}`}></Redirect>
     )} else {
         return (
             <>

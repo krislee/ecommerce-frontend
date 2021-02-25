@@ -52,21 +52,26 @@ export default function ShippingForm({ backend, loggedIn, readOnly, shipping, ad
     }
 
     const disableButton = () => {
-        console.log(shippingInput.line1, typeof shippingInput.line1)
         return (
-            /^[a-z][a-z\s]*$/i.test(shippingInput.firstName) !== true 
-            || shippingInput.firstName === undefined)
-            || (/^[a-z][a-z\s]*$/i.test(shippingInput.lastName) !== true 
-            || shippingInput.lastName === undefined)
+            /^[a-z ,.'-]+$/i.test(shippingInput.firstName) !== true 
+            || shippingInput.firstName === ""
+            || shippingInput.firstName === undefined
+            || /^[a-z ,.'-]+$/i.test(shippingInput.lastName) !== true 
+            || shippingInput.lastName === ""
+            || shippingInput.lastName === undefined
+            || shippingInput.line1 === ""
             || shippingInput.line1 === undefined
-            || shippingInput.line1 === ''
-            || (/^[a-z][a-z\s]*$/i.test(shippingInput.city) !== true 
-            || shippingInput.city === undefined)
-            || (/^[a-z][a-z\s]*$/i.test(shippingInput.state) !== true 
-            || shippingInput.state === undefined)
-            || (/^d+$/.test(shippingInput.postalCode) !== true 
+            || /^[a-z ,.'-]+$/i.test(shippingInput.city) !== true 
+            || shippingInput.city === ""
+            || shippingInput.city === undefined
+            || /^[a-z][a-z\s]*$/i.test(shippingInput.state) !== true 
+            || shippingInput.state === ""
+            || shippingInput.state === undefined
+            || shippingInput.state.length !== 2
+            || /^[0-9]+$/.test(shippingInput.postalCode) !== true 
+            || shippingInput.postalCode === ""
             || shippingInput.postalCode === undefined
-            || shippingInput.postalCode === ''
+            || shippingInput.postalCode.length !== 5
         )
     }
 
@@ -74,23 +79,23 @@ export default function ShippingForm({ backend, loggedIn, readOnly, shipping, ad
         <>
         <form id="form" name="form" onSubmit={handleSubmit}>
             <input value={shippingInput.firstName || ""} name="firstName" placeholder="First Name" onChange={handleShippingChange} readOnly={readOnly} required/>
-            {((/^[a-z][a-z\s]*$/i.test(shippingInput.firstName) !== true)  && shippingInput.firstName !== "") && <div className="warning">You must enter only letters as your first name</div>}
+            {(/^[a-z ,.'-]+$/i.test(shippingInput.firstName) !== true && shippingInput.firstName !== "") && <div className="warning">You must enter only letters as your first name</div>}
 
             <input value={shippingInput.lastName || ""} name="lastName" placeholder="Last Name" onChange={handleShippingChange} readOnly={readOnly} required/>
-            {((/^[a-z][a-z\s]*$/i.test(shippingInput.lastName) !== true)  && shippingInput.firstName !== "") && <div className="warning">You must enter only letters as your last name</div>}
+            {(/^[a-z ,.'-]+$/i.test(shippingInput.lastName) !== true && shippingInput.lastName !== "") && <div className="warning">You must enter only letters as your last name</div>}
 
             <input value={shippingInput.line1 || ""} name="line1" placeholder="Address Line One" onChange={handleShippingChange} readOnly={readOnly} required/>
 
             <input value={shippingInput.line2 || ""} name="line2" placeholder="Address Line Two" onChange={handleShippingChange} readOnly={readOnly} />
 
             <input value={shippingInput.city || ""} name="city" placeholder="City" onChange={handleShippingChange} readOnly={readOnly} required/>
-            {((/^[a-z][a-z\s]*$/i.test(shippingInput.city) !== true) && shippingInput.city !== "") && <div className="warning">You must enter only letters as your city</div>}
+            {(/^[a-z ,.'-]+$/i.test(shippingInput.city) !== true && shippingInput.city !== "") && <div className="warning">You must enter only letters as your city</div>}
 
             <input value={shippingInput.state || ""} name="state" placeholder="State" onChange={handleShippingChange} maxLength="2" readOnly={readOnly} required />
             {((/^[a-z][a-z\s]*$/i.test(shippingInput.state) !== true) && shippingInput.state !== "") && <div className="warning">You must enter only letters as your state</div>}
 
             <input value={shippingInput.postalCode || ""} name="postalCode" placeholder="Zipcode" onChange={handleShippingChange} maxLength="5" readOnly={readOnly} required />
-            {((/^d+$/g.test(shippingInput.postalCode) !== true) && shippingInput.postalCode !== undefined) && <div className="warning">You must enter only numbers as your zip code</div>}
+            {(/^[0-9]+$/.test(shippingInput.postalCode) !== true && shippingInput.postalCode !== "" && shippingInput.postalCode !== undefined) && <div className="warning">You must enter only numbers as your zip code</div>}
 
             {(loggedIn() && !shipping.firstName) && (
                 <>
@@ -104,8 +109,10 @@ export default function ShippingForm({ backend, loggedIn, readOnly, shipping, ad
             <button form="form" disabled={disableButton()}>Save</button> 
             <button type="button" onClick={closeModal}>Cancel</button>
             </>
-        ) : <button form="form" disabled={readOnly}>Next</button>   
+        ) : <button form="form" disabled={readOnly || disableButton()}>Next</button>   
         }
         </>      
     )
 }
+
+
