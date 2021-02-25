@@ -365,7 +365,6 @@ function PaymentMethod ({ backend, processing, loggedIn, error, grabError, disab
                 - We can tell if the Element is empty or not when handleCardChange() runs, handleCardChange() runs when there is typing/backspacing in the input. When handleCardChange() runs, the disabled state is updated to false when there is typing/backspacing or something written in CVV Element
                 - A CVC Element is only displayed if there is a saved card with a "true" recollectCVV property) 
                 2) error when typing in the Card/CVV Element */}
-                <button onClick = {() => console.log(disabled, error, paymentMethod.recollectCVV)}>Click</button>
                 {(!editPayment && !redisplayCardElement && !showSavedCards) ? (
                     <button disabled={ (disabled && paymentMethod.recollectCVV === "true") || error || processingPayment }  id="submit" onClick={(event) => {
                         setProcessingPayment(true)

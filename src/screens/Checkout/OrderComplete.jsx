@@ -40,7 +40,7 @@ export default function OrderComplete({ backend, loggedIn, cartID, socket, grabT
                     setOrderLoading(false)
                     socket.emit('end', {cartID: cartID}) // end socket connect
                 })
-                if(!loggedIn()) setRedirect(true)
+                if((prevLoggedIn && !loggedIn())) setRedirect(true)
             } else {
             
                 // If user wants to see the order receipt after order is complete at anytime, then we need to parse the URL query to get the order number. However, user needs to be logged in to see the order since it would not be safe for anyone with the URL can view the order. So if guest made an order, then guest can only view the order confirmation right after confirming payment.
