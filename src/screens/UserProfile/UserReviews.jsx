@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function UserReviews({ backend, loggedIn, reviewData, grabReviewData, reviewsTotal, reviewLoading, reviewsPage, grabReviewsPage, grabTotalCartQuantity, grabRedirect }) {
+export default function UserReviews({ backend, loggedIn, reviewData, grabReviewData, reviewsTotal, grabReviewsTotal, reviewLoading, reviewsPage, grabReviewsPage, grabTotalCartQuantity, grabRedirect }) {
 
     const classes = useStyles();
     const paginationClass = paginationUseStyles()
@@ -104,7 +104,7 @@ export default function UserReviews({ backend, loggedIn, reviewData, grabReviewD
             })
             const updateReviewData = await updateReviewResponse.json()
             console.log(updateReviewData)
-            grabReviewData(updateReviewData.allReviews.reverse()) // update the reviewData state with the new list of reviews that includes the updated review
+            grabReviewData(updateReviewData.allReviews) // update the reviewData state with the new list of reviews that includes the updated review
             setEditReviewForm(false) // close modal
             setDisableButtonAfterFetching(false) // enable the Submit button again for another edit
         } else {
@@ -126,9 +126,10 @@ export default function UserReviews({ backend, loggedIn, reviewData, grabReviewD
             })
             const deletedReviewData = await deleteReviewResponse.json()
             console.log(deletedReviewData)
-            grabReviewData(deletedReviewData.allReviews.reverse()) // update the reviewData state with the new list of reviews with the deleted review gone
+            grabReviewData(deletedReviewData.allReviews) // update the reviewData state with the new list of reviews with the deleted review gone
             setDeleteReviewForm(false) // close modal
             setDisableButtonAfterFetching(false) // enable the Submit button again for deleting
+            grabReviewsTotal(deletedReviewData.totalPages)
         } else {
             grabTotalCartQuantity(0)
             grabRedirect(true)
