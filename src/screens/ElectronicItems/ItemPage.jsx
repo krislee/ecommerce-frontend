@@ -28,7 +28,7 @@ function ItemPage ({ loggedIn, url, backend, totalCartQuantity, grabTotalCartQua
     const [avgRating, setAvgRating] = useState(null);
     const [review, setReview] = useState("");
     const [allReviews, setAllReviews] = useState([]);
-
+    const [nameOfItemLength, setNameOfItemLength] = useState(0);
     const [showAddItemAlert, setShowAddItemAlert] = useState(false)
     const [showAddItemDifferenceAlert, setShowAddItemDifferenceAlert] = useState(false)
     const [differenceQuantity, setDifferenceQuantity] = useState(0)
@@ -64,10 +64,10 @@ function ItemPage ({ loggedIn, url, backend, totalCartQuantity, grabTotalCartQua
                 let data = await resp.json();
                 console.log(31, data)
                 setItemInfo(data.electronicItem);
+                setNameOfItemLength(data.electronicItem.Name.length);
                 setAllReviews(data.review)
                 setAvgRating(data.avgRating)
             }
-
             fetchData();
 
             return function cleanUp () {
@@ -91,27 +91,39 @@ function ItemPage ({ loggedIn, url, backend, totalCartQuantity, grabTotalCartQua
                 let data = await resp.json();
                 console.log(49, data)
                 setItemInfo(data.electronicItem);
+                setNameOfItemLength(data.electronicItem.Name.length);
                 setAllReviews(data.review)
                 setAvgRating(data.avgRating)
             }
 
             fetchData();
-
+            // nameOfItem();
             return function cleanUp () {
                 abortController.abort()
             }
         }
-    }, [review])
+    }, [review]);
 
     const handleAddItemQuantity = (event) => {
         const { value } = event.target
         console.log(value, typeof value)
         setQuantity(parseInt(value))
-    }
+    };
 
-    return (
-        // Name, price, description, add to cart
-        <div className="item-page">
+
+    // const nameOfItem = () => {
+    //     if (nameOfItemLength < 20) {
+    //         return itemInfo.Name
+    //     } else {
+    //         return `${itemInfo.Name.split(" ").splice(0, 7).join(" ")}...`
+    //     }
+    // }
+
+    if (!itemInfo) {
+        return null
+    } else {
+        return (
+            <div className="item-page">
             {/* <NavBar totalCartQuantity={totalCartQuantity} grabTotalCartQuantity={grabTotalCartQuantity} backend={backend} loggedIn={loggedIn}/> */}
             <div className="item-info">
                 <div className="left-side-item-page">
@@ -164,7 +176,8 @@ function ItemPage ({ loggedIn, url, backend, totalCartQuantity, grabTotalCartQua
             <AllReviews backend={backend} allReviews={allReviews} />
             <Footer />
         </div>
-    )
+        )
+    }
 }
 
 export default ItemPage

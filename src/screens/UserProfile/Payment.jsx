@@ -15,10 +15,6 @@ function UserProfilePayment ({ backend, paymentData, grabPaymentData, defaultFir
     const [cardHolderInput, setCardHolderInput] = useState({});
     // Getter and Setter to store an object that will later be used to determine what users enter into inputs specifically regarding the creating payment function on the second edit modal (for billing information)
     const [billingInput, setBillingInput] = useState({});
-    // Getter and Setter to display a warning message regarding when the user does not fulfill requirements for the zipcode input when creating a payment method
-    const [addZipcodeWarning, setAddZipcodeWarning] = useState(false);
-    // Getter and Setter to display a warning message regarding when the user does not fulfill requirements for the state input when creating a payment method
-    const [addStateAbbreviationWarning, setAddStateAbbreviationWarning] = useState(false);
     // Getter and Setter to disable the button based on whether or not the card is valid when the user enters to create the payment method
     const [cardNumberDisabled, setCardNumberDisabled] = useState(true);
     const [cardCVCDisabled, setCardCVCDisabled] = useState(true);
@@ -27,7 +23,8 @@ function UserProfilePayment ({ backend, paymentData, grabPaymentData, defaultFir
     const [cardNumberError, setCardNumberError] = useState(null);
     const [cardCVCError, setCardCVCError] = useState(null);
     const [cardExpirationError, setCardExpirationError] = useState(null);
-    const [disabledOnSubmit, setDisabledOnSubmit] = useState(false);
+    const [disabledOnSubmitAddPaymentModal, setDisabledOnSubmitAddPaymentModal] = useState(false);
+    const [overlayClickCloseAddPaymentModal, setOverlayClickCloseAddPaymentModal] = useState(true);
     
 
     // Stripe elements
@@ -50,97 +47,120 @@ function UserProfilePayment ({ backend, paymentData, grabPaymentData, defaultFir
 
     // Function that is used to open the modal when users plan to create
     const openModal = () => {
-        setModalIsOpen(true);
-        // setDisabledOnSubmit(false);
+        if (loggedIn()) {
+            setModalIsOpen(true);
+        } else {
+            grabRedirect();
+        };
     };
 
     // Function that is used to close the modal when the user either leaves or submits a address
     const closeModal = () => {
-        setModalIsOpen(false);
-        setCardNumberDisabled(true);
-        setCardCVCDisabled(true);
-        setCardExpirationDisabled(true);
-        setCardHolderInput({});
-        setBillingInput({});
-        setCardNumberError(null);
-        setCardCVCError(null);
-        setCardExpirationError(null);
+        if (loggedIn()) {
+            setModalIsOpen(false);
+            setCardNumberDisabled(true);
+            setCardCVCDisabled(true);
+            setCardExpirationDisabled(true);
+            setCardHolderInput({});
+            setBillingInput({});
+            setCardNumberError(null);
+            setCardCVCError(null);
+            setCardExpirationError(null);
+        } else {
+            grabRedirect();
         };
+    };
 
     // Function that is used to open the second modal when users plan to create
     const openModalTwo = (e) => {
         e.preventDefault();
-        setModalTwoIsOpen(true);
-        // setDisabledOnSubmit(false);
+        if (loggedIn()) {
+            setModalTwoIsOpen(true);
+        } else {
+            grabRedirect();
+        };
     };
 
     // Function that is used to close the second modal when the user either leaves or submits a address
     const closeModalTwo = () => {
-        setModalIsOpen(false);
-        setModalTwoIsOpen(false);
-        setCardNumberDisabled(true);
-        setCardCVCDisabled(true);
-        setCardExpirationDisabled(true);
-        setCardHolderInput({});
-        setBillingInput({});
-        setCardNumberError(null);
-        setCardCVCError(null);
-        setCardExpirationError(null);
-        setDisabledOnSubmit(false);
+        if (loggedIn()) {
+            setModalIsOpen(false);
+            setModalTwoIsOpen(false);
+            setCardNumberDisabled(true);
+            setCardCVCDisabled(true);
+            setCardExpirationDisabled(true);
+            setCardHolderInput({});
+            setBillingInput({});
+            setCardNumberError(null);
+            setCardCVCError(null);
+            setCardExpirationError(null);
+            setDisabledOnSubmitAddPaymentModal(false);
+            setOverlayClickCloseAddPaymentModal(true);
+        } else {
+            grabRedirect();
+        };
     };
 
     // Function that allows us to change the value of the input dynamically and display it on the page regarding the card information
     const handleCardHolderNameChange = (e) => {
-        const { name, value } = e.target;
-        setCardHolderInput((prevCardHolder) => ({
-            ...prevCardHolder, [name] : value
-        }));
+        if (loggedIn()) {
+            const { name, value } = e.target;
+            setCardHolderInput((prevCardHolder) => ({
+                ...prevCardHolder, [name] : value
+            }));
+        } else {
+            grabRedirect();
+        };
     };
 
     // Function that allows us to change the value of the input dynamically and display it on the page regarding the billing address information
     const handleBillingChange = (e) => {
-        const { name, value } = e.target;
-        setBillingInput((prevBilling) => ({
-            ...prevBilling, [name] : value
-        }));
+        if (loggedIn()) {
+            const { name, value } = e.target;
+            setBillingInput((prevBilling) => ({
+                ...prevBilling, [name] : value
+            }));
+        } else {
+            grabRedirect();
+        };
     };
 
     // Function that allows us to check on the changes made when entering card number (whether it is valid or empty) set disabled or error accordingly
     const handleCardNumberChange = (event) => {
-        setCardNumberDisabled(event.empty);
-        console.log(event.error);
-        setCardNumberError(event.error ? event.error.message : "");
+        if (loggedIn()) {
+            setCardNumberDisabled(event.empty);
+            setCardNumberError(event.error ? event.error.message : "");
+        } else {
+            grabRedirect();
+        };
     };
 
     const handleCardCVCChange = (event) => {
-        setCardCVCDisabled(event.empty);
-        console.log(event.error);
-        setCardCVCError(event.error ? event.error.message : "");
+        if (loggedIn()) {
+            setCardCVCDisabled(event.empty);
+            setCardCVCError(event.error ? event.error.message : "");
+        } else {
+            grabRedirect();
+        };
     };
 
     const handleCardExpirationChange = (event) => {
-        setCardExpirationDisabled(event.empty);
-        console.log(event.error);
-        setCardExpirationError(event.error ? event.error.message : "");
+        if (loggedIn()) { 
+            setCardExpirationDisabled(event.empty);
+            setCardExpirationError(event.error ? event.error.message : "");
+        } else {
+            grabRedirect();
+        };
     };
 
     // Function that is used to handle the event when a user submits the request to make a new payment method
     const handleCreatePayment = async (e) => {
         // Prevents the page from refreshing
         e.preventDefault();
-        setDisabledOnSubmit(true);
-        // If the user does not fulfill the requirements for the zipcode input
-        if (billingInput.zipcode.length !== 5) {
-            setAddZipcodeWarning(true);
-            setAddStateAbbreviationWarning(false);
-        // If the user does not fulfill the requirements for the state input
-        } else if (billingInput.state.length !== 2) {
-            setAddZipcodeWarning(false);
-            setAddStateAbbreviationWarning(true);
-        } else {
-            // If the user does fulfill the requirements for the all the inputs
-            setAddZipcodeWarning(false);
-            setAddStateAbbreviationWarning(false);
+        // Sets the button to disabled to not create duplicate payments
+        if (loggedIn()) {
+            setOverlayClickCloseAddPaymentModal(false);
+            setDisabledOnSubmitAddPaymentModal(true);
             // We grab the checkbox that has the ID payment-default
             const checkbox = document.getElementById('payment-default');
             // We check whether or not the checkbox is checked (which indicates whether or not they want to make the payment method the default payment method)
@@ -189,6 +209,8 @@ function UserProfilePayment ({ backend, paymentData, grabPaymentData, defaultFir
             setBillingInput({});
             // Close the modal
             closeModalTwo();
+        } else {
+            grabRedirect();
         };
     };
 
@@ -208,6 +230,7 @@ function UserProfilePayment ({ backend, paymentData, grabPaymentData, defaultFir
                 capitalize={capitalize}
                 capitalizeArray={capitalizeArray}
                 loggedIn={loggedIn}
+                grabRedirect={grabRedirect}
                 />
             );
         };
@@ -249,8 +272,8 @@ function UserProfilePayment ({ backend, paymentData, grabPaymentData, defaultFir
                 name="cardName" 
                 placeholder="Card Name" 
                 onChange={handleCardHolderNameChange}/>
-                {/* Appears when the input for full name has anything other than letters */}
-                {(/^[a-z][a-z\s]*$/i.test(cardHolderInput.cardName) !== true 
+                {/* Appears when the input for full name has anything other than letters and certain characters like apostrophes, commas, periods and hyphens */}
+                {(/^[a-z ,.'-]+$/i.test(cardHolderInput.cardName) !== true 
                 && cardHolderInput.cardName !== "")
                 && <div className="warning">You must enter only letters as your name</div>}
                 {/* Imported from Stripe API, this will generate the input fields for the card number, expiration date and zipcode */}
@@ -277,7 +300,7 @@ function UserProfilePayment ({ backend, paymentData, grabPaymentData, defaultFir
                 || cardCVCDisabled
                 || cardNumberDisabled
                 || cardExpirationDisabled
-                || ((/^[a-z][a-z\s]*$/i.test(cardHolderInput.cardName) !== true) 
+                || ((/^[a-z ,.'-]+$/i.test(cardHolderInput.cardName) !== true) 
                 || cardHolderInput.cardName === ""
                 || cardHolderInput.cardName === undefined)
                 }>
@@ -288,6 +311,7 @@ function UserProfilePayment ({ backend, paymentData, grabPaymentData, defaultFir
             </Modal>
             {/* Modal that is used to create the payment method billing address section*/}
             <Modal
+                shouldCloseOnOverlayClick={overlayClickCloseAddPaymentModal}
                 isOpen={modalTwoIsOpen}
                 onRequestClose={closeModalTwo}
                 style={customStyles}
@@ -302,8 +326,8 @@ function UserProfilePayment ({ backend, paymentData, grabPaymentData, defaultFir
                 type="text"
                 placeholder="First Name" 
                 onChange={handleBillingChange}/>
-                {/* Appears when the input for first name has anything other than letters */}
-                {(/^[a-z][a-z\s]*$/i.test(billingInput.firstName) !== true 
+                {/* Appears when the input for first name has anything other than letters and certain characters like apostrophes, commas, periods and hyphens */}
+                {(/^[a-z ,.'-]+$/i.test(billingInput.firstName) !== true 
                 && billingInput.firstName !== "") 
                 && <div className="warning">You must enter only letters as your first name</div>}
                 {/* Input regarding the last name of the creating payment method billing address modal */}
@@ -312,8 +336,8 @@ function UserProfilePayment ({ backend, paymentData, grabPaymentData, defaultFir
                 name="lastName" 
                 placeholder="Last Name" 
                 onChange={handleBillingChange}/>
-                {/* Appears when the input for last name has anything other than letters */}
-                {(/^[a-z][a-z\s]*$/i.test(billingInput.lastName) !== true 
+                {/* Appears when the input for last name has anything other than letters and certain characters like apostrophes, commas, periods and hyphens */}
+                {(/^[a-z ,.'-]+$/i.test(billingInput.lastName) !== true 
                 && billingInput.lastName !== "") 
                 && <div className="warning">You must enter only letters as your last name</div>}
                 {/* Input regarding the first address line of the creating payment method billing address modal */}
@@ -337,8 +361,8 @@ function UserProfilePayment ({ backend, paymentData, grabPaymentData, defaultFir
                 name="city" 
                 placeholder="City" 
                 onChange={handleBillingChange}/>
-                {/* Appears when the input for city has anything other than letters */}
-                {(/^[a-z][a-z\s]*$/i.test(billingInput.city) !== true 
+                {/* Appears when the input for city has anything other than letters and certain characters like apostrophes, commas, periods and hyphens */}
+                {(/^[a-z ,.'-]+$/i.test(billingInput.city) !== true 
                 && billingInput.city !== "") 
                 && <div className="warning">You must enter only letters as your city</div>}
                 {/* Input regarding the state of the creating payment method billing address modal */}
@@ -361,32 +385,28 @@ function UserProfilePayment ({ backend, paymentData, grabPaymentData, defaultFir
                 maxLength="5"
                 onChange={handleBillingChange}/>
                 {/* Appears when the input for zipcode has anything other than numbers */}
-                {(/[a-zA-Z]/g.test(billingInput.zipcode) === true 
+                {(/^[0-9]+$/.test(billingInput.zipcode) !== true 
                 && billingInput.zipcode !== undefined) 
                 && <div className="warning">You must enter only numbers as your zip code</div>}
-                {/* Appears when the input for zipcode has not met the five digit count length */}
-                {addZipcodeWarning 
-                && <div className="warning">You must enter five digits as your zip code</div>}
-                {/* Appears when the input for state has not met the two digit count length */}
-                {addStateAbbreviationWarning 
-                && <div className="warning">Please enter your state as an abbreviation (ex. CA, NY)</div>}
                 {/* Button will be disabled if the input fields are not filled in (except for the address line two input field) */}
                 <button 
                 style={{marginTop: '1rem'}}
                 onClick={handleCreatePayment} 
                 disabled={
-                (/^[a-z][a-z\s]*$/i.test(billingInput.firstName) !== true 
+                (/^[a-z ,.'-]+$/i.test(billingInput.firstName) !== true 
                 || billingInput.firstName === undefined)
-                || (/^[a-z][a-z\s]*$/i.test(billingInput.lastName) !== true 
+                || (/^[a-z ,.'-]+$/i.test(billingInput.lastName) !== true 
                 || billingInput.lastName === undefined)
                 || billingInput.lineOne === undefined
-                || (/^[a-z][a-z\s]*$/i.test(billingInput.city) !== true 
+                || (/^[a-z ,.'-]+$/i.test(billingInput.city) !== true 
                 || billingInput.city === undefined)
                 || (/^[a-z][a-z\s]*$/i.test(billingInput.state) !== true 
-                || billingInput.state === undefined)
-                || (/[a-zA-Z]/g.test(billingInput.zipcode) === true 
+                || billingInput.state === undefined
+                || billingInput.state.length !== 2)
+                || (/^[0-9]+$/.test(billingInput.zipcode) !== true 
                 || billingInput.zipcode === "")
-                || disabledOnSubmit
+                || billingInput.zipcode.length !== 5
+                || disabledOnSubmitAddPaymentModal
                 }>
                     Submit
                 </button>

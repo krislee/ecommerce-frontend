@@ -12,6 +12,8 @@ function UserProfileAddress ({ backend, addressData, defaultFirst, grabAddressDa
     // Getter and Setter to store an object that will later be used to determine what users enter into inputs specifically regarding the adding address function
     const [addressInput, setAddressInput] = useState({});
     // Getter and setter to display a warning message regarding when the user does not fulfill requirements for the zipcode input when creating an address
+    const [disabledOnSubmitAddAddressModal, setDisabledOnSubmitAddAddressModal] = useState(false);
+    const [overlayClickCloseAddAddressModal, setOverlayClickCloseAddAddressModal] = useState(true);
 
     // Style for the Modal
     const customStyles = {
@@ -28,21 +30,36 @@ function UserProfileAddress ({ backend, addressData, defaultFirst, grabAddressDa
 
     // Function that is used to open the modal when users plan to create
     const openModal = () => {
-        setIsOpen(true);
+        if (loggedIn()) {
+            setIsOpen(true);
+        }
+        else {
+            grabRedirect();
+        };
     };
 
     // Function that is used to close the modal when the user either leaves or submits a address
     const closeModal = () => {
-        setIsOpen(false);
-        setAddressInput({});
+        if (loggedIn()) {
+            setIsOpen(false);
+            setAddressInput({});
+            setOverlayClickCloseAddAddressModal(true);
+            setDisabledOnSubmitAddAddressModal(false);
+        } else {
+            grabRedirect();
+        };
     };
 
     // Function that is used to make sure the inputs that are being put in by the user is saved to the addressInput object so we can use the object when creating a new address
     const handleAddressChange = (e) => {
-        const { name, value } = e.target
+        if (loggedIn()) {
+            const { name, value } = e.target
         setAddressInput((prevAddress) => ({
             ...prevAddress, [name] : value
         }));
+        } else {
+            grabRedirect();
+        }
     };
 
     // Function that is used to handle the event when a user submits the request to make a new address
@@ -50,6 +67,8 @@ function UserProfileAddress ({ backend, addressData, defaultFirst, grabAddressDa
         // Prevents the page from refreshing
         event.preventDefault();
         if (loggedIn()) {
+        setDisabledOnSubmitAddAddressModal(true);
+        setOverlayClickCloseAddAddressModal(false);
         // Grabbing the DOM element with the ID of address-default (which is the checkbox that is used by users to indicate whether or not they want said address to be default or not)
         const checkbox = document.getElementById('address-default');
         // We check if the checkbox is checked or not, and this will return a boolean
@@ -77,9 +96,9 @@ function UserProfileAddress ({ backend, addressData, defaultFirst, grabAddressDa
         // Clearing out the object used to store the information that users put in the input fields so it's blank when users want to create a new one
         setAddressInput({});
         // Close the modal
-        setIsOpen(false);
+        closeModal();
         } else {
-            return grabTotalCartQuantity(0);
+            grabRedirect();
         }
     }
 
@@ -100,7 +119,8 @@ function UserProfileAddress ({ backend, addressData, defaultFirst, grabAddressDa
                 loggedIn={loggedIn}
                 capitalize={capitalize}
                 capitalizeArray={capitalizeArray}
-                grabTotalCartQuantity={grabTotalCartQuantity}/>
+                grabTotalCartQuantity={grabTotalCartQuantity}
+                grabRedirect={grabRedirect}/>
             );
         };
     });
@@ -127,6 +147,7 @@ function UserProfileAddress ({ backend, addressData, defaultFirst, grabAddressDa
             </>}
             {/* Modal that specifically pertains to the adding new addresses */}
             <Modal
+                shouldCloseOnOverlayClick={overlayClickCloseAddAddressModal}
                 isOpen={modalIsOpen}
                 onRequestClose={closeModal}
                 style={customStyles}
@@ -141,8 +162,8 @@ function UserProfileAddress ({ backend, addressData, defaultFirst, grabAddressDa
                 placeholder={"First Name"}
                 type={"text"}
                 onChange={handleAddressChange}/>
-                {/* Appears when the input for first name has anything other than letters */}
-                {(/^[a-z][a-z\s]*$/i.test(addressInput.firstName) !== true 
+                {/* Appears when the input for first name has anything other than letters and certain characters like apostrophes, commas, periods and hyphens */}
+                {(/^[a-z ,.'-]+$/i.test(addressInput.firstName) !== true 
                 && addressInput.firstName !== "") 
                 && <div className="warning">You must enter only letters as your first name</div>}
                 {/* Input regarding the last name of the adding address modal */}
@@ -152,8 +173,8 @@ function UserProfileAddress ({ backend, addressData, defaultFirst, grabAddressDa
                 placeholder={"Last Name"}
                 type={"text"}
                 onChange={handleAddressChange}/>
-                {/* Appears when the input for last name has anything other than letters */}
-                {(/^[a-z][a-z\s]*$/i.test(addressInput.lastName) !== true 
+                {/* Appears when the input for last name has anything other than letters and certain characters like apostrophes, commas, periods and hyphens */}
+                {(/^[a-z ,.'-]+$/i.test(addressInput.lastName) !== true 
                 && addressInput.lastName !== "") 
                 && <div className="warning">You must enter only letters as your last name</div>}
                 {/* Input regarding the first address line of the adding address modal */}
@@ -180,8 +201,8 @@ function UserProfileAddress ({ backend, addressData, defaultFirst, grabAddressDa
                 placeholder={"City"}
                 type={"text"}
                 onChange={handleAddressChange}/>
-                {/* Appears when the input for city has anything other than letters */}
-                {(/^[a-z][a-z\s]*$/i.test(addressInput.city) !== true 
+                {/* Appears when the input for city has anything other than letters and certain characters like apostrophes, commas, periods and hyphens */}
+                {(/^[a-z ,.'-]+$/i.test(addressInput.city) !== true 
                 && addressInput.city !== "") 
                 && <div className="warning">You must enter only letters as your city</div>}
                 {/* Input regarding the state of the adding address modal */}
@@ -206,7 +227,7 @@ function UserProfileAddress ({ backend, addressData, defaultFirst, grabAddressDa
                 maxLength={"5"} 
                 pattern={"\d*"}/>
                 {/* Appears when the input for zipcode has anything other than numbers */}
-                {(/[a-zA-Z]/g.test(addressInput.zipcode) === true 
+                {(/^[0-9]+$/.test(addressInput.zipcode) !== true 
                 && addressInput.zipcode !== undefined) 
                 && <div className="warning">You must enter only numbers as your zip code</div>}
                 {/* Section where users can check off whether or not they want the address being created to become the default address */}
@@ -221,21 +242,22 @@ function UserProfileAddress ({ backend, addressData, defaultFirst, grabAddressDa
                 <button 
                 onClick={handleSubmitAddress} 
                 disabled={
-                (/^[a-z][a-z\s]*$/i.test(addressInput.firstName) !== true 
+                (/^[a-z ,.'-]+$/i.test(addressInput.firstName) !== true 
                 || addressInput.firstName === undefined)
-                || (/^[a-z][a-z\s]*$/i.test(addressInput.lastName) !== true 
+                || (/^[a-z ,.'-]+$/i.test(addressInput.lastName) !== true 
                 || addressInput.lastName === undefined)
                 || addressInput.addressLineOne === undefined
                 || addressInput.addressLineOne === ""
-                || (/^[a-z][a-z\s]*$/i.test(addressInput.city) !== true 
+                || (/^[a-z ,.'-]+$/i.test(addressInput.city) !== true 
                 || addressInput.city === undefined)
                 || (/^[a-z][a-z\s]*$/i.test(addressInput.state) !== true 
                 || addressInput.state === undefined)
                 || addressInput.state.length !== 2 
-                || (/[a-zA-Z]/g.test(addressInput.zipcode) === true 
+                || (/^[0-9]+$/.test(addressInput.zipcode) !== true 
                 || addressInput.zipcode === undefined
                 || addressInput.zipcode === "")
                 || addressInput.zipcode.length !== 5
+                || disabledOnSubmitAddAddressModal
                 }>Submit</button>
                 </form>
                 </Modal>

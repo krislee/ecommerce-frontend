@@ -1,19 +1,18 @@
-import React from 'react';
+import React, { useState } from 'react';
 // import '../styles/Button.css'
 
 function Item ({ name, itemUrl, grabURL }) {
 
-    function grabAndLogURL() {
-        console.log(itemUrl);
+    const grabAndLogURL = () => {
         grabURL(itemUrl);
-    }
+    };
 
     return (
         <div className="item" onClick={() => grabAndLogURL()}>
-            <div>{name}</div>
+            {name.length < 50 ? <div>{name}</div> :
+            <div>{`${name.split(" ").splice(0, 8).join(" ")}...`}</div>}
         </div>
-    )
-}
-
+    );
+};
 
 export default Item
