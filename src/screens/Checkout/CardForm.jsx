@@ -46,7 +46,6 @@ export default function CardForm ({ loggedIn, paymentMethod, processing, handleS
                         {processing ? (<div className="spinner" id="spinner"></div>) : ("Confirm Payment")}
                     </span>
                 </button>
-                <button type="button" onClick={() => console.log(disabled, error, billingInputErrorDisableButton())}>Click</button>
                 </>
             )}
 

@@ -32,6 +32,8 @@ export default function UserReviews({ backend, loggedIn, reviewData, grabReviewD
 
     const history = useHistory()
 
+    const [disableButtonAfterFetching, setDisableButtonAfterFetching] = useState(false) // disable Submit buttons for editing and deleting reviews to prevent user from making multiple consecutive requests
+
     const [reviewID, setReviewID] = useState('') //whenever we click update or delete button update the reviewID state to contain the ID of the item we are updating or deleting - that way, we can use the reviewID value in the fetch URL parameter
     const [editReviewForm, setEditReviewForm] = useState(false) // controls opening the Edit modal when editReviewForm state is true
     const [deleteReviewForm, setDeleteReviewForm] = useState(false) // controls opening the Delete modal when editReviewForm state is true
@@ -86,6 +88,9 @@ export default function UserReviews({ backend, loggedIn, reviewData, grabReviewD
     const handleUpdateReview = async(event) => {
         event.preventDefault()
         if(loggedIn()) {
+
+            setDisableButtonAfterFetching(true) // disable Submit edit button to prevent user from trying to submit more than once
+
             const updateReviewResponse = await fetch(`${backend}/buyer/electronic/review/${reviewID}`, {
                 method: 'PUT',
                 headers: {
@@ -101,6 +106,7 @@ export default function UserReviews({ backend, loggedIn, reviewData, grabReviewD
             console.log(updateReviewData)
             grabReviewData(updateReviewData.allReviews.reverse()) // update the reviewData state with the new list of reviews that includes the updated review
             setEditReviewForm(false) // close modal
+            setDisableButtonAfterFetching(false) // enable the Submit button again for another edit
         } else {
             grabTotalCartQuantity(0)
             grabRedirect(true)
@@ -109,6 +115,8 @@ export default function UserReviews({ backend, loggedIn, reviewData, grabReviewD
 
     const handleDeleteReview = async(event) => {
         if(loggedIn()) {
+            setDisableButtonAfterFetching(true) // disable Submit delete button to prevent user from trying to submit more than once
+
             const deleteReviewResponse = await fetch(`${backend}/buyer/electronic/review/${reviewID}`, {
                 method: 'DELETE',
                 headers: {
@@ -120,6 +128,7 @@ export default function UserReviews({ backend, loggedIn, reviewData, grabReviewD
             console.log(deletedReviewData)
             grabReviewData(deletedReviewData.allReviews.reverse()) // update the reviewData state with the new list of reviews with the deleted review gone
             setDeleteReviewForm(false) // close modal
+            setDisableButtonAfterFetching(false) // enable the Submit button again for deleting
         } else {
             grabTotalCartQuantity(0)
             grabRedirect(true)
@@ -193,7 +202,7 @@ export default function UserReviews({ backend, loggedIn, reviewData, grabReviewD
                         <form onSubmit={handleUpdateReview}>
                             <p><b>{brandName} {itemName} </b></p>
                             <ReviewForm ratingValue={ratingValue} grabRatingValue={grabRatingValue} ratingHover={ratingHover} grabRatingHover={grabRatingHover} commentsValue={commentsValue} handleCommentsChange={handleCommentsChange} />
-                            <button disabled={!commentsValue}>Submit</button>
+                            <button disabled={!commentsValue || disableButtonAfterFetching}>Submit</button>
                             <button onClick={closeEditReviewModal}>Cancel</button>
                         </form>
                     </Modal>
@@ -201,7 +210,7 @@ export default function UserReviews({ backend, loggedIn, reviewData, grabReviewD
                 {deleteReviewForm && (
                     <Modal isOpen={deleteReviewForm} onRequestClose={closeDeleteReviewModal} ariaHideApp={false} contentLabel="Delete Review">
                         <p><b>Are you sure you want to delete?</b></p>
-                        <button onClick={handleDeleteReview}>Yes</button>
+                        <button disabled={disableButtonAfterFetching} onClick={handleDeleteReview}>Yes</button>
                         <button onClick={closeDeleteReviewModal}>Cancel</button>
                     </Modal>
                 )}
