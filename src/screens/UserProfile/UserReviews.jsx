@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
-import ReviewForm from '../../components/Reviews/ReviewForm'
+import ReviewForm from '../../components/Reviews/ReviewForm';
 import Modal from 'react-modal';
 import Rating from '@material-ui/lab/Rating';
 import { makeStyles } from '@material-ui/core/styles';
@@ -28,29 +28,30 @@ const useStyles = makeStyles((theme) => ({
 export default function UserReviews({ backend, loggedIn, reviewData, grabReviewData, reviewsTotal, reviewLoading, reviewsPage, grabReviewsPage, grabTotalCartQuantity, grabRedirect }) {
 
     const classes = useStyles();
-    const paginationClass = paginationUseStyles()
+    const paginationClass = paginationUseStyles();
 
-    const history = useHistory()
+    const history = useHistory();
 
-    const [reviewID, setReviewID] = useState('') //whenever we click update or delete button update the reviewID state to contain the ID of the item we are updating or deleting - that way, we can use the reviewID value in the fetch URL parameter
-    const [editReviewForm, setEditReviewForm] = useState(false) // controls opening the Edit modal when editReviewForm state is true
-    const [deleteReviewForm, setDeleteReviewForm] = useState(false) // controls opening the Delete modal when editReviewForm state is true
+    const [reviewID, setReviewID] = useState(''); //whenever we click update or delete button update the reviewID state to contain the ID of the item we are updating or deleting - that way, we can use the reviewID value in the fetch URL parameter
+    const [editReviewForm, setEditReviewForm] = useState(false); // controls opening the Edit modal when editReviewForm state is true
+    const [deleteReviewForm, setDeleteReviewForm] = useState(false); // controls opening the Delete modal when editReviewForm state is true
 
-    const [brandName, setBrandName] = useState('') 
-    const [itemName, setItemName] = useState('')
+    const [brandName, setBrandName] = useState('') ;
+    const [itemName, setItemName] = useState('');
 
-    const [ratingValue, setRatingValue] = useState(5)
-    const [ratingHover, setRatingHover] = useState(-1)
-    const [commentsValue, setCommentsValue] = useState('')
+    const [ratingValue, setRatingValue] = useState(5);
+    const [ratingHover, setRatingHover] = useState(-1);
+    const [commentsValue, setCommentsValue] = useState('');
+    // Getter and Setter to display the full length of the review message or just the preview 
+    const [showMoreReview, setShowMoreReview] = useState(false);
 
     // pass grabRatingValue and grabRatingHover to ReviewForm and Rating component inside ReviewForm component for onChange callback
     // pass handleCommentsChange for textarea onchange callback
-    const grabRatingValue = (rating) => setRatingValue(rating)
-    const grabRatingHover = (rating) => setRatingHover(rating)
-    const handleCommentsChange = (event) => setCommentsValue(event.target.value)
+    const grabRatingValue = (rating) => setRatingValue(rating);
+    const grabRatingHover = (rating) => setRatingHover(rating);
+    const handleCommentsChange = (event) => setCommentsValue(event.target.value);
 
     const openUpdateReviewModal = async (event) => {
-        console.log(event.target.id)
         if(loggedIn()) {
             const retrieveOneReviewResponse = await fetch(`${backend}/buyer/electronic/review/${event.target.id}`, {
                 method: 'GET',
@@ -58,33 +59,30 @@ export default function UserReviews({ backend, loggedIn, reviewData, grabReviewD
                     'Content-Type': 'application/json',
                     'Authorization': loggedIn()
                 }
-            })
-            const retrieveOneReviewData = await retrieveOneReviewResponse.json()
-            console.log(retrieveOneReviewData)
-
-            setRatingValue(retrieveOneReviewData.singleReview.Rating) // update the rating state --> pass to ReviewForm and Rating component inside ReviewForm component --> prefill the rating stars section
-            setCommentsValue(retrieveOneReviewData.singleReview.Comment) // update the comments --> pass to ReviewForm and Rating component --> prefill the comment section
-            setBrandName(retrieveOneReviewData.singleReview.ElectronicItem[0].Brand) // update the brand and item name to populate in the modal
-            setItemName(retrieveOneReviewData.singleReview.ElectronicItem[0].Name)
-            setReviewID(event.target.id) // reviewID state is used for the actual call to server when we click Submit button
-            setEditReviewForm(true) // open the modal
+            });
+            const retrieveOneReviewData = await retrieveOneReviewResponse.json();
+            setRatingValue(retrieveOneReviewData.singleReview.Rating); // update the rating state --> pass to ReviewForm and Rating component inside ReviewForm component --> prefill the rating stars section
+            setCommentsValue(retrieveOneReviewData.singleReview.Comment); // update the comments --> pass to ReviewForm and Rating component --> prefill the comment section
+            setBrandName(retrieveOneReviewData.singleReview.ElectronicItem[0].Brand); // update the brand and item name to populate in the modal
+            setItemName(retrieveOneReviewData.singleReview.ElectronicItem[0].Name);
+            setReviewID(event.target.id); // reviewID state is used for the actual call to server when we click Submit button
+            setEditReviewForm(true); // open the modal
         } else {
-            console.log(71)
-            grabTotalCartQuantity(0)
-            grabRedirect(true)
-        }
-    }
+            grabTotalCartQuantity(0);
+            grabRedirect(true);
+        };
+    };
 
     const closeEditReviewModal = () => {
-        setEditReviewForm(false)
+        setEditReviewForm(false);
         if(!loggedIn()) {
-            grabTotalCartQuantity(0)
-            grabRedirect(true)
-        }
-    }
+            grabTotalCartQuantity(0);
+            grabRedirect(true);
+        };
+    };
 
     const handleUpdateReview = async(event) => {
-        event.preventDefault()
+        event.preventDefault();
         if(loggedIn()) {
             const updateReviewResponse = await fetch(`${backend}/buyer/electronic/review/${reviewID}`, {
                 method: 'PUT',
@@ -96,18 +94,18 @@ export default function UserReviews({ backend, loggedIn, reviewData, grabReviewD
                     Comment: commentsValue,
                     Rating: ratingValue
                 })
-            })
-            const updateReviewData = await updateReviewResponse.json()
-            console.log(updateReviewData)
-            grabReviewData(updateReviewData.allReviews.reverse()) // update the reviewData state with the new list of reviews that includes the updated review
-            setEditReviewForm(false) // close modal
+            });
+            const updateReviewData = await updateReviewResponse.json();
+            console.log(updateReviewData);
+            grabReviewData(updateReviewData.allReviews.reverse()); // update the reviewData state with the new list of reviews that includes the updated review
+            setEditReviewForm(false); // close modal
         } else {
-            grabTotalCartQuantity(0)
-            grabRedirect(true)
-        }
-    }
+            grabTotalCartQuantity(0);
+            grabRedirect(true);
+        };
+    };
 
-    const handleDeleteReview = async(event) => {
+    const handleDeleteReview = async() => {
         if(loggedIn()) {
             const deleteReviewResponse = await fetch(`${backend}/buyer/electronic/review/${reviewID}`, {
                 method: 'DELETE',
@@ -115,39 +113,38 @@ export default function UserReviews({ backend, loggedIn, reviewData, grabReviewD
                     'Content-Type': 'application/json',
                     'Authorization': loggedIn()
                 },
-            })
-            const deletedReviewData = await deleteReviewResponse.json()
-            console.log(deletedReviewData)
-            grabReviewData(deletedReviewData.allReviews.reverse()) // update the reviewData state with the new list of reviews with the deleted review gone
-            setDeleteReviewForm(false) // close modal
+            });
+            const deletedReviewData = await deleteReviewResponse.json();
+            grabReviewData(deletedReviewData.allReviews.reverse()); // update the reviewData state with the new list of reviews with the deleted review gone
+            setDeleteReviewForm(false); // close modal
         } else {
-            grabTotalCartQuantity(0)
-            grabRedirect(true)
-        }
-    }
+            grabTotalCartQuantity(0);
+            grabRedirect(true);
+        };
+    };
 
     const openDeleteReviewModal = (event) => {
         if(loggedIn()) {
-            setReviewID(event.target.id) // update reviewID state so that we can use the id for fetch to server when we click Yes button
-            setDeleteReviewForm(true)
+            setReviewID(event.target.id); // update reviewID state so that we can use the id for fetch to server when we click Yes button
+            setDeleteReviewForm(true);
         } else {
-            grabTotalCartQuantity(0)
-            grabRedirect(true)
-        }
-    }
+            grabTotalCartQuantity(0);
+            grabRedirect(true);
+        };
+    };
+
     const closeDeleteReviewModal = () => {
-        setDeleteReviewForm(false)
+        setDeleteReviewForm(false);
         if(!loggedIn()) {
-            grabTotalCartQuantity(0)
-            grabRedirect(true)
-        }
-    }
+            grabTotalCartQuantity(0);
+            grabRedirect(true);
+        };
+    };
 
-    const handlePageOnChange = async(event, page) => {
-
+    const handlePageOnChange = async(page) => {
         history.replace({
             pathname: `/profile/review?page=${page}` // when we click on the pagination number, we want to update the URL param with the clicked pagination number (represented by page)
-        })
+        });
         if(loggedIn()) {
             const allReviewsResponse = await fetch(`${backend}/buyer/all/electronic/reviews?page=${page}`, {
                 method: 'GET',
@@ -157,14 +154,14 @@ export default function UserReviews({ backend, loggedIn, reviewData, grabReviewD
                 }
             });
             const allReviewsData = await allReviewsResponse.json();
-            console.log(allReviewsData.allReviews);
-            grabReviewData(allReviewsData.allReviews)
-            grabReviewsPage(page)
+            grabReviewData(allReviewsData.allReviews);
+            grabReviewsPage(page);
         } else {
-            grabTotalCartQuantity(0)
-            grabRedirect(true)
-        }
-    }
+            grabTotalCartQuantity(0);
+            grabRedirect(true);
+        };
+    };
+
 
     if(reviewLoading) return null
     return (
@@ -180,7 +177,26 @@ export default function UserReviews({ backend, loggedIn, reviewData, grabReviewD
                             <p><b>{review.ElectronicItem[0].Brand} {review.ElectronicItem[0].Name}</b></p>
                         </Link>
                         <Rating name="size-small" value={review.Rating} size="small" readOnly/>
-                        <p>{review.Comment}</p>
+                        {/* If the review has more than 60 words, then show a preview of the review */}
+                        {review.Comment.length > 60 ? 
+                        <div>
+                        {/* What is displayed depends on whether users want to view the longer version or the shorter version of the review when users click on the show more and show less button */}
+                        {!showMoreReview ?  
+                        <div>
+                        {/* Reviews are split to splice in order cut down the text, and then rejoined to form a new review which is a shorter preview of the full review */}
+                        <p>{`${review.Comment.split(" ").splice(0, 50).join(" ")}...`}</p> 
+                        {/* Button to display the full review */}
+                        <div style={{cursor: 'pointer'}} onClick={() => setShowMoreReview(true)}>Show More...</div>
+                        </div> : 
+                        <div>
+                        {/* The original full review */}
+                        <p>{review.Comment}</p> 
+                        {/* Button to display the shortened version of the review */}
+                        <div style={{cursor: 'pointer'}} onClick={() => setShowMoreReview(false)}>Show Less...</div>
+                        </div>}
+                        </div>
+                        // If the review has less than 60 words, then show the whole review
+                        : <p>{review.Comment}</p>}
                         <button id={review._id} onClick={openUpdateReviewModal}>Update</button>
                         <button id={review._id} onClick={openDeleteReviewModal}>Delete</button>
                     </div>
