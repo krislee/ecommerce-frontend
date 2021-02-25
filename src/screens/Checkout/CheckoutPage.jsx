@@ -273,13 +273,14 @@ function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCar
             || billing.state === ""
             || billing.state === undefined
             || billing.state.length !== 2
-            || /^[0-9]+$/.test(billing.postalCode) !== true 
+            // || /^[0-9]+$/.test(billing.postalCode) !== true 
             // || billing.postalCode === ""
             // || billing.postalCode === undefined
             // || billing.postalCode.length !== 5
         )
     }
 
+    // Need to separate postal code because when we add a card in the card form, the psotal code is in the card element strip and not as one of the inputs
     const billingPostalCodeInputErrorDisableButton = () => {
         return (
             /^[0-9]*$/g.test(billing.postalCode) !== true 
