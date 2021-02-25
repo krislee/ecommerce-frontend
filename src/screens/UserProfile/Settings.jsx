@@ -3,7 +3,9 @@ import React, { useState } from 'react';
 import Toast from 'react-bootstrap/Toast'
 
 export default function Settings({ backend, loggedIn, settingData, grabSettingData, grabTotalCartQuantity, grabRedirect }) {
-   
+    
+    const [disableButtonAfterFetching, setDisableButtonAfterFetching] = useState(false) // disable submit buttons for changing emails and password so user does not make more than one request when submitting
+
     // EMAIL/PASSWORD SUBMISSION ERRORS 
     const [emailInvalid, setEmailInvalid] = useState(false)
     const [emailErrorMessage, setEmailErrorMessage] = useState(false)
@@ -22,13 +24,11 @@ export default function Settings({ backend, loggedIn, settingData, grabSettingDa
     const [showEmailInput, setShowEmailInput] = useState(false)
     const [showPasswordInput, setShowPasswordInput] = useState(false)
 
-    const [disableForm, setDisableForm] = useState(true)
-    
-
   
     const handleEmailUpdate = async(event) => {
         event.preventDefault()
         if(loggedIn()) {
+            setDisableButtonAfterFetching(true) // disable submit button so email change consecutive requests are prevented
             const emailUpdateResponse = await fetch(`${backend}/buyer/profile`, {
                 method: 'PUT',
                 headers: {
@@ -57,6 +57,9 @@ export default function Settings({ backend, loggedIn, settingData, grabSettingDa
                 setEmailErrorMessage(false)
                 setEmailInput('') // empty input
             }
+
+            setDisableButtonAfterFetching(false) // enable the submit button so that user can change email again after the request is done if user wants to 
+
         } else {
             grabTotalCartQuantity(0)
             grabRedirect(true)
@@ -68,6 +71,9 @@ export default function Settings({ backend, loggedIn, settingData, grabSettingDa
         event.preventDefault()
 
         if(loggedIn()) {
+
+            setDisableButtonAfterFetching(true) // disable submit button so password change consecutive requests are prevented
+
             const resetPasswordResponse = await fetch(`${backend}/buyer/profile`, {
                 method: 'PUT',
                 headers: {
@@ -95,6 +101,9 @@ export default function Settings({ backend, loggedIn, settingData, grabSettingDa
                 setPasswordErrorMessage(false)
                 setPasswordInput('') // empty input
             }
+
+            setDisableButtonAfterFetching(false) // enable the submit button so that user can change password again after the request is done if user wants to 
+
         } else {
             grabTotalCartQuantity(0)
             grabRedirect(true)
@@ -155,7 +164,7 @@ export default function Settings({ backend, loggedIn, settingData, grabSettingDa
                 {showPasswordInput && (
                     <form>
                         <input type="password" value={passwordInput} onChange={handlePasswordInputChange}/>
-                        <input type="submit" disabled={!passwordInput.length} onClick={handleResetPassword}/>
+                        <input type="submit" disabled={ !passwordInput.length || disableButtonAfterFetching } onClick={handleResetPassword}/>
                         <button onClick={closeChangePasswordForm}>Close</button>
                     </form>
                 )}
@@ -175,7 +184,7 @@ export default function Settings({ backend, loggedIn, settingData, grabSettingDa
                 {showEmailInput && (
                     <form>
                         <input type="email" value={emailInput} onChange={handleEmailInputChange}/>
-                        <input type="submit" disabled={!emailInput} onClick={handleEmailUpdate}/>
+                        <input type="submit" disabled={ !emailInput || disableButtonAfterFetching } onClick={handleEmailUpdate}/>
                         <button onClick={closeChangeEmailForm}>Close</button>
                     </form>
                 )} 

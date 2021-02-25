@@ -1,6 +1,6 @@
 import React from 'react'
 
-export default function ShippingForm({ backend, loggedIn, readOnly, shipping, addShipping, shippingInput, grabShippingInput, updateShippingState, updateShippingInputState, editShipping, handleEditShipping, closeModal, collapse, addNewShipping, grabAddNewShipping, grabMultipleShipping, grabTotalCartQuantity }) {
+export default function ShippingForm({ loggedIn, readOnly, shipping, addShipping, shippingInput, grabShippingInput, editShipping, handleEditShipping, closeModal, collapse, disableButtonAfterMakingRequest, grabDisableButtonAfterMakingRequest, addAdditionalSaveShipping}) {
     
     const handleShippingChange = (event) => {
         const { name, value} = event.target
@@ -15,9 +15,11 @@ export default function ShippingForm({ backend, loggedIn, readOnly, shipping, ad
         console.log("shipping input: ", shippingInput)
         if(addShipping) {
             console.log("adding")
+            grabDisableButtonAfterMakingRequest(true)
             addAdditionalSaveShipping()
         } if(editShipping) {
             console.log("editing")
+            grabDisableButtonAfterMakingRequest(true)
             handleEditShipping()
         } else if(!loggedIn() || !shipping.firstName) {
             console.log("guest/first time saving next")
@@ -26,47 +28,27 @@ export default function ShippingForm({ backend, loggedIn, readOnly, shipping, ad
         }
     }
 
-    const addAdditionalSaveShipping = async() => {
-        console.log("adding additional address")
-        if(loggedIn()) {
-            const saveNewShippingResponse = await fetch(`${backend}/shipping/address?lastUsed=false&default=false&checkout=true`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': loggedIn()
-                }, 
-                body: JSON.stringify({
-                    name: `${shippingInput.firstName}, ${shippingInput.lastName}`,
-                    address: `${shippingInput.line1}, ${shippingInput.line2}, ${shippingInput.city}, ${shippingInput.state}, ${shippingInput.postalCode}`
-                })
-            })
-            const saveNewShippingData = await saveNewShippingResponse.json()
-            console.log(saveNewShippingData)
-            updateShippingState(saveNewShippingData.address)
-            updateShippingInputState(saveNewShippingData.address)
-            grabAddNewShipping(false) // updates the addShipping state to represent we are no longer adding a new shipping; if false, modal won't be returned; if true, modal would be shown
-            grabMultipleShipping(true) // We can only add a new shipping if Add New button is shown. Add New button is shown if we have at least one saved address. If we only have one saved address, then Saved Shipping button would not be shown. But since we are adding a new shipping, then Saved Shipping button would definitely be shown. Saved Shipping button is shown dependent on the truthy value of MultipleShipping state
-        } else {
-            grabTotalCartQuantity(0)
-        }
-    }
-
     const disableButton = () => {
-        console.log(shippingInput.line1, typeof shippingInput.line1)
         return (
-            /^[a-z][a-z\s]*$/i.test(shippingInput.firstName) !== true 
-            || shippingInput.firstName === undefined)
-            || (/^[a-z][a-z\s]*$/i.test(shippingInput.lastName) !== true 
-            || shippingInput.lastName === undefined)
+            /^[a-z ,.'-]+$/i.test(shippingInput.firstName) !== true 
+            || shippingInput.firstName === ""
+            || shippingInput.firstName === undefined
+            || /^[a-z ,.'-]+$/i.test(shippingInput.lastName) !== true 
+            || shippingInput.lastName === ""
+            || shippingInput.lastName === undefined
+            || shippingInput.line1 === ""
             || shippingInput.line1 === undefined
-            || shippingInput.line1 === ''
-            || (/^[a-z][a-z\s]*$/i.test(shippingInput.city) !== true 
-            || shippingInput.city === undefined)
-            || (/^[a-z][a-z\s]*$/i.test(shippingInput.state) !== true 
-            || shippingInput.state === undefined)
-            || (/^d+$/.test(shippingInput.postalCode) !== true 
+            || /^[a-z ,.'-]+$/i.test(shippingInput.city) !== true 
+            || shippingInput.city === ""
+            || shippingInput.city === undefined
+            || /^[a-z][a-z\s]*$/i.test(shippingInput.state) !== true 
+            || shippingInput.state === ""
+            || shippingInput.state === undefined
+            || shippingInput.state.length !== 2
+            || /^[0-9]+$/.test(shippingInput.postalCode) !== true 
+            || shippingInput.postalCode === ""
             || shippingInput.postalCode === undefined
-            || shippingInput.postalCode === ''
+            || shippingInput.postalCode.length !== 5
         )
     }
 
@@ -74,23 +56,23 @@ export default function ShippingForm({ backend, loggedIn, readOnly, shipping, ad
         <>
         <form id="form" name="form" onSubmit={handleSubmit}>
             <input value={shippingInput.firstName || ""} name="firstName" placeholder="First Name" onChange={handleShippingChange} readOnly={readOnly} required/>
-            {((/^[a-z][a-z\s]*$/i.test(shippingInput.firstName) !== true)  && shippingInput.firstName !== "") && <div className="warning">You must enter only letters as your first name</div>}
+            {(/^[a-z ,.'-]+$/i.test(shippingInput.firstName) !== true && shippingInput.firstName !== "") && <div className="warning">You must enter only letters as your first name</div>}
 
             <input value={shippingInput.lastName || ""} name="lastName" placeholder="Last Name" onChange={handleShippingChange} readOnly={readOnly} required/>
-            {((/^[a-z][a-z\s]*$/i.test(shippingInput.lastName) !== true)  && shippingInput.firstName !== "") && <div className="warning">You must enter only letters as your last name</div>}
+            {(/^[a-z ,.'-]+$/i.test(shippingInput.lastName) !== true && shippingInput.lastName !== "") && <div className="warning">You must enter only letters as your last name</div>}
 
             <input value={shippingInput.line1 || ""} name="line1" placeholder="Address Line One" onChange={handleShippingChange} readOnly={readOnly} required/>
 
             <input value={shippingInput.line2 || ""} name="line2" placeholder="Address Line Two" onChange={handleShippingChange} readOnly={readOnly} />
 
             <input value={shippingInput.city || ""} name="city" placeholder="City" onChange={handleShippingChange} readOnly={readOnly} required/>
-            {((/^[a-z][a-z\s]*$/i.test(shippingInput.city) !== true) && shippingInput.city !== "") && <div className="warning">You must enter only letters as your city</div>}
+            {(/^[a-z ,.'-]+$/i.test(shippingInput.city) !== true && shippingInput.city !== "") && <div className="warning">You must enter only letters as your city</div>}
 
             <input value={shippingInput.state || ""} name="state" placeholder="State" onChange={handleShippingChange} maxLength="2" readOnly={readOnly} required />
             {((/^[a-z][a-z\s]*$/i.test(shippingInput.state) !== true) && shippingInput.state !== "") && <div className="warning">You must enter only letters as your state</div>}
 
             <input value={shippingInput.postalCode || ""} name="postalCode" placeholder="Zipcode" onChange={handleShippingChange} maxLength="5" readOnly={readOnly} required />
-            {((/^d+$/g.test(shippingInput.postalCode) !== true) && shippingInput.postalCode !== undefined) && <div className="warning">You must enter only numbers as your zip code</div>}
+            {(/^[0-9]+$/.test(shippingInput.postalCode) !== true && shippingInput.postalCode !== "" && shippingInput.postalCode !== undefined) && <div className="warning">You must enter only numbers as your zip code</div>}
 
             {(loggedIn() && !shipping.firstName) && (
                 <>
@@ -101,11 +83,13 @@ export default function ShippingForm({ backend, loggedIn, readOnly, shipping, ad
         </form>
         {shipping.firstName ? (
             <>
-            <button form="form" disabled={disableButton()}>Save</button> 
+            <button form="form" disabled={disableButton() || disableButtonAfterMakingRequest }>Save</button> 
             <button type="button" onClick={closeModal}>Cancel</button>
             </>
-        ) : <button form="form" disabled={readOnly}>Next</button>   
+        ) : <button form="form" disabled={readOnly || disableButton() || disableButtonAfterMakingRequest }>Next</button>   
         }
         </>      
     )
 }
+
+

@@ -2,7 +2,7 @@ import React from 'react';
 import CollectCard from "../../components/Checkout/Card"
 import BillingInput from "../../components/Checkout/BillingInput"
 
-export default function CardForm ({ loggedIn, paymentMethod, processing, handleSubmitCardForm, handleCardChange, handleBillingChange, handleCardholderNameChange, cardholderName, billing, collectCVV, redisplayCardElement, closeAddNewModal, error, disabled, sameAsShipping, handleSameAsShipping, billingInputErrorDisableButton }) {
+export default function CardForm ({ loggedIn, paymentMethod, processing, handleSubmitCardForm, handleCardChange, handleBillingChange, handleCardholderNameChange, cardholderName, billing, collectCVV, redisplayCardElement, closeAddNewModal, error, disabled, sameAsShipping, handleSameAsShipping, billingInputErrorDisableButton, disableButtonAfterMakingRequest }) {
 
     return(
         <form onSubmit={handleSubmitCardForm}>
@@ -20,7 +20,7 @@ export default function CardForm ({ loggedIn, paymentMethod, processing, handleS
 
             {redisplayCardElement ? (
                 <>
-                <button disabled= { (error !== '') || disabled || billingInputErrorDisableButton()  }>Save</button>
+                <button disabled= { (error !== '') || disabled || billingInputErrorDisableButton() || disableButtonAfterMakingRequest }>Save</button>
                 <button type="button" onClick={closeAddNewModal}>Close</button>
                 </>
             ): (
@@ -41,16 +41,15 @@ export default function CardForm ({ loggedIn, paymentMethod, processing, handleS
                 - A Card Element is only displayed if user does not have any saved cards. Saved card is indicated by a truthy value of paymentMethod.paymentMethodID (recall paymentMethod state was updated upon Checkout/PaymentMethod's useEffect() running, which fetches for either a default-saved, last-used-saved, last-saved, or no saved card - server sends back {paymentMethodID: null} for no saved card, so paymentMethod state equals to {paymentMethodID: null})
                 2) error when typing in the Card/CVV Element */}
                 
-            <button disabled={ (disabled && !paymentMethod.paymentMethodID) || error || billingInputErrorDisableButton() }  id="submit" >
-                <span id="button-text">
-                    {processing ? (<div className="spinner" id="spinner"></div>) : ("Confirm Payment")}
-                </span>
-            </button>
-
+                <button disabled={ (disabled && !paymentMethod.paymentMethodID) || error || billingInputErrorDisableButton() }  id="submit" >
+                    <span id="button-text">
+                        {processing ? (<div className="spinner" id="spinner"></div>) : ("Confirm Payment")}
+                    </span>
+                </button>
                 </>
             )}
 
-
+            
         </form>
     )
 }

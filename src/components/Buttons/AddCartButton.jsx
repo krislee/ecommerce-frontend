@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import '../../styles/Button.css'
 
 function AddCartButton ({ name, id, loggedIn, backend, quantity, differenceQuantity, grabDifferenceQuantity, grabTotalCartQuantity, prevLoggedIn, grabShowAddItemAlert, grabShowAddItemDifferenceAlert }) {
     
-    const [addedQuantityToReach10, setAddedQuantityToReach10] = useState(0)
+    // const [addedQuantityToReach10, setAddedQuantityToReach10] = useState(0)
 
     const addItem = async (e) => {
         e.preventDefault();

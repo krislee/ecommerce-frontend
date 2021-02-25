@@ -24,6 +24,9 @@ import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'fontsource-roboto'; // Font for Roboto
 
+import { io } from "socket.io-client";
+
+const socketConnection = io.connect('wss://elecommerce.herokuapp.com',  { transports: ['websocket', 'polling', 'flashsocket'] }) // connect to socket outside function because we want to connect to the socket only one time; if inside the function, then it will reconnect at every render; reconnecting more than once will give us multiple socket IDs
 
 function App() {
 
@@ -35,6 +38,7 @@ function App() {
   const [url, setURL] = useState('');
   const [loggedOut, setLoggedOut] = useState(false)
   const [cartID, setCartID] = useState('')
+  const [socket, setSocket] = useState(socketConnection)
 
   /* ------- UPDATE STATES ------- */
 
@@ -52,8 +56,8 @@ function App() {
   const loggedIn = () => localStorage.getItem('token')
 
   /* ------- SOCKET TO BE PASSED FROM CHECKOUTPAGE TO OREDERCOMPLETE COMPONENT ------- */
-  const [socketContainer, setSocketContainer] = useState(null)
-  const grabSocketContainer = (socketContainer) => setSocketContainer(socketContainer)
+  // const [socketContainer, setSocketContainer] = useState(null)
+  // const grabSocketContainer = (socketContainer) => setSocketContainer(socketContainer)
 
   /* ------- NAV BAR SHOPPING CART BADGE UPDATE ------- */
   const [totalCartQuantity, setTotalCartQuantity] = useState(0)
@@ -100,17 +104,17 @@ function App() {
   return (
     <div className="App">
       <BrowserRouter>
-        <NavBar totalCartQuantity={totalCartQuantity} grabTotalCartQuantity={grabTotalCartQuantity} />
+        <NavBar totalCartQuantity={totalCartQuantity} grabTotalCartQuantity={grabTotalCartQuantity} socket={socket}/>
         <Switch>
 
           {/* CHECKOUT */}
           <Route path="/checkout">
             <Elements stripe={stripePromise}>
-              <Checkout backend={backend} loggedIn={loggedIn} loggedOut={loggedOut} grabLoggedOut={grabLoggedOut} cartID={cartID}grabCartID={grabCartID} grabTotalCartQuantity={grabTotalCartQuantity} grabSocketContainer={grabSocketContainer} />
+              <Checkout backend={backend} loggedIn={loggedIn} loggedOut={loggedOut} grabLoggedOut={grabLoggedOut} cartID={cartID}grabCartID={grabCartID} grabTotalCartQuantity={grabTotalCartQuantity} socket={socket} />
             </Elements>
           </Route>
           <Route path="/order-complete">
-            <OrderComplete backend={backend} loggedIn={loggedIn} cartID={cartID} socketContainer={socketContainer} grabTotalCartQuantity={grabTotalCartQuantity} />
+            <OrderComplete backend={backend} loggedIn={loggedIn} cartID={cartID} socket={socket} totalCartQuantity={totalCartQuantity} grabTotalCartQuantity={grabTotalCartQuantity} />
           </Route>
 
           {/* LOGIN/REGISTRATION */}
