@@ -162,7 +162,7 @@ function UserProfileAddress ({ backend, addressData, defaultFirst, grabAddressDa
                 placeholder={"First Name"}
                 type={"text"}
                 onChange={handleAddressChange}/>
-                {/* Appears when the input for first name has anything other than letters */}
+                {/* Appears when the input for first name has anything other than letters and certain characters like apostrophes, commas, periods and hyphens */}
                 {(/^[a-z ,.'-]+$/i.test(addressInput.firstName) !== true 
                 && addressInput.firstName !== "") 
                 && <div className="warning">You must enter only letters as your first name</div>}
@@ -173,7 +173,7 @@ function UserProfileAddress ({ backend, addressData, defaultFirst, grabAddressDa
                 placeholder={"Last Name"}
                 type={"text"}
                 onChange={handleAddressChange}/>
-                {/* Appears when the input for last name has anything other than letters */}
+                {/* Appears when the input for last name has anything other than letters and certain characters like apostrophes, commas, periods and hyphens */}
                 {(/^[a-z ,.'-]+$/i.test(addressInput.lastName) !== true 
                 && addressInput.lastName !== "") 
                 && <div className="warning">You must enter only letters as your last name</div>}
@@ -201,7 +201,7 @@ function UserProfileAddress ({ backend, addressData, defaultFirst, grabAddressDa
                 placeholder={"City"}
                 type={"text"}
                 onChange={handleAddressChange}/>
-                {/* Appears when the input for city has anything other than letters */}
+                {/* Appears when the input for city has anything other than letters and certain characters like apostrophes, commas, periods and hyphens */}
                 {(/^[a-z ,.'-]+$/i.test(addressInput.city) !== true 
                 && addressInput.city !== "") 
                 && <div className="warning">You must enter only letters as your city</div>}

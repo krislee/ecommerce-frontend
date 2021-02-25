@@ -591,7 +591,7 @@ function PaymentContainer ({ backend, payment, defaultFirstPayment, grabPaymentD
         type="text"
         placeholder="Card Name"
         onChange={handleEditCardHolderNameChange}/>
-        {/* Appears when the input for full name has anything other than letters */}
+        {/* Appears when the input for full name has anything other than letters and certain characters like apostrophes, commas, periods and hyphens */}
         {(/^[a-z ,.'-]+$/i.test(editCardHolderInput.cardName) !== true 
         && editCardHolderInput.cardName !== "") 
         && <div className="warning">You must enter only letters as your name</div>}
@@ -671,7 +671,7 @@ function PaymentContainer ({ backend, payment, defaultFirstPayment, grabPaymentD
         placeholder="First Name" 
         type="text"
         onChange={handleEditBillingChange}/>
-        {/* Appears when the input for first name has anything other than letters */}
+        {/* Appears when the input for first name has anything other than letters and certain characters like apostrophes, commas, periods and hyphens */}
         {(/^[a-z ,.'-]+$/i.test(editBillingInput.editBillingFirstName) !== true 
         && editBillingInput.editBillingFirstName !== "") 
         && <div className="warning">You must enter only letters as your first name</div>}
@@ -682,7 +682,7 @@ function PaymentContainer ({ backend, payment, defaultFirstPayment, grabPaymentD
         placeholder="Last Name" 
         type="text"
         onChange={handleEditBillingChange}/>
-        {/* Appears when the input for last name has anything other than letters */}
+        {/* Appears when the input for last name has anything other than letters and certain characters like apostrophes, commas, periods and hyphens */}
         {(/^[a-z ,.'-]+$/i.test(editBillingInput.editBillingLastName) !== true 
         && editBillingInput.editBillingLastName !== "") 
         && <div className="warning">You must enter only letters as your last name</div>}
@@ -708,7 +708,7 @@ function PaymentContainer ({ backend, payment, defaultFirstPayment, grabPaymentD
         placeholder="City" 
         type="text"
         onChange={handleEditBillingChange}/>
-        {/* Appears when the input for city has anything other than letters */}
+        {/* Appears when the input for city has anything other than letters and certain characters like apostrophes, commas, periods and hyphens */}
         {(/^[a-z ,.'-]+$/i.test(editBillingInput.editBillingCity) !== true 
         && editBillingInput.editBillingCity !== "") 
         && <div className="warning">You must enter only letters as your city</div>}

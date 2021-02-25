@@ -272,7 +272,7 @@ function UserProfilePayment ({ backend, paymentData, grabPaymentData, defaultFir
                 name="cardName" 
                 placeholder="Card Name" 
                 onChange={handleCardHolderNameChange}/>
-                {/* Appears when the input for full name has anything other than letters */}
+                {/* Appears when the input for full name has anything other than letters and certain characters like apostrophes, commas, periods and hyphens */}
                 {(/^[a-z ,.'-]+$/i.test(cardHolderInput.cardName) !== true 
                 && cardHolderInput.cardName !== "")
                 && <div className="warning">You must enter only letters as your name</div>}
@@ -326,7 +326,7 @@ function UserProfilePayment ({ backend, paymentData, grabPaymentData, defaultFir
                 type="text"
                 placeholder="First Name" 
                 onChange={handleBillingChange}/>
-                {/* Appears when the input for first name has anything other than letters */}
+                {/* Appears when the input for first name has anything other than letters and certain characters like apostrophes, commas, periods and hyphens */}
                 {(/^[a-z ,.'-]+$/i.test(billingInput.firstName) !== true 
                 && billingInput.firstName !== "") 
                 && <div className="warning">You must enter only letters as your first name</div>}
@@ -336,7 +336,7 @@ function UserProfilePayment ({ backend, paymentData, grabPaymentData, defaultFir
                 name="lastName" 
                 placeholder="Last Name" 
                 onChange={handleBillingChange}/>
-                {/* Appears when the input for last name has anything other than letters */}
+                {/* Appears when the input for last name has anything other than letters and certain characters like apostrophes, commas, periods and hyphens */}
                 {(/^[a-z ,.'-]+$/i.test(billingInput.lastName) !== true 
                 && billingInput.lastName !== "") 
                 && <div className="warning">You must enter only letters as your last name</div>}
@@ -361,7 +361,7 @@ function UserProfilePayment ({ backend, paymentData, grabPaymentData, defaultFir
                 name="city" 
                 placeholder="City" 
                 onChange={handleBillingChange}/>
-                {/* Appears when the input for city has anything other than letters */}
+                {/* Appears when the input for city has anything other than letters and certain characters like apostrophes, commas, periods and hyphens */}
                 {(/^[a-z ,.'-]+$/i.test(billingInput.city) !== true 
                 && billingInput.city !== "") 
                 && <div className="warning">You must enter only letters as your city</div>}
