@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react'
 import { Redirect } from 'react-router-dom';
-import PaymentMethod from './PaymentMethod';
+// import PaymentMethod from './PaymentMethod';
 
 export default function CheckoutItems({ backend, loggedIn, showItems, grabShowItems, grabShowShipping, grabShowButtons, grabReadOnly, grabTotalCartQuantity, shipping, prevLoggedIn, grabPrevLoggedIn, paymentMethod, grabRedirect }) {
     

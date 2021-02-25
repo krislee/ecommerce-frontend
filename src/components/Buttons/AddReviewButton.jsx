@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import Modal from 'react-modal';
 import Toast from 'react-bootstrap/Toast'
 import '../../styles/Button.css'
 import ReviewForm from '../Reviews/ReviewForm'
-import { Redirect } from 'react-router-dom';
 
 export default function AddReviewButton ({ backend, loggedIn, electronicID, grabReview, grabTotalCartQuantity }) {
 

@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { Link, Redirect, useLocation } from 'react-router-dom';
+import React from 'react'
+import { Link, useLocation } from 'react-router-dom';
 // import Button from '../components/Button'
 import '../styles/NavigationBar.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -21,18 +21,13 @@ const StyledBadge = withStyles((theme) => ({
 
 
 function NavBar ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuantity }) {
-    const [redirect, setRedirect] = useState(false)
+
     const location = useLocation()
+    
     const handleLogout = () => {
         localStorage.clear();
-        grabTotalCartQuantity(0)
-        // grabRedirect(true)
+        grabTotalCartQuantity()
     }
-
-
-    // if(redirect) {
-    //     return <Redirect to='/login/buyer'></Redirect>
-    // } 
 
     return (
         <div className="navbar">

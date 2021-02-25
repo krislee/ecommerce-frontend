@@ -3,7 +3,7 @@ import {useLocation} from 'react-router-dom';
 import '../../styles/ItemPage.css'
 import AddCartButton from '../../components/Buttons/AddCartButton';
 import AddReviewButton from '../../components/Buttons/AddReviewButton';
-import NavBar from '../../components/NavigationBar';
+// import NavBar from '../../components/NavigationBar';
 import Footer from '../../components/Footer'
 import AllReviews from '../../components/Reviews/AllReviews'
 import Rating from '@material-ui/lab/Rating';

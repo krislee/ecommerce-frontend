@@ -1,22 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { Redirect } from 'react-router-dom';
 import {useStripe, useElements, CardElement, CardCvcElement} from '@stripe/react-stripe-js';
-import { io } from "socket.io-client";
 
 import Shipping from './Shipping'
 import PaymentMethod from './PaymentMethod'
 import CheckoutItems from './CheckoutItems'
-import OrderComplete from './OrderComplete'
+// import OrderComplete from './OrderComplete'
 
 import createPaymentMethod from './CreatePayment'
 import '../../styles/CheckoutPage.css';
 
 
-const socket = io.connect('wss://elecommerce.herokuapp.com',  { transports: ['websocket', 'polling', 'flashsocket'] }) // connect to socket outside function because we want to connect to the socket only one time; if inside the function, then it will reconnect at every render; reconnecting more than once will give us multiple socket IDs
-
-function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCartID, grabTotalCartQuantity, grabSocketContainer }) {
-    // Helper to check if user is logged in
-
+function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCartID, grabTotalCartQuantity, socket }) {
+    
     /* ------- LOADING STATES ------- */
     // The loading states determine what you will see when you hit the "/checkout" route the first time
     const [redirect, setRedirect] = useState(false);
@@ -204,7 +200,7 @@ function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCar
 
     /* ------- PASSING SOCKET FROM CHECKOUT TO ORDER COMPLETE VIA APP ------- */  
 
-    grabSocketContainer(socket)
+    // grabSocketContainer(socket)
 
     /* ------- LISTEN TO INPUT CHANGES TO UPDATE STATES ------- */  
 
@@ -258,24 +254,33 @@ function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCar
     const grabRedirect = (redirect) => setRedirect(redirect) // aside from using redirect state at CheckoutPage component, redirect state is also passed down to the 2 other child components (CheckoutItems and Shipping) to be used for users who cleared local storage.
 
     const billingInputErrorDisableButton = () => {
-        console.log(billing)
-        console.log(cardholderName)
         return (
             /^[a-z][a-z\s]*$/i.test(cardholderName) !== true 
             || cardholderName === undefined
-            || /^[a-z][a-z\s]*$/i.test(billing.firstName) !== true 
+            || cardholderName === ''
+            || /^[a-z ,.'-]+$/i.test(billing.firstName) !== true 
+            || billing.firstName === ""
             || billing.firstName === undefined
-            || /^[a-z][a-z\s]*$/i.test(billing.lastName) !== true 
+            || /^[a-z ,.'-]+$/i.test(billing.lastName) !== true 
+            || billing.lastName === ""
             || billing.lastName === undefined
+            || billing.line1 === ""
             || billing.line1 === undefined
-            || billing.line1 === ''
-            || /^[a-z][a-z\s]*$/i.test(billing.city) !== true 
+            || /^[a-z ,.'-]+$/i.test(billing.city) !== true 
+            || billing.city === ""
             || billing.city === undefined
             || /^[a-z][a-z\s]*$/i.test(billing.state) !== true 
+            || billing.state === ""
             || billing.state === undefined
+            || billing.state.length !== 2
+            // || /^[0-9]+$/.test(billing.postalCode) !== true 
+            // || billing.postalCode === ""
+            // || billing.postalCode === undefined
+            // || billing.postalCode.length !== 5
         )
     }
 
+    // Need to separate postal code because when we add a card in the card form, the psotal code is in the card element strip and not as one of the inputs
     const billingPostalCodeInputErrorDisableButton = () => {
         return (
             /^[0-9]*$/g.test(billing.postalCode) !== true 
@@ -472,7 +477,7 @@ function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCar
         } else if(confirmCardResult.paymentIntent.status === 'succeeded'){
             // The payment has been processed!
             console.log('succeeded')
-            // grabSuccessfulPaymentIntent(confirmCardResult.paymentIntent)
+            // setDisabled(true)
             setProcessing(false) // Stop the spinner
             setOrderComplete(true) //redirect to OrderComplete component
         }
@@ -485,15 +490,13 @@ function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCar
         return <Redirect to="/cart"></Redirect>
     } else if(orderComplete) {
         return (
-            <Redirect to={`/order-complete?orderNumber=${cartID}`}>
-                <OrderComplete />
-            </Redirect>
+            <Redirect to={`/order-complete?orderNumber=${cartID}`}></Redirect>
     )} else {
         return (
             <>
             {/* <NavBar /> */}
             <div id="payment-form" >
-                <CheckoutItems backend={backend} loggedIn={loggedIn} showItems={showItems} grabShowItems={grabShowItems} grabShowShipping={grabShowShipping} grabShowButtons={grabShowButtons} grabShowPayment={grabShowPayment} grabReadOnly={grabReadOnly} grabTotalCartQuantity={grabTotalCartQuantity} grabRedirect={grabRedirect} shipping={shipping} grabTotalCartQuantity={grabTotalCartQuantity} revLoggedIn={prevLoggedIn} grabPrevLoggedIn={grabPrevLoggedIn} paymentMethod={paymentMethod} grabRedirect={grabRedirect} />
+                <CheckoutItems backend={backend} loggedIn={loggedIn} showItems={showItems} grabShowItems={grabShowItems} grabShowShipping={grabShowShipping} grabShowButtons={grabShowButtons} grabShowPayment={grabShowPayment} grabReadOnly={grabReadOnly} grabTotalCartQuantity={grabTotalCartQuantity} grabRedirect={grabRedirect} shipping={shipping} grabTotalCartQuantity={grabTotalCartQuantity} prevLoggedIn={prevLoggedIn} grabPrevLoggedIn={grabPrevLoggedIn} paymentMethod={paymentMethod} grabRedirect={grabRedirect} />
 
                 <Shipping backend={backend} loggedIn={loggedIn} grabPaymentLoading={grabPaymentLoading} cartID={cartID} showPayment={showPayment} grabShowPayment={grabShowPayment} grabShowItems={grabShowItems} shipping={shipping} grabShipping={grabShipping} grabBillingWithShipping={grabBillingWithShipping} shippingInput={shippingInput} grabShippingInput={grabShippingInput} paymentMethod={paymentMethod} grabCardholderName={grabCardholderName} grabShowButtons={grabShowButtons} showButtons={showButtons} showShipping={showShipping} grabShowShipping={grabShowShipping} grabShowItems={grabShowItems} readOnly={readOnly} grabReadOnly={grabReadOnly} grabTotalCartQuantity={grabTotalCartQuantity} grabError={grabError} grabDisabled={grabDisabled} grabRedirect={grabRedirect} paymentMethod={paymentMethod} prevLoggedIn={prevLoggedIn} grabPrevLoggedIn={grabPrevLoggedIn} />
 

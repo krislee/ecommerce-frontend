@@ -35,7 +35,7 @@ function UserProfile ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuant
     const [reviewData, setReviewData] = useState([])
     const [reviewsTotal, setReviewsTotal] = useState(null)
     const [reviewsPage, setReviewsPage] = useState('')
-    const [redirectToReview, setRedirectToReview] = useState(false)
+    // const [redirectToReview, setRedirectToReview] = useState(false)
 
     const [redirect, setRedirect] = useState(false)
     const [footerLoading, setFooterLoading] = useState(true)
@@ -211,9 +211,10 @@ function UserProfile ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuant
     const grabOrderData = (data) => setOrderData(data) // pass down to Orders component to update the orderData state to contain a new list of orders. The new list of orders is given from the server when we click on the page number.
     const grabOrdersPage =(data) => setOrdersPage(data) //update the ordersPage state in handlePageOnChange; ordersPage state is used for Pagination 
     const grabReviewsPage = (data) => setReviewsPage(data) //update the reviewsPage state in handlePageOnChange; reviewsPage state is used for Pagination 
+    const grabReviewsTotal = (data) => setReviewsTotal(data) // need to update the total reviews pagination pages after deleting reviews so pass grabReviewsTotal function down to UserReviews component to be used in delete review function
     const grabReviewData = (data) => setReviewData(data) // pass down to UserReviews component to update the reviews state to contain a new list of reviews. When we click on a page number, the page onChange function runs, getting a new list of reviews from the server.
     const grabSettingData = (data) => setSettingData(data)
-    const grabRedirect= (data) => setRedirect(data)
+    const grabRedirect = (data) => setRedirect(data)
 
     /* ------- HANDLES WHICH COMPONENT TO DISPLAY IN THE RETURN ------- */
 
@@ -356,6 +357,7 @@ function UserProfile ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuant
                         grabReviewData={grabReviewData} 
                         reviewsTotal={reviewsTotal}
                         reviewsPage={reviewsPage} 
+                        grabReviewsTotal={grabReviewsTotal}
                         grabReviewsPage={grabReviewsPage}
                         grabTotalCartQuantity={grabTotalCartQuantity} 
                         grabRedirect={grabRedirect} />
