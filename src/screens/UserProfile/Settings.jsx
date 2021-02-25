@@ -22,9 +22,6 @@ export default function Settings({ backend, loggedIn, settingData, grabSettingDa
     const [showEmailInput, setShowEmailInput] = useState(false)
     const [showPasswordInput, setShowPasswordInput] = useState(false)
 
-    const [disableForm, setDisableForm] = useState(true)
-    
-
   
     const handleEmailUpdate = async(event) => {
         event.preventDefault()

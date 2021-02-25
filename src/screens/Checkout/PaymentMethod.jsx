@@ -274,6 +274,7 @@ function PaymentMethod ({ backend, processing, loggedIn, error, grabError, disab
     // Test if the expiration is only numbers; function will return true if test fails
     const editExpirationError = () => {
         console.log(/^[0-9]*$/g.test(editExpiration.month))
+        console.log(editExpiration.month === undefined)
        return (
            (/^[0-9]*$/g.test(editExpiration.month) !== true && editExpiration.month !== '')
            || (/^[0-9]*$/g.test(editExpiration.year) !== true && editExpiration.month !== '')

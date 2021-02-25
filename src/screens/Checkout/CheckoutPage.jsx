@@ -1,18 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { Redirect, useHistory } from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
 import {useStripe, useElements, CardElement, CardCvcElement} from '@stripe/react-stripe-js';
 
 import Shipping from './Shipping'
 import PaymentMethod from './PaymentMethod'
 import CheckoutItems from './CheckoutItems'
-import OrderComplete from './OrderComplete'
+// import OrderComplete from './OrderComplete'
 
 import createPaymentMethod from './CreatePayment'
 import '../../styles/CheckoutPage.css';
 
 
 function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCartID, grabTotalCartQuantity, socket }) {
-    const history = useHistory()
     
     /* ------- LOADING STATES ------- */
     // The loading states determine what you will see when you hit the "/checkout" route the first time
@@ -255,32 +254,33 @@ function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCar
     const grabRedirect = (redirect) => setRedirect(redirect) // aside from using redirect state at CheckoutPage component, redirect state is also passed down to the 2 other child components (CheckoutItems and Shipping) to be used for users who cleared local storage.
 
     const billingInputErrorDisableButton = () => {
-        console.log(billing)
-        console.log(cardholderName)
-        console.log(/^[a-z][a-z\s]*$/i.test(cardholderName))
         return (
             /^[a-z][a-z\s]*$/i.test(cardholderName) !== true 
             || cardholderName === undefined
             || cardholderName === ''
-            || /^[a-z][a-z\s]*$/i.test(billing.firstName) !== true 
+            || /^[a-z ,.'-]+$/i.test(billing.firstName) !== true 
+            || billing.firstName === ""
             || billing.firstName === undefined
-            || billing.firstName === ''
-            || /^[a-z][a-z\s]*$/i.test(billing.lastName) !== true 
+            || /^[a-z ,.'-]+$/i.test(billing.lastName) !== true 
+            || billing.lastName === ""
             || billing.lastName === undefined
-            || billing.lastName === ''
+            || billing.line1 === ""
             || billing.line1 === undefined
-            || billing.line1 === ''
-            || /^[a-z][a-z\s]*$/i.test(billing.city) !== true 
+            || /^[a-z ,.'-]+$/i.test(billing.city) !== true 
+            || billing.city === ""
             || billing.city === undefined
-            || billing.city === ''
             || /^[a-z][a-z\s]*$/i.test(billing.state) !== true 
+            || billing.state === ""
             || billing.state === undefined
-            || billing.state === ''
+            || billing.state.length !== 2
+            || /^[0-9]+$/.test(billing.postalCode) !== true 
+            || billing.postalCode === ""
+            || billing.postalCode === undefined
+            || billing.postalCode.length !== 5
         )
     }
 
     const billingPostalCodeInputErrorDisableButton = () => {
-        console.log(/^[0-9]*$/g.test(billing.postalCode))
         return (
             /^[0-9]*$/g.test(billing.postalCode) !== true 
             || billing.postalCode === undefined
@@ -495,7 +495,7 @@ function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCar
             <>
             {/* <NavBar /> */}
             <div id="payment-form" >
-                <CheckoutItems backend={backend} loggedIn={loggedIn} showItems={showItems} grabShowItems={grabShowItems} grabShowShipping={grabShowShipping} grabShowButtons={grabShowButtons} grabShowPayment={grabShowPayment} grabReadOnly={grabReadOnly} grabTotalCartQuantity={grabTotalCartQuantity} grabRedirect={grabRedirect} shipping={shipping} grabTotalCartQuantity={grabTotalCartQuantity} revLoggedIn={prevLoggedIn} grabPrevLoggedIn={grabPrevLoggedIn} paymentMethod={paymentMethod} grabRedirect={grabRedirect} />
+                <CheckoutItems backend={backend} loggedIn={loggedIn} showItems={showItems} grabShowItems={grabShowItems} grabShowShipping={grabShowShipping} grabShowButtons={grabShowButtons} grabShowPayment={grabShowPayment} grabReadOnly={grabReadOnly} grabTotalCartQuantity={grabTotalCartQuantity} grabRedirect={grabRedirect} shipping={shipping} grabTotalCartQuantity={grabTotalCartQuantity} prevLoggedIn={prevLoggedIn} grabPrevLoggedIn={grabPrevLoggedIn} paymentMethod={paymentMethod} grabRedirect={grabRedirect} />
 
                 <Shipping backend={backend} loggedIn={loggedIn} grabPaymentLoading={grabPaymentLoading} cartID={cartID} showPayment={showPayment} grabShowPayment={grabShowPayment} grabShowItems={grabShowItems} shipping={shipping} grabShipping={grabShipping} grabBillingWithShipping={grabBillingWithShipping} shippingInput={shippingInput} grabShippingInput={grabShippingInput} paymentMethod={paymentMethod} grabCardholderName={grabCardholderName} grabShowButtons={grabShowButtons} showButtons={showButtons} showShipping={showShipping} grabShowShipping={grabShowShipping} grabShowItems={grabShowItems} readOnly={readOnly} grabReadOnly={grabReadOnly} grabTotalCartQuantity={grabTotalCartQuantity} grabError={grabError} grabDisabled={grabDisabled} grabRedirect={grabRedirect} paymentMethod={paymentMethod} prevLoggedIn={prevLoggedIn} grabPrevLoggedIn={grabPrevLoggedIn} />
 

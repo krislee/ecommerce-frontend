@@ -1,10 +1,9 @@
 import React, {useEffect, useState} from 'react'
-import {Link, useLocation} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import '../../styles/CartPage.css'
-import NavBar from '../../components/NavigationBar'
+// import NavBar from '../../components/NavigationBar'
 import Footer from '../../components/Footer'
 import CartItemPage from './CartItemPage'
-import axios from 'axios';
 
 function CartPage ({ backend, loggedIn, cartQuantity, grabCartQuantity, totalCartQuantity, grabTotalCartQuantity } ) {
 

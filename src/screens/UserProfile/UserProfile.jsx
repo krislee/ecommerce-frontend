@@ -35,7 +35,7 @@ function UserProfile ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuant
     const [reviewData, setReviewData] = useState([])
     const [reviewsTotal, setReviewsTotal] = useState(null)
     const [reviewsPage, setReviewsPage] = useState('')
-    const [redirectToReview, setRedirectToReview] = useState(false)
+    // const [redirectToReview, setRedirectToReview] = useState(false)
 
     const [redirect, setRedirect] = useState(false)
     const [footerLoading, setFooterLoading] = useState(true)

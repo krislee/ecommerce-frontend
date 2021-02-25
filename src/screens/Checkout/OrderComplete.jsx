@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import NavBar from '../../components/NavigationBar';
+// import NavBar from '../../components/NavigationBar';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { useLocation, Link, Redirect } from 'react-router-dom';
 import Modal from 'react-modal';

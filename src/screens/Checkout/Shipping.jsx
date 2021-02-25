@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import ShippingForm from '../../components/Checkout/ShippingForm'
 import Modal from 'react-modal';
-import { Redirect } from 'react-router-dom';
+// import { Redirect } from 'react-router-dom';
 // import { Accordion, Card } from 'react-bootstrap'
 
 function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, grabShowPayment, shipping, grabShipping, grabBillingWithShipping, shippingInput, grabShippingInput, paymentMethod, grabCardholderName, showButtons, grabShowButtons, showShipping, grabShowShipping, grabError, grabDisabled, grabReadOnly, grabTotalCartQuantity, grabRedirect, prevLoggedIn }) {

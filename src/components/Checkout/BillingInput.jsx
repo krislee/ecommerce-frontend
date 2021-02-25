@@ -3,7 +3,7 @@ import '../../styles/Input.css'
 
 
 function BillingInput({ billing, handleBillingChange, editPayment }) {
-    console.log(billing.postalCode !== "")
+
     return (
         <>
             <input value={billing.firstName || ""} name="firstName" placeholder="First Name" onChange={handleBillingChange} required/>
@@ -22,7 +22,7 @@ function BillingInput({ billing, handleBillingChange, editPayment }) {
             {((/^[a-z][a-z\s]*$/i.test(billing.state) !== true) && billing.state !== "") && <div className="warning">You must enter only letters as your state</div>}
 
             {editPayment ? <input value={billing.postalCode || ""} name="postalCode" placeholder="Zipcode" maxLength="5" onChange={handleBillingChange} required/> : <></>}
-            {editPayment && (/^[0-9]+$/.test(billing.postalCode) !== true  && billing.postalCode !== "") && <div className="warning">You must enter only numbers as your zip code</div>}
+            {editPayment && (/^[0-9]+$/.test(billing.postalCode) !== true  && billing.postalCode !== "" && billing.postalCode !== undefined) && <div className="warning">You must enter only numbers as your zip code</div>}
         </>
     )
 }

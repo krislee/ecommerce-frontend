@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { Link, Redirect, useLocation } from 'react-router-dom';
+import React from 'react'
+import { Link, useLocation } from 'react-router-dom';
 // import Button from '../components/Button'
 import '../styles/NavigationBar.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'

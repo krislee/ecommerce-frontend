@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react'
 import { Redirect, useLocation}  from "react-router-dom";
-import NavBar from '../components/NavigationBar'
+// import NavBar from '../components/NavigationBar'
 import Footer from '../components/Footer'
 
 export default function Homepage({ backend, loggedIn, totalCartQuantity, grabTotalCartQuantity }) {
