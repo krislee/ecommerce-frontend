@@ -275,8 +275,8 @@ function UserProfile ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuant
                 {/* <Navbar totalCartQuantity={totalCartQuantity} grabTotalCartQuantity={grabTotalCartQuantity} backend={backend} loggedIn={loggedIn}/> */}
                 <div className="user-profile-container">
                     {/* This bar represents the sections that users can click on to switch between the address, payments, and order components (screens) */}
-                    <div className='top-bar'>
-                         <div style={{borderLeft: '1px solid #000'}} onClick={handleClickSettings} 
+                    <div className='left-bar'>
+                         <div onClick={handleClickSettings} 
                         className={settingsTabOpen === true ? "highlighted-tab" : null}>
                             Settings
                         </div>
@@ -297,7 +297,7 @@ function UserProfile ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuant
                            Reviews
                         </div>
                     </div>
-                   
+                   <div className="right-side">
                     {/* This component renders only when the profileTabOpen is open  */}
                     {settingsTabOpen && 
                         <Settings backend={backend} loggedIn={loggedIn} settingData={settingData} grabSettingData={grabSettingData} grabTotalCartQuantity={grabTotalCartQuantity} grabRedirect={grabRedirect} />
@@ -362,8 +362,9 @@ function UserProfile ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuant
                         grabTotalCartQuantity={grabTotalCartQuantity} 
                         grabRedirect={grabRedirect} />
                     }
-                    {!footerLoading && <Footer />}
+                    </div>
                 </div>
+                {!footerLoading && <Footer />}
             </>
         );
     };

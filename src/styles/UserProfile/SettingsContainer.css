@@ -1,0 +1,85 @@
+.settings {
+    height: 100%;
+    display: grid;
+    grid-template-rows: 15% 80%;
+}
+
+.settings > header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2rem;
+    font-weight: bold;
+    color: #fff;
+}
+
+.account-information {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.account-information-container { 
+    width: 45%;
+    background-color: #21212B;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    padding: 0.5rem;
+    border-radius: 1rem;
+}
+
+.account-information-container > div {
+    margin: 0.75rem;
+}
+
+.account-information-displayName-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.account-information-email-container, .account-information-password-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.information-type {
+    font-size: 0.8rem;
+    color: #b8b8b8;
+    font-weight: bold;
+}
+
+.information-info {
+    font-size: 1rem;
+    margin-top: 0.1rem;
+    font-weight: bold;
+}
+
+.information-password-info {
+    font-size: 0.8rem;
+    margin-top: 0.1rem;
+}
+
+.change-form {
+    width: 100%;
+    padding: 0px;
+    padding-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.change-form > input {
+    width: 65%;
+}
+
+.change-form > button {
+    width: 20%;
+    margin-top: 1rem;
+}
+
+.MuiButton-contained.Mui-disabled {
+    background-color: #e0e0e0 !important;
+}
