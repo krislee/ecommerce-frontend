@@ -274,9 +274,9 @@ function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCar
             || billing.state === undefined
             || billing.state.length !== 2
             || /^[0-9]+$/.test(billing.postalCode) !== true 
-            || billing.postalCode === ""
-            || billing.postalCode === undefined
-            || billing.postalCode.length !== 5
+            // || billing.postalCode === ""
+            // || billing.postalCode === undefined
+            // || billing.postalCode.length !== 5
         )
     }
 

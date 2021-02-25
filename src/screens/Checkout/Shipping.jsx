@@ -8,6 +8,7 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
    
     const [shippingLoading, setShippingLoading] = useState(true) // shippingLoading state is initially set to true to render <></> before updating it to false in useEffect()
     const [showModal, setShowModal] = useState(false)
+    const [disableButtonAfterMakingRequest, setDisableButtonAfterMakingRequest] = useState(false)
 
     // addShipping state to represent if we are currently adding a new shipping address to addresses logged in user has already saved
     const [addShipping, setAddShipping] = useState(false)
@@ -19,16 +20,21 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
     const [editShipping, setEditShipping] = useState(false)
     const [multipleShipping, setMultipleShipping] = useState(false) //multipleShipping state is initially false but will update to true in UseEffect if there is more than 1 saved address coming back from the server or after adding a new address at checkout
 
-
+    
     /* ------- MISCELLANEOUS FUNCTIONS ------ */
 
     const grabAddNewShipping = (addShipping) => setAddShipping(addShipping)
+
+    const grabMultipleShipping = (multipleShipping) => setMultipleShipping(multipleShipping) // update multipleShipping state after adding an address to show saved addresses button
+
+    const grabDisableButtonAfterMakingRequest = (disableButton) => setDisableButtonAfterMakingRequest(disableButton)
 
     // Fade out the Shipping component and show the Payment Method component when Next button is clicked
     const collapse = async () => {
         // To differentiate between a guest user vs logged in user who cleared local storage checking out, we need to identify if user was ever logged in right when user goes to /checkout path. If user was logged in when the checkout page first loads, then prevLoggedIn state has a truthy value. 
         if(prevLoggedIn && !loggedIn()) return grabTotalCartQuantity(0) // logged in user (indicated by prevLoggedIn state) who cleared local storage needs to be redirected to cart page, and update nav bar
 
+        setDisableButtonAfterMakingRequest(true) // disable Next button so that we do not make a request multiple times
         grabShowShipping(false) // hide the Shipping component that shows the shipment details
         grabShowPayment(true) //The payment method form or payment method details  from paymentMethod component will be displayed when openCollapse state is true
         grabReadOnly(true) // disable the input fields
@@ -53,17 +59,17 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
             }
         }
         // For both guest and logged in users (who are still logged in)
+        setDisableButtonAfterMakingRequest(false) // since user was in Payment method component, clicking back, we need to enable the Next button again so user can head to the Payment Method component again
         grabShowShipping(true) // show the Shipping component with the shipment details again
         grabShowPayment(false) // close the payment method info/form
         grabShowButtons(true) // show the Add New, Edit (the one that is associated with handleEditShipping function), and All Addresses buttons again 
+        grabReadOnly(false) // enable the Shipping Form for editing or Adding card again, and reshow the Next button
+        grabError(null) // clear any card errors if we are clicking back into the Shipping component from PaymentMethod component, so that when we click Next to show the PaymentMethod component, there would not be any errors displayed
+        grabDisabled(true) // if we are clicking back into the Shipping component from PaymentMethod component, and then click Next to show the PaymentMethod component, we want the confirm payment button to be disabled until guest types the card number again
         // For guests or logged in user (who does not have saved payment method), who are at the PaymentMethod component but clicks Edit button at the Shipping Component to edit the Shipping form, the following condition is run:
         if(!paymentMethod.paymentMethodID) {
-            grabCardholderName("") // When we click Back while filling out the Payment method form we want to clear the cardholder's name input if user started typing in it
-            grabError(null) // clear any card errors if we are clicking back into the Shipping component from PaymentMethod component, so that when we click Next to show the PaymentMethod component, there would not be any errors displayed
-            grabDisabled(true) // if we are clicking back into the Shipping component from PaymentMethod component, and then click Next to show the PaymentMethod component, we want the confirm payment button to be disabled until guest types the card number again
+            grabCardholderName("") // When we click Back while filling out the Payment method form we want to clear the 
         }
-        grabReadOnly(false) // enable the Shipping Form for editing or Adding card again, and reshow the Next button
-        
     }
 
 
@@ -204,6 +210,7 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
     /* ------- EDITING SHIPPING ------ */
 
     const handleEditShipping = async () => {
+        // setDisableButtonAfterMakingRequest(true)
         if(loggedIn()) {
             const editShippingResponse = await fetch(`${backend}/shipping/address/${shipping.id}?checkout=true`, {
                 method: 'PUT',
@@ -222,6 +229,34 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
             updateShippingState(editShippingData.address) // Update the shipping state to re-render the newly edited address. Recall address display is retrieved from shipping state, so shipping state stores the address info.
             updateShippingInputState(editShippingData.address) // Update the shippingInput state so that the input fields will also reflect the newly edited address, so when you click Edit button again the input fields are prefilled with the newly edited address
             setEditShipping(false) // update the editShipping state to true to represent we are not edditing a shipping
+            setDisableButtonAfterMakingRequest(false) // enable back Save button
+        } else {
+            grabTotalCartQuantity(0)
+        }
+    }
+
+    /* ------- ADD NEW SHIPPING ------ */
+    const addAdditionalSaveShipping = async() => {
+        console.log("adding additional address")
+        if(loggedIn()) {
+            const saveNewShippingResponse = await fetch(`${backend}/shipping/address?lastUsed=false&default=false&checkout=true`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': loggedIn()
+                }, 
+                body: JSON.stringify({
+                    name: `${shippingInput.firstName}, ${shippingInput.lastName}`,
+                    address: `${shippingInput.line1}, ${shippingInput.line2}, ${shippingInput.city}, ${shippingInput.state}, ${shippingInput.postalCode}`
+                })
+            })
+            const saveNewShippingData = await saveNewShippingResponse.json()
+            console.log(saveNewShippingData)
+            updateShippingState(saveNewShippingData.address)
+            updateShippingInputState(saveNewShippingData.address)
+            grabAddNewShipping(false) // updates the addShipping state to represent we are no longer adding a new shipping; if false, modal won't be returned; if true, modal would be shown
+            grabMultipleShipping(true) // We can only add a new shipping if Add New button is shown. Add New button is shown if we have at least one saved address. If we only have one saved address, then Saved Shipping button would not be shown. But since we are adding a new shipping, then Saved Shipping button would definitely be shown. Saved Shipping button is shown dependent on the truthy value of MultipleShipping state
+            grabDisableButtonAfterMakingRequest(false) // enable back Save button
         } else {
             grabTotalCartQuantity(0)
         }
@@ -234,7 +269,7 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
         console.log("adding new address as guest or first saved address")
         console.log("adding new address input: ", shippingInput)
         console.log("used shipping: ", shipping)
-
+        console.log(243, "disabling button", disableButtonAfterMakingRequest)
         // We want to always update the Payment Intent when we click Next so that it stores the most up to date shipping for both guest and logged in users. For logged in user who has saved shipping addresses or is saving an address for the first time, we also want to highlight it as the last used shipping in our Payment Intent. The payment intent webhook will create a new address with LastUsed property with a true value if saving an address for the first time. The payment webhook will update the saved address with LastUsed property with a true value. If logged in user does not have any saved address, the payment webhook won't do anything to the addresses.
         if(loggedIn()) {
             console.log(49, cartID)
@@ -292,8 +327,6 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
         }
     }
  
-    /* ------- UPDATE MULTIPLESHIPPING STATE AFTER ADDING AN ADDRESS TO SHOW SAVED ADDRESSES BUTTON ------ */
-    const grabMultipleShipping = (multipleShipping) => setMultipleShipping(multipleShipping)
 
     /* --------------------- USE EFFECT -------------------- */
 
@@ -359,7 +392,7 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
             {/* When the Next button in CheckoutItems component is clicked, showShipping state is updated to true, and only then the form will be shown */}
             {showShipping && (
                 <>
-                <ShippingForm backend={backend} loggedIn={loggedIn} shipping={shipping} shippingInput={shippingInput} grabShippingInput={grabShippingInput} grabPaymentLoading={grabPaymentLoading} addShipping={addShipping} grabAddNewShipping={grabAddNewShipping} cartID={cartID} updateShippingState={updateShippingState} updateShippingInputState={updateShippingInputState} editShipping={editShipping} handleEditShipping={handleEditShipping} closeModal={closeModal} collapse={collapse} addNewShipping={addNewShipping} /> 
+                <ShippingForm backend={backend} loggedIn={loggedIn} shipping={shipping} shippingInput={shippingInput} grabShippingInput={grabShippingInput} grabPaymentLoading={grabPaymentLoading} addShipping={addShipping} grabAddNewShipping={grabAddNewShipping} cartID={cartID} updateShippingState={updateShippingState} updateShippingInputState={updateShippingInputState} editShipping={editShipping} handleEditShipping={handleEditShipping} closeModal={closeModal} collapse={collapse} addNewShipping={addNewShipping} disableButtonAfterMakingRequest={disableButtonAfterMakingRequest} grabAfterMakingRequestDisable={grabDisableButtonAfterMakingRequest} disableButtonAfterMakingRequest={disableButtonAfterMakingRequest} /> 
                 </>
             )} 
             {/* When we click Next button in Shipping component, collapse() runs and showPayment state is updated to true to show the Payment Component. We need to make sure to still show the shipping details and Edit button when we do show the payment section*/}
@@ -395,7 +428,7 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
     } else if(addShipping || editShipping ) {
         return (
             <Modal isOpen={showModal} onRequestClose={ closeModal } ariaHideApp={false} contentLabel="Add or Edit Shipping">
-                <ShippingForm backend={backend} loggedIn={loggedIn} shipping={shipping} shippingInput={shippingInput} grabShippingInput={grabShippingInput} grabPaymentLoading={grabPaymentLoading} addShipping={addShipping} grabAddNewShipping={grabAddNewShipping} cartID={cartID} updateShippingState={updateShippingState} updateShippingInputState={updateShippingInputState} editShipping={editShipping} handleEditShipping={handleEditShipping} closeModal={closeModal} collapse={collapse} grabMultipleShipping={grabMultipleShipping} grabTotalCartQuantity={grabTotalCartQuantity} /> 
+                <ShippingForm backend={backend} loggedIn={loggedIn} shipping={shipping} shippingInput={shippingInput} grabShippingInput={grabShippingInput} grabPaymentLoading={grabPaymentLoading} addShipping={addShipping} grabAddNewShipping={grabAddNewShipping} cartID={cartID} updateShippingState={updateShippingState} updateShippingInputState={updateShippingInputState} editShipping={editShipping} handleEditShipping={handleEditShipping} closeModal={closeModal} collapse={collapse} grabMultipleShipping={grabMultipleShipping} grabTotalCartQuantity={grabTotalCartQuantity} disableButtonAfterMakingRequest={disableButtonAfterMakingRequest} grabDisableButtonAfterMakingRequest={grabDisableButtonAfterMakingRequest} addAdditionalSaveShipping={addAdditionalSaveShipping} /> 
             </Modal>
         )
     } else if(shipping.firstName) {
@@ -420,7 +453,7 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
                     {multipleShipping && <button id="allAddresses" onClick={openAllAddressesModal}>All Addresses</button>}
                     </>
                 )}
-                {showShipping && <button onClick={collapse}>Next</button>}
+                {showShipping && <button onClick={collapse} disabled={disableButtonAfterMakingRequest} >Next</button>}
             </div>
             )}
             
