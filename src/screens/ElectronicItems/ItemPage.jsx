@@ -24,11 +24,16 @@ function ItemPage ({ loggedIn, url, backend, totalCartQuantity, grabTotalCartQua
     const classes = useStyles()
 
     const [itemInfo, setItemInfo] = useState('');
+    const [ownPageInfo, setOwnPageInfo] = useState('')
+    const [nonOwnPageInfo, setNonOwnPageInfo] = useState('')
+    const [nameOfItemLength, setNameOfItemLength] = useState(0);
+
     const [quantity, setQuantity] = useState(1);
     const [avgRating, setAvgRating] = useState(null);
+
     const [review, setReview] = useState("");
     const [allReviews, setAllReviews] = useState([]);
-    const [nameOfItemLength, setNameOfItemLength] = useState(0);
+    
     const [showAddItemAlert, setShowAddItemAlert] = useState(false)
     const [showAddItemDifferenceAlert, setShowAddItemDifferenceAlert] = useState(false)
     const [differenceQuantity, setDifferenceQuantity] = useState(0)
@@ -64,6 +69,8 @@ function ItemPage ({ loggedIn, url, backend, totalCartQuantity, grabTotalCartQua
                 let data = await resp.json();
                 console.log(31, data)
                 setItemInfo(data.electronicItem);
+                setOwnPageInfo(data.ownPageElectronic)
+                setNonOwnPageInfo(data.nonOwnPageElectronic)
                 setNameOfItemLength(data.electronicItem.Name.length);
                 setAllReviews(data.review)
                 setAvgRating(data.avgRating)
@@ -91,6 +98,8 @@ function ItemPage ({ loggedIn, url, backend, totalCartQuantity, grabTotalCartQua
                 let data = await resp.json();
                 console.log(49, data)
                 setItemInfo(data.electronicItem);
+                setOwnPageInfo(data.ownPageElectronic)
+                setNonOwnPageInfo(data.nonOwnPageElectronic)
                 setNameOfItemLength(data.electronicItem.Name.length);
                 setAllReviews(data.review)
                 setAvgRating(data.avgRating)
@@ -110,15 +119,6 @@ function ItemPage ({ loggedIn, url, backend, totalCartQuantity, grabTotalCartQua
         setQuantity(parseInt(value))
     };
 
-
-    // const nameOfItem = () => {
-    //     if (nameOfItemLength < 20) {
-    //         return itemInfo.Name
-    //     } else {
-    //         return `${itemInfo.Name.split(" ").splice(0, 7).join(" ")}...`
-    //     }
-    // }
-
     if (!itemInfo) {
         return null
     } else {
@@ -137,7 +137,7 @@ function ItemPage ({ loggedIn, url, backend, totalCartQuantity, grabTotalCartQua
                                 <Rating name="size-small" value={avgRating} size="small" precision={0.1} readOnly/>
                             </div>
                             <div className="price">Price: ${itemInfo.Price}</div>
-                            <div className="description">Description: {itemInfo.Description}</div>
+                            {/* <div className="description">Description: {itemInfo.Description}</div> */}
                         </div>
                         <div className="input-info">
                             <div className="quantity-tag">Quantity</div>
@@ -153,10 +153,6 @@ function ItemPage ({ loggedIn, url, backend, totalCartQuantity, grabTotalCartQua
                                 <option value={9}>09</option>
                                 <option value={10}>10</option>
                             </select>
-                            {/* <input className="quantity-input" type="number" min="1" max="12" value={quantity} onChange={handleChangeQuantity} />
-                            {notANumber && <div className="warning">You input must be a number</div>}
-                            {negativeWarning && <div className="warning">You can't have a negative amount of items</div>}
-                            {upToTwelve && <div className="warning">You can only buy twelve items at once</div>} */}
   
                             <Toast onClose={() => setShowAddItemAlert(false)} show={showAddItemAlert} delay={3000} autohide>
                                     <Toast.Body>The maximum quantity of this item has already been added to your cart.</Toast.Body>
