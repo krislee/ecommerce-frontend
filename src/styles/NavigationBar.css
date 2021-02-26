@@ -58,7 +58,7 @@ a {
 .cart-icon:hover {
     transform: rotate(15deg);
     /* transition: 0.5s all ease-in-out; */
-    color: #b8b8b8;
+    /* color: #b8b8b8; */
 }
 
 .user-profile {
@@ -120,10 +120,11 @@ a {
     /* margin-top: 4vh !important; */
     color: #fff;
     z-index: 2;
+    border: 1px solid #21212B !important;
 }
 
 .dropdown-menu > a {
-    background-color: #000;
+    background-color: #21212B;
     color: #fff;
 }
 

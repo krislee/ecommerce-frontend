@@ -68,16 +68,13 @@
     padding: 0px;
     padding-bottom: 1rem;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .change-form > input {
     width: 65%;
-}
-
-.change-form > button {
-    width: 20%;
-    margin-top: 1rem;
 }
 
 .MuiButton-contained.Mui-disabled {

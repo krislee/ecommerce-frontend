@@ -149,10 +149,146 @@ export default function Settings({ backend, loggedIn, settingData, grabSettingDa
     };
     const handleEmailInputChange = e => setEmailInput(e.target.value);
 
-
-
     return (
         <>
+            <div
+            aria-live="polite"
+            aria-atomic="true"
+            style={{
+                position: 'absolute',
+                minHeight: '100px',
+                top: '6rem',
+                right: '1rem'
+            }}
+            >
+            <Toast
+            style={{
+            width: '100%',
+            backgroundColor: '#ff0000',
+            color: '#fff'
+            }} 
+            onClose={() => setEmailInvalid(false)}
+            show={emailInvalid}
+            delay={3000}
+            autohide>
+                <Toast.Body>Must be a valid email.</Toast.Body>
+            </Toast>
+            </div>
+            <div
+            aria-live="polite"
+            aria-atomic="true"
+            style={{
+                position: 'absolute',
+                minHeight: '100px',
+                top: '6rem',
+                right: '1rem'
+            }}
+            >
+            <Toast
+            style={{
+            width: '100%',
+            backgroundColor: '#008000',
+            color: '#fff'
+            }} 
+            onClose={() => setUpdateEmailSuccess(false)}
+            show={updateEmailSuccess}
+            delay={3000}
+            autohide>
+                <Toast.Body>Your email is successfully changed.</Toast.Body>
+            </Toast>
+            </div>
+            <div
+            aria-live="polite"
+            aria-atomic="true"
+            style={{
+                position: 'absolute',
+                minHeight: '100px',
+                top: '6rem',
+                right: '1rem'
+            }}
+            >
+            <Toast
+            style={{
+            width: '100%',
+            backgroundColor: '#ff0000',
+            color: '#fff'
+            }} 
+            onClose={() => setEmailErrorMessage(false)}
+            show={emailErrorMessage}
+            delay={3000}
+            autohide>
+                <Toast.Body>Email is already registered.</Toast.Body>
+            </Toast>
+            </div>
+            <div
+            aria-live="polite"
+            aria-atomic="true"
+            style={{
+                position: 'absolute',
+                minHeight: '100px',
+                top: '6rem',
+                right: '1rem'
+            }}
+            >
+            <Toast
+            style={{
+            width: '100%',
+            backgroundColor: '#ff0000',
+            color: '#fff'
+            }} 
+            onClose={() => setPasswordInvalid(false)}
+            show={passwordInvalid}
+            delay={3000}
+            autohide>
+                <Toast.Body>Your password must be at least 8 characters long.</Toast.Body>
+            </Toast>
+            </div>
+            <div
+            aria-live="polite"
+            aria-atomic="true"
+            style={{
+                position: 'absolute',
+                minHeight: '100px',
+                top: '6rem',
+                right: '1rem'
+            }}
+            >
+            <Toast
+            style={{
+            width: '100%',
+            backgroundColor: '#ff0000',
+            color: '#fff'
+            }} 
+            onClose={() => setPasswordErrorMessage(false)}
+            show={passwordErrorMessage}
+            delay={3000}
+            autohide>
+                <Toast.Body>Your password cannot be your 5 most recently used passwords.</Toast.Body>
+            </Toast>
+            </div>
+            <div
+            aria-live="polite"
+            aria-atomic="true"
+            style={{
+                position: 'absolute',
+                minHeight: '100px',
+                top: '6rem',
+                right: '1rem'
+            }}
+            >
+            <Toast
+            style={{
+            width: '100%',
+            backgroundColor: '#008000',
+            color: '#fff'
+            }} 
+            onClose={() => setResetPasswordSuccess(false)}
+            show={resetPasswordSuccess}
+            delay={3000}
+            autohide>
+                <Toast.Body>Your password is successfully changed.</Toast.Body>
+            </Toast>
+            </div>
             <div className="settings">
                 <header>Account Settings</header>
                 <div className="account-information">
@@ -189,15 +325,6 @@ export default function Settings({ backend, loggedIn, settingData, grabSettingDa
                         onClick={closeChangeEmailForm}>Close</Button>
                         </div>
                     )} 
-                    <Toast onClose={() => setEmailInvalid(false)} show={emailInvalid} delay={2000} autohide>
-                        <Toast.Body style={{backgroundColor: 'rgb(255, 51, 51)'}}>Must be a valid email.</Toast.Body>
-                    </Toast>  
-                    <Toast onClose={() => setEmailErrorMessage(false)} show={emailErrorMessage} delay={2000} autohide>
-                        <Toast.Body style={{backgroundColor: 'rgb(255, 51, 51)'}}> Email is already registered.</Toast.Body>
-                    </Toast>  
-                    <Toast onClose={() => setUpdateEmailSuccess(false)} show={updateEmailSuccess} delay={2000} autohide>
-                        <Toast.Body style={{backgroundColor: 'rgb(57, 172, 57)'}}>Your email is successfully changed.</Toast.Body>
-                    </Toast>
                     <div className="account-information-password-container">
                     <div>
                     <div className="information-type">Password</div>
@@ -222,7 +349,7 @@ export default function Settings({ backend, loggedIn, settingData, grabSettingDa
                         onClick={closeChangePasswordForm}>Close</Button>
                         </div>
                     )}
-                    <Toast onClose={() => setPasswordInvalid(false)} show={passwordInvalid} delay={3000} autohide>
+                    {/* <Toast onClose={() => setPasswordInvalid(false)} show={passwordInvalid} delay={3000} autohide>
                         <Toast.Body style={{backgroundColor: 'rgb(255, 51, 51)'}}>Your password must be at least 8 characters long.</Toast.Body>
                     </Toast>  
                     <Toast onClose={() => setPasswordErrorMessage(false)} show={passwordErrorMessage} delay={3000} autohide>
@@ -230,7 +357,7 @@ export default function Settings({ backend, loggedIn, settingData, grabSettingDa
                     </Toast>  
                     <Toast onClose={() => setResetPasswordSuccess(false)} show={resetPasswordSuccess} delay={3000} autohide>
                         <Toast.Body style={{backgroundColor: 'rgb(57, 172, 57)'}}>Your password is successfully changed.</Toast.Body>
-                    </Toast>
+                    </Toast> */}
                     </div>    
                 </div>   
             </div>
