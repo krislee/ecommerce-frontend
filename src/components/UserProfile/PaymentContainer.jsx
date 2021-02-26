@@ -356,14 +356,15 @@ function PaymentContainer ({ backend, payment, defaultFirstPayment, grabPaymentD
     // Styles pertaining to the cards used to display the payment methods
     const useStyles = makeStyles((theme) => ({
         root: {
-          width: '100%',
-          backgroundColor: '#e8e8e8'
+          width: '60%',
+          backgroundColor: '#21212B',
+          margin: '0.5rem'
         },
         header: {
           cursor: 'pointer'
         },
         avatar: {
-          backgroundColor: '#e8e8e8',
+          backgroundColor: '#fff',
           position: 'static'
         },
         avatarVisa: {
@@ -380,8 +381,8 @@ function PaymentContainer ({ backend, payment, defaultFirstPayment, grabPaymentD
           cursor: 'pointer'
         },
         collapsedContent: {
-          borderTop: '1px solid #c8c8c8',
-          backgroundColor: '#fff'
+          borderTop: '1px solid #101016',
+          backgroundColor: '#21212B'
         }
       }));
 
