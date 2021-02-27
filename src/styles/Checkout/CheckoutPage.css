@@ -1,13 +1,27 @@
 .checkout-items { 
     grid-area: side;
 }
+#checkout-shipping-payment {
+    /* background-color: #312f2f; */
+    display: flex;
+    flex-direction: column;
+    
+}
 .checkout-shipping { 
     grid-area: main1; 
     background-color: #e5e5e5;
+    border-radius: 10px;
+    margin-left: 10px;
+    margin-top: 20px;
+    width: 100%
+
 }
 .checkout-payment { 
     grid-area: main2; 
     background-color: #e5e5e5;
+    border-radius: 10px;
+    margin-left: 10px;
+    margin-top: 20px;
 }
 
 #payment-form {
@@ -19,7 +33,7 @@
     grid-column-gap: 30px;
     grid-template-columns: 55%;
     margin-right: 10px;
-    margin-left: 10px;
+    /* margin-left: 10px; */
     
 }
 

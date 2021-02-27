@@ -320,8 +320,11 @@ function PaymentMethod ({ backend, processing, loggedIn, error, grabError, disab
 
         return (
             <>
-            <div><h2>Payment Method</h2></div>
+            <div></div>
+            {/* <div><h2>Payment Method</h2></div> */}
             {showPayment && (
+            <div id="payment-container" style={{marginLeft: '30px'}}>
+             <h2>Payment Method</h2>
             <div>
                 <p><b>{paymentMethod.cardholderName}</b></p>
                 <p><b>{paymentMethod.brand}</b></p>
@@ -369,24 +372,25 @@ function PaymentMethod ({ backend, processing, loggedIn, error, grabError, disab
                 - A CVC Element is only displayed if there is a saved card with a "true" recollectCVV property) 
                 2) error when typing in the Card/CVV Element */}
 
-            {(!editPayment && !redisplayCardElement && !showSavedCards) && (
-                <Button variant="dark" id="submit" 
-                disabled={ (disabled && paymentMethod.recollectCVV === "true") || error || processingPayment }  
-                onClick={(event) => {
-                    setProcessingPayment(true)
-                    handleConfirmPayment(event)
-                }}>
-                    { processingPayment ? (
-                        <>
-                        <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" /> 
-                        <span>Processing...</span>
-                        </> 
-                        ) : "Confirm Payment"
-                    }
-                </Button>
-                ) 
-            }
+                {(!editPayment && !redisplayCardElement && !showSavedCards) && (
+                    <Button variant="dark" id="submit" 
+                    disabled={ (disabled && paymentMethod.recollectCVV === "true") || error || processingPayment }  
+                    onClick={(event) => {
+                        setProcessingPayment(true)
+                        handleConfirmPayment(event)
+                    }}>
+                        { processingPayment ? (
+                            <>
+                            <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" /> 
+                            <span>Processing...</span>
+                            </> 
+                            ) : "Confirm Payment"
+                        }
+                    </Button>
+                    ) 
+                }
 
+            </div>
             </div>
             )}
             </>

@@ -3,7 +3,9 @@ import ShippingForm from '../../components/Checkout/ShippingForm'
 import Modal from 'react-modal';
 import Button from 'react-bootstrap/Button';
 
-import { makeStyles } from '@material-ui/core/styles';
+import classNames from 'classnames'
+// import { StylesProvider } from "@material-ui/core/styles";
+import { makeStyles, createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import SpeedDial from '@material-ui/lab/SpeedDial';
 import SpeedDialIcon from '@material-ui/lab/SpeedDialIcon';
 import SpeedDialAction from '@material-ui/lab/SpeedDialAction';
@@ -12,16 +14,47 @@ import EditLocationIcon from '@material-ui/icons/EditLocation';
 import HomeIcon from '@material-ui/icons/Home';
 import EditIcon from '@material-ui/icons/Edit';
 
+
+let theme = createMuiTheme({})
+theme = { ...theme,
+    overrides: {
+        MuiFab: {
+            root: {
+                [theme.breakpoints.down("xs")]: {
+                    width: 36,
+                    height: 0
+                },
+                [theme.breakpoints.up("xs")]: {
+                    width: 45,
+                    height: 45
+                },
+            },
+        },
+        MuiSpeedDial: {
+
+        }
+    },
+  };
+
 const useStyles = makeStyles((theme) => ({
     root: {
-      height: 20,
-      transform: 'translateZ(0px)',
-      flexGrow: 0.5,
+        height: 20,
+        transform: 'translateZ(0px)',
+        flexGrow: 0.5,
+        "margin-right": 30,
+        [theme.breakpoints.down("xs")]: {
+            "margin-right": 10,
+            "margin-bottom": 20
+        },
+        [theme.breakpoints.up("s")]: {
+            // "margin-bottom": '50px',
+            // "margin-right": 0,
+        }
     },
     speedDial: {
       position: 'absolute',
-      bottom: theme.spacing(2),
-      right: theme.spacing(2),
+      bottom: theme.spacing(0),
+      right: theme.spacing(0),
     },
 }));
   
@@ -470,8 +503,8 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
         )
     } else if(shipping.firstName) {
         return (
-            <>
-            <h2>Shipping Address</h2>
+            <div id="shipping-container" style={{marginLeft: '30px'}}>
+            <h2 id="shipping-heading">Shipping Address</h2>
             {/* When Next is clicked from the CheckoutItems component, showShipping updates to true & showPayment updates to false so the following shipment details will show. We still want to show the shipment details when we click Next in Shipping component. When we click Next in Shipping component, showShipping is false but showPayment will be updated to true , so shipment details will STILL show. */}
             {(showShipping || showPayment) && (
             <div className="display-shipping-info">
@@ -499,11 +532,13 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
                 //     {multipleShipping && <Button variant="dark" size="sm" id="allAddresses" onClick={openAllAddressesModal}>All Addresses</Button>}
                 //     </>
                 // )}
+                // <StylesProvider injectFirst>
+                <ThemeProvider theme={theme}>
                 <div className={classes.root}>
-                    <SpeedDial
+                    <SpeedDial 
                         ariaLabel="SpeedDial openIcon"
                         className={classes.speedDial}
-                        icon={<SpeedDialIcon openIcon={<EditIcon />} />}
+                        icon={<EditIcon />} 
                         onClose={handleClose}
                         onOpen={handleOpen}
                         open={open}
@@ -528,13 +563,15 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
                         />
                     </SpeedDial>
                 </div>
+                </ThemeProvider>
+                // </StylesProvider>
                 
                 )}
                 </div>
             {/* </div> */}
             {/* )} */}
             
-            </>
+            </div>
         )
     } 
 }
