@@ -8,7 +8,7 @@ import CheckoutItems from './CheckoutItems'
 // import OrderComplete from './OrderComplete'
 
 import createPaymentMethod from './CreatePayment'
-import '../../styles/CheckoutPage.css';
+import '../../styles/Checkout/CheckoutPage.css';
 
 
 function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCartID, grabTotalCartQuantity, socket }) {
@@ -65,9 +65,9 @@ function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCar
     const [shippingInput, setShippingInput] = useState({})
     
     // The following Shipping states controls if we show or hide the CheckoutItems, Shipping, and PaymentMethod component:
-    const [showShipping, setShowShipping] = useState(false) // showShipping state is updated in either CheckoutItems and PaymentMethod components to show the Shipping details or form
-    const [readOnly, setReadOnly] = useState(false) // Shipping form is enabled by default until we click Next button in CheckoutItems component, updating readOnly state to true to disable the shipping form. When we are showing the Payment component, and then click Edit in the Shipping component, we enable the shipping form to edit
-    const [showButtons, setShowButtons] = useState(false) // If showButtons state is true, it will show 3 buttons: Add New, Edit, and Saved Shipping in the Shipping component. showButtons state is updated when we click Next button in CheckoutItems component and when we are in the Payment component but click on the Edit button in the Shipping component
+    const [showShipping, setShowShipping] = useState(true) // showShipping state is updated in either CheckoutItems and PaymentMethod components to show the Shipping details or form
+    const [readOnly, setReadOnly] = useState(true) // Shipping form is enabled by default until we click Next button in CheckoutItems component, updating readOnly state to true to disable the shipping form. When we are showing the Payment component, and then click Edit in the Shipping component, we enable the shipping form to edit
+    const [showButtons, setShowButtons] = useState(true) // If showButtons state is true, it will show 3 buttons: Add New, Edit, and Saved Shipping in the Shipping component. showButtons state is updated when we click Next button in CheckoutItems component and when we are in the Payment component but click on the Edit button in the Shipping component
     const [showPayment, setShowPayment] = useState(false) // showPayment state is passed to both PaymentMethod component, and is updated in the Shipping Component when we click Next or Edit button in the Shipping Component
     const [showItems, setShowItems] = useState(true) //showItems state is updated in CheckoutItems component
 
@@ -496,12 +496,17 @@ function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCar
             <>
             
             <div id="payment-form">
+                <div className="checkout-items">
                 <CheckoutItems backend={backend} loggedIn={loggedIn} showItems={showItems} grabShowItems={grabShowItems} grabShowShipping={grabShowShipping} grabShowButtons={grabShowButtons} grabShowPayment={grabShowPayment} grabReadOnly={grabReadOnly} grabTotalCartQuantity={grabTotalCartQuantity} grabRedirect={grabRedirect} shipping={shipping} grabTotalCartQuantity={grabTotalCartQuantity} prevLoggedIn={prevLoggedIn} grabPrevLoggedIn={grabPrevLoggedIn} paymentMethod={paymentMethod} grabRedirect={grabRedirect} />
-
-                <Shipping backend={backend} loggedIn={loggedIn} grabPaymentLoading={grabPaymentLoading} cartID={cartID} showPayment={showPayment} grabShowPayment={grabShowPayment} grabShowItems={grabShowItems} shipping={shipping} grabShipping={grabShipping} grabBillingWithShipping={grabBillingWithShipping} shippingInput={shippingInput} grabShippingInput={grabShippingInput} paymentMethod={paymentMethod} grabCardholderName={grabCardholderName} grabShowButtons={grabShowButtons} showButtons={showButtons} showShipping={showShipping} grabShowShipping={grabShowShipping} grabShowItems={grabShowItems} readOnly={readOnly} grabReadOnly={grabReadOnly} grabTotalCartQuantity={grabTotalCartQuantity} grabError={grabError} grabDisabled={grabDisabled} grabRedirect={grabRedirect} paymentMethod={paymentMethod} prevLoggedIn={prevLoggedIn} grabPrevLoggedIn={grabPrevLoggedIn} />
-
-                <PaymentMethod backend={backend} loggedIn={loggedIn} error={error} grabError={grabError} disabled={disabled} grabDisabled={grabDisabled} paymentLoading={paymentLoading} grabPaymentLoading={grabPaymentLoading} billing={billing} handleBillingChange={handleBillingChange} grabBilling={grabBilling} paymentMethod={paymentMethod} grabPaymentMethod={grabPaymentMethod} cardholderName={cardholderName} grabCardholderName={grabCardholderName}handleCardholderNameChange={handleCardholderNameChange} handleCardChange={handleCardChange} collectCVV={collectCVV} grabCollectCVV={grabCollectCVV} editPayment={editPayment} grabEditPayment={grabEditPayment} redisplayCardElement={redisplayCardElement} grabRedisplayCardElement={grabRedisplayCardElement} grabShowSavedCards={grabShowSavedCards} handleConfirmPayment={handleConfirmPayment} showSavedCards={showSavedCards} editExpiration={editExpiration} grabEditExpiration={grabEditExpiration} loggedOut={loggedOut} grabLoggedOut={grabLoggedOut} showPayment={showPayment} sameAsShipping={sameAsShipping} handleSameAsShipping={handleSameAsShipping} shippingInput={shippingInput} grabBillingWithShipping={grabBillingWithShipping} shipping={shipping} recheckSameAsShippingButton={recheckSameAsShippingButton} grabTotalCartQuantity={grabTotalCartQuantity}grabRedirect={grabRedirect} billingInputErrorDisableButton={billingInputErrorDisableButton} billingPostalCodeInputErrorDisableButton={billingPostalCodeInputErrorDisableButton} />
+                </div>
                 
+                <div className="checkout-shipping">
+                <Shipping backend={backend} loggedIn={loggedIn} grabPaymentLoading={grabPaymentLoading} cartID={cartID} showPayment={showPayment} grabShowPayment={grabShowPayment} grabShowItems={grabShowItems} shipping={shipping} grabShipping={grabShipping} grabBillingWithShipping={grabBillingWithShipping} shippingInput={shippingInput} grabShippingInput={grabShippingInput} paymentMethod={paymentMethod} grabCardholderName={grabCardholderName} grabShowButtons={grabShowButtons} showButtons={showButtons} showShipping={showShipping} grabShowShipping={grabShowShipping} grabShowItems={grabShowItems} readOnly={readOnly} grabReadOnly={grabReadOnly} grabTotalCartQuantity={grabTotalCartQuantity} grabError={grabError} grabDisabled={grabDisabled} grabRedirect={grabRedirect} paymentMethod={paymentMethod} prevLoggedIn={prevLoggedIn} grabPrevLoggedIn={grabPrevLoggedIn} />
+                </div>
+
+                <div className="checkout-payment">
+                <PaymentMethod backend={backend} loggedIn={loggedIn} error={error} grabError={grabError} disabled={disabled} grabDisabled={grabDisabled} paymentLoading={paymentLoading} grabPaymentLoading={grabPaymentLoading} billing={billing} handleBillingChange={handleBillingChange} grabBilling={grabBilling} paymentMethod={paymentMethod} grabPaymentMethod={grabPaymentMethod} cardholderName={cardholderName} grabCardholderName={grabCardholderName}handleCardholderNameChange={handleCardholderNameChange} handleCardChange={handleCardChange} collectCVV={collectCVV} grabCollectCVV={grabCollectCVV} editPayment={editPayment} grabEditPayment={grabEditPayment} redisplayCardElement={redisplayCardElement} grabRedisplayCardElement={grabRedisplayCardElement} grabShowSavedCards={grabShowSavedCards} handleConfirmPayment={handleConfirmPayment} showSavedCards={showSavedCards} editExpiration={editExpiration} grabEditExpiration={grabEditExpiration} loggedOut={loggedOut} grabLoggedOut={grabLoggedOut} showPayment={showPayment} sameAsShipping={sameAsShipping} handleSameAsShipping={handleSameAsShipping} shippingInput={shippingInput} grabBillingWithShipping={grabBillingWithShipping} shipping={shipping} recheckSameAsShippingButton={recheckSameAsShippingButton} grabTotalCartQuantity={grabTotalCartQuantity}grabRedirect={grabRedirect} billingInputErrorDisableButton={billingInputErrorDisableButton} billingPostalCodeInputErrorDisableButton={billingPostalCodeInputErrorDisableButton} />
+                </div>
             </div>         
             </>
         )

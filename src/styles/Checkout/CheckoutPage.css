@@ -1,0 +1,25 @@
+.checkout-items { 
+    grid-area: side;
+}
+.checkout-shipping { 
+    grid-area: main1; 
+}
+.checkout-payment { 
+    grid-area: main2; 
+}
+
+#payment-form {
+    margin-top: 10vh;
+    display: grid;
+    grid-template-areas: 
+        'main1 main1 main1 side'
+        'main2 main2 main2 side';
+    grid-gap: 30px;
+    grid-template-columns: 55%;
+    margin-right: 10px;
+    /* margin-top: 20px; */
+}
+
+.grid-container > div {
+    text-align: center;
+}
