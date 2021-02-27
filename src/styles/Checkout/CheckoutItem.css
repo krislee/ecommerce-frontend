@@ -1,11 +1,19 @@
-/* .checkut-items-container {
-    margin-left: 20px;
-} */
+.checkout-items-container {
+    margin-top: 30px;
+}
+.Heading-Edit {
+    display: flex;
+}
+h2 {
+    margin-right: 20%;
+}
+
+
 .checkout-items-sub-container {
     max-height: 500px;
     overflow-y: scroll;
+    margin-top: 20px;
 }
-
 .checkout-items-individual-container {
     width: 100%;
     margin-bottom: 30px;
@@ -19,16 +27,48 @@
 img {
     width: 100%;
 }
+/* .MuiBadge-root {
+    display:inline;
+}
+.MuiBadge-colorPrimary {
+    background-color: #adb5bd
+} */
 .checkout-item-name {
     align-self: center;
 }
-
-.Heading-Edit {
-    margin-top: 30px;
-    display: flex;
-    /* justify-content: space-around; */
+#show-image-only-mobile {
+    display: none
 }
 
-h2 {
-    margin-right: 20%;
+
+@media only screen and (max-width: 900px) {
+    .checkout-item-name {
+        display: none
+    }
+    .checkout-items-individual-container {
+        justify-content: center;
+    }
 }
+
+@media only screen and (max-width: 800px) {
+    .checkout-items-sub-container {
+        max-height: 100%;
+        display: flex;
+        max-width: 100%;
+        overflow-x: scroll;
+    }
+}
+
+@media only screen and (max-width: 500px) {
+    h2 {
+        font-size: 1em;
+    }
+    /* remove badge */
+    #badge {
+        display: none;
+    }
+    #show-image-only-mobile {
+        display: inline
+    }
+}
+

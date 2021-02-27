@@ -1,7 +1,10 @@
 import React, {useEffect, useState} from 'react'
 import { Redirect } from 'react-router-dom';
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import Badge from '@material-ui/core/Badge';
+import { withStyles } from '@material-ui/core/styles';
+import IconButton from '@material-ui/core/IconButton';
 
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -22,12 +25,27 @@ const useStyles = makeStyles({
     },
 });
 
+const StyledBadge = withStyles((theme) => ({
+    badge: {
+      top: 30,
+    //   border: `2px solid ${theme.palette.background.paper}`,
+      padding: '0 4px',
+    },
+    ".MuiBadge-colorPrimary" : {
+        "background-color": "#adb5bd"
+    },
+    ".MuiBadge-anchorOriginTopLeftCircle": {
+        left: '5%'
+    }
+  }))(Badge);
+
 export default function CheckoutItems({ backend, loggedIn, showItems, grabShowItems, grabShowShipping, grabShowButtons, grabReadOnly, grabTotalCartQuantity, shipping, prevLoggedIn, grabPrevLoggedIn, paymentMethod, grabRedirect }) {
     
     const classes = useStyles() // for table style
 
     const [checkoutItemsLoading, setCheckoutItemsLoading] = useState(true)
     const [items, setItems] = useState([]);
+    const [itemQuantity, setItemQuantity] = useState(1)
     const [subtotal, setSubtotal] = useState(0)
     const [redirect, setRedirect] = useState(false)
     // const [checkoutItemPrevLoggedIn, setCheckoutItemPrevLoggedIn] = useState(loggedIn())
@@ -115,64 +133,69 @@ export default function CheckoutItems({ backend, loggedIn, showItems, grabShowIt
     } else {
         return (
             <div className="checkout-items-container">
-            <div className="Heading-Edit">
-                <h2>Your Cart</h2>
-                <p onClick={editCheckoutCart}><u>Edit</u></p>
-            </div>
-            <div className="checkout-items-sub-container">
-                {items.map((item) => { return(
-                    <div key={item._id} className="checkout-items-individual-container">
-                        <div className="checkout-item-img-container">
-                            <img src={item.Image}></img>
-                        </div>
-                        <div className="checkout-item-name">
-                            <b>{item.Name.length > 20 ? item.Name.substring(0, 20) + "..." : item.Name}</b>
-                        </div>
-                    </div>
-                )})}
-            
-            </div>
 
-            <TableContainer component={Paper}>
-                    <Table className={classes.table} aria-label="simple table">
-                        <TableBody>
-                            <TableRow key={"subtotal"}>
-                                <TableCell component="th" scope="row">
-                                    Subtotal
-                                </TableCell>
-                                <TableCell align="right">{subtotal}</TableCell>
-                            </TableRow>
+                <div className="Heading-Edit">
+                    <h2>Your Cart</h2>
+                    <p onClick={editCheckoutCart}><u>Edit</u></p>
+                </div>
 
-                            <TableRow key={"shipping-fee"}>
-                                <TableCell component="th" scope="row">
-                                    Shipping Fee
-                                </TableCell>
-                                <TableCell align="right">$0.00</TableCell>
-                            </TableRow>
-
-                            <TableRow key={"tax"}>
-                                <TableCell component="th" scope="row"> Taxes </TableCell>
-                                <TableCell align="right">$0.00</TableCell>
-                            </TableRow>
+                <div className="checkout-items-sub-container">
+                    {items.map((item) => { return(
+                        <div key={item._id} className="checkout-items-individual-container">
+                            <div className="checkout-item-img-container">
+                            <img id="show-image-only-mobile" src={item.Image}></img>
+                            <StyledBadge 
+                            id="badge"
+                            anchorOrigin={{
+                                vertical: 'top',
+                                horizontal: 'left',
+                            }} 
+                            badgeContent={item.Quantity} 
+                            color="primary" 
+                            overlap="circle">
+                                <img src={item.Image}></img>
+                            </StyledBadge>
                             
-                            <TableRow key={"total"}>
-                                <TableCell component="th" scope="row">Total</TableCell>
-                                <TableCell align="right">{subtotal}</TableCell>
-                            </TableRow>
-                        </TableBody>
-                    </Table>
-                </TableContainer>
+                            </div>
 
-                {/* {showItems && <button onClick={handleNext}>Next</button>} */}
-{/*          
-            <button onClick={()=> {
-                if((prevLoggedIn&& !loggedIn())) return grabTotalCartQuantity(0)
-                else setRedirect(true)
-            }}>Edit</button> */}
-            {/* <FontAwesomeIcon className="home" icon={faPencilAlt} size={20} onClick={()=> {
-                    if((prevLoggedIn&& !loggedIn())) return grabTotalCartQuantity(0)
-                    else setRedirect(true)
-                }}/> */}
+                            <div className="checkout-item-name">
+                                <b>{item.Name.length > 20 ? item.Name.substring(0, 20) + "..." : item.Name}</b>
+                            </div>
+                        </div>
+                    )})}
+                
+                </div>
+
+                <TableContainer component={Paper}>
+                        <Table className={classes.table} size="small" aria-label="simple table">
+                            <TableBody>
+                                <TableRow key={"subtotal"}>
+                                    <TableCell component="th" scope="row">
+                                        Subtotal
+                                    </TableCell>
+                                    <TableCell align="right">{subtotal}</TableCell>
+                                </TableRow>
+
+                                <TableRow key={"shipping-fee"}>
+                                    <TableCell component="th" scope="row">
+                                        Shipping Fee
+                                    </TableCell>
+                                    <TableCell align="right">$0.00</TableCell>
+                                </TableRow>
+
+                                <TableRow key={"tax"}>
+                                    <TableCell component="th" scope="row"> Taxes </TableCell>
+                                    <TableCell align="right">$0.00</TableCell>
+                                </TableRow>
+                                
+                                <TableRow key={"total"}>
+                                    <TableCell component="th" scope="row">Total</TableCell>
+                                    <TableCell align="right">{subtotal}</TableCell>
+                                </TableRow>
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+
             </div>
         )
     }

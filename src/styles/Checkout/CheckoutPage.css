@@ -17,9 +17,17 @@
     grid-gap: 30px;
     grid-template-columns: 55%;
     margin-right: 10px;
-    /* margin-top: 20px; */
+    margin-left: 10px;
 }
 
 .grid-container > div {
     text-align: center;
+}
+
+
+@media only screen and (max-width: 800px) {
+    #payment-form {
+        display: flex;
+        flex-wrap: wrap;
+    }
 }
