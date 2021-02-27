@@ -1,11 +1,45 @@
 import React, { useEffect, useState } from 'react';
 import ShippingForm from '../../components/Checkout/ShippingForm'
 import Modal from 'react-modal';
-// import { Redirect } from 'react-router-dom';
-// import { Accordion, Card } from 'react-bootstrap'
+import Button from 'react-bootstrap/Button';
+
+import { makeStyles } from '@material-ui/core/styles';
+import SpeedDial from '@material-ui/lab/SpeedDial';
+import SpeedDialIcon from '@material-ui/lab/SpeedDialIcon';
+import SpeedDialAction from '@material-ui/lab/SpeedDialAction';
+import AddIcon from '@material-ui/icons/Add';
+import EditLocationIcon from '@material-ui/icons/EditLocation';
+import HomeIcon from '@material-ui/icons/Home';
+import EditIcon from '@material-ui/icons/Edit';
+
+const useStyles = makeStyles((theme) => ({
+    root: {
+      height: 20,
+      transform: 'translateZ(0px)',
+      flexGrow: 0.5,
+    },
+    speedDial: {
+      position: 'absolute',
+      bottom: theme.spacing(2),
+      right: theme.spacing(2),
+    },
+}));
+  
 
 function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, grabShowPayment, shipping, grabShipping, grabBillingWithShipping, shippingInput, grabShippingInput, paymentMethod, grabCardholderName, showButtons, grabShowButtons, showShipping, grabShowShipping, grabError, grabDisabled, grabReadOnly, grabTotalCartQuantity, grabRedirect, prevLoggedIn }) {
-   
+    
+    const classes = useStyles();
+    const [open, setOpen] = useState(false);
+    
+    const handleOpen = () => {
+        setOpen(true);
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+    };
+    
+
     const [shippingLoading, setShippingLoading] = useState(true) // shippingLoading state is initially set to true to render <></> before updating it to false in useEffect()
     const [showModal, setShowModal] = useState(false)
     const [disableButtonAfterMakingRequest, setDisableButtonAfterMakingRequest] = useState(false)
@@ -398,12 +432,13 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
             {/* When we click Next button in Shipping component, collapse() runs and showPayment state is updated to true to show the Payment Component. We need to make sure to still show the shipping details and Edit button when we do show the payment section*/}
             {showPayment && (
                 <>  
-                <div>
+                <div className="display-shipping-info">
                     <p>{shippingInput.firstName} {shippingInput.lastName}</p>
                     <p>{shippingInput.line1}</p>
                     <p>{shippingInput.line2}</p>
                     <p>{shippingInput.city}, {shippingInput.state} {shippingInput.postalCode}</p>
-                    {!showButtons && <button onClick={back}>Edit</button>}
+                    {!showButtons && <Button variant="dark" size="sm" onClick={back}>Edit</Button>}
+                   
                 </div>
                 </>
             )} 
@@ -419,10 +454,12 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
                         <p id="line1">{savedShipping.Address.split(", ")[0]}</p>
                         <p id="line2">{savedShipping.Address.split(", ")[1] === "null" || savedShipping.Address.split(", ")[1] === "undefined" ? "" : savedShipping.Address.split(", ")[1]}</p>
                         <p id="cityStateZipcode">{savedShipping.Address.split(", ")[2]}, {savedShipping.Address.split(", ")[3]} {savedShipping.Address.split(", ")[4]}</p>
-                        <button id={savedShipping._id} onClick={handleSelectedShipping}>Select</button>
+                        <Button variant="dark" size="sm" id={savedShipping._id} onClick={handleSelectedShipping}>Select</Button>
+
                     </div>
                 )})}
-                <button onClick={ closeModal }>Close</button>
+                <Button variant="dark" onClick={ closeModal }>Close</Button>
+                
             </Modal>
         )
     } else if(addShipping || editShipping ) {
@@ -437,25 +474,65 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
             <h2>Shipping Address</h2>
             {/* When Next is clicked from the CheckoutItems component, showShipping updates to true & showPayment updates to false so the following shipment details will show. We still want to show the shipment details when we click Next in Shipping component. When we click Next in Shipping component, showShipping is false but showPayment will be updated to true , so shipment details will STILL show. */}
             {(showShipping || showPayment) && (
-            <div>
+            <div className="display-shipping-info">
                 {/* If user has a saved address (indicated by shipping.address), display the address: */}
                 <p id="name">{shipping.firstName} {shipping.lastName}</p>
                 <p id="line1">{shipping.line1}</p>
                 <p id="line2">{shipping.line2}</p>
                 <p id="cityStateZipcode">{shipping.city}, {shipping.state} {shipping.postalCode}</p>
                 {/* Edit button only shown if user has moved onto the Payment Method component */}
-                {!showButtons && <button onClick={back}>Edit</button>} 
+            </div>)}
+                
+
+                <div className="next-edit-container">
+                {!showButtons && <Button variant="dark" size="lg" onClick={back}>Edit</Button>} 
+                {showShipping && <Button variant="dark" size="lg" onClick={collapse} disabled={disableButtonAfterMakingRequest}>Next</Button>}
+
                 {/* The following are shown if user is still in the Shipping component */}
                 { showButtons && (
-                    <>
-                    <button id="addNewAddress" onClick={openAddNewModal}>Add New</button>
-                    <button id="editAddress" onClick={openEditModal}>Edit</button>
-                    {multipleShipping && <button id="allAddresses" onClick={openAllAddressesModal}>All Addresses</button>}
-                    </>
+                //     <>
+                //     {/* <button id="addNewAddress" onClick={openAddNewModal}>Add New</button> */}
+                //     <Button variant="dark" size="sm" id="addNewAddress" onClick={openAddNewModal}>Add New</Button>
+                //     {/* <button id="editAddress" onClick={openEditModal}>Edit</button> */}
+                //     <Button variant="dark" size="sm" id="editAddress" onClick={openEditModal}>Edit</Button>
+                //     {/* {multipleShipping && <button id="allAddresses" onClick={openAllAddressesModal}>All Addresses</button>} */}
+                //     {multipleShipping && <Button variant="dark" size="sm" id="allAddresses" onClick={openAllAddressesModal}>All Addresses</Button>}
+                //     </>
+                // )}
+                <div className={classes.root}>
+                    <SpeedDial
+                        ariaLabel="SpeedDial openIcon"
+                        className={classes.speedDial}
+                        icon={<SpeedDialIcon openIcon={<EditIcon />} />}
+                        onClose={handleClose}
+                        onOpen={handleOpen}
+                        open={open}
+                    >
+                        <SpeedDialAction
+                            key={"Add Address"}
+                            icon={<AddIcon />}
+                            tooltipTitle={"Add Address"}
+                            onClick={openAddNewModal}
+                        />
+                        <SpeedDialAction
+                            key={"Edit Address"}
+                            icon={<EditLocationIcon />}
+                            tooltipTitle={"Edit Address"}
+                            onClick={openEditModal}
+                        />
+                        <SpeedDialAction
+                            key={"All Addresses"}
+                            icon={<HomeIcon />}
+                            tooltipTitle={"All Addresses"}
+                            onClick={openAllAddressesModal}
+                        />
+                    </SpeedDial>
+                </div>
+                
                 )}
-                {showShipping && <button onClick={collapse} disabled={disableButtonAfterMakingRequest} >Next</button>}
-            </div>
-            )}
+                </div>
+            {/* </div> */}
+            {/* )} */}
             
             </>
         )

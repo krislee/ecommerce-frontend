@@ -5,6 +5,9 @@ import Modal from 'react-modal';
 import { useStripe, CardElement, useElements, CardCvcElement } from "@stripe/react-stripe-js"; 
 import createPaymentMethod from './CreatePayment'
 import CardForm from './CardForm'
+
+import Button from 'react-bootstrap/Button';
+import Spinner from 'react-bootstrap/Spinner'
 import '../../styles/Checkout/Payment.css'
 
 
@@ -365,16 +368,24 @@ function PaymentMethod ({ backend, processing, loggedIn, error, grabError, disab
                 - We can tell if the Element is empty or not when handleCardChange() runs, handleCardChange() runs when there is typing/backspacing in the input. When handleCardChange() runs, the disabled state is updated to false when there is typing/backspacing or something written in CVV Element
                 - A CVC Element is only displayed if there is a saved card with a "true" recollectCVV property) 
                 2) error when typing in the Card/CVV Element */}
-                {(!editPayment && !redisplayCardElement && !showSavedCards) ? (
-                    <button disabled={ (disabled && paymentMethod.recollectCVV === "true") || error || processingPayment }  id="submit" onClick={(event) => {
-                        setProcessingPayment(true)
-                        handleConfirmPayment(event)
-                    }} >
-                        <span id="button-text">
-                            {processing ? (<div className="spinner" id="spinner"></div>) : ("Confirm Payment")}
-                        </span>
-                    </button>
-                ):<></>}
+
+            {(!editPayment && !redisplayCardElement && !showSavedCards) && (
+                <Button variant="dark" id="submit" 
+                disabled={ (disabled && paymentMethod.recollectCVV === "true") || error || processingPayment }  
+                onClick={(event) => {
+                    setProcessingPayment(true)
+                    handleConfirmPayment(event)
+                }}>
+                    { processingPayment ? (
+                        <>
+                        <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" /> 
+                        <span>Processing...</span>
+                        </> 
+                        ) : "Confirm Payment"
+                    }
+                </Button>
+                ) 
+            }
 
             </div>
             )}

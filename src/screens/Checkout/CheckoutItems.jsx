@@ -28,15 +28,10 @@ const useStyles = makeStyles({
 const StyledBadge = withStyles((theme) => ({
     badge: {
       top: 30,
-    //   border: `2px solid ${theme.palette.background.paper}`,
       padding: '0 4px',
+      backgroundColor: '#adb5bd'
     },
-    ".MuiBadge-colorPrimary" : {
-        "background-color": "#adb5bd"
-    },
-    ".MuiBadge-anchorOriginTopLeftCircle": {
-        left: '5%'
-    }
+
   }))(Badge);
 
 export default function CheckoutItems({ backend, loggedIn, showItems, grabShowItems, grabShowShipping, grabShowButtons, grabReadOnly, grabTotalCartQuantity, shipping, prevLoggedIn, grabPrevLoggedIn, paymentMethod, grabRedirect }) {
@@ -135,15 +130,14 @@ export default function CheckoutItems({ backend, loggedIn, showItems, grabShowIt
             <div className="checkout-items-container">
 
                 <div className="Heading-Edit">
-                    <h2>Your Cart</h2>
-                    <p onClick={editCheckoutCart}><u>Edit</u></p>
+                    <h2 id="cart-heading">Your Cart</h2>
+                    <p id="edit" onClick={editCheckoutCart}><u>Edit</u></p>
                 </div>
 
                 <div className="checkout-items-sub-container">
                     {items.map((item) => { return(
                         <div key={item._id} className="checkout-items-individual-container">
                             <div className="checkout-item-img-container">
-                            <img id="show-image-only-mobile" src={item.Image}></img>
                             <StyledBadge 
                             id="badge"
                             anchorOrigin={{
@@ -165,8 +159,9 @@ export default function CheckoutItems({ backend, loggedIn, showItems, grabShowIt
                     )})}
                 
                 </div>
-
-                <TableContainer component={Paper}>
+                
+                <div id="table">
+                    <TableContainer component={Paper}>
                         <Table className={classes.table} size="small" aria-label="simple table">
                             <TableBody>
                                 <TableRow key={"subtotal"}>
@@ -195,7 +190,7 @@ export default function CheckoutItems({ backend, loggedIn, showItems, grabShowIt
                             </TableBody>
                         </Table>
                     </TableContainer>
-
+                </div>
             </div>
         )
     }

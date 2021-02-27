@@ -3,9 +3,11 @@
 }
 .checkout-shipping { 
     grid-area: main1; 
+    background-color: #e5e5e5;
 }
 .checkout-payment { 
     grid-area: main2; 
+    background-color: #e5e5e5;
 }
 
 #payment-form {
@@ -14,15 +16,18 @@
     grid-template-areas: 
         'main1 main1 main1 side'
         'main2 main2 main2 side';
-    grid-gap: 30px;
+    grid-column-gap: 30px;
     grid-template-columns: 55%;
     margin-right: 10px;
     margin-left: 10px;
+    
 }
 
 .grid-container > div {
     text-align: center;
 }
+
+
 
 
 @media only screen and (max-width: 800px) {

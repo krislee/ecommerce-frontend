@@ -1,4 +1,5 @@
 import React from 'react'
+import Button from 'react-bootstrap/Button';
 
 export default function ShippingForm({ loggedIn, readOnly, shipping, addShipping, shippingInput, grabShippingInput, editShipping, handleEditShipping, closeModal, collapse, disableButtonAfterMakingRequest, grabDisableButtonAfterMakingRequest, addAdditionalSaveShipping}) {
     
@@ -84,7 +85,9 @@ export default function ShippingForm({ loggedIn, readOnly, shipping, addShipping
         {shipping.firstName ? (
             <>
             <button form="form" disabled={disableButton() || disableButtonAfterMakingRequest }>Save</button> 
-            <button type="button" onClick={closeModal}>Cancel</button>
+            {/* <Button variant="dark" type="submit" disabled={disableButton() || disableButtonAfterMakingRequest }>Save</Button> */}
+            {/* <button type="button" onClick={closeModal}>Cancel</button> */}
+            <Button variant="dark" type="button" onClick={closeModal}>Cancel</Button>
             </>
         ) : <button form="form" disabled={readOnly || disableButton() || disableButtonAfterMakingRequest }>Next</button>   
         }

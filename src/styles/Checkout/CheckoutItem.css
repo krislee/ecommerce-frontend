@@ -36,10 +36,9 @@ img {
 .checkout-item-name {
     align-self: center;
 }
-#show-image-only-mobile {
-    display: none
+#table {
+    margin-top: 25px
 }
-
 
 @media only screen and (max-width: 900px) {
     .checkout-item-name {
@@ -60,15 +59,11 @@ img {
 }
 
 @media only screen and (max-width: 500px) {
-    h2 {
-        font-size: 1em;
+   #cart-heading {
+        font-size: 0.5em;
     }
-    /* remove badge */
-    #badge {
-        display: none;
-    }
-    #show-image-only-mobile {
-        display: inline
+    #edit {
+        font-size: 0.3em;
     }
 }
 
