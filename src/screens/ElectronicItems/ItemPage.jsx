@@ -1,14 +1,32 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import {useLocation} from 'react-router-dom';
-import '../../styles/ItemPage.css'
 import AddCartButton from '../../components/Buttons/AddCartButton';
 import AddReviewButton from '../../components/Buttons/AddReviewButton';
 // import NavBar from '../../components/NavigationBar';
 import Footer from '../../components/Footer'
 import AllReviews from '../../components/Reviews/AllReviews'
+
 import Rating from '@material-ui/lab/Rating';
 import { makeStyles } from '@material-ui/core/styles';
+import Pulse from 'react-reveal/Pulse';
+import Flip from 'react-reveal/Flip';
+import { useInView } from 'react-intersection-observer';
+import { motion, useTransform, useViewportScroll } from 'framer-motion';
 import Toast from 'react-bootstrap/Toast'
+
+// import Swiper core and required modules
+import SwiperCore, { Navigation, Pagination, Scrollbar, A11y } from 'swiper';
+import { Swiper, SwiperSlide } from 'swiper/react';
+
+// Import Swiper styles
+import 'swiper/swiper.scss';
+import 'swiper/components/navigation/navigation.scss';
+import 'swiper/components/pagination/pagination.scss';
+import 'swiper/components/scrollbar/scrollbar.scss';
+import '../../styles/ItemPage.css'
+
+// install Swiper modules
+SwiperCore.use([Navigation, Pagination, Scrollbar, A11y]);
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -20,12 +38,25 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+
 function ItemPage ({ loggedIn, url, backend, totalCartQuantity, grabTotalCartQuantity }) {
+
     const classes = useStyles()
 
+    // const [ref, inView] = useInView({
+    //     triggerOnce: true,
+    //     // rootMargin: '300px 0px'
+    //     threshold: 0.5
+    // })
+
+    const { scrollYProgress } = useViewportScroll()
+    const scale = useTransform(scrollYProgress, [0, 1], [0.2, 2]);
+
+
+    const [showItemDetails, setShowItemDetails] = useState(true)
     const [itemInfo, setItemInfo] = useState('');
     const [ownPageInfo, setOwnPageInfo] = useState('')
-    const [nonOwnPageInfo, setNonOwnPageInfo] = useState('')
+    const [notOwnPageInfo, setNotOwnPageInfo] = useState('')
     const [nameOfItemLength, setNameOfItemLength] = useState(0);
 
     const [quantity, setQuantity] = useState(1);
@@ -70,10 +101,11 @@ function ItemPage ({ loggedIn, url, backend, totalCartQuantity, grabTotalCartQua
                 console.log(31, data)
                 setItemInfo(data.electronicItem);
                 setOwnPageInfo(data.ownPageElectronic)
-                setNonOwnPageInfo(data.nonOwnPageElectronic)
+                setNotOwnPageInfo(data.notOwnPageElectronic)
                 setNameOfItemLength(data.electronicItem.Name.length);
                 setAllReviews(data.review)
                 setAvgRating(data.avgRating)
+                setShowItemDetails(false)
             }
             fetchData();
 
@@ -99,10 +131,11 @@ function ItemPage ({ loggedIn, url, backend, totalCartQuantity, grabTotalCartQua
                 console.log(49, data)
                 setItemInfo(data.electronicItem);
                 setOwnPageInfo(data.ownPageElectronic)
-                setNonOwnPageInfo(data.nonOwnPageElectronic)
+                setNotOwnPageInfo(data.notOwnPageElectronic)
                 setNameOfItemLength(data.electronicItem.Name.length);
                 setAllReviews(data.review)
                 setAvgRating(data.avgRating)
+                setShowItemDetails(false)
             }
 
             fetchData();
@@ -111,6 +144,7 @@ function ItemPage ({ loggedIn, url, backend, totalCartQuantity, grabTotalCartQua
                 abortController.abort()
             }
         }
+
     }, [review]);
 
     const handleAddItemQuantity = (event) => {
@@ -119,7 +153,8 @@ function ItemPage ({ loggedIn, url, backend, totalCartQuantity, grabTotalCartQua
         setQuantity(parseInt(value))
     };
 
-    if (!itemInfo) {
+
+    if (showItemDetails) {
         return null
     } else {
         return (
@@ -127,7 +162,21 @@ function ItemPage ({ loggedIn, url, backend, totalCartQuantity, grabTotalCartQua
             {/* <NavBar totalCartQuantity={totalCartQuantity} grabTotalCartQuantity={grabTotalCartQuantity} backend={backend} loggedIn={loggedIn}/> */}
             <div className="item-info">
                 <div className="left-side-item-page">
-                    <div className="item-image">Image of Item Here</div>
+                    
+                    {/* <div className="item-image">Image of Item Here</div> */}
+                    <Swiper
+                    spaceBetween={0}
+                    slidesPerView={1}
+                    navigation
+                    pagination={{ clickable: true }}
+                    scrollbar={{ draggable: true }}
+                    onSwiper={(swiper) => console.log(swiper)}
+                    onSlideChange={() => console.log('slide change')}
+                    >
+                    {itemInfo.Image.map((image, index) =>{ return (
+                        <SwiperSlide key={index}><div><img src={image} /></div></SwiperSlide>
+                    )})}
+                    </Swiper>
                 </div>
                 <div className="right-side-item-page">
                     <div className="item-logistics">
@@ -169,6 +218,35 @@ function ItemPage ({ loggedIn, url, backend, totalCartQuantity, grabTotalCartQua
                     </div>
                 </div>
             </div>
+            {/* Full window with image on the left side and description on left side*/}
+            <div>
+                {ownPageInfo.map((description) => {return (
+                    <div key={description._id}>
+                        {/* <motion.div
+                        animate={{ scale: 2 }}
+                        transition={{ duration: 0.5 }}
+                        /> */}
+                            <div className="left-side-item-page">
+                                <img src={description.Image}/>
+                            </div>
+                            <Flip bottom>
+                                <h2>{description.Heading}</h2>
+                            </Flip> 
+                            <h5>{description.Paragraph}</h5>
+            
+                    </div>
+                )})} 
+            </div>
+            {/* Combine all the other description in a flex */}
+            <div>
+                {notOwnPageInfo.map((description) => {return (
+                    <div key={description._id}>
+                        <h3>{description.Heading}</h3>
+                        <p>{description.Paragraph}</p>
+                    </div>
+
+                )})}
+            </div>
             <AllReviews backend={backend} allReviews={allReviews} />
             <Footer />
         </div>
@@ -177,3 +255,4 @@ function ItemPage ({ loggedIn, url, backend, totalCartQuantity, grabTotalCartQua
 }
 
 export default ItemPage
+
