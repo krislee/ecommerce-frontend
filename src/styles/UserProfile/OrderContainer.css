@@ -1,0 +1,42 @@
+.MuiPaper-root {
+    background-color: #21212B !important;
+}
+
+.order-container {
+    width: 60%;
+    margin: 0.5rem;
+}
+
+.orders {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    height: 100%;
+}
+
+.MuiTypography-h5 {
+    font-size: 1rem !important;
+}
+
+.MuiTypography-body1 {
+    font-size: 0.8rem !important;
+}
+
+.date-and-time {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.MuiPaginationItem-outlined {
+    border: 1px solid #fff !important;
+}
+
+.MuiPagination-ul > li > button {
+    background-color: #21212B !important;
+    color: #fff !important;
+}
+
+.order-container > a > div > div > div > span:nth-child(2) {
+    text-align: end;
+}
