@@ -163,8 +163,8 @@ function ItemPage ({ loggedIn, url, backend, totalCartQuantity, grabTotalCartQua
             <div className="item-info">
                 <div className="left-side-item-page">
                     
-                    {/* <div className="item-image">Image of Item Here</div> */}
-                    <Swiper
+                    <div className="item-image">Image of Item Here</div>
+                    {/* <Swiper
                     spaceBetween={0}
                     slidesPerView={1}
                     navigation
@@ -176,7 +176,7 @@ function ItemPage ({ loggedIn, url, backend, totalCartQuantity, grabTotalCartQua
                     {itemInfo.Image.map((image, index) =>{ return (
                         <SwiperSlide key={index}><div><img src={image} /></div></SwiperSlide>
                     )})}
-                    </Swiper>
+                    </Swiper> */}
                 </div>
                 <div className="right-side-item-page">
                     <div className="item-logistics">
@@ -222,18 +222,13 @@ function ItemPage ({ loggedIn, url, backend, totalCartQuantity, grabTotalCartQua
             <div>
                 {ownPageInfo.map((description) => {return (
                     <div key={description._id}>
-                        {/* <motion.div
-                        animate={{ scale: 2 }}
-                        transition={{ duration: 0.5 }}
-                        /> */}
-                            <div className="left-side-item-page">
-                                <img src={description.Image}/>
-                            </div>
-                            <Flip bottom>
-                                <h2>{description.Heading}</h2>
-                            </Flip> 
-                            <h5>{description.Paragraph}</h5>
-            
+                        <div className="left-side-item-page">
+                            <img src={description.Image}/>
+                        </div>
+                        
+                        <h2>{description.Heading}</h2>
+
+                        <h5>{description.Paragraph}</h5>
                     </div>
                 )})} 
             </div>
