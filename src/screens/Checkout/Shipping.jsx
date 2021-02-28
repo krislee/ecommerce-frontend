@@ -3,16 +3,31 @@ import ShippingForm from '../../components/Checkout/ShippingForm'
 import Modal from 'react-modal';
 import Button from 'react-bootstrap/Button';
 
-import classNames from 'classnames'
-// import { StylesProvider } from "@material-ui/core/styles";
 import { makeStyles, createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
+
 import SpeedDial from '@material-ui/lab/SpeedDial';
-import SpeedDialIcon from '@material-ui/lab/SpeedDialIcon';
 import SpeedDialAction from '@material-ui/lab/SpeedDialAction';
 import AddIcon from '@material-ui/icons/Add';
 import EditLocationIcon from '@material-ui/icons/EditLocation';
 import HomeIcon from '@material-ui/icons/Home';
 import EditIcon from '@material-ui/icons/Edit';
+import PersonIcon from '@material-ui/icons/Person';
+import LocationOnIcon from '@material-ui/icons/LocationOn';
+import PhoneIcon from '@material-ui/icons/Phone';
+
+import '../../styles/Checkout/Shipping.css'
+
+// Styles for the Modal
+const customStyles = {
+    content : {
+      top: '50%',
+      left: '50%',
+      right: 'auto',
+      bottom: 'auto',
+      transform: 'translate(-50%, -50%)',
+    //   width: '60vw'
+    }
+};
 
 
 let theme = createMuiTheme({})
@@ -20,19 +35,28 @@ theme = { ...theme,
     overrides: {
         MuiFab: {
             root: {
-                [theme.breakpoints.down("xs")]: {
-                    width: 36,
-                    height: 0
+                [theme.breakpoints.down("sm")]: {
+                    width: 34,
+                    height: 30
                 },
-                [theme.breakpoints.up("xs")]: {
+                [theme.breakpoints.up("sm")]: {
                     width: 45,
                     height: 45
                 },
             },
+            primary: {
+                backgroundColor: '#343a40'
+            }
         },
-        MuiSpeedDial: {
-
-        }
+        MuiSvgIcon: {
+            root: {
+                "font-size": "2.5em",
+                [theme.breakpoints.down("sm")]: {
+                    "font-size": "1.5em"
+                }
+            }
+            
+        },
     },
   };
 
@@ -42,14 +66,10 @@ const useStyles = makeStyles((theme) => ({
         transform: 'translateZ(0px)',
         flexGrow: 0.5,
         "margin-right": 30,
-        [theme.breakpoints.down("xs")]: {
-            "margin-right": 10,
-            "margin-bottom": 20
-        },
-        [theme.breakpoints.up("s")]: {
-            // "margin-bottom": '50px',
-            // "margin-right": 0,
-        }
+        // [theme.breakpoints.down("xs")]: {
+        //     "margin-right": 10,
+        //     "margin-bottom": 20
+        // }
     },
     speedDial: {
       position: 'absolute',
@@ -61,6 +81,7 @@ const useStyles = makeStyles((theme) => ({
 
 function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, grabShowPayment, shipping, grabShipping, grabBillingWithShipping, shippingInput, grabShippingInput, paymentMethod, grabCardholderName, showButtons, grabShowButtons, showShipping, grabShowShipping, grabError, grabDisabled, grabReadOnly, grabTotalCartQuantity, grabRedirect, prevLoggedIn }) {
     
+    // Speed Dial State and Functions
     const classes = useStyles();
     const [open, setOpen] = useState(false);
     
@@ -72,6 +93,8 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
         setOpen(false);
     };
     
+    
+    /* ------- SHIPPING STATES ------ */
 
     const [shippingLoading, setShippingLoading] = useState(true) // shippingLoading state is initially set to true to render <></> before updating it to false in useEffect()
     const [showModal, setShowModal] = useState(false)
@@ -144,8 +167,9 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
 
     // Update the shipping state whenever we want to store ONE saved address that we want to display. The param savedShippingAddressData is some data received after fetching the server. We update the shipping state to store that data of ONE address. We update the shipping state when we run useEffect(), edit address, selected address, and after adding a new address. The goals is to be able to display the address after editing/selecting/adding an address or showing the address when we load the page. To display the address, it depends on the shipping state. 
     const updateShippingState = (checkoutSavedShippingAddressData) => {
+        console.log(157, checkoutSavedShippingAddressData)
         const shippingAddress = checkoutSavedShippingAddressData.Address
-        console.log(checkoutSavedShippingAddressData)
+        console.log(158, checkoutSavedShippingAddressData)
         
         if(shippingAddress) {
             console.log(shippingAddress[1], typeof shippingAddress[1])
@@ -155,10 +179,11 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
                 firstName: splitShippingName[0],
                 lastName: splitShippingName[1],
                 line1: splitShippingAddress[0],
-                addressLineTwo: (splitShippingAddress[1] === "null" || splitShippingAddress[1] === "undefined") ? "" : splitShippingAddress[1],
+                line2: (splitShippingAddress[1] === "null" || splitShippingAddress[1] === "undefined") ? "" : splitShippingAddress[1],
                 city: splitShippingAddress[2],
                 state: splitShippingAddress[3],
                 postalCode: splitShippingAddress[4],
+                phone: checkoutSavedShippingAddressData.Phone,
                 id: checkoutSavedShippingAddressData._id
             })
         } 
@@ -166,19 +191,22 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
 
     // Update the shippingInput state alongside the shipping state (including useEffect, editing/adding/selecting address), so that when we do click on Edit button the inputs would be prefilled with the most current displayed saved address.
     const updateShippingInputState = (checkoutSavedShippingAddressData) => {
+        console.log(181, checkoutSavedShippingAddressData)
         const shippingAddress = checkoutSavedShippingAddressData.Address
         if(shippingAddress) {
             const splitShippingAddress = shippingAddress.split(", ")
+            console.log(183, splitShippingAddress)
             const splitShippingName = checkoutSavedShippingAddressData.Name.split(", ")
 
             grabShippingInput({
                 firstName: splitShippingName[0],
                 lastName: splitShippingName[1],
                 line1: splitShippingAddress[0],
-                addressLineTwo: splitShippingAddress[1] === "null" || splitShippingAddress[1] === "undefined" ? "" : splitShippingAddress[1],
+                line2: splitShippingAddress[1] === "null" || splitShippingAddress[1] === "undefined" ? "" : splitShippingAddress[1],
                 city: splitShippingAddress[2],
                 state: splitShippingAddress[3],
-                postalCode: splitShippingAddress[4]
+                postalCode: splitShippingAddress[4],
+                phone: checkoutSavedShippingAddressData.Phone
                 
             })
         } 
@@ -287,7 +315,8 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
                 },
                 body: JSON.stringify({
                     name: `${shippingInput.firstName}, ${shippingInput.lastName}`,
-                    address: `${shippingInput.line1}, ${shippingInput.line2}, ${shippingInput.city}, ${shippingInput.state}, ${shippingInput.postalCode}`
+                    address: `${shippingInput.line1}, ${shippingInput.line2}, ${shippingInput.city}, ${shippingInput.state}, ${shippingInput.postalCode}`,
+                    phone: shippingInput.phone
                 })
             })
             const editShippingData = await editShippingResponse.json()
@@ -314,7 +343,8 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
                 }, 
                 body: JSON.stringify({
                     name: `${shippingInput.firstName}, ${shippingInput.lastName}`,
-                    address: `${shippingInput.line1}, ${shippingInput.line2}, ${shippingInput.city}, ${shippingInput.state}, ${shippingInput.postalCode}`
+                    address: `${shippingInput.line1}, ${shippingInput.line2}, ${shippingInput.city}, ${shippingInput.state}, ${shippingInput.postalCode}`,
+                    phone: shippingInput.phone
                 })
             })
             const saveNewShippingData = await saveNewShippingResponse.json()
@@ -354,7 +384,8 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
                         line2: shippingInput.line2,
                         city: shippingInput.city,
                         state: shippingInput.state,
-                        postalCode: shippingInput.postalCode
+                        postalCode: shippingInput.postalCode,
+                        phone: shippingInput.phone,
                     },
                     saveShipping: (checkbox && checkbox.checked) ? true : false,
                     lastUsedShipping: shipping.firstName ? shipping.id : undefined
@@ -380,7 +411,8 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
                         line2: shippingInput.line2,
                         city: shippingInput.city,
                         state: shippingInput.state,
-                        postalCode: shippingInput.postalCode
+                        postalCode: shippingInput.postalCode,
+                        phone: shippingInput.phone,
                     },
                     saveShipping: false
                 })
@@ -393,7 +425,6 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
             } 
         }
     }
- 
 
     /* --------------------- USE EFFECT -------------------- */
 
@@ -454,65 +485,97 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
     } else if((loggedIn() && !shipping.firstName) || (!loggedIn() && !shipping.firstName)) {
         // If user is guest (as indicated by !loggedIn()), or logged in user does not have a shipping address (indicated by !shipping.address), we want to show the shipping form when the Next button from CheckoutItems component is clicked
         return (
-            <>
-            <h2>Shipping Address</h2>
-            {/* When the Next button in CheckoutItems component is clicked, showShipping state is updated to true, and only then the form will be shown */}
-            {showShipping && (
-                <>
-                <ShippingForm backend={backend} loggedIn={loggedIn} shipping={shipping} shippingInput={shippingInput} grabShippingInput={grabShippingInput} grabPaymentLoading={grabPaymentLoading} addShipping={addShipping} grabAddNewShipping={grabAddNewShipping} cartID={cartID} updateShippingState={updateShippingState} updateShippingInputState={updateShippingInputState} editShipping={editShipping} handleEditShipping={handleEditShipping} closeModal={closeModal} collapse={collapse} addNewShipping={addNewShipping} disableButtonAfterMakingRequest={disableButtonAfterMakingRequest} grabAfterMakingRequestDisable={grabDisableButtonAfterMakingRequest} disableButtonAfterMakingRequest={disableButtonAfterMakingRequest} /> 
-                </>
-            )} 
-            {/* When we click Next button in Shipping component, collapse() runs and showPayment state is updated to true to show the Payment Component. We need to make sure to still show the shipping details and Edit button when we do show the payment section*/}
-            {showPayment && (
-                <>  
-                <div className="display-shipping-info">
-                    <p>{shippingInput.firstName} {shippingInput.lastName}</p>
-                    <p>{shippingInput.line1}</p>
-                    <p>{shippingInput.line2}</p>
-                    <p>{shippingInput.city}, {shippingInput.state} {shippingInput.postalCode}</p>
-                    {!showButtons && <Button variant="dark" size="sm" onClick={back}>Edit</Button>}
-                   
-                </div>
-                </>
-            )} 
-            </>
+            <div id="shipping-form-container">
+                <h2>Shipping Address</h2>
+                {/* When the Next button in CheckoutItems component is clicked, showShipping state is updated to true, and only then the form will be shown */}
+                {showShipping && (
+                    <>
+                    <ShippingForm backend={backend} loggedIn={loggedIn} shipping={shipping} shippingInput={shippingInput} grabShippingInput={grabShippingInput} grabPaymentLoading={grabPaymentLoading} addShipping={addShipping} grabAddNewShipping={grabAddNewShipping} cartID={cartID} updateShippingState={updateShippingState} updateShippingInputState={updateShippingInputState} editShipping={editShipping} handleEditShipping={handleEditShipping} closeModal={closeModal} collapse={collapse} addNewShipping={addNewShipping} disableButtonAfterMakingRequest={disableButtonAfterMakingRequest} grabAfterMakingRequestDisable={grabDisableButtonAfterMakingRequest} disableButtonAfterMakingRequest={disableButtonAfterMakingRequest} /> 
+                    </>
+                )} 
+                {/* When we click Next button in Shipping component, collapse() runs and showPayment state is updated to true to show the Payment Component. We need to make sure to still show the shipping details and Edit button when we do show the payment section*/}
+                {showPayment && (
+                    <>  
+                    <div className="display-shipping-info1">
+                        <div id="shipping-icon-name-container1">
+                            <PersonIcon /> 
+                            <p id="name1">{shippingInput.firstName} {shippingInput.lastName}</p>
+                        </div>
+                        <div id="shipping-icon-address-container1">
+                            <LocationOnIcon /> 
+                            <div id="shipping-address1">
+                                <div id="line1-1">{shippingInput.line1}</div>
+                                {shippingInput.line2 !== '' && <div id="line2-1">{shippingInput.line2}</div>}
+                                <div id="cityStateZipcode1">{shippingInput.city}, {shippingInput.state} {shippingInput.postalCode}</div>
+                            </div>
+                        </div>
+                        <div id="shipping-icon-phone-container1">
+                            <PhoneIcon />
+                            <p id="phone1">{shippingInput.phone}</p>
+                        </div>
+                        {!showButtons && <Button variant="dark" size="lg" onClick={back}>Edit</Button>}
+                    
+                    </div>
+                    </>
+                )} 
+            </div>
         )
     } else if(showSavedShipping) {
         return(
-            <Modal isOpen={showModal} onRequestClose={ closeModal } ariaHideApp={false} contentLabel="Saved Shipping">
-                <h2>Shipping Address</h2>
+            <Modal isOpen={showModal} styles={customStyles} onRequestClose={ closeModal } ariaHideApp={false} contentLabel="Saved Shipping">
+                <div>
+                <h2 id="saved-shipping-modal-heading">Shipping Address</h2>
+                <div id="all-addresses-container">
                 {allSavedShipping.map((savedShipping, index) => { return (
-                    <div key={index}>
+                    <div id="single-saved-address" key={index}>
+                        <div id="single-saved-address-paragraph">
                         <p id="name"><b>{savedShipping.Name.replace(", ", " ")}</b></p>
                         <p id="line1">{savedShipping.Address.split(", ")[0]}</p>
                         <p id="line2">{savedShipping.Address.split(", ")[1] === "null" || savedShipping.Address.split(", ")[1] === "undefined" ? "" : savedShipping.Address.split(", ")[1]}</p>
                         <p id="cityStateZipcode">{savedShipping.Address.split(", ")[2]}, {savedShipping.Address.split(", ")[3]} {savedShipping.Address.split(", ")[4]}</p>
-                        <Button variant="dark" size="sm" id={savedShipping._id} onClick={handleSelectedShipping}>Select</Button>
+                        </div>
+                        <div>
+                        <Button className="select-save-shipping-button" variant="dark" size="sm" id={savedShipping._id} onClick={handleSelectedShipping}>Select</Button>
+                        </div>
 
                     </div>
                 )})}
-                <Button variant="dark" onClick={ closeModal }>Close</Button>
+                </div>
+                </div>
+                <div className="close-saved-address-button-container"><Button variant="dark" id="close-saved-address-button" onClick={ closeModal }>Close</Button></div>
                 
             </Modal>
         )
     } else if(addShipping || editShipping ) {
         return (
-            <Modal isOpen={showModal} onRequestClose={ closeModal } ariaHideApp={false} contentLabel="Add or Edit Shipping">
+            <Modal style={customStyles} isOpen={showModal} onRequestClose={ closeModal } ariaHideApp={false} contentLabel="Add or Edit Shipping">
                 <ShippingForm backend={backend} loggedIn={loggedIn} shipping={shipping} shippingInput={shippingInput} grabShippingInput={grabShippingInput} grabPaymentLoading={grabPaymentLoading} addShipping={addShipping} grabAddNewShipping={grabAddNewShipping} cartID={cartID} updateShippingState={updateShippingState} updateShippingInputState={updateShippingInputState} editShipping={editShipping} handleEditShipping={handleEditShipping} closeModal={closeModal} collapse={collapse} grabMultipleShipping={grabMultipleShipping} grabTotalCartQuantity={grabTotalCartQuantity} disableButtonAfterMakingRequest={disableButtonAfterMakingRequest} grabDisableButtonAfterMakingRequest={grabDisableButtonAfterMakingRequest} addAdditionalSaveShipping={addAdditionalSaveShipping} /> 
             </Modal>
         )
     } else if(shipping.firstName) {
         return (
             <div id="shipping-container" style={{marginLeft: '30px'}}>
-            <h2 id="shipping-heading">Shipping Address</h2>
+            <h2 id="shipping-heading" >Shipping Address</h2>
             {/* When Next is clicked from the CheckoutItems component, showShipping updates to true & showPayment updates to false so the following shipment details will show. We still want to show the shipment details when we click Next in Shipping component. When we click Next in Shipping component, showShipping is false but showPayment will be updated to true , so shipment details will STILL show. */}
             {(showShipping || showPayment) && (
-            <div className="display-shipping-info">
+            <div className="display-shipping-info2">
                 {/* If user has a saved address (indicated by shipping.address), display the address: */}
-                <p id="name">{shipping.firstName} {shipping.lastName}</p>
-                <p id="line1">{shipping.line1}</p>
-                <p id="line2">{shipping.line2}</p>
-                <p id="cityStateZipcode">{shipping.city}, {shipping.state} {shipping.postalCode}</p>
+                <div id="shipping-icon-name-container2">
+                    <PersonIcon /> 
+                    <p id="name2">{shipping.firstName} {shipping.lastName}</p>
+                </div>
+                <div id="shipping-icon-address-container2">
+                    <LocationOnIcon /> 
+                    <div id="shipping-address2">
+                        <p id="line1-2">{shipping.line1}</p>
+                        {shipping.line2 !== '' && <p id="line2-2">{shipping.line2}</p>}
+                        <div id="cityStateZipcode2">{shipping.city}, {shipping.state} {shipping.postalCode}</div>
+                    </div>
+                </div>
+                <div id="shipping-icon-phone-container2">
+                    <PhoneIcon />
+                    <p id="phone2">{shipping.phone}</p>
+                </div>
                 {/* Edit button only shown if user has moved onto the Payment Method component */}
             </div>)}
                 
@@ -523,54 +586,41 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
 
                 {/* The following are shown if user is still in the Shipping component */}
                 { showButtons && (
-                //     <>
-                //     {/* <button id="addNewAddress" onClick={openAddNewModal}>Add New</button> */}
-                //     <Button variant="dark" size="sm" id="addNewAddress" onClick={openAddNewModal}>Add New</Button>
-                //     {/* <button id="editAddress" onClick={openEditModal}>Edit</button> */}
-                //     <Button variant="dark" size="sm" id="editAddress" onClick={openEditModal}>Edit</Button>
-                //     {/* {multipleShipping && <button id="allAddresses" onClick={openAllAddressesModal}>All Addresses</button>} */}
-                //     {multipleShipping && <Button variant="dark" size="sm" id="allAddresses" onClick={openAllAddressesModal}>All Addresses</Button>}
-                //     </>
-                // )}
-                // <StylesProvider injectFirst>
-                <ThemeProvider theme={theme}>
-                <div className={classes.root}>
-                    <SpeedDial 
-                        ariaLabel="SpeedDial openIcon"
-                        className={classes.speedDial}
-                        icon={<EditIcon />} 
-                        onClose={handleClose}
-                        onOpen={handleOpen}
-                        open={open}
-                    >
-                        <SpeedDialAction
-                            key={"Add Address"}
-                            icon={<AddIcon />}
-                            tooltipTitle={"Add Address"}
-                            onClick={openAddNewModal}
-                        />
-                        <SpeedDialAction
-                            key={"Edit Address"}
-                            icon={<EditLocationIcon />}
-                            tooltipTitle={"Edit Address"}
-                            onClick={openEditModal}
-                        />
-                        <SpeedDialAction
-                            key={"All Addresses"}
-                            icon={<HomeIcon />}
-                            tooltipTitle={"All Addresses"}
-                            onClick={openAllAddressesModal}
-                        />
-                    </SpeedDial>
+                <div id="control-speed-dial-margin">
+                    <ThemeProvider theme={theme}>
+                        <div className={classes.root}>
+                            <SpeedDial 
+                                ariaLabel="SpeedDial openIcon"
+                                className={classes.speedDial}
+                                icon={<EditIcon />} 
+                                onClose={handleClose}
+                                onOpen={handleOpen}
+                                open={open}
+                            >
+                                <SpeedDialAction
+                                    key={"Add Address"}
+                                    icon={<AddIcon />}
+                                    tooltipTitle={"Add Address"}
+                                    onClick={openAddNewModal}
+                                />
+                                <SpeedDialAction
+                                    key={"Edit Address"}
+                                    icon={<EditLocationIcon />}
+                                    tooltipTitle={"Edit Address"}
+                                    onClick={openEditModal}
+                                />
+                                <SpeedDialAction
+                                    key={"All Addresses"}
+                                    icon={<HomeIcon />}
+                                    tooltipTitle={"All Addresses"}
+                                    onClick={openAllAddressesModal}
+                                />
+                            </SpeedDial>
+                        </div>
+                    </ThemeProvider>
                 </div>
-                </ThemeProvider>
-                // </StylesProvider>
-                
                 )}
                 </div>
-            {/* </div> */}
-            {/* )} */}
-            
             </div>
         )
     } 

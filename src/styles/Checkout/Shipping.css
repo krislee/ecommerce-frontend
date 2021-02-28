@@ -1,24 +1,79 @@
-body {
-    background-color: #e5e6e4;
-    margin-top: 30px;
-}
-
 #shipping-container {
     margin-left: 10px;
+    display: flex;
+    flex-direction: column;
+    /* width: 100vw;
+    max-width:100%; */
+    
 }
+/* Shipping heading */
+h2 {
+    padding-bottom: 20px;
+}
+#shipping-icon-name-container1, #shipping-icon-name-container2, #shipping-icon-address-container1, #shipping-icon-address-container2,#shipping-icon-phone-container1, #shipping-icon-phone-container2 {
+    display: flex;
+}
+#name1, #name2 #phone1, #phone2 {
+    padding-left: 0.5rem;
+}
+
+#shipping-address1 {
+    display: flex;
+    flex-direction: column;
+    padding-left: 0.5rem;
+    flex-flow:wrap;
+}
+
+#shipping-address2 {
+    display: flex;
+    flex-direction: column;
+    padding-left: 0.5rem;
+    flex-flow:wrap;
+}
+
+/* Next button + Speed Dial OR Edit button only */
 .next-edit-container {
     display: flex;
-    justify-content: space-between
+    justify-content: space-between;
+    padding-bottom: 2.5rem;
+    /* margin-bottom: 20px;
+    padding-bottom: 20px; */
+}
+/* Next button */
+.btn-dark {
+    /* padding-bottom: 15px; */
+    margin-top: 40px;
+    /* align-self: flex-end */
+}
+/* Div surrounding Speed Dial */
+#control-speed-dial-margin {
+   margin-top: 65px;
+   width: 20px;
 }
 
-
-
-/* button.MuiButtonBase-root.MuiFab-root.MuiSpeedDial-fab.MuiFab-primary {
-    width: 30px;
-    height: 30px;
+#shipping-form-container {
+    margin-left: 30px;
+    margin-right: 30px;
+    padding-bottom: 30px;
 }
 
-.MuiFab-primary {
-    background-color: teal;
+/* #heading-edit {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 } */
 
+@media only screen and (max-width: 600px) {
+    .btn-dark{
+        width: 55px;
+        font-size: 1em !important;
+        height: 40px;
+        margin-bottom: 0px;
+        padding: 0rem !important; /* font size changed, causing the text to not be aligned, so remove padding to recenter text */
+    } 
+    #control-speed-dial-margin {
+        margin-top: 60px;
+        width: 15px;
+    }
+   
+}

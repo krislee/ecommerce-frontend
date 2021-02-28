@@ -1,13 +1,20 @@
 .checkout-items-container {
     margin-top: 30px;
+    margin-left: 20px;
+    /* background-color: thistle; */
 }
 .Heading-Edit {
     display: flex;
+    align-items: center;
+    /* padding-top: 30px; */
 }
+#edit {
+    padding-top: 19px;
+}
+
 h2 {
     margin-right: 20%;
 }
-
 
 .checkout-items-sub-container {
     max-height: 500px;
@@ -27,18 +34,18 @@ h2 {
 img {
     width: 100%;
 }
-/* .MuiBadge-root {
-    display:inline;
-}
-.MuiBadge-colorPrimary {
-    background-color: #adb5bd
-} */
+
 .checkout-item-name {
     align-self: center;
 }
 #table {
-    margin-top: 25px
+    margin-top: 25px;
+
 }
+
+
+
+
 
 @media only screen and (max-width: 900px) {
     .checkout-item-name {
@@ -56,9 +63,12 @@ img {
         max-width: 100%;
         overflow-x: scroll;
     }
+    #table {
+        margin-top: 10px;
+    }
 }
 
-@media only screen and (max-width: 500px) {
+@media only screen and (max-width: 600px) {
    #cart-heading {
         font-size: 0.5em;
     }

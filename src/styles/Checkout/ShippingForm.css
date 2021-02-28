@@ -1,0 +1,56 @@
+#names-container {
+    display: grid;
+    grid-template-columns: auto auto;
+    grid-column-gap: 10px;
+}
+#first-name-container, #last-name-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.city-state-zipcode {
+    display: grid;
+    grid-template-columns: auto auto auto;
+    grid-column-gap: 10px;
+}
+#city-container, .zipcode, #postalcode-container {
+    display: flex;
+    flex-direction: column;
+}
+
+input, .zipcode {
+    height: 2.5rem
+}
+.zipcode {
+    border: 0px
+}
+
+input[name="line1"], input[name="line2"], #names-container, .city-state-zipcode, input[name="phone"] {
+    margin-bottom: 10px !important;
+}
+
+#save-default-container {
+    display: flex;
+    align-items: center;
+}
+#address-default-label {
+    margin-bottom: 0rem;
+}
+
+#form {
+    box-shadow: none;
+    padding: 0px;
+
+}
+#next-shipping-button, #save-shipping-button, #cancel-shipping-button{
+    margin-top: 20px;
+}
+#save-shipping-button {
+    margin-right: 10px;
+}
+@media only screen and (max-width: 800px) {
+    #form {
+        width: 100%
+    }
+}
+

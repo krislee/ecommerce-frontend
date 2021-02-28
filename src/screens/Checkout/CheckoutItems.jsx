@@ -19,11 +19,26 @@ import '../../styles/Checkout/CheckoutItem.css'
 import { faPencilAlt } from '@fortawesome/free-solid-svg-icons';
 
 // Table Style
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
     table: {
-      minWidth: '100%',
+      width: '100%',
     },
-});
+    tableContainer: {
+        width: '100%',
+        margin: 'auto',
+        "margin-bottom": '10px'
+    },
+    [theme.breakpoints.down("md")]: {
+        tableContainer: {
+            width: '50%'
+        }
+    },
+    // [theme.breakpoints.down("sm")]: {
+    //     tableContainer: {
+    //         width: '60%'
+    //     }
+    // },
+}));
 
 const StyledBadge = withStyles((theme) => ({
     badge: {
@@ -161,8 +176,8 @@ export default function CheckoutItems({ backend, loggedIn, showItems, grabShowIt
                 </div>
                 
                 <div id="table">
-                    <TableContainer component={Paper}>
-                        <Table className={classes.table} size="small" aria-label="simple table">
+                    <TableContainer component={Paper} className={classes.tableContainer}>
+                        <Table className={classes.table} size="small" aria-label="simple table" padding='none'>
                             <TableBody>
                                 <TableRow key={"subtotal"}>
                                     <TableCell component="th" scope="row">

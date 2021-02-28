@@ -5,35 +5,40 @@
     /* background-color: #312f2f; */
     display: flex;
     flex-direction: column;
+    width: 100vw;
+    max-width: 100%;
     
 }
 .checkout-shipping { 
     grid-area: main1; 
-    background-color: #e5e5e5;
+    background-color: #E8EAED;
     border-radius: 10px;
-    margin-left: 10px;
-    margin-top: 20px;
-    width: 100%
+    margin-left: 20px;
+    margin-top: 30px;
+    /* font-size: 1.5em; */
+    /* height: 50vh; */
+ 
 
 }
 .checkout-payment { 
     grid-area: main2; 
-    background-color: #e5e5e5;
+    background-color: #f2f3f5;
     border-radius: 10px;
-    margin-left: 10px;
+    margin-left: 20px;
     margin-top: 20px;
 }
 
 #payment-form {
-    margin-top: 10vh;
+    margin-top: 50px;
     display: grid;
     grid-template-areas: 
         'main1 main1 main1 side'
         'main2 main2 main2 side';
-    grid-column-gap: 30px;
+    grid-column-gap: 10px;
     grid-template-columns: 55%;
-    margin-right: 10px;
+    margin-right: 20px;
     /* margin-left: 10px; */
+    width: 100vw;
     
 }
 
@@ -41,8 +46,44 @@
     text-align: center;
 }
 
+h2 {
+    color: #A4ABB7;
+    padding-top: 30px;
+}
+
+/* SAVED ADDRESS MODAL */
+#all-addresses-container {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100vw;
+}
+#single-saved-address {
+    width: 50vw;
+    line-height: 0.5;
+}
+#saved-shipping-modal-heading {
+    padding-top: 0px;
+    margin-right: 0px;
+}
+.select-save-shipping-button {
+    margin-top:5px;
+    margin-bottom: 20px;
+}
+#close-saved-address-button {
+    margin-top: 25px;
+    /* float: right; */
+}
 
 
+/* .modal {
+    top: '35%';
+    left: '50%';
+    right: 'auto';
+    bottom: 'auto';
+    margin-right: '-50%';
+    width: '60%';
+    transform: 'translate(-40%, -10%)';
+} */
 
 @media only screen and (max-width: 800px) {
     #payment-form {
@@ -50,3 +91,28 @@
         flex-wrap: wrap;
     }
 }
+@media only screen and (max-width: 600px) {
+    #payment-form {
+        font-size: 0.75rem !important;
+    }
+    h2 {
+        font-size: 1.25rem !important;
+    }
+    #all-addresses-container {
+        width: 100%;
+    }
+    #single-saved-address {
+        width: 90vw;
+        font-size: 0.75rem !important;
+        display: flex;
+        justify-content: space-between;
+    }
+    .close-saved-address-button-container{
+        /* display: flex;
+        justify-content: center;
+        align-items: center; */
+        text-align: center;
+    }
+}
+
+/* style={{content: {position: "absolute", inset: '124px'}}} */
