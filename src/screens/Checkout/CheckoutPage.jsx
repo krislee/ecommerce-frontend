@@ -204,7 +204,7 @@ function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCar
 
     /* ------- LISTEN TO INPUT CHANGES TO UPDATE STATES ------- */  
 
-    // handleBillingChange() gets passed down as prop to Checkout/PaymentMethod, and then to Component/BillingInput
+    // handleBillingChange() and handleBillingStateChange() gets passed down as prop to Checkout/PaymentMethod, and then to Component/BillingInput
     const handleBillingChange = (event) => {
         const { name, value } = event.target
         
@@ -212,6 +212,14 @@ function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCar
             ...prevBilling, [name] : value // need the previous billing state when updating the billing state (hence the ...prevBilling) or else the other input values will be empty
         }))
     }
+
+    const handleBillingStateChange = (event) => {
+        console.log(event.target.value)
+        setBilling((prevBilling) => ({
+            ...prevBilling, "state": event.target.value
+        }))
+    }
+    
     
     const recheckSameAsShippingButton = (sameAsShipping) => setSameAsShipping(sameAsShipping)
 
@@ -289,10 +297,10 @@ function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCar
             || /^[a-z ,.'-]+$/i.test(billing.city) !== true 
             || billing.city === ""
             || billing.city === undefined
-            || /^[a-z][a-z\s]*$/i.test(billing.state) !== true 
-            || billing.state === ""
-            || billing.state === undefined
-            || billing.state.length !== 2
+            // || /^[a-z][a-z\s]*$/i.test(billing.state) !== true 
+            // || billing.state === ""
+            // || billing.state === undefined
+            // || billing.state.length !== 2
             // || /^[0-9]+$/.test(billing.postalCode) !== true 
             // || billing.postalCode === ""
             // || billing.postalCode === undefined
@@ -526,7 +534,7 @@ function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCar
                 </div>
 
                 <div className="checkout-payment">
-                <PaymentMethod backend={backend} loggedIn={loggedIn} error={error} grabError={grabError} disabled={disabled} grabDisabled={grabDisabled} paymentLoading={paymentLoading} grabPaymentLoading={grabPaymentLoading} billing={billing} handleBillingChange={handleBillingChange} grabBilling={grabBilling} paymentMethod={paymentMethod} grabPaymentMethod={grabPaymentMethod} cardholderName={cardholderName} grabCardholderName={grabCardholderName}handleCardholderNameChange={handleCardholderNameChange} handleCardChange={handleCardChange} collectCVV={collectCVV} grabCollectCVV={grabCollectCVV} editPayment={editPayment} grabEditPayment={grabEditPayment} redisplayCardElement={redisplayCardElement} grabRedisplayCardElement={grabRedisplayCardElement} grabShowSavedCards={grabShowSavedCards} handleConfirmPayment={handleConfirmPayment} showSavedCards={showSavedCards} editExpiration={editExpiration} grabEditExpiration={grabEditExpiration} loggedOut={loggedOut} grabLoggedOut={grabLoggedOut} showPayment={showPayment} sameAsShipping={sameAsShipping} handleSameAsShipping={handleSameAsShipping} shippingInput={shippingInput} grabBillingWithShipping={grabBillingWithShipping} shipping={shipping} recheckSameAsShippingButton={recheckSameAsShippingButton} grabTotalCartQuantity={grabTotalCartQuantity}grabRedirect={grabRedirect} billingInputErrorDisableButton={billingInputErrorDisableButton} billingPostalCodeInputErrorDisableButton={billingPostalCodeInputErrorDisableButton} />
+                <PaymentMethod backend={backend} loggedIn={loggedIn} error={error} grabError={grabError} disabled={disabled} grabDisabled={grabDisabled} paymentLoading={paymentLoading} grabPaymentLoading={grabPaymentLoading} billing={billing} handleBillingChange={handleBillingChange} handleBillingStateChange={handleBillingStateChange} grabBilling={grabBilling} paymentMethod={paymentMethod} grabPaymentMethod={grabPaymentMethod} cardholderName={cardholderName} grabCardholderName={grabCardholderName}handleCardholderNameChange={handleCardholderNameChange} handleCardChange={handleCardChange} collectCVV={collectCVV} grabCollectCVV={grabCollectCVV} editPayment={editPayment} grabEditPayment={grabEditPayment} redisplayCardElement={redisplayCardElement} grabRedisplayCardElement={grabRedisplayCardElement} grabShowSavedCards={grabShowSavedCards} handleConfirmPayment={handleConfirmPayment} showSavedCards={showSavedCards} editExpiration={editExpiration} grabEditExpiration={grabEditExpiration} loggedOut={loggedOut} grabLoggedOut={grabLoggedOut} showPayment={showPayment} sameAsShipping={sameAsShipping} handleSameAsShipping={handleSameAsShipping} shippingInput={shippingInput} grabBillingWithShipping={grabBillingWithShipping} shipping={shipping} recheckSameAsShippingButton={recheckSameAsShippingButton} grabTotalCartQuantity={grabTotalCartQuantity}grabRedirect={grabRedirect} billingInputErrorDisableButton={billingInputErrorDisableButton} billingPostalCodeInputErrorDisableButton={billingPostalCodeInputErrorDisableButton} />
                 </div>
                 </div>
             </div>         

@@ -121,7 +121,7 @@ export default function ShippingForm({ loggedIn, readOnly, shipping, addShipping
                 type="submit"
                 variant="dark"
                 size='lg'
-                disabled={disableButton() || disableButtonAfterMakingRequest }>
+                disabled={disableButton() || disableButtonAfterMakingRequest || shippingInput.state === 'select' }>
                     Save
                 </Button> 
                 {/* <Button variant="dark" type="submit" disabled={disableButton() || disableButtonAfterMakingRequest }>Save</Button> */}

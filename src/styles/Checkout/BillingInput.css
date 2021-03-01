@@ -1,12 +1,24 @@
 #billing-input-names-container {
     display: flex;
-    /* justify-content: space-between; */
+    justify-content: space-between;
 }
 
 .billing-input {
     margin-bottom: 10px;
 }
 
-#billing-input-firstName-error-container {
+#billing-input-state {
+    height: 100%;
+    /* margin-bottom: 0px; */
+}
+#billing-input-firstName-error-container, #billing-input-city-error-container, #billing-input-state-error-container{
     margin-right: 10px;
+}
+
+#billing-input-cityStateZipcode-container {
+    display: flex;
+}
+#billing-input-city-error-container, #billing-input-state-error-container, #billing-input-postalCode-error-container {
+    display: flex;
+    flex-direction: column;
 }

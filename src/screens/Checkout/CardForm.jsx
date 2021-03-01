@@ -3,7 +3,7 @@ import CollectCard from "../../components/Checkout/Card"
 import BillingInput from "../../components/Checkout/BillingInput"
 import Button from 'react-bootstrap/Button'
 
-export default function CardForm ({ loggedIn, paymentMethod, processing, handleSubmitCardForm, handleCardChange, handleBillingChange, handleCardholderNameChange, cardholderName, billing, collectCVV, redisplayCardElement, closeAddNewModal, error, disabled, sameAsShipping, handleSameAsShipping, billingInputErrorDisableButton, disableButtonAfterMakingRequest }) {
+export default function CardForm ({ loggedIn, paymentMethod, processing, handleSubmitCardForm, handleCardChange, handleBillingChange, handleBillingStateChange, handleCardholderNameChange, cardholderName, billing, collectCVV, redisplayCardElement, closeAddNewModal, error, disabled, sameAsShipping, handleSameAsShipping, billingInputErrorDisableButton, disableButtonAfterMakingRequest }) {
 
     return(
         <form id="card-form" onSubmit={handleSubmitCardForm}>
@@ -20,7 +20,7 @@ export default function CardForm ({ loggedIn, paymentMethod, processing, handleS
                 <label className="same-billing-shipping-label">Same as Shipping Address </label>
             </div>
             {/* If user does not have a saved payment method as indicated by !paymentMethod.paymentMethodID or if users who is adding an additionally new payment method at checkout does NOT check Same as Shipping box as indicated by !sameAsShipping, then show the input form */}
-            {(!sameAsShipping || !paymentMethod.paymentMethodID) && <BillingInput handleBillingChange={handleBillingChange} billing={billing}/>}
+            {(!sameAsShipping || !paymentMethod.paymentMethodID) && <BillingInput handleBillingChange={handleBillingChange} handleBillingStateChange={handleBillingStateChange} billing={billing}/>}
 
             {sameAsShipping && (
                 <div id="display-same-billing-shipping-info-container">
@@ -34,7 +34,7 @@ export default function CardForm ({ loggedIn, paymentMethod, processing, handleS
             {redisplayCardElement ? (
                 <div id="add-card-buttons-container">
                     <Button id="cancel-save-button" type="button" type='lg' variant='dark' onClick={closeAddNewModal}>Cancel</Button>
-                    <Button id="save-card-button" type='submit' type='lg' variant='dark' disabled= { (error !== '') || disabled || billingInputErrorDisableButton() || disableButtonAfterMakingRequest }>Save</Button>
+                    <Button id="save-card-button" type='submit' type='lg' variant='dark' disabled= { (error !== '') || disabled || billingInputErrorDisableButton() || disableButtonAfterMakingRequest || billing.state==="Select"}>Save</Button>
                 </div>
             ): (
                 <>
