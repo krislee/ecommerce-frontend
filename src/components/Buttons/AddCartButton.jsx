@@ -18,18 +18,20 @@ function AddCartButton ({ name, id, loggedIn, backend, quantity, differenceQuant
                 },
             })
             const itemQuantityData = await itemQuantityResponse.json()
+            console.log(21, itemQuantityData)
             let difference = 0
             if(itemQuantityData.item && (itemQuantityData.item.Items[0].Quantity + parseInt(quantity) > 10)) {
                 if(itemQuantityData.item.Items[0].Quantity < 10) { // If there is less than 10 of that item in the cart, and user is adding more of that item but will cause the item quantity to exceed 10, we will add only the difference to get to 10 of that item
                     console.log(24)
                     difference = 10-itemQuantityData.item.Items[0].Quantity
+                    console.log(27, difference)
                     grabDifferenceQuantity(difference)
                     grabShowAddItemDifferenceAlert(true)
                 } else {
                     return grabShowAddItemAlert(true) // If there is 10 of that item already in the cart, do not continue to make a POST request and show an alert back at ItemPage component
                 }
             }
-            // console.log(29, difference)
+            console.log(34, quantity)
             const addItemResponse = await fetch(`${backend}/buyer/electronic/cart/${id}`, {
                 method: 'POST',
                 headers: {

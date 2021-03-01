@@ -494,8 +494,8 @@ function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCar
     )} else {
         return (
             <>
-            {/* <NavBar /> */}
-            <div id="payment-form" >
+            
+            <div id="payment-form">
                 <CheckoutItems backend={backend} loggedIn={loggedIn} showItems={showItems} grabShowItems={grabShowItems} grabShowShipping={grabShowShipping} grabShowButtons={grabShowButtons} grabShowPayment={grabShowPayment} grabReadOnly={grabReadOnly} grabTotalCartQuantity={grabTotalCartQuantity} grabRedirect={grabRedirect} shipping={shipping} grabTotalCartQuantity={grabTotalCartQuantity} prevLoggedIn={prevLoggedIn} grabPrevLoggedIn={grabPrevLoggedIn} paymentMethod={paymentMethod} grabRedirect={grabRedirect} />
 
                 <Shipping backend={backend} loggedIn={loggedIn} grabPaymentLoading={grabPaymentLoading} cartID={cartID} showPayment={showPayment} grabShowPayment={grabShowPayment} grabShowItems={grabShowItems} shipping={shipping} grabShipping={grabShipping} grabBillingWithShipping={grabBillingWithShipping} shippingInput={shippingInput} grabShippingInput={grabShippingInput} paymentMethod={paymentMethod} grabCardholderName={grabCardholderName} grabShowButtons={grabShowButtons} showButtons={showButtons} showShipping={showShipping} grabShowShipping={grabShowShipping} grabShowItems={grabShowItems} readOnly={readOnly} grabReadOnly={grabReadOnly} grabTotalCartQuantity={grabTotalCartQuantity} grabError={grabError} grabDisabled={grabDisabled} grabRedirect={grabRedirect} paymentMethod={paymentMethod} prevLoggedIn={prevLoggedIn} grabPrevLoggedIn={grabPrevLoggedIn} />
