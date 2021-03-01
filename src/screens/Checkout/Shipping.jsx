@@ -25,7 +25,6 @@ const customStyles = {
       right: 'auto',
       bottom: 'auto',
       transform: 'translate(-50%, -50%)',
-    //   width: '60vw'
     }
 };
 
@@ -499,14 +498,14 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
                     <div className="display-shipping-info1">
                         <div id="shipping-icon-name-container1">
                             <PersonIcon /> 
-                            <p id="name1">{shippingInput.firstName} {shippingInput.lastName}</p>
+                            <p id="shipping-name1">{shippingInput.firstName} {shippingInput.lastName}</p>
                         </div>
                         <div id="shipping-icon-address-container1">
                             <LocationOnIcon /> 
                             <div id="shipping-address1">
-                                <div id="line1-1">{shippingInput.line1}</div>
-                                {shippingInput.line2 !== '' && <div id="line2-1">{shippingInput.line2}</div>}
-                                <div id="cityStateZipcode1">{shippingInput.city}, {shippingInput.state} {shippingInput.postalCode}</div>
+                                <div id="shipping-line1-1">{shippingInput.line1}</div>
+                                {shippingInput.line2 !== '' && <div id="shipping-line2-1">{shippingInput.line2}</div>}
+                                <div id="shipping-cityStateZipcode1">{shippingInput.city}, {shippingInput.state} {shippingInput.postalCode}</div>
                             </div>
                         </div>
                         <div id="shipping-icon-phone-container1">
@@ -522,9 +521,9 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
         )
     } else if(showSavedShipping) {
         return(
-            <Modal isOpen={showModal} styles={customStyles} onRequestClose={ closeModal } ariaHideApp={false} contentLabel="Saved Shipping">
+            <Modal isOpen={showModal} id="saved-address-modal"styles={customStyles} onRequestClose={ closeModal } ariaHideApp={false} contentLabel="Saved Shipping">
                 <div>
-                <h2 id="saved-shipping-modal-heading">Shipping Address</h2>
+                <h2 id="saved-shipping-modal-heading">Select an address</h2>
                 <div id="all-addresses-container">
                 {allSavedShipping.map((savedShipping, index) => { return (
                     <div id="single-saved-address" key={index}>
@@ -534,9 +533,9 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
                         <p id="line2">{savedShipping.Address.split(", ")[1] === "null" || savedShipping.Address.split(", ")[1] === "undefined" ? "" : savedShipping.Address.split(", ")[1]}</p>
                         <p id="cityStateZipcode">{savedShipping.Address.split(", ")[2]}, {savedShipping.Address.split(", ")[3]} {savedShipping.Address.split(", ")[4]}</p>
                         </div>
-                        <div>
+                        
                         <Button className="select-save-shipping-button" variant="dark" size="sm" id={savedShipping._id} onClick={handleSelectedShipping}>Select</Button>
-                        </div>
+                       
 
                     </div>
                 )})}
@@ -562,14 +561,14 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
                 {/* If user has a saved address (indicated by shipping.address), display the address: */}
                 <div id="shipping-icon-name-container2">
                     <PersonIcon /> 
-                    <p id="name2">{shipping.firstName} {shipping.lastName}</p>
+                    <p id="shipping-name2">{shipping.firstName} {shipping.lastName}</p>
                 </div>
                 <div id="shipping-icon-address-container2">
                     <LocationOnIcon /> 
                     <div id="shipping-address2">
-                        <p id="line1-2">{shipping.line1}</p>
-                        {shipping.line2 !== '' && <p id="line2-2">{shipping.line2}</p>}
-                        <div id="cityStateZipcode2">{shipping.city}, {shipping.state} {shipping.postalCode}</div>
+                        <p id="shipping-line1-2">{shipping.line1}</p>
+                        {shipping.line2 !== '' && <p id="shipping-line2-2">{shipping.line2}</p>}
+                        <div id="shipping-cityStateZipcode2">{shipping.city}, {shipping.state} {shipping.postalCode}</div>
                     </div>
                 </div>
                 <div id="shipping-icon-phone-container2">

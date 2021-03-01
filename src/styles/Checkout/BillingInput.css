@@ -1,0 +1,12 @@
+#billing-input-names-container {
+    display: flex;
+    /* justify-content: space-between; */
+}
+
+.billing-input {
+    margin-bottom: 10px;
+}
+
+#billing-input-firstName-error-container {
+    margin-right: 10px;
+}

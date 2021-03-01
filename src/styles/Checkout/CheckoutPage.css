@@ -51,27 +51,10 @@ h2 {
     padding-top: 30px;
 }
 
-/* SAVED ADDRESS MODAL */
-#all-addresses-container {
-    display: flex;
-    flex-wrap: wrap;
-    width: 100vw;
-}
-#single-saved-address {
-    width: 50vw;
-    line-height: 0.5;
-}
-#saved-shipping-modal-heading {
-    padding-top: 0px;
-    margin-right: 0px;
-}
-.select-save-shipping-button {
-    margin-top:5px;
-    margin-bottom: 20px;
-}
-#close-saved-address-button {
-    margin-top: 25px;
-    /* float: right; */
+/* INPUT ERRORS */
+.warning  {
+    font-size: 0.6rem;
+    font-style: italic;
 }
 
 
@@ -97,21 +80,6 @@ h2 {
     }
     h2 {
         font-size: 1.25rem !important;
-    }
-    #all-addresses-container {
-        width: 100%;
-    }
-    #single-saved-address {
-        width: 90vw;
-        font-size: 0.75rem !important;
-        display: flex;
-        justify-content: space-between;
-    }
-    .close-saved-address-button-container{
-        /* display: flex;
-        justify-content: center;
-        align-items: center; */
-        text-align: center;
     }
 }
 

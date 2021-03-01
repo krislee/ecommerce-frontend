@@ -113,20 +113,21 @@ export default function ShippingForm({ loggedIn, readOnly, shipping, addShipping
             )}
 
         {shipping.firstName ? (
-            <>
-            <Button 
-            id="save-shipping-button"
-            // form="form" 
-            type="submit"
-            variant="dark"
-            size='lg'
-            disabled={disableButton() || disableButtonAfterMakingRequest }>
-                Save
-            </Button> 
-            {/* <Button variant="dark" type="submit" disabled={disableButton() || disableButtonAfterMakingRequest }>Save</Button> */}
-            {/* <button type="button" onClick={closeModal}>Cancel</button> */}
-            <Button id="cancel-shipping-button" size='lg' variant="dark" type="button" onClick={closeModal}>Cancel</Button>
-            </>
+            <div id="save-cancel-shipping-buttons">
+                <Button id="cancel-shipping-button" size='lg' variant="dark" type="button" onClick={closeModal}>Cancel</Button>
+                <Button 
+                id="save-shipping-button"
+                // form="form" 
+                type="submit"
+                variant="dark"
+                size='lg'
+                disabled={disableButton() || disableButtonAfterMakingRequest }>
+                    Save
+                </Button> 
+                {/* <Button variant="dark" type="submit" disabled={disableButton() || disableButtonAfterMakingRequest }>Save</Button> */}
+                {/* <button type="button" onClick={closeModal}>Cancel</button> */}
+                
+            </div>
         ) : <Button 
             id="next-shipping-button"
             // form="form" 

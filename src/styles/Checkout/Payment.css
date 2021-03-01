@@ -1,15 +1,356 @@
-.expiration {
-    border: 1px solid #bbb;
-}
-.expiration input {
-    border: 0;
-    /* text-align: center; */
-    outline: 0; /* remove if you want input highlight */
-}
-
+@import url('https://fonts.googleapis.com/css2?family=Orbitron&display=swap');
+/* font-family: 'Orbitron', sans-serif; */
 #payment-container {
     margin-left: 30px;
 } 
-body {
-    background-color: #e5e6e4;
+
+
+/* Chrome, Safari, Edge, Opera */
+#edit-exp-month::-webkit-outer-spin-button,#edit-exp-year::-webkit-outer-spin-button,
+#edit-exp-month::-webkit-inner-spin-button, #edit-exp-year::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+#edit-exp-month, #edit-exp-year {
+  -moz-appearance: textfield;
+}
+
+
+
+/* ADD NEW PAYMENT METHOD FORM */
+
+/* Credit Card heading */
+#add-card-heading {
+    padding-top: 0px;
+    font-size: 1.5rem;
+}
+/* Billing Address heading */
+.billing-address-heading {
+    padding-bottom: 10px;
+    margin-right: 0px;
+    font-size: 1.5rem;
+}
+/* Billing Names Input Errors */
+#billing-input-firstName-error-container, #billing-input-lastName-error-container {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Same as shipping label + checkbox  */
+#same-billing-shipping-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.same-billing-shipping-label {
+    margin-bottom: 0rem;
+}
+
+#sameAsShipping {
+    margin: 0;
+    margin-right: 5px;
+}
+/* Display billing info if shipping label is checked */
+#display-same-billing-shipping-container {
+    padding-top: 15px;
+    width: 60%;
+}
+#billing-line1, #billing-cityStateZipcode {
+    word-wrap: break-word;
+}
+#add-card-buttons-container {
+    display: flex;
+    justify-content: space-between;
+}
+#save-card-button, #cancel-save-button {
+    margin-top: 20px;
+}
+
+.display-billing, #display-billing-heading  {
+    margin-bottom: 0px;
+}
+.display-billing {
+    font-weight: bold;
+}
+
+/* EDIT PAYMENT METHOD FORM */
+#edit-payment-heading {
+    padding-top: 0px;
+    margin-bottom: 0px;
+}
+#display-edit-payment-info, #display-saved-payment-info, #display-payment-info {
+    border-radius: 5px;
+}
+#edit-cardholder-name-exp-dates-container {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+#edit-cardholder-name-container {
+    display: flex;
+    flex-direction: column;
+    width: 60%;
+    /* margin-right: 10px; */
+}
+
+/* Edit Expiration */
+.expiration-container {
+    border: 1px solid #bbb;
+    border-radius: 5px;
+    display: flex;
+    width: 5rem;
+    height: 50%;
+}
+#edit-exp-month, #edit-exp-year {
+    border: none;
+    margin-bottom: 0px !important;
+    padding: 0px !important;
+}
+#edit-exp-month {
+    text-align: right;
+    width: 34%;
+}
+#edit-exp-year {
+    text-align: left;
+    width: 66%;
+}
+#edit-expiration-slash {
+    padding: 0.5rem 0.2rem 0.2rem 0.2rem;
+}
+/* Edit Buttons */
+#edit-buttons-container {
+    display: flex;
+    justify-content: space-between;
+}
+.edit-buttons {
+    margin-top: 20px;
+}
+
+/* SAVED CARDS MODAL */
+#saved-address-heading {
+    text-align:center;
+    margin-right: 0px;
+    margin-top: 0px;
+}
+#display-saved-payment-info {
+    display: flex;
+    justify-content: space-between;
+}
+.select-save-address-button {
+    margin-left: 10px;
+    margin-top: 0px;
+    align-self: center;
+}
+#close-save-address-button {
+    float: right;
+}
+
+/* CREDIT CARD ILLUSTRATION DISPLAY */
+
+#edit-credit-card, #saved-credit-card, #display-credit-card {
+    background-image: linear-gradient(to bottom right, #1e5799 0%, #2989d8 50%, #207cca 51%, #7db9e8 100%);
+    display: grid;
+    width: 80%;
+    height: 11rem;
+    margin: auto;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    grid-template-areas:
+        'chip brand'
+        'cardNumber cardNumber'
+        'cardholder expires'
+        'cardholderName expiryDate';
+    grid-template-columns: 50%;
+}
+#saved-credit-card {
+    /* override the width of the card in saved cards modal */
+    width: 65%; 
+}
+#display-credit-card {
+    /* override the width of the card when displaying the payment info right before confirming */
+    width: 40%; 
+}
+#chip-card-img {
+    grid-area: chip;
+    width: 25%;
+    height: 10%;
+    margin-top: 10px;
+    margin-left: 10px;
+}
+#card-img-container {
+    grid-area: brand;
+    /* width: 10%; */
+    /* height: 10% */
+    display: flex;
+    justify-content: flex-end;
+}
+#discover, #jcb {
+    width: 45%;
+}
+#discover {
+    margin-top: -10px;
+}
+#american-express {
+    width: 30%;
+    height: 0.1vh;
+    margin-top: 10px;
+    margin-right: 10px;
+}
+#diners-club {
+    width: 50%;
+    margin-top: 10px;
+    height: 0vh;
+}
+#unionpay {
+    height: 0vh;
+    margin-top: 10px;
+    margin-right: 10px;
+}
+#visa {
+    height: 0vh;
+    margin-top: 10px;
+    margin-right: 10px;
+}
+#saved-credit-card #visa {
+    width: 30%;
+}
+#mastercard {
+    width: 57%;
+}
+#cardNumber {
+    grid-area: cardNumber
+}
+#card-number {
+    /* margin-left: 2rem; */
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: white;
+}
+#cardholder-title {
+    grid-area: cardholder;
+    margin-left: 10px;
+}
+#edit-cardholder-name, #saved-cardholder-name, #display-cardholder-name {
+    grid-area: cardholderName;
+    margin-left: 10px;
+}
+#expiry-date-title {
+    grid-area: expires;
+    display: flex;
+    justify-content: flex-end;
+    margin-right: 10px;
+}
+#expiry-date {
+    grid-area: expiryDate;
+    display: flex;
+    justify-content: flex-end;
+    margin-right: 10px;
+}
+#cardholder-title, #edit-cardholder-name, #saved-cardholder-name, #display-cardholder-name #expiry-date-title, #expiry-date {
+    color: white;
+}
+#cardholder-title, #expiry-date-title{
+    font-size: 0.5rem;
+}
+#edit-cardholder-name, #saved-cardholder-name, #display-cardholder-name, #expiry-date {
+    font-size: 0.75rem;
+}
+
+/* CONFIRM PAYMENT BUTTON */
+#submit {
+    margin-bottom: 50px;
+}
+
+
+/* MEDIA QUERIES */
+@media only screen and (max-width: 1250px) {
+    #display-credit-card {
+        width: 52%; 
+    }
+}
+@media only screen and (max-width: 1050px) {
+    #display-credit-card {
+        width:60%; 
+    }
+}
+@media only screen and (max-width: 900px) {
+    #saved-credit-card {
+        width: 70%;
+    }
+    #display-credit-card {
+        width: 67%; 
+    }
+}
+@media only screen and (max-width: 800px) {
+    #display-credit-card {
+        width: 45%; 
+    }
+}
+@media only screen and (max-width: 600px) {
+    #payment-container {
+        font-size: 0.75rem !important;
+    } 
+
+    /* ALL INPUTS */
+    input {
+        font-size: 0.75rem !important;
+        padding: 5px !important;
+    }
+
+    /* CREDIT CARD IMAGE CONTAINER (IN SAVED CARDS, EDIT CARD, DISPLAY INFO) */
+    #card-img-container {
+        top: 40%;
+    }
+
+    #display-credit-card {
+        width: 57%; 
+    }
+    #saved-credit-card {
+        width: 80%
+    }
+
+    /* EDIT CARD MODAL */
+    #edit-credit-card {
+        width: 90%
+    }
+    #card-number {
+        font-size: 1rem;
+    }
+    #cardholder-title, #expiry-date-title{
+        font-size: 0.3rem !important;
+    }
+    #edit-cardholder-name, #expiry-date {
+        font-size: 0.5rem;
+    }
+
+    /* CONFIRM PAYMENT BUTTON */
+    #submit {
+        width: 7rem;
+        height: 3rem;
+    }
+}
+
+
+@media only screen and (max-width: 450px) {
+    #edit-credit-card {
+        width: 100%
+    }
+    #saved-credit-card {
+        width: 90%
+    }
+    #display-credit-card {
+        width: 75%; 
+    }
+    /* SAVED CARDS MODAL */
+    #display-saved-payment-info {
+        flex-direction: column;
+    }
+    .select-save-address-button {
+        margin-bottom: 20px;
+    }
 }

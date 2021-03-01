@@ -254,8 +254,28 @@ function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCar
     const grabRedirect = (redirect) => setRedirect(redirect) // aside from using redirect state at CheckoutPage component, redirect state is also passed down to the 2 other child components (CheckoutItems and Shipping) to be used for users who cleared local storage.
 
     const billingInputErrorDisableButton = () => {
+        // console.log (cardholderName, billing)
+        // console.log("disabled", disabled, "error", error, typeof error)
+        // console.log(/^[a-z ,.'-]+$/i.test(cardholderName) !== true 
+        // || cardholderName === undefined
+        // || cardholderName === '')
+        // console.log(billing.firstName === ""
+        // || billing.firstName === undefined
+        // || /^[a-z ,.'-]+$/i.test(billing.lastName) !== true )
+        // console.log(/^[a-z ,.'-]+$/i.test(billing.lastName) !== true 
+        // || billing.lastName === ""
+        // || billing.lastName === undefined)
+        // console.log(billing.line1 === ""
+        // || billing.line1 === undefined)
+        // console.log(/^[a-z ,.'-]+$/i.test(billing.city) !== true 
+        // || billing.city === ""
+        // || billing.city === undefined)
+        // console.log(/^[a-z][a-z\s]*$/i.test(billing.state) !== true 
+        // || billing.state === ""
+        // || billing.state === undefined
+        // || billing.state.length !== 2)
         return (
-            /^[a-z][a-z\s]*$/i.test(cardholderName) !== true 
+            /^[a-z ,.'-]+$/i.test(cardholderName) !== true 
             || cardholderName === undefined
             || cardholderName === ''
             || /^[a-z ,.'-]+$/i.test(billing.firstName) !== true 
