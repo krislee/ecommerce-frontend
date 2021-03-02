@@ -77,7 +77,8 @@ export default function CartItemPage ({ backend, loggedIn, id, name, image, quan
     const handleDeleteCartItem = async(event) => {
         if(loggedIn()) {
             console.log("deleting logged in")
-            const deleteCartItemResponse = await fetch(`${backend}/buyer/electronic/cart/${event.target.id}`, {
+            
+            const deleteCartItemResponse = await fetch(`${backend}/buyer/electronic/cart/${event.target.parentElement.parentElement.id}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
@@ -93,7 +94,7 @@ export default function CartItemPage ({ backend, loggedIn, id, name, image, quan
         } else {
             if(prevLoggedIn) return grabTotalCartQuantity(0)
             console.log("deleting guest")
-            const deleteCartItemResponse = await fetch(`${backend}/buyer/electronic/cart/${event.target.id}`, {
+            const deleteCartItemResponse = await fetch(`${backend}/buyer/electronic/cart/${event.target.parentElement.parentElement.id}`, {
                 method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include'
@@ -140,7 +141,7 @@ export default function CartItemPage ({ backend, loggedIn, id, name, image, quan
                     </select>
                 </div>
                 <div className="cart-item-totalPrice2">${totalPrice.toFixed(2)}</div>
-                <div className="cart-item-remove-icon"><FontAwesomeIcon id={id} onClick={handleDeleteCartItem} icon={faTimes}>Remove</FontAwesomeIcon></div>
+                <div className="cart-item-remove-icon"id={id} ><FontAwesomeIcon onClick={handleDeleteCartItem} icon={faTimes}>Remove</FontAwesomeIcon></div>
             </div>
         </div>
         {/* </div> */}
