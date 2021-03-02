@@ -15,13 +15,14 @@ import { makeStyles, createMuiTheme, ThemeProvider } from '@material-ui/core/sty
 
 import SpeedDial from '@material-ui/lab/SpeedDial';
 import SpeedDialAction from '@material-ui/lab/SpeedDialAction';
+import MoreHorizRoundedIcon from '@material-ui/icons/MoreHorizRounded';
 import AddIcon from '@material-ui/icons/Add';
 import EditIcon from '@material-ui/icons/Edit';
 import PaymentRoundedIcon from '@material-ui/icons/PaymentRounded';
 
 import '../../styles/Checkout/Shipping.css'
 
-
+// Theme for overriding Speed Dial styles
 let theme = createMuiTheme({})
 theme = { ...theme,
     overrides: {
@@ -45,9 +46,21 @@ theme = { ...theme,
             }
             
         },
+        "makeStyles-speedDial-7": {
+            [theme.breakpoints.down("950px")]: {
+                "bottom": "5.25em"
+            }
+        },
+        MuiSpeedDialAction: {
+            staticTooltipLabel : {
+                padding: '5px',
+                "font-size": '0.75rem'
+            }
+        }
     },
 };
 
+// Speed Dial Styles
 const useStyles = makeStyles((theme) => ({
     root: {
         transform: 'translateZ(0px)',
@@ -55,12 +68,12 @@ const useStyles = makeStyles((theme) => ({
     },
     speedDial: {
         position: 'absolute',
-        bottom: '-5rem', 
+        bottom: '-5.5rem', 
         right: '1.5rem', 
     },
 }));
 
-function PaymentMethod ({ backend, processing, loggedIn, error, grabError, disabled, grabDisabled,  paymentLoading, grabPaymentLoading, billing, grabBilling, handleBillingChange, handleBillingStateChange, paymentMethod, grabPaymentMethod, cardholderName, grabCardholderName, handleCardholderNameChange, handleCardChange, collectCVV, grabCollectCVV, editPayment, grabEditPayment, redisplayCardElement, grabRedisplayCardElement, grabShowSavedCards, handleConfirmPayment, showSavedCards, editExpiration, grabEditExpiration, showPayment, sameAsShipping, handleSameAsShipping, shippingInput, grabBillingWithShipping, recheckSameAsShippingButton, grabTotalCartQuantity, billingInputErrorDisableButton, billingPostalCodeInputErrorDisableButton }) {
+function PaymentMethod ({ backend, processing, loggedIn, error, grabError, disabled, grabDisabled,  paymentLoading, grabPaymentLoading, billing, grabBilling, handleBillingChange, handleBillingStateChange, paymentMethod, grabPaymentMethod, cardholderName, grabCardholderName, handleCardholderNameChange, handleCardChange, collectCVV, grabCollectCVV, editPayment, grabEditPayment, redisplayCardElement, grabRedisplayCardElement, grabShowSavedCards, handleConfirmPayment, showSavedCards, editExpiration, grabEditExpiration, showPayment, sameAsShipping, handleSameAsShipping, shippingInput, grabBillingWithShipping, recheckSameAsShippingButton, grabTotalCartQuantity, billingInputErrorDisableButton, billingPostalCodeInputErrorDisableButton, guestProcessingPayment, grabGuestProcessingPayment}) {
 
     /* ------- STRIPE VARIABLES ------ */
     const elements = useElements()
@@ -366,12 +379,13 @@ function PaymentMethod ({ backend, processing, loggedIn, error, grabError, disab
     if(paymentLoading) {
         return <></>
     } else if(!paymentMethod.paymentMethodID) {
+        if(!showPayment) return null
         // If there is no saved payment methods (indicated by !paymentMethod.paymentMethodID) OR if there is a saved payment method (indicated by paymentMethod.paymentMethodID) and Add New Card button is clicked (indicated by redisplayCardElement state to true), then the same form that collects cards details is displayed. But for the form's onSubmit, the functions would be different.
         return collectCVV !== 'true' && (
-            <>
-            <div><h2>Payment Method</h2></div>
-            {showPayment && <CardForm loggedIn={loggedIn} paymentMethod={paymentMethod} handleSubmitCardForm={handleConfirmPayment} handleCardChange={handleCardChange} handleBillingChange={handleBillingChange} handleBillingStateChange={handleBillingStateChange} handleCardholderNameChange={handleCardholderNameChange} cardholderName={cardholderName} billing={billing} grabBilling={grabBilling} collectCVV={collectCVV} redisplayCardElement={redisplayCardElement} closeAddNewModal={closeAddNewModal} disabled={disabled} error={error} sameAsShipping={sameAsShipping} handleSameAsShipping={handleSameAsShipping} billingInputErrorDisableButton={billingInputErrorDisableButton} processing={processing} />}
-            </>
+            <div id="guest-payment-container">
+            <h2 id="guest-payment-heading">Payment Method</h2>
+            {showPayment && <CardForm loggedIn={loggedIn} paymentMethod={paymentMethod} handleSubmitCardForm={handleConfirmPayment} handleCardChange={handleCardChange} handleBillingChange={handleBillingChange} handleBillingStateChange={handleBillingStateChange} handleCardholderNameChange={handleCardholderNameChange} cardholderName={cardholderName} billing={billing} grabBilling={grabBilling} collectCVV={collectCVV} redisplayCardElement={redisplayCardElement} closeAddNewModal={closeAddNewModal} disabled={disabled} error={error} sameAsShipping={sameAsShipping} handleSameAsShipping={handleSameAsShipping} billingInputErrorDisableButton={billingInputErrorDisableButton} processing={processing} guestProcessingPayment={guestProcessingPayment} grabGuestProcessingPayment={grabGuestProcessingPayment} />}
+            </div>
         )      
 
     } else if (paymentMethod.paymentMethodID && redisplayCardElement) {
@@ -383,138 +397,142 @@ function PaymentMethod ({ backend, processing, loggedIn, error, grabError, disab
         )  
     } else if(paymentMethod.paymentMethodID && !editPayment) {
         // console.log(paymentMethod)
-
         return (
             <>
-            <div></div>
             {/* <div><h2>Payment Method</h2></div> */}
             {showPayment && (
             <div id="payment-container" style={{marginLeft: '30px'}}>
-             <h2>Payment Method</h2>
-            <div>
-                <div id="display-payment-info">  
-                    <div id="display-credit-card">
-                        <div id="chip-card-img">
-                            <img src="https://img.pngio.com/chip-png-free-download-fourjayorg-chip-png-2400_2400.png"></img>
-                        </div>
-                        <div id="card-img-container">
-                            {brandImage(paymentMethod.brand)}
-                        </div>
-                        <div id="cardNumber"><b>{paymentMethod.brand === 'amex' ? <p id='card-number'>****   ******   {paymentMethod.last4}</p> : <p id='card-number'>****   ****   ****   {paymentMethod.last4}</p>}</b></div>
-                        <div id="cardholder-title">Cardholder</div>
-                        <div id="display-cardholder-name"><b>{paymentMethod.cardholderName}</b></div>
-                        <div id="expiry-date-title">Valid thru</div>
-                        <div id="expiry-date"><b>{paymentMethod.expDate}</b></div>
-                    </div>
-                </div>
-            
-                {/* Need the conditions in order for the CVC Element to render properly */}
-                {(collectCVV === "true" && !redisplayCardElement) && <CollectCard collectCVV={collectCVV} redisplayCardElement={redisplayCardElement} handleCardChange={handleCardChange} />}
-
-                {/* Show any error that happens when processing the payment */}
-                {( error) && (<div className="card-error" role="alert">{error}</div>)}
-
-                <h2 id="display-billing-heading">Billing Address</h2>
-                <p id="billing-name" className="display-billing">{paymentMethod.billingDetails.name.split(", ")[0]} {paymentMethod.billingDetails.name.split(", ")[1]}</p>
-                <p id="billing-line1" className="display-billing">{paymentMethod.billingDetails.address.line1}</p>
-                <p id="billing-line2" className="display-billing">{paymentMethod.billingDetails.address.line2 === "null" || paymentMethod.billingDetails.address.line2 === "undefined" ? "" : paymentMethod.billingDetails.address.line2}</p>
-                <p id="billing-cityStateZipcode" className="display-billing">{paymentMethod.billingDetails.address.city}, {paymentMethod.billingDetails.address.state} {paymentMethod.billingDetails.address.postalCode}</p>
-
-                {/* Click Edit to update payment method */}
-                {/* <button id={paymentMethod.paymentMethodID} onClick={handleEdit}>Edit</button> */}
-
-                {/* Click Add New to add a new payment method */}
-                {/* <button type="button" id={paymentMethod.paymentMethodID} onClick={handleAddNew}>Add New</button> */}
-                {/* Click Saved Cards to see all the other cards the logged in user has saved. */}
-                {/* {multipleSavedCards && <button type="button" id={paymentMethod.paymentMethodID} onClick={showAllSavedCards}>Saved Cards</button>} */}
-
-
-                <div id="control-speed-dial-payment-margin">
-                    <ThemeProvider theme={theme}>
-                        <div className={classes.root}>
-                            <SpeedDial 
-                                ariaLabel="SpeedDial openIcon"
-                                className={classes.speedDial}
-                                icon={<EditIcon />} 
-                                onClose={handleClose}
-                                onOpen={handleOpen}
-                                open={open}
-                            >
-                                <SpeedDialAction
-                                    id={paymentMethod.paymentMethodID} 
-                                    onClick={handleAddNew}
-                                    key={"Add Address"}
-                                    icon={<AddIcon />}
-                                    tooltipTitle={"Add Payment"}
-                                />
-                                <SpeedDialAction
-                                    id={paymentMethod.paymentMethodID} 
-                                    onClick={handleEdit}
-                                    key={"Edit Address"}
-                                    icon={<EditIcon />}
-                                    tooltipTitle={"Edit Payment"}
-                                />
-                                {multipleSavedCards && <SpeedDialAction
-                                    id={paymentMethod.paymentMethodID}
-                                    key={"All Addresses"}
-                                    icon={<PaymentRoundedIcon />}
-                                    tooltipTitle={"Saved Payments"}
-                                    onClick={showAllSavedCards}
-                                />}
-                            </SpeedDial>
-                        </div>
-                    </ThemeProvider>
-                </div>
-             
-                {/* Modal with the list of saved cards appear when Saved Cards button is clicked and updates the state of showModal to true. Since redisplayCardElement and editPayment states are false, this part gets returned. */}
-                <Modal isOpen={showModal} onRequestClose={ closeSavedCards } ariaHideApp={false} contentLabel="Saved Cards">
-                    <h2 id="saved-address-heading">Select an address</h2>
-                    {savedCards.map((savedCard, index) => { return (
-                        <div id="display-saved-payment-info" key="index">  
-                            <div id="saved-credit-card">
-                                <div id="chip-card-img">
-                                    <img src="https://img.pngio.com/chip-png-free-download-fourjayorg-chip-png-2400_2400.png"></img>
-                                </div>
-                                <div id="card-img-container">
-                                    {brandImage(savedCard.brand)}
-                                </div>
-                                <div id="cardNumber"><b>{savedCard.brand === 'amex' ? <p id='card-number'>****   ******   {savedCard.last4}</p> : <p id='card-number'>****   ****   ****   {savedCard.last4}</p>}</b></div>
-                                <div id="cardholder-title">Cardholder</div>
-                                <div id="saved-cardholder-name"><b>{savedCard.cardholderName}</b></div>
-                                <div id="expiry-date-title">Valid thru</div>
-                                <div id="expiry-date"><b>{savedCard.expDate}</b></div>
+                <h2>Payment Method</h2>
+                <div>
+                    <div id="display-payment-info">  
+                        <div id={paymentMethod.brand} className="display-credit-card">
+                            <div id="chip-card-img">
+                                <img src="https://img.pngio.com/chip-png-free-download-fourjayorg-chip-png-2400_2400.png"></img>
+                                <img src="https://students.1fbusa.com/hubfs/pw.png"></img>
                             </div>
-                            <Button type="button" variant='dark' size='lg' id={savedCard.paymentMethodID} className="select-save-address-button" disabled={disableButtonAfterMakingRequest} onClick={ showOneSavedCard }>Select</Button>
+                            <div id="card-img-container">
+                                {brandImage(paymentMethod.brand)}
+                            </div>
+                            <div id="cardNumber"><b>{paymentMethod.brand === 'amex' ? <p id='card-number'>****   ******   {paymentMethod.last4}</p> : <p id='card-number'>****   ****   ****   {paymentMethod.last4}</p>}</b></div>
+                            <div id="cardholder-title">Cardholder</div>
+                            <div id="display-cardholder-name"><b>{paymentMethod.cardholderName}</b></div>
+                            <div id="expiry-date-title">Valid thru</div>
+                            <div id="expiry-date"><b>{paymentMethod.expDate}</b></div>
                         </div>
-                    )})}
-                    <Button id="close-save-address-button" type='button' variant='dark' size='lg' onClick={ closeSavedCards }>Close</Button>
-                </Modal>
+                    </div>
+                
+                    {/* Need the conditions in order for the CVC Element to render properly */}
+                    {(collectCVV === "true" && !redisplayCardElement) && <CollectCard loggedIn={loggedIn} collectCVV={collectCVV} redisplayCardElement={redisplayCardElement} handleCardChange={handleCardChange} />}
 
-                {/* Do not show the Confirm Payment button when Saved Cards modal, Edit modal, and Add New Card modal are open */}
+                    {/* Show any error that happens when processing the payment */}
+                    {( error) && (<div className="card-error" role="alert">{error}</div>)}
 
-                {(!editPayment && !redisplayCardElement && !showSavedCards) && (
-                    <Button variant="dark" id="submit" size='lg'
-                    disabled={ (disabled && paymentMethod.recollectCVV === "true") || error || processingPayment }  
-                    onClick={(event) => {
-                        setProcessingPayment(true)
-                        handleConfirmPayment(event)
-                    }}>
-                        { processingPayment ? (
-                            <>
-                            <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" /> 
-                            <span>Processing...</span>
-                            </> 
-                            ) : "Confirm Payment"
-                        }
-                    </Button>
-                    ) 
-                }
+                    <h2 id="display-billing-heading">Billing Address</h2>
+                    <p id="billing-name" className="display-billing">{paymentMethod.billingDetails.name.split(", ")[0]} {paymentMethod.billingDetails.name.split(", ")[1]}</p>
+                    <p id="billing-line1" className="display-billing">{paymentMethod.billingDetails.address.line1}</p>
+                    <p id="billing-line2" className="display-billing">{paymentMethod.billingDetails.address.line2 === "null" || paymentMethod.billingDetails.address.line2 === "undefined" ? "" : paymentMethod.billingDetails.address.line2}</p>
+                    <p id="billing-cityStateZipcode" className="display-billing">{paymentMethod.billingDetails.address.city}, {paymentMethod.billingDetails.address.state} {paymentMethod.billingDetails.address.postalCode}</p>
 
-            </div>
+                    {/* Click Edit to update payment method */}
+                    {/* <button id={paymentMethod.paymentMethodID} onClick={handleEdit}>Edit</button> */}
+
+                    {/* Click Add New to add a new payment method */}
+                    {/* <button type="button" id={paymentMethod.paymentMethodID} onClick={handleAddNew}>Add New</button> */}
+                    {/* Click Saved Cards to see all the other cards the logged in user has saved. */}
+                    {/* {multipleSavedCards && <button type="button" id={paymentMethod.paymentMethodID} onClick={showAllSavedCards}>Saved Cards</button>} */}
+
+
+                    {/* <div id="control-speed-dial-payment-margin"> */}
+                        <ThemeProvider theme={theme}>
+                            <div className={classes.root}>
+                                <SpeedDial 
+                                    ariaLabel="SpeedDial openIcon"
+                                    className={classes.speedDial}
+                                    icon={<MoreHorizRoundedIcon />} 
+                                    onClose={handleClose}
+                                    onOpen={handleOpen}
+                                    open={open}
+                                >
+                                    <SpeedDialAction
+                                        id={paymentMethod.paymentMethodID} 
+                                        onClick={handleAddNew}
+                                        key={"Add Payment"}
+                                        icon={<AddIcon />}
+                                        tooltipTitle={"Add Payment"}
+                                        tooltipOpen
+                                    />
+                                    <SpeedDialAction
+                                        id={paymentMethod.paymentMethodID} 
+                                        onClick={handleEdit}
+                                        key={"Edit Payment"}
+                                        icon={<EditIcon />}
+                                        tooltipTitle={"Edit Payment"}
+                                        tooltipOpen
+                                    />
+                                    {multipleSavedCards && <SpeedDialAction
+                                        id={paymentMethod.paymentMethodID}
+                                        key={"Saved Payments"}
+                                        icon={<PaymentRoundedIcon />}
+                                        onClick={showAllSavedCards}
+                                        tooltipTitle={"Saved Payments"}
+                                        tooltipOpen
+                                    />}
+                                </SpeedDial>
+                            </div>
+                        </ThemeProvider>
+                    {/* </div> */}
+                
+                    {/* Modal with the list of saved cards appear when Saved Cards button is clicked and updates the state of showModal to true. Since redisplayCardElement and editPayment states are false, this part gets returned. */}
+                    <Modal isOpen={showModal} onRequestClose={ closeSavedCards } ariaHideApp={false} contentLabel="Saved Cards">
+                        <h2 id="saved-address-heading">Select an address</h2>
+                        {savedCards.map((savedCard, index) => { return (
+                            <div id="display-saved-payment-info" key={index}>  
+                                <div id={savedCard.brand} className="saved-credit-card">
+                                    <div id="chip-card-img">
+                                        <img src="https://img.pngio.com/chip-png-free-download-fourjayorg-chip-png-2400_2400.png"></img>
+                                        <img src="https://students.1fbusa.com/hubfs/pw.png"></img>
+                                    </div>
+                                    <div id="card-img-container">
+                                        {brandImage(savedCard.brand)}
+                                    </div>
+                                    <div id="cardNumber"><b>{savedCard.brand === 'amex' ? <p id='card-number'>****   ******   {savedCard.last4}</p> : <p id='card-number'>****   ****   ****   {savedCard.last4}</p>}</b></div>
+                                    <div id="cardholder-title">Cardholder</div>
+                                    <div id="saved-cardholder-name"><b>{savedCard.cardholderName}</b></div>
+                                    <div id="expiry-date-title">Valid thru</div>
+                                    <div id="expiry-date"><b>{savedCard.expDate}</b></div>
+                                </div>
+                                <Button type="button" variant='dark' size='lg' id={savedCard.paymentMethodID} className="select-save-address-button" disabled={disableButtonAfterMakingRequest} onClick={ showOneSavedCard }>Select</Button>
+                            </div>
+                        )})}
+                        <Button id="close-save-address-button" type='button' variant='dark' size='lg' onClick={ closeSavedCards }>Close</Button>
+                    </Modal>
+
+                    {/* Do not show the Confirm Payment button when Saved Cards modal, Edit modal, and Add New Card modal are open */}
+
+                    {(!editPayment && !redisplayCardElement && !showSavedCards) && (
+                        <Button variant="dark" id="submit" size='lg'
+                        disabled={ (disabled && paymentMethod.recollectCVV === "true") || error || processingPayment }  
+                        onClick={(event) => {
+                            setProcessingPayment(true)
+                            handleConfirmPayment(event)
+                        }}>
+                            { processingPayment ? (
+                                <>
+                                <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" /> 
+                                <span>Processing...</span>
+                                </> 
+                                ) : "Confirm Payment"
+                            }
+                        </Button>
+                        ) 
+                    }
+
+                </div>
             </div>
             )}
             </>
         )
+        
     } else if(paymentMethod.paymentMethodID && editPayment) {
         // When the Edit button is clicked this modal is shown
         return (
@@ -522,9 +540,10 @@ function PaymentMethod ({ backend, processing, loggedIn, error, grabError, disab
                 <form onSubmit={handleUpdatePayment}>
                     <h2 id="edit-payment-heading">Edit Payment</h2>
                     <div id="display-edit-payment-info">  
-                        <div id="edit-credit-card">
+                        <div id={paymentMethod.brand} className="edit-credit-card">
                             <div id="chip-card-img">
                                 <img src="https://img.pngio.com/chip-png-free-download-fourjayorg-chip-png-2400_2400.png"></img>
+                                <img src="https://students.1fbusa.com/hubfs/pw.png"></img>
                             </div>
                             <div id="card-img-container">
                                 {brandImage(paymentMethod.brand)}
@@ -551,7 +570,7 @@ function PaymentMethod ({ backend, processing, loggedIn, error, grabError, disab
                     {/* { editExpirationError() && <div className="warning">You must enter only numbers for your expiration date</div> } */}
 
                     <div>
-                        <BillingInput billing={billing} handleBillingChange={handleBillingChange} handleBillingStateChange={handleBillingStateChange} editPayment={editPayment} />
+                        <BillingInput loggedIn={loggedIn} billing={billing} handleBillingChange={handleBillingChange} handleBillingStateChange={handleBillingStateChange} editPayment={editPayment} paymentMethod={paymentMethod} />
                         <div id="edit-buttons-container">
                             <Button size='lg' variant='dark' className="edit-buttons" onClick={closeEditModal}>Close</Button>
                             <Button size='lg' variant='dark' className="edit-buttons" disabled={ billingInputErrorDisableButton() || billingPostalCodeInputErrorDisableButton() || editExpirationError() || disableButtonAfterMakingRequest || billing.state === 'Select'}>Save</Button>

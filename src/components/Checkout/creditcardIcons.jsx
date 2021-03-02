@@ -8,7 +8,7 @@ const brandImage = (cardBrand) => {
       return (
         <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/American_Express_logo_%282018%29.svg/1200px-American_Express_logo_%282018%29.svg.png" 
         alt="American Express"
-        id="american-express"
+        id="american-express1"
         className="single-credit-card"
         />
       );
@@ -17,7 +17,7 @@ const brandImage = (cardBrand) => {
       return (
         <img src="https://upload.wikimedia.org/wikipedia/fr/7/72/Logo_GIE-CB.jpg"
         alt="Cartes Bancaires"
-        id="cartes-bancaires"
+        id="cartes-bancaires1"
         className="single-credit-card"
         />
       );
@@ -27,7 +27,7 @@ const brandImage = (cardBrand) => {
         <img 
         src="https://1000logos.net/wp-content/uploads/2020/04/Diners-Club-International-Logo.png"
         alt="Diners Club"
-        id="diners-club"
+        id="diners-club1"
         className="single-credit-card"/>
       );
       // If the cardbrand was Discover
@@ -36,7 +36,7 @@ const brandImage = (cardBrand) => {
         <img 
         src ="https://brandeps.com/logo-download/D/Discover-Card-logo-vector-01.svg"
         alt="Discover"
-        id="discover"
+        id="discover1"
         className="single-credit-card"
         />
       );
@@ -46,7 +46,7 @@ const brandImage = (cardBrand) => {
         <img 
         src ="https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/JCB_logo.svg/1200px-JCB_logo.svg.png"
         alt="JCB"
-        id="jcb"
+        id="jcb1"
         className="single-credit-card"
         />
       );
@@ -56,7 +56,7 @@ const brandImage = (cardBrand) => {
         <img 
         src ="https://www.mastercard.com/content/dam/mccom/global/logos/logo-mastercard-mobile.svg"
         alt="Mastercard"
-        id="mastercard"
+        id="mastercard1"
         className="single-credit-card"
         />
       );
@@ -66,7 +66,7 @@ const brandImage = (cardBrand) => {
         <img 
         src ="https://metapay.eu/images/reference/visa.png"
         alt="Visa"
-        id="visa"
+        id="visa1"
         className="single-credit-card"
         />
       );
@@ -76,7 +76,7 @@ const brandImage = (cardBrand) => {
         <img 
         src ="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/UnionPay_logo.svg/1200px-UnionPay_logo.svg.png"
         alt="UnionPay"
-        id="unionpay"
+        id="unionpay1"
         className="single-credit-card"
         />
       );

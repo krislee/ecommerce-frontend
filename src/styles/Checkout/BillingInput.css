@@ -8,8 +8,15 @@
 }
 
 #billing-input-state {
+    width: 100%;
     height: 100%;
     /* margin-bottom: 0px; */
+}
+#billing-input-state-city-error {
+    height: 60%;
+}
+#billing-input-state-city-or-zipcode-error {
+    height: 50%;
 }
 #billing-input-firstName-error-container, #billing-input-city-error-container, #billing-input-state-error-container{
     margin-right: 10px;
@@ -17,8 +24,30 @@
 
 #billing-input-cityStateZipcode-container {
     display: flex;
+    justify-content: space-between;
 }
 #billing-input-city-error-container, #billing-input-state-error-container, #billing-input-postalCode-error-container {
     display: flex;
     flex-direction: column;
+}
+
+/* #billing-input-state {
+    height: 60%;
+    width: 100%;
+}  */
+
+/* GUEST */
+#guest-billing-input-firstName-error-container, #guest-billing-input-lastName-error-container, #guest-billing-input-city-error-container, #guest-billing-input-state-error-container, #guest-billing-input-state  {
+    width: 100%;
+}
+#guest-billing-input-firstName-error-container, #guest-billing-input-city-error-container {
+    margin-right: 10px;
+}
+#guest-billing-input-state  {
+    /* height: 100%; */
+    padding: 8px;
+}
+#guest-billing-input-state-city-error {
+    height: 60%;
+    width: 100%;
 }

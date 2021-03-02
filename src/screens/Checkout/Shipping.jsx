@@ -10,7 +10,7 @@ import SpeedDialAction from '@material-ui/lab/SpeedDialAction';
 import AddIcon from '@material-ui/icons/Add';
 import EditLocationIcon from '@material-ui/icons/EditLocation';
 import HomeIcon from '@material-ui/icons/Home';
-import EditIcon from '@material-ui/icons/Edit';
+import MoreHorizRoundedIcon from '@material-ui/icons/MoreHorizRounded';
 import PersonIcon from '@material-ui/icons/Person';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
 import PhoneIcon from '@material-ui/icons/Phone';
@@ -28,7 +28,7 @@ const customStyles = {
     }
 };
 
-
+// Theme for overriding Speed Dial styles
 let theme = createMuiTheme({})
 theme = { ...theme,
     overrides: {
@@ -56,9 +56,16 @@ theme = { ...theme,
             }
             
         },
+        MuiSpeedDialAction: {
+            staticTooltipLabel : {
+                padding: '5px',
+                "font-size": '0.75rem'
+            }
+        }
     },
-  };
+};
 
+// Speed Dial Styles
 const useStyles = makeStyles((theme) => ({
     root: {
         height: 20,
@@ -591,7 +598,7 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
                             <SpeedDial 
                                 ariaLabel="SpeedDial openIcon"
                                 className={classes.speedDial}
-                                icon={<EditIcon />} 
+                                icon={<MoreHorizRoundedIcon />} 
                                 onClose={handleClose}
                                 onOpen={handleOpen}
                                 open={open}
@@ -600,20 +607,23 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
                                     key={"Add Address"}
                                     icon={<AddIcon />}
                                     tooltipTitle={"Add Address"}
+                                    tooltipOpen
                                     onClick={openAddNewModal}
                                 />
                                 <SpeedDialAction
                                     key={"Edit Address"}
                                     icon={<EditLocationIcon />}
                                     tooltipTitle={"Edit Address"}
+                                    tooltipOpen
                                     onClick={openEditModal}
                                 />
-                                <SpeedDialAction
+                                {multipleShipping && <SpeedDialAction
                                     key={"All Addresses"}
                                     icon={<HomeIcon />}
                                     tooltipTitle={"All Addresses"}
+                                    tooltipOpen
                                     onClick={openAllAddressesModal}
-                                />
+                                />}
                             </SpeedDial>
                         </div>
                     </ThemeProvider>

@@ -19,7 +19,7 @@ h2 {
 #shipping-icon-name-container1, #shipping-icon-name-container2, #shipping-icon-address-container1, #shipping-icon-address-container2,#shipping-icon-phone-container1, #shipping-icon-phone-container2 {
     display: flex;
 }
-#shipping-name1, #shipping-name2 #phone1, #phone2 {
+#shipping-name1, #shipping-name2, #phone1, #phone2 {
     padding-left: 0.5rem;
 }
 #shipping-address1 {

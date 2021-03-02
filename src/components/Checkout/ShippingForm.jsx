@@ -1,4 +1,4 @@
-import React, {useRef} from 'react'
+import React from 'react'
 import Button from 'react-bootstrap/Button';
 import '../../styles/Checkout/ShippingForm.css'
 import '../../styles/Checkout/Shipping.css'
@@ -89,7 +89,23 @@ export default function ShippingForm({ loggedIn, readOnly, shipping, addShipping
                     {(/^[a-z ,.'-]+$/i.test(shippingInput.city) !== true && shippingInput.city !== "") && <div className="warning"><i>Only letters and ", . ' -" are accepted</i></div>}
                 </div>
                 
-                <select className="state" value={shippingInput.state || "Select"} onChange={handleShippingStateChange}>
+                <select 
+                className="state" 
+                value={shippingInput.state || "Select"} 
+                onChange={handleShippingStateChange}
+                id={
+
+                    ((!loggedIn() && /^[a-z ,.'-]+$/i.test(shippingInput.city) !== true && shippingInput.city !== "")
+                    || (!loggedIn() && /^[0-9]+$/.test(shippingInput.postalCode) !== true && shippingInput.postalCode !== "" && shippingInput.postalCode !== undefined)
+                    || (loggedIn() && !shipping.firstName && /^[0-9]+$/.test(shippingInput.postalCode) !== true && shippingInput.postalCode !== "" && shippingInput.postalCode !== undefined) 
+                    || (loggedIn() && !shipping.firstName && /^[a-z ,.'-]+$/i.test(shippingInput.city) !== true && shippingInput.city !== ""))
+                    ? 'guest-shipping-input-state-city-postalCode-error'
+                    : ((/^[0-9]+$/.test(shippingInput.postalCode) !== true && shippingInput.postalCode !== "" && shippingInput.postalCode !== undefined) 
+                    || (/^[a-z ,.'-]+$/i.test(shippingInput.city) !== true && shippingInput.city !== ""))
+                    ? 'shipping-input-state-city-postalCode-error'
+                    : 'shipping-input-state'
+                }
+                >
                     <option value="">Select</option>
                     <option value="Alabama">Alabama</option>
                     <option value="New York">New York</option>

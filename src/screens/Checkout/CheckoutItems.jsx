@@ -4,7 +4,6 @@ import { Redirect } from 'react-router-dom';
 // import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import Badge from '@material-ui/core/Badge';
 import { withStyles } from '@material-ui/core/styles';
-import IconButton from '@material-ui/core/IconButton';
 
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -14,9 +13,11 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 
-import { makeStyles } from '@material-ui/core/styles';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faShoppingBasket } from '@fortawesome/free-solid-svg-icons'
+import { makeStyles, createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import '../../styles/Checkout/CheckoutItem.css'
-import { faPencilAlt } from '@fortawesome/free-solid-svg-icons';
+
 
 // Table Style
 const useStyles = makeStyles((theme) => ({
@@ -27,18 +28,23 @@ const useStyles = makeStyles((theme) => ({
         width: '100%',
         margin: 'auto',
         "margin-bottom": '10px'
-    },
-    [theme.breakpoints.down("md")]: {
-        tableContainer: {
-            width: '50%'
-        }
-    },
-    // [theme.breakpoints.down("sm")]: {
-    //     tableContainer: {
-    //         width: '60%'
-    //     }
-    // },
+    }
 }));
+
+// Override Table Style
+let theme = createMuiTheme({})
+theme = { ...theme,
+    overrides: {
+        MuiTableCell: {
+            root: {
+               padding: '10px',
+               [theme.breakpoints.down(800)]: {
+                    padding: "5px"
+                }
+            }
+        },
+    }
+};
 
 const StyledBadge = withStyles((theme) => ({
     badge: {
@@ -146,12 +152,13 @@ export default function CheckoutItems({ backend, loggedIn, showItems, grabShowIt
 
                 <div className="Heading-Edit">
                     <h2 id="cart-heading">Your Cart</h2>
-                    <p id="edit" onClick={editCheckoutCart}><u>Edit</u></p>
+                    {/* <p id="edit" onClick={editCheckoutCart}><u>Edit</u></p> */}
+                    <FontAwesomeIcon className="home" icon={faShoppingBasket} onClick={editCheckoutCart}/>
                 </div>
 
                 <div className="checkout-items-sub-container">
                     {items.map((item) => { return(
-                        <div key={item._id} className="checkout-items-individual-container">
+                        <div key={item._id || item.ItemId} className="checkout-items-individual-container">
                             <div className="checkout-item-img-container">
                             <StyledBadge 
                             id="badge"
@@ -162,7 +169,7 @@ export default function CheckoutItems({ backend, loggedIn, showItems, grabShowIt
                             badgeContent={item.Quantity} 
                             color="primary" 
                             overlap="circle">
-                                <img src={item.Image}></img>
+                                <img className="checkout-item-img" src={item.Image}></img>
                             </StyledBadge>
                             
                             </div>
@@ -172,12 +179,12 @@ export default function CheckoutItems({ backend, loggedIn, showItems, grabShowIt
                             </div>
                         </div>
                     )})}
-                
                 </div>
-                
+
+                <ThemeProvider theme={theme}>
                 <div id="table">
                     <TableContainer component={Paper} className={classes.tableContainer}>
-                        <Table className={classes.table} size="small" aria-label="simple table" padding='none'>
+                        <Table className={classes.table} aria-label="simple table" >
                             <TableBody>
                                 <TableRow key={"subtotal"}>
                                     <TableCell component="th" scope="row">
@@ -206,6 +213,7 @@ export default function CheckoutItems({ backend, loggedIn, showItems, grabShowIt
                         </Table>
                     </TableContainer>
                 </div>
+                </ThemeProvider>
             </div>
         )
     }

@@ -241,7 +241,7 @@ function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCar
             })
         } else {
             // If the checkbox is not checked, then leave the billing input fields empty
-            setBilling({})
+            setBilling({"state": "Select"})
         }
     }
 
@@ -317,7 +317,8 @@ function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCar
         )
     }
 
-
+    const [guestProcessingPayment, setGuestProcessingPayment] = useState(false)
+    const grabGuestProcessingPayment = (guestProcessingPayment) => setGuestProcessingPayment(guestProcessingPayment)
 
     /* ------- CREATE NEW OR UPDATE EXISTING PAYMENT INTENT AFTER RENDERING DOM ------- */
     useEffect(() => {
@@ -413,6 +414,7 @@ function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCar
         grabDisabled(true) // Disable Confirm Payment button once we hit it
         setProcessing(true) // Create a spinner by updating processing state to true
         // We don't want to let default form submission happen here, which would refresh the page.
+        setGuestProcessingPayment(true)
         event.preventDefault();
 
         // Check if Stripe.js has loaded yet.
@@ -534,7 +536,7 @@ function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCar
                 </div>
 
                 <div className="checkout-payment">
-                <PaymentMethod backend={backend} loggedIn={loggedIn} error={error} grabError={grabError} disabled={disabled} grabDisabled={grabDisabled} paymentLoading={paymentLoading} grabPaymentLoading={grabPaymentLoading} billing={billing} handleBillingChange={handleBillingChange} handleBillingStateChange={handleBillingStateChange} grabBilling={grabBilling} paymentMethod={paymentMethod} grabPaymentMethod={grabPaymentMethod} cardholderName={cardholderName} grabCardholderName={grabCardholderName}handleCardholderNameChange={handleCardholderNameChange} handleCardChange={handleCardChange} collectCVV={collectCVV} grabCollectCVV={grabCollectCVV} editPayment={editPayment} grabEditPayment={grabEditPayment} redisplayCardElement={redisplayCardElement} grabRedisplayCardElement={grabRedisplayCardElement} grabShowSavedCards={grabShowSavedCards} handleConfirmPayment={handleConfirmPayment} showSavedCards={showSavedCards} editExpiration={editExpiration} grabEditExpiration={grabEditExpiration} loggedOut={loggedOut} grabLoggedOut={grabLoggedOut} showPayment={showPayment} sameAsShipping={sameAsShipping} handleSameAsShipping={handleSameAsShipping} shippingInput={shippingInput} grabBillingWithShipping={grabBillingWithShipping} shipping={shipping} recheckSameAsShippingButton={recheckSameAsShippingButton} grabTotalCartQuantity={grabTotalCartQuantity}grabRedirect={grabRedirect} billingInputErrorDisableButton={billingInputErrorDisableButton} billingPostalCodeInputErrorDisableButton={billingPostalCodeInputErrorDisableButton} />
+                <PaymentMethod backend={backend} loggedIn={loggedIn} error={error} grabError={grabError} disabled={disabled} grabDisabled={grabDisabled} paymentLoading={paymentLoading} grabPaymentLoading={grabPaymentLoading} billing={billing} handleBillingChange={handleBillingChange} handleBillingStateChange={handleBillingStateChange} grabBilling={grabBilling} paymentMethod={paymentMethod} grabPaymentMethod={grabPaymentMethod} cardholderName={cardholderName} grabCardholderName={grabCardholderName}handleCardholderNameChange={handleCardholderNameChange} handleCardChange={handleCardChange} collectCVV={collectCVV} grabCollectCVV={grabCollectCVV} editPayment={editPayment} grabEditPayment={grabEditPayment} redisplayCardElement={redisplayCardElement} grabRedisplayCardElement={grabRedisplayCardElement} grabShowSavedCards={grabShowSavedCards} handleConfirmPayment={handleConfirmPayment} showSavedCards={showSavedCards} editExpiration={editExpiration} grabEditExpiration={grabEditExpiration} loggedOut={loggedOut} grabLoggedOut={grabLoggedOut} showPayment={showPayment} sameAsShipping={sameAsShipping} handleSameAsShipping={handleSameAsShipping} shippingInput={shippingInput} grabBillingWithShipping={grabBillingWithShipping} shipping={shipping} recheckSameAsShippingButton={recheckSameAsShippingButton} grabTotalCartQuantity={grabTotalCartQuantity}grabRedirect={grabRedirect} billingInputErrorDisableButton={billingInputErrorDisableButton} billingPostalCodeInputErrorDisableButton={billingPostalCodeInputErrorDisableButton} guestProcessingPayment={guestProcessingPayment} grabGuestProcessingPayment={grabGuestProcessingPayment} />
                 </div>
                 </div>
             </div>         

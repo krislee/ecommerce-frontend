@@ -1,19 +1,24 @@
 import React from 'react';
+import PaymentMethod from '../../screens/Checkout/PaymentMethod';
 // import '../../styles/Input.css'
 import '../../styles/Checkout/BillingInput.css'
 
-function BillingInput({ billing, handleBillingChange, handleBillingStateChange, editPayment }) {
+function BillingInput({ loggedIn, billing, handleBillingChange, handleBillingStateChange, editPayment, paymentMethod }) {
 
     return (
         <>
             <div id="billing-input-names-container">
-                <div id="billing-input-firstName-error-container">
+                <div id={
+                    ((loggedIn() && !paymentMethod.paymentMethodID) || !loggedIn())
+                    ? "guest-billing-input-firstName-error-container"
+                    : "billing-input-firstName-error-container" 
+                }>
                     <input id="billing-input-firstName" className="billing-input" value={billing.firstName || ""} name="firstName" placeholder="First Name" onChange={handleBillingChange} required/>
 
                     {(/^[a-z ,.'-]+$/i.test(billing.firstName) !== true &&  billing.firstName !== "") && <div className="warning" id="billing-input-firstName-error">You must enter only letters as your first name</div>}
                 </div>
 
-                <div id="billing-input-lastName-error-container">
+                <div id={((loggedIn() && !paymentMethod.paymentMethodID) || !loggedIn()) ? "guest-billing-input-lastName-error-container" : "billing-input-lastName-error-container" } >
                     <input id="billing-input-lastName" className="billing-input" value={billing.lastName || ""} name="lastName" placeholder="Last Name" onChange={handleBillingChange} required/>
                     {(/^[a-z ,.'-]+$/i.test(billing.lastName) !== true && billing.lastName !== "") && <div className="warning" id="billing-input-lastName-error">You must enter only letters as your last name</div>}
                 </div>
@@ -23,15 +28,39 @@ function BillingInput({ billing, handleBillingChange, handleBillingStateChange, 
             <input id="billing-input-line2" className="billing-input" value={billing.line2 || ""} name="line2" placeholder="Address 2" onChange={handleBillingChange} />
 
             <div id="billing-input-cityStateZipcode-container">
-                <div id="billing-input-city-error-container">
+                <div id={((loggedIn() && !paymentMethod.paymentMethodID) || !loggedIn()) ? "guest-billing-input-city-error-container" : "billing-input-city-error-container" }>
                     <input id="billing-input-city" className="billing-input" value={billing.city || ""} name="city" placeholder="City" onChange={handleBillingChange} required/>
                     {(/^[a-z ,.'-]+$/i.test(billing.city) !== true && billing.city !== "") && <div className="warning">You must enter only letters as your city</div>}
                 </div>
 
-                <div id="billing-input-state-error-container">
+                <div id={((loggedIn() && !paymentMethod.paymentMethodID) || !loggedIn()) ? "guest-billing-input-state-error-container" : "billing-input-state-error-container"} >
                     {/* <input id="billing-input-state" className="billing-input" value={billing.state || ""} name="state" placeholder="State" onChange={handleBillingChange} maxLength="2" required/> */}
                     
-                    <select id="billing-input-state" className="billing-input" value={billing.state || "Select"} onChange={handleBillingStateChange}>
+                    <select 
+                        // id={
+                        //     (loggedIn() && /^[a-z ,.'-]+$/i.test(billing.city) !== true && billing.city !== "") 
+                        //     ? "billing-input-state-city-error" : loggedIn() 
+                        //     ? "billing-input-state" : (!loggedIn() && (/^[a-z ,.'-]+$/i.test(billing.city) !== true && billing.city !== "")) 
+                        //     ? "guest-billing-input-state-city-error" 
+                        //     : "guest-billing-input-state"
+                        // } 
+
+                        id={
+                            (!loggedIn() && /^[a-z ,.'-]+$/i.test(billing.city) !== true && billing.city !== "")
+                            || (loggedIn() && !paymentMethod.paymentMethodID && /^[a-z ,.'-]+$/i.test(billing.city) !== true && billing.city !== "")
+                            ? "guest-billing-input-state-city-error" 
+                            : (editPayment && loggedIn() && /^[0-9]+$/.test(billing.postalCode) !== true  && billing.postalCode !== "" && billing.postalCode !== undefined ) 
+                            || (editPayment && loggedIn() && /^[a-z ,.'-]+$/i.test(billing.city) !== true && billing.city !== "")
+                            ? "billing-input-state-city-or-zipcode-error"
+                            : (loggedIn() && /^[a-z ,.'-]+$/i.test(billing.city) !== true && billing.city !== "") 
+                            ? "billing-input-state-city-error" 
+                            : (!loggedIn() || (loggedIn() && !paymentMethod.paymentMethodID))
+                            ? "guest-billing-input-state" 
+                            : "billing-input-state"
+                        }
+                        className="billing-input" value={billing.state || "Select"} 
+                        onChange={handleBillingStateChange}
+                    >
                         <option value="">Select</option>
                         <option value="Alabama">Alabama</option>
                         <option value="New York">New York</option>

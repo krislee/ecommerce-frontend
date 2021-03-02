@@ -29,6 +29,13 @@ input[name="line1"], input[name="line2"], #names-container, .city-state-zipcode,
     margin-bottom: 10px !important;
 }
 
+#shipping-input-state-city-postalCode-error {
+    height: 60%;
+}
+#guest-shipping-input-state-city-postalCode-error {
+    height: 70%;
+}
+
 #save-default-container {
     display: flex;
     align-items: center;

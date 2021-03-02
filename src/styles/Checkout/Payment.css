@@ -21,6 +21,17 @@
 
 /* ADD NEW PAYMENT METHOD FORM */
 
+/* GUEST FORM */
+#guest-card-form {
+    box-shadow: none;
+}
+#save-card-container {
+    display: flex;
+    align-items: center;
+    margin-top: 20px;
+}
+
+/* LOGGED IN FORM */
 /* Credit Card heading */
 #add-card-heading {
     padding-top: 0px;
@@ -32,10 +43,14 @@
     margin-right: 0px;
     font-size: 1.5rem;
 }
+
 /* Billing Names Input Errors */
 #billing-input-firstName-error-container, #billing-input-lastName-error-container {
     display: flex;
     flex-direction: column;
+}
+#billing-input-firstName-error-container, #billing-input-city-error-container, #billing-input-state-error-container {
+    margin-right: 10px;
 }
 
 /* Same as shipping label + checkbox  */
@@ -58,6 +73,7 @@
     padding-top: 15px;
     width: 60%;
 }
+
 #billing-line1, #billing-cityStateZipcode {
     word-wrap: break-word;
 }
@@ -74,6 +90,21 @@
 }
 .display-billing {
     font-weight: bold;
+}
+/* GUEST DISPLAYING BILLING INFO IF SHIPPING LABEL IS CHECKED */
+#guest-payment-container {
+    padding-left: 20px;
+}
+#guest-payment-heading {
+    padding-left: 20px;
+    padding-bottom: 0px;
+}
+#guest-add-card-heading {
+    padding-top: 0px;
+}
+#guest-billing-names, #guest-billing-line1, #guest-billing-line2, #guest-billing-cityStateZipcode {
+    margin-bottom: 0px;
+    word-wrap: break-word
 }
 
 /* EDIT PAYMENT METHOD FORM */
@@ -134,6 +165,7 @@
     text-align:center;
     margin-right: 0px;
     margin-top: 0px;
+    padding-top: 0px;
 }
 #display-saved-payment-info {
     display: flex;
@@ -150,8 +182,7 @@
 
 /* CREDIT CARD ILLUSTRATION DISPLAY */
 
-#edit-credit-card, #saved-credit-card, #display-credit-card {
-    background-image: linear-gradient(to bottom right, #1e5799 0%, #2989d8 50%, #207cca 51%, #7db9e8 100%);
+.edit-credit-card, .saved-credit-card, .display-credit-card {
     display: grid;
     width: 80%;
     height: 11rem;
@@ -165,20 +196,21 @@
         'cardholderName expiryDate';
     grid-template-columns: 50%;
 }
-#saved-credit-card {
+.saved-credit-card {
     /* override the width of the card in saved cards modal */
     width: 65%; 
 }
-#display-credit-card {
+.display-credit-card {
     /* override the width of the card when displaying the payment info right before confirming */
     width: 40%; 
 }
 #chip-card-img {
     grid-area: chip;
     width: 25%;
-    height: 10%;
+    /* height: 10%; */
     margin-top: 10px;
     margin-left: 10px;
+    display: flex;
 }
 #card-img-container {
     grid-area: brand;
@@ -187,38 +219,64 @@
     display: flex;
     justify-content: flex-end;
 }
-#discover, #jcb {
-    width: 45%;
+#jcb1 {
+    width: 25%;
+    margin-top: 10px;
+    margin-right: 10px;
 }
-#discover {
+#jcb {
+    background: linear-gradient(to right, #4f476b 6%, #4285b8 80%);
+}
+#discover1 {
+    width: 45%;
     margin-top: -10px;
 }
-#american-express {
+#discover {
+    background: linear-gradient(to top right, #0066eb 6%, #ebff8a 80%);
+}
+#american-express1 {
     width: 30%;
     height: 0.1vh;
     margin-top: 10px;
     margin-right: 10px;
 }
-#diners-club {
+#amex {
+    background-image: linear-gradient(315deg, #d2a813 0%, #000000 74%);
+}
+#diners-club1 {
     width: 50%;
     margin-top: 10px;
     height: 0vh;
 }
-#unionpay {
+#diners {
+    background: linear-gradient(to bottom right, #332d34 6%, #6c8293 80%);
+}
+#unionpay1 {
     height: 0vh;
     margin-top: 10px;
     margin-right: 10px;
-}
-#visa {
-    height: 0vh;
-    margin-top: 10px;
-    margin-right: 10px;
-}
-#saved-credit-card #visa {
     width: 30%;
 }
-#mastercard {
+#unionpay {
+    background-image: linear-gradient(147deg, #000000 0%, #434343 74%);
+}
+#visa1 {
+    height: 0vh;
+    margin-top: 10px;
+    margin-right: 10px;
+    width: 30%;
+}
+#visa {
+    background-image: linear-gradient(to bottom right, #1e5799 0%, #2989d8 50%, #207cca 51%, #7db9e8 100%);
+}
+.saved-credit-card #visa1 {
+    width: 30%;
+}
+#mastercard1 {
     width: 57%;
+}
+#mastercard {
+    background: linear-gradient(to bottom right, #332d34 6%, #8aa7ff 80%);
 }
 #cardNumber {
     grid-area: cardNumber
@@ -265,29 +323,32 @@
 #submit {
     margin-bottom: 50px;
 }
+#guest-submit {
+    margin-bottom: 30px;
+}
 
 
 /* MEDIA QUERIES */
 @media only screen and (max-width: 1250px) {
-    #display-credit-card {
+    .display-credit-card {
         width: 52%; 
     }
 }
 @media only screen and (max-width: 1050px) {
-    #display-credit-card {
+    .display-credit-card {
         width:60%; 
     }
 }
 @media only screen and (max-width: 900px) {
-    #saved-credit-card {
+    .saved-credit-card {
         width: 70%;
     }
-    #display-credit-card {
+    .display-credit-card {
         width: 67%; 
     }
 }
 @media only screen and (max-width: 800px) {
-    #display-credit-card {
+    .display-credit-card {
         width: 45%; 
     }
 }
@@ -301,21 +362,24 @@
         font-size: 0.75rem !important;
         padding: 5px !important;
     }
+    select {
+        font-size: 0.75rem !important;
+    }
 
     /* CREDIT CARD IMAGE CONTAINER (IN SAVED CARDS, EDIT CARD, DISPLAY INFO) */
     #card-img-container {
         top: 40%;
     }
 
-    #display-credit-card {
+    .display-credit-card {
         width: 57%; 
     }
-    #saved-credit-card {
+    .saved-credit-card {
         width: 80%
     }
 
     /* EDIT CARD MODAL */
-    #edit-credit-card {
+    .edit-credit-card {
         width: 90%
     }
     #card-number {
@@ -329,7 +393,7 @@
     }
 
     /* CONFIRM PAYMENT BUTTON */
-    #submit {
+    #submit, #guest-submit {
         width: 7rem;
         height: 3rem;
     }
@@ -337,13 +401,13 @@
 
 
 @media only screen and (max-width: 450px) {
-    #edit-credit-card {
+    .edit-credit-card {
         width: 100%
     }
-    #saved-credit-card {
+    .saved-credit-card {
         width: 90%
     }
-    #display-credit-card {
+    .display-credit-card {
         width: 75%; 
     }
     /* SAVED CARDS MODAL */
