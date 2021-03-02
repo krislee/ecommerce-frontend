@@ -21,7 +21,7 @@ const createPaymentMethod = async (stripe,cardElement, billing, cardholderName, 
         }
     })
 
-    console.log(createPaymentMethodResponse)
+    console.log(24, "CREATE PAYMENT", createPaymentMethodResponse)
     if(createPaymentMethodResponse.error) {
         return createPaymentMethodResponse.error.message
     }

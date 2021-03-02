@@ -24,6 +24,7 @@ function AllItems ({ loggedIn, grabURL, backend, totalCartQuantity, grabTotalCar
     const history = useHistory()
 
     const [items, setItems] = useState([]); // store all the items in items state
+    const [totalItemsPage, setTotalItemsPage] = useState(0)
 
     useEffect(() => {
         
@@ -37,8 +38,10 @@ function AllItems ({ loggedIn, grabURL, backend, totalCartQuantity, grabTotalCar
                 signal: signal
             });
             const data = await resp.json();
+            console.log(data)
             console.log(data.allElectronic);
             setItems(data.allElectronic);
+            setTotalItemsPage(data.totalPages)
             setFooterLoading(false)
         };
 
@@ -84,7 +87,7 @@ function AllItems ({ loggedIn, grabURL, backend, totalCartQuantity, grabTotalCar
                 {<div className={loggedIn() ? 'itemContainerLoggedIn' : 'itemContainer'}>
                     {itemList}
                     <div className={classes.root}>
-                        <Pagination showFirstButton showLastButton size="large" variant="outlined" shape="rounded" page={Number(pageIndex)} count={2} siblingCount={1} boundaryCount={2} onChange={handlePageOnChange} />
+                        <Pagination showFirstButton showLastButton size="large" variant="outlined" shape="rounded" page={Number(pageIndex)} count={totalItemsPage} siblingCount={1} boundaryCount={2} onChange={handlePageOnChange} />
                     </div>        
                 </div>}
             </div>

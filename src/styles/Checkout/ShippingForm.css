@@ -1,0 +1,76 @@
+#names-container {
+    display: grid;
+    grid-template-columns: auto auto;
+    grid-column-gap: 10px;
+}
+#first-name-container, #last-name-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.city-state-zipcode {
+    display: grid;
+    grid-template-areas: 'city state postalCode';
+    /* grid-template-columns: 40% 20% 40%; */
+    grid-column-gap: 10px;
+}
+#city-container {
+    grid-area: city;
+    width: 100%;
+}
+#shipping-input-state {
+    grid-area: state;
+    width: 100%;
+}
+#postalcode-container {
+    grid-area: postalCode;
+    width: 100%;
+}
+#city-container, .zipcode, #postalcode-container {
+    display: flex;
+    flex-direction: column;
+}
+
+input, .zipcode {
+    height: 2.5rem
+}
+.zipcode {
+    border: 0px
+}
+
+input[name="line1"], input[name="line2"], #names-container, .city-state-zipcode, input[name="phone"] {
+    margin-bottom: 10px !important;
+}
+
+#shipping-input-state-city-postalCode-error {
+    height: 60%;
+}
+#guest-shipping-input-state-city-postalCode-error {
+    height: 70%;
+}
+
+#save-default-container {
+    display: flex;
+    align-items: center;
+}
+#address-default-label {
+    margin-bottom: 0rem;
+}
+
+#form {
+    box-shadow: none;
+    padding: 0px;
+
+}
+#next-shipping-button, #save-shipping-button, #cancel-shipping-button{
+    margin-top: 20px;
+}
+#save-shipping-button {
+    margin-right: 10px;
+}
+@media only screen and (max-width: 800px) {
+    #form {
+        width: 100%
+    }
+}
+

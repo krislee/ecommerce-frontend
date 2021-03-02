@@ -1,37 +1,29 @@
 import React from 'react';
 import {CardCvcElement, CardElement } from "@stripe/react-stripe-js";
-import '../../styles/Card.css'
+import '../../styles/Checkout/Card.css'
 
-function CollectCard({ handleCardChange, collectCVV, handleCardholderNameChange, cardholderName }) {
-
-    const cardStyle = {
-        base: {
-        color: "#32325d",
-        fontFamily: 'Arial, sans-serif',
-        fontSmoothing: "antialiased",
-        fontSize: "16px",
-        "::placeholder": {
-            color: "#32325d"
-        }
-        },
-        invalid: {
-        fontFamily: 'Arial, sans-serif',
-        color: "#fa755a",
-        iconColor: "#fa755a"
-        }
-    }
+function CollectCard({ loggedIn, handleCardChange, collectCVV, handleCardholderNameChange, cardholderName }) {
 
     // We want to show CVV Card Element whenever collectCVV is 'true'. This happens when the json data we get back when we fetch to /order/checkout/payment has the property recollectCVV with a value of 'true'.
     if (collectCVV !== "true") {
         return (
             <>
-            <input value={cardholderName || ""} name="name" placeholder="Name on card" onChange={handleCardholderNameChange} required/>
-            {((/^[a-z][a-z\s]*$/i.test(cardholderName) !== true)  && cardholderName !== "") && <div className="warning">You must enter only letters as your full name</div>}
-            <CardElement options={cardStyle} onChange={(event) => handleCardChange(event)}/>
+            <input value={cardholderName || ""} name="name" placeholder="Name on card" id="cardholder-name" onChange={handleCardholderNameChange} required/>
+            {((/^[a-z ,.'-]+$/i.test(cardholderName) !== true)  && cardholderName !== "") && <div className="warning">You must enter only letters as your full name</div>}
+            <div id={loggedIn() ? "card-container" : "guest-card-container"} >
+            <CardElement onChange={(event) => handleCardChange(event)}/>
+            </div>
             </>
         )
     } else {
-        return <CardCvcElement options={cardStyle} onChange={(event) => handleCardChange(event)}/> 
+        return (
+            <div id="label-cvc-container">
+                <label id="recollect-cvv-label"><h5 id="recollect-cvv-heading">Re-enter CVV:</h5></label>
+                <div id="cvc-container">
+                    <CardCvcElement onChange={(event) => handleCardChange(event)}/> 
+                </div>
+            </div>
+        )
     }
 
 }
