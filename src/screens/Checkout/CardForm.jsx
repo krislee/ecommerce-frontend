@@ -16,7 +16,7 @@ export default function CardForm ({ loggedIn, paymentMethod, processing, handleS
             {error && <div className="card-error" role="alert">{error}</div>}
 
             <h2 className="billing-address-heading">Enter Billing Address</h2>
-            <div id="same-billing-shipping-container">
+            <div id={(!loggedIn() || loggedIn() && !paymentMethod.paymentMethodID) ? "guest-same-billing-shipping-container" : "same-billing-shipping-container"} >
                 <input id="sameAsShipping" type="checkbox" defaultChecked={sameAsShipping} onChange={handleSameAsShipping}/>
                 <label className="same-billing-shipping-label">Same as Shipping Address </label>
             </div>
@@ -24,7 +24,7 @@ export default function CardForm ({ loggedIn, paymentMethod, processing, handleS
             {(!sameAsShipping || (!sameAsShipping && !paymentMethod.paymentMethodID)) && <BillingInput loggedIn={loggedIn} handleBillingChange={handleBillingChange} handleBillingStateChange={handleBillingStateChange} billing={billing} paymentMethod={paymentMethod} />}
 
             {sameAsShipping && (
-                <div id={"display-same-billing-shipping-info-container"}>
+                <div id={(!loggedIn() || loggedIn() && !paymentMethod.paymentMethodID) ? "guest-display-same-billing-shipping-info-container" : "display-same-billing-shipping-info-container"}>
                     <p id={(!loggedIn() || loggedIn() && !paymentMethod.paymentMethodID) ? "guest-billing-names": "billing-names"}><b>{billing.firstName} {billing.lastName}</b></p>
                     <p id={(!loggedIn() || loggedIn() && !paymentMethod.paymentMethodID) ? "guest-billing-line1" : "billing-line1"}>{billing.line1}</p>
                     {(billing.line2 !== 'null' || billing.line2 !== '') && <p id={(!loggedIn() || loggedIn() && !paymentMethod.paymentMethodID) ? 'guest-billing-line2' : 'billing-line2' }>{billing.line2}</p>}

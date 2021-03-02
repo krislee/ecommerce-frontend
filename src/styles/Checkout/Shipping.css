@@ -80,6 +80,7 @@ input {
     width: 35% !important;
     height: 50% !important;
     margin: auto;
+    /* margin-right: 0px; */
 }
 
 #all-addresses-container {
@@ -88,6 +89,10 @@ input {
 #single-saved-address {
     width: 50vw;
     line-height: 0.5;
+    margin-right: 0px !important;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
 }
 #saved-shipping-modal-heading {
     padding-top: 0px;

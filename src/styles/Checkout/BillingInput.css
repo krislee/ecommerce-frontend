@@ -18,8 +18,15 @@
 #billing-input-state-city-or-zipcode-error {
     height: 50%;
 }
-#billing-input-firstName-error-container, #billing-input-city-error-container, #billing-input-state-error-container{
+#billing-input-firstName-error-container, #billing-input-city-error-container {
+    /*  #billing-input-state-error-container */
     margin-right: 10px;
+}
+#billing-input-postalCode-error-container {
+    margin-left: 10px;
+}
+#billing-input-city-error-container {
+    width: 60%;
 }
 
 #billing-input-cityStateZipcode-container {

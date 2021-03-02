@@ -1,7 +1,11 @@
 import React from 'react'
 import Button from 'react-bootstrap/Button';
+import usStates from '../../components/states'
+
 import '../../styles/Checkout/ShippingForm.css'
 import '../../styles/Checkout/Shipping.css'
+
+
 export default function ShippingForm({ loggedIn, readOnly, shipping, addShipping, shippingInput, grabShippingInput, editShipping, handleEditShipping, closeModal, collapse, disableButtonAfterMakingRequest, grabDisableButtonAfterMakingRequest, addAdditionalSaveShipping}) {
   
     const handleShippingChange = (event) => {
@@ -107,9 +111,12 @@ export default function ShippingForm({ loggedIn, readOnly, shipping, addShipping
                 }
                 >
                     <option value="">Select</option>
-                    <option value="Alabama">Alabama</option>
+                    {usStates.map((state, index) => { return (
+                        <option key={state.abbreviation} value={state.name}>{state.name}</option>
+                    )})}
+                    {/* <option value="Alabama">Alabama</option>
                     <option value="New York">New York</option>
-                    <option value="California">California</option>
+                    <option value="California">California</option> */}
                 </select>
                
                 <div id="postalcode-container">

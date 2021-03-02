@@ -1,6 +1,6 @@
 import React from 'react';
-import PaymentMethod from '../../screens/Checkout/PaymentMethod';
-// import '../../styles/Input.css'
+import usStates from '../../components/states'
+
 import '../../styles/Checkout/BillingInput.css'
 
 function BillingInput({ loggedIn, billing, handleBillingChange, handleBillingStateChange, editPayment, paymentMethod }) {
@@ -62,9 +62,9 @@ function BillingInput({ loggedIn, billing, handleBillingChange, handleBillingSta
                         onChange={handleBillingStateChange}
                     >
                         <option value="">Select</option>
-                        <option value="Alabama">Alabama</option>
-                        <option value="New York">New York</option>
-                        <option value="California">California</option>
+                        {usStates.map((state, index) => { return (
+                            <option key={state.abbreviation} value={state.name}>{state.name}</option>
+                        )})}
                     </select>
                     {/* {((/^[a-z][a-z\s]*$/i.test(billing.state) !== true) && billing.state !== "") && <div className="warning">You must enter only letters as your state</div>} */}
                 </div>

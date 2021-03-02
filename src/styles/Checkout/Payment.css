@@ -68,10 +68,12 @@
     margin: 0;
     margin-right: 5px;
 }
+
 /* Display billing info if shipping label is checked */
 #display-same-billing-shipping-container {
     padding-top: 15px;
     width: 60%;
+    font-size: 1rem;
 }
 
 #billing-line1, #billing-cityStateZipcode {
@@ -364,6 +366,10 @@
     }
     select {
         font-size: 0.75rem !important;
+    }
+    /* ADD CARD MODAL DISPLAY BILLING INFO */
+    #billing-names, #billing-line1, #billing-line2, #billing-cityStateZipcode, #same-billing-shipping-container {
+        font-size: 0.75rem !important
     }
 
     /* CREDIT CARD IMAGE CONTAINER (IN SAVED CARDS, EDIT CARD, DISPLAY INFO) */

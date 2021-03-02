@@ -10,8 +10,21 @@
 
 .city-state-zipcode {
     display: grid;
-    grid-template-columns: auto auto auto;
+    grid-template-areas: 'city state postalCode';
+    /* grid-template-columns: 40% 20% 40%; */
     grid-column-gap: 10px;
+}
+#city-container {
+    grid-area: city;
+    width: 100%;
+}
+#shipping-input-state {
+    grid-area: state;
+    width: 100%;
+}
+#postalcode-container {
+    grid-area: postalCode;
+    width: 100%;
 }
 #city-container, .zipcode, #postalcode-container {
     display: flex;
