@@ -97,15 +97,17 @@ function CartPage ({ backend, loggedIn, cartQuantity, grabCartQuantity, totalCar
             <>
             <div className="cart-page-container">
                 {/* <NavBar totalCartQuantity={totalCartQuantity} grabTotalCartQuantity={grabTotalCartQuantity}/> */}
-                <h2>Shopping Cart</h2>
+                <div id="shopping-cart-heading"><h2>Shopping Cart</h2></div>
                 <div className="cart">
                     <div className="cart-items">
                         {items.map((item) => { return <CartItemPage backend={backend} loggedIn={loggedIn} key={item.ItemId} id={item.ItemId} name={item.Name} image={item.Image} quantity={item.Quantity} totalPrice={item.TotalPrice} grabItems={grabItems} grabTotalPrice={grabTotalPrice} grabTotalCartQuantity={grabTotalCartQuantity} cartQuantity={cartQuantity} grabCartQuantity={grabCartQuantity} /> })}
-                        <p><b>${totalPrice}</b></p>
+                        {/* <div id="cart-total"> */}
+                            <div id="cart-total-heading"><span><b>Total Price: </b></span><b>${totalPrice}</b></div>
+                        {/* </div> */}
                     </div>
                         
                     <Link to="/checkout">
-                        <Button variant="dark" size="lg">Checkout</Button>
+                        <Button id="cart-checkout-button" variant="dark" size="lg"><b>Checkout</b></Button>
                     </Link>
                 </div>
                

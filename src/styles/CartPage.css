@@ -1,25 +1,93 @@
+/* @import url('https://fonts.googleapis.com/css2?family=Mukta:wght@300&display=swap'); */
+@import url('https://fonts.googleapis.com/css2?family=Mukta:wght@200&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Average+Sans&display=swap');
+
+#shopping-cart-heading {
+    margin: 80px 0px 30px 30px;
+}
 .cart {
-    margin-top: 10rem;
     margin-bottom: 10rem;
     padding: 0 2rem;
 }
 
-/* .cart-items > div {
-    margin-bottom: 1rem;
-} */
-
-.noItems {
-    margin-top: 10vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.cart-page-container {
-    width: 100vw;
-}
-
-.cart-items {
+.individual-cart-item, .cart-right-container {
     display: grid;
-    grid-template-columns: 2fr 3fr 1fr 1fr 1fr;
+    grid-template-columns: 1fr 3fr;
+    /* grid-template-columns: 2fr 3fr 1fr 1fr 0.5fr; */
+    grid-gap: 10px;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+    font-size: 1.25rem;
+    font-family: 'Mukta', sans-serif;
+}
+.cart-right-container {
+    grid-template-columns:  1fr 0.5fr 0.5fr 0.5fr;
+}
+.individual-cart-item {
+    border-bottom: 0.25px solid #eeeee4;
+}
+.cart-item-image-container {
+    width: 75%
+}
+
+.homepage-items, .cart-item-quantity, .cart-item-totalPrice, .cart-item-remove-icon  {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.homepage-items {
+    justify-content: flex-start;
+}
+
+.cart-item-name {
+    font-weight: bold;
+    /* font-size: 1.25rem;
+    font-family: 'Mukta', sans-serif; */
+}
+
+.cart-item-select-quantity {
+    padding: 10px;
+}
+
+.cart-item-remove-icon {
+    margin-top: 10px;
+    justify-content: flex-end;
+}
+
+#cart-total {
+    float: right;
+}
+
+#cart-total-heading {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 3rem;
+    margin-bottom: 10px;
+    padding-right: 10px;
+}
+
+#cart-total-heading > span {
+    padding-right: 15px;
+}
+
+#cart-checkout-button {
+    float: right;
+    margin-top: 20px;
+    font-family: 'Mukta', sans-serif;
+}
+
+@media only screen and (max-width: 900px) {
+    .individual-cart-item {
+        font-size: 1rem;
+    }
+}
+
+@media only screen and (max-width: 600px) {
+    .individual-cart-item {
+        grid-template-columns: 1fr 1fr;
+    }
+    .cart-right-container {
+        display: flex
+    }
 }

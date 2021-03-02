@@ -2,7 +2,8 @@ import { Link } from 'react-router-dom'
 import React, {useEffect, useState} from 'react'
 import Button from 'react-bootstrap/Button';
 import '../../styles/CartPage.css'
-
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faTimes } from '@fortawesome/free-solid-svg-icons'
 
 export default function CartItemPage ({ backend, loggedIn, id, name, image, quantity, totalPrice, grabItems, grabTotalPrice, grabTotalCartQuantity }) {
     const [cartQuantity, setCartQuantity] = useState(quantity)
@@ -106,33 +107,38 @@ export default function CartItemPage ({ backend, loggedIn, id, name, image, quan
     }
 
     return (
-        <div>
+        <>
+        <div className='individual-cart-item'>
             <div className="cart-item-image-container">
                 <img className="cart-item-image" src={image} alt={name} />
             </div>
+            <div className="cart-right-container">
+                <Link className="homepage-items" to={{
+                    pathname:`/item/${name}`,
+                    search: `id=${id}`
+                }}>
+                    <div className="cart-item-name">{name}</div>
+                </Link>
 
-            <Link className="homepage-items" to={{
-                pathname:`/item/${name}`,
-                search: `id=${id}`
-            }}>
-                <div className="cart-item-name">{name}</div>
-            </Link>
-
-            {/* <input type="number" min="1" value={cartQuantity} onChange={handleQuantity}/> */}
-            <select id={id} value={cartQuantity} onChange={handleUpdateItemQuantity} className="cart-item-quantity" >
-                <option value={1}>01</option>
-                <option value={2}>02</option>
-                <option value={3}>03</option>
-                <option value={4}>04</option>
-                <option value={5}>05</option>
-                <option value={6}>06</option>
-                <option value={7}>07</option>
-                <option value={8}>08</option>
-                <option value={9}>09</option>
-                <option value={10}>10</option>
-            </select>
-            <div className="cart-item-totalPrice">${totalPrice}</div>
-            <Button className="cart-item-remove-button" id={id} onClick={handleDeleteCartItem} variant="dark" size="sm">Remove</Button>
+                {/* <input type="number" min="1" value={cartQuantity} onChange={handleQuantity}/> */}
+                <div className="cart-item-quantity">
+                        <select className="cart-item-select-quantity" id={id} value={cartQuantity} onChange={handleUpdateItemQuantity}  >
+                        <option value={1}>01</option>
+                        <option value={2}>02</option>
+                        <option value={3}>03</option>
+                        <option value={4}>04</option>
+                        <option value={5}>05</option>
+                        <option value={6}>06</option>
+                        <option value={7}>07</option>
+                        <option value={8}>08</option>
+                        <option value={9}>09</option>
+                        <option value={10}>10</option>
+                    </select>
+                </div>
+                <div className="cart-item-totalPrice">${totalPrice.toFixed(2)}</div>
+                <div className="cart-item-remove-icon"><FontAwesomeIcon id={id} onClick={handleDeleteCartItem} icon={faTimes}>Remove</FontAwesomeIcon></div>
+            </div>
         </div>
+        </>
     )
 }
