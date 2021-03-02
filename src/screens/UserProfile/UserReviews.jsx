@@ -188,7 +188,8 @@ export default function UserReviews({ backend, loggedIn, reviewData, grabReviewD
         <div style={{
             display: 'flex',
             flexDirection: 'column',
-            justifyContent: 'center'
+            justifyContent: 'center',
+            height: '100%'
         }}>
             <div style={{
                 display: 'flex',
@@ -200,7 +201,8 @@ export default function UserReviews({ backend, loggedIn, reviewData, grabReviewD
                 textAlign: 'center',
                 color: '#fff',
                 fontWeight: 'bold',
-                fontSize: '2rem'
+                fontSize: '2rem',
+                fontFamily: 'Average Sans, sans-serif'
             }}>Reviews</header>
             </div>
             {reviewData.length === 0 ? <p style={{
@@ -208,6 +210,7 @@ export default function UserReviews({ backend, loggedIn, reviewData, grabReviewD
                 justifyContent: 'center',
                 alignItems: 'center',
                 height: '100%',
+                fontFamily: 'Mukta Vaani, sans-serif'
             }}>Go ahead and leave a review for the items you have purchased!</p> : (
                 <>
                 <div

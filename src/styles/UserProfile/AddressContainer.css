@@ -8,6 +8,7 @@
     flex-direction: column;
     margin: 0.5rem;
     border-radius: 1rem;
+    font-family: 'Mukta Vaani', sans-serif;
 }
 
 .one-address-container-empty {
@@ -24,13 +25,13 @@
 }
 
 .person-name {
-    font-size: 14px;
+    font-size: 1rem;
     font-weight: bold;
     cursor: default;
 }
 
 .address {
-    font-size: 12px;
+    font-size: 0.8rem;
     color: #c8c8c8;
     cursor: default;
 }
@@ -43,7 +44,7 @@
     color: #000;
     width: 4rem;
     text-align: center;
-    font-size: 12px;
+    font-size: 0.8rem;
     cursor: default;
 }
 
@@ -52,7 +53,7 @@
     top: 45%;
     display: flex;
     width: 25%;
-    font-size: 14px;
+    font-size: 1rem;
     justify-content: space-between;
 }
 
@@ -61,7 +62,7 @@
     top: 30%;
     display: flex;
     width: 25%;
-    font-size: 14px;
+    font-size: 1rem;
     justify-content: space-between;
 }
 

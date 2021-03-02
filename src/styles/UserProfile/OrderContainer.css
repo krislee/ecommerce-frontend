@@ -3,7 +3,7 @@
 }
 
 .order-container {
-    width: 60%;
+    width: 80%;
     margin: 0.5rem;
 }
 
@@ -17,6 +17,7 @@
     align-items: center;
     flex-direction: column;
     height: 100%;
+    width: 100%;
 }
 
 .MuiTypography-h5 {
@@ -30,6 +31,7 @@
 .date-and-time {
     font-size: 1.5rem;
     font-weight: bold;
+    font-family: 'Average Sans', sans-serif;
 }
 
 .MuiPaginationItem-outlined {

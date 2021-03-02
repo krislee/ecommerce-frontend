@@ -144,7 +144,8 @@ function UserProfileAddress ({ backend, addressData, defaultFirst, grabAddressDa
                     color: '#fff',
                     justifyContent: 'center',
                     height: '100%',
-                    alignItems: 'center'
+                    alignItems: 'center',
+                    fontFamily: 'Mukta Vaani, sans-serif'
                 }}>Looks like you don't have any addresses saved yet! Click the Add Address button to add your first one.</div> : 
             <>
                 <div className="all-address-container">

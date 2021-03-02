@@ -10,7 +10,7 @@ import Avatar from '@material-ui/core/Avatar';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import Button from '@material-ui/core/Button';
+import Button from 'react-bootstrap/Button';
 
 function PaymentContainer ({ backend, payment, defaultFirstPayment, grabPaymentData, capitalize, capitalizeArray, loggedIn, grabRedirect }) {
     /* ------- STATES ------- */
@@ -358,10 +358,12 @@ function PaymentContainer ({ backend, payment, defaultFirstPayment, grabPaymentD
         root: {
           width: '60%',
           backgroundColor: '#21212B',
-          margin: '0.5rem'
+          margin: '0.5rem',
+          fontFamily: 'Mukta Vaani, sans-serif'
         },
         header: {
-          cursor: 'pointer'
+          cursor: 'pointer',
+          fontFamily: 'Mukta Vaani, sans-serif'
         },
         avatar: {
           backgroundColor: '#fff',
@@ -378,7 +380,8 @@ function PaymentContainer ({ backend, payment, defaultFirstPayment, grabPaymentD
         expirationDate: {
           paddingTop: '0.5rem',
           paddingBottom: '1rem !important',
-          cursor: 'pointer'
+          cursor: 'pointer',
+          fontFamily: 'Mukta Vaani, sans-serif'
         },
         collapsedContent: {
           borderTop: '1px solid #101016',
@@ -567,11 +570,11 @@ function PaymentContainer ({ backend, payment, defaultFirstPayment, grabPaymentD
             <div className="update-buttons">
               {/* Button will be different based on whether or not the payment method is default or not. If it is default, then the remove default button will show, but if it isn't default, then the add default button will appear instead */}
               {defaultCard ? 
-              <Button variant="contained" onClick={handleEditPaymentDefaultStatus}>Remove Default</Button> : 
-              <Button variant="contained" onClick={handleEditPaymentDefaultStatus}>Make Default</Button> }
+              <Button variant="primary" onClick={handleEditPaymentDefaultStatus}>Remove Default</Button> : 
+              <Button variant="primary" onClick={handleEditPaymentDefaultStatus}>Make Default</Button> }
               {/* Buttons to open the edit modal or the delete modal */}
-              <Button variant="contained" onClick={openEditModal}>Edit</Button>
-              <Button variant="contained" color="secondary" onClick={openDeleteModal}>Delete</Button>
+              <Button variant="primary" onClick={openEditModal}>Edit</Button>
+              <Button variant="danger"  onClick={openDeleteModal}>Delete</Button>
             </div>
           </CardContent>
         </Collapse>

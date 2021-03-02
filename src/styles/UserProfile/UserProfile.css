@@ -34,6 +34,7 @@
     justify-content: center;
     align-items: center;
     font-size: 1rem;
+    font-family: 'Mukta Vaani', sans-serif;
 }
 
 /* .right-side {
@@ -63,6 +64,7 @@
     align-items: center;
     width: 100%;
     padding: 1rem;
+    font-family: 'Average Sans', sans-serif;
 }
 
 .header {

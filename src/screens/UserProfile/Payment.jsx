@@ -255,7 +255,8 @@ function UserProfilePayment ({ backend, paymentData, grabPaymentData, defaultFir
                     color: '#fff',
                     justifyContent: 'center',
                     height: '100%',
-                    alignItems: 'center'
+                    alignItems: 'center',
+                    fontFamily: 'Mukta Vaani, sans-serif'
                 }}>Looks like you don't have any payments saved yet! Click the Add Payment button to add your first one.</div> : 
             <>
                 <div className="all-payment-container">

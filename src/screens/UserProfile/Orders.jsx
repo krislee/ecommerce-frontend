@@ -51,17 +51,24 @@ export default function Orders ({ backend, loggedIn, orderData, grabOrderData, o
             display: 'flex',
             justifyContent: 'space-around',
             alignItems: 'center',
-            width: '100%',
             padding: '1rem',
+            height: '100%',
+            flexDirection: 'column'
         }}>
         <header style={{
             textAlign: 'center',
             color: '#fff',
             fontWeight: 'bold',
-            fontSize: '2rem'
+            fontSize: '2rem',
+            fontFamily: 'Average Sans, sans-serif'
         }}>Orders</header>
-        </div>
-        {orderData.length === 0 ? <p>No purchases yet, but you could become the next owner of the latest gadget!</p> : (
+        {orderData.length === 0 ? <p style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: '100%',
+            fontFamily: 'Mukta Vaani, sans-serif'
+        }}>No purchases yet, but you could become the next owner of the latest gadget!</p> : (
             <div className="orders">
             {orderData.map((order, index) => {
                 return (
@@ -86,8 +93,8 @@ export default function Orders ({ backend, loggedIn, orderData, grabOrderData, o
                 <Pagination showFirstButton showLastButton size="large" variant="outlined" shape="rounded" count={ordersTotal} page={Number(ordersPage)} siblingCount={1} boundaryCount={2} onChange={handlePageOnChange} />
             </div>  
             </div>
-
         )}
+        </div>
         </>
     )
    

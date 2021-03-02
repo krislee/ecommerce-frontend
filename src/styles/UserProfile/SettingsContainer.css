@@ -12,6 +12,7 @@
     font-weight: bold;
     color: #fff;
     padding: 1rem;
+    font-family: 'Average Sans', sans-serif;
 }
 
 .account-information {
@@ -31,6 +32,7 @@
     justify-content: space-around;
     padding: 0.5rem;
     border-radius: 1rem;
+    font-family: 'Mukta Vaani', sans-serif;
 }
 
 .account-information-container > div {
@@ -52,12 +54,14 @@
     font-size: 0.8rem;
     color: #b8b8b8;
     font-weight: bold;
+    font-family: 'Average-Sans', sans-serif;
 }
 
 .information-info {
     font-size: 1rem;
     margin-top: 0.1rem;
     font-weight: bold;
+    font-family: 'Mukta Vaani', sans-serif;
 }
 
 .information-password-info {

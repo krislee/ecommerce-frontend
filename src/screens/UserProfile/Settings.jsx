@@ -57,9 +57,7 @@ export default function Settings({ backend, loggedIn, settingData, grabSettingDa
                 setEmailErrorMessage(false);
                 setEmailInput(''); // empty input
             }
-
             setDisableButtonAfterFetching(false); // enable the submit button so that user can change email again after the request is done if user wants to 
-
         } else {
             grabTotalCartQuantity(0);
             grabRedirect(true);

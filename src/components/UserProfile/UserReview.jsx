@@ -49,7 +49,7 @@ export default function UserReviewComponent({ review, classes, openUpdateReviewM
             id={review._id} 
             onClick={openUpdateReviewModal}>Update</Button>
             <Button 
-            variant="primary"
+            variant="danger"
             id={review._id} 
             onClick={openDeleteReviewModal}>Delete</Button>
             </div>
