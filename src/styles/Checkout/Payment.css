@@ -30,7 +30,11 @@
     align-items: center;
     margin-top: 20px;
 }
-
+#guest-same-billing-shipping-container {
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+}
 /* LOGGED IN FORM */
 /* Credit Card heading */
 #add-card-heading {
@@ -66,7 +70,7 @@
 
 #sameAsShipping {
     margin: 0;
-    margin-right: 5px;
+    margin-right: 10px;
 }
 
 /* Display billing info if shipping label is checked */
@@ -178,8 +182,13 @@
     margin-top: 0px;
     align-self: center;
 }
-#close-save-address-button {
-    float: right;
+#close-saved-address-button {
+    /* float: right; */
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+    margin-right: 20px;
+    margin-bottom: 20px;
 }
 
 /* CREDIT CARD ILLUSTRATION DISPLAY */

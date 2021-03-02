@@ -9,7 +9,7 @@ import '../../styles/Checkout/Shipping.css'
 export default function ShippingForm({ loggedIn, readOnly, shipping, addShipping, shippingInput, grabShippingInput, editShipping, handleEditShipping, closeModal, collapse, disableButtonAfterMakingRequest, grabDisableButtonAfterMakingRequest, addAdditionalSaveShipping}) {
   
     const handleShippingChange = (event) => {
-        console.log(shippingInput)
+        // console.log(shippingInput)
         const { name, value} = event.target
         grabShippingInput((prevShipping) => ({
             ...prevShipping, [name]: value
@@ -17,7 +17,7 @@ export default function ShippingForm({ loggedIn, readOnly, shipping, addShipping
     }
 
     const handleShippingStateChange = (event) => {
-        console.log(event.target.value)
+        // console.log(event.target.value)
         grabShippingInput((prevShipping) => ({
             ...prevShipping, "state": event.target.value
         }))
@@ -110,7 +110,7 @@ export default function ShippingForm({ loggedIn, readOnly, shipping, addShipping
                     : 'shipping-input-state'
                 }
                 >
-                    <option value="">Select</option>
+                    <option value="Select">Select</option>
                     {usStates.map((state, index) => { return (
                         <option key={state.abbreviation} value={state.name}>{state.name}</option>
                     )})}
@@ -144,7 +144,7 @@ export default function ShippingForm({ loggedIn, readOnly, shipping, addShipping
                 type="submit"
                 variant="dark"
                 size='lg'
-                disabled={disableButton() || disableButtonAfterMakingRequest || shippingInput.state === 'select' }>
+                disabled={disableButton() || disableButtonAfterMakingRequest || shippingInput.state === 'Select' }>
                     Save
                 </Button> 
                 {/* <Button variant="dark" type="submit" disabled={disableButton() || disableButtonAfterMakingRequest }>Save</Button> */}
@@ -157,7 +157,7 @@ export default function ShippingForm({ loggedIn, readOnly, shipping, addShipping
             type="submit"
             variant="dark"
             size='lg'
-            disabled={readOnly || disableButton() || disableButtonAfterMakingRequest }>
+            disabled={ readOnly || disableButton() || disableButtonAfterMakingRequest || shippingInput.state === 'Select' }>
                 Next
             </Button>   
         }

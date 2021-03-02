@@ -36,6 +36,7 @@ export default function CardForm ({ loggedIn, paymentMethod, processing, handleS
                 <div id="add-card-buttons-container">
                     <Button id="cancel-save-button" type="button" type='lg' variant='dark' onClick={closeAddNewModal}>Cancel</Button>
                     <Button id="save-card-button" type='submit' type='lg' variant='dark' disabled= { (error !== '') || disabled || billingInputErrorDisableButton() || disableButtonAfterMakingRequest || billing.state==="Select"}>Save</Button>
+                    {/* <Button onClick={() => console.log(error, typeof error, "disabled: ", disabled, "billing regex: ", billingInputErrorDisableButton(), "disable button after making request: ", disableButtonAfterMakingRequest, "billing.state: ", billing.state)}>Click</Button> */}
                 </div>
             ): (
                 <>
@@ -64,6 +65,7 @@ export default function CardForm ({ loggedIn, paymentMethod, processing, handleS
                     ) : "Confirm Payment"
                     }
                 </Button>
+                {/* <Button type="button" onClick={console.log(32, (disabled && !paymentMethod.paymentMethodID),  error, billingInputErrorDisableButton(), billing.state==="Select", guestProcessingPayment)}>Click</Button> */}
                 </>
             )}
 

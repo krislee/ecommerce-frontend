@@ -61,7 +61,7 @@ function BillingInput({ loggedIn, billing, handleBillingChange, handleBillingSta
                         className="billing-input" value={billing.state || "Select"} 
                         onChange={handleBillingStateChange}
                     >
-                        <option value="">Select</option>
+                        <option value="Select">Select</option>
                         {usStates.map((state, index) => { return (
                             <option key={state.abbreviation} value={state.name}>{state.name}</option>
                         )})}

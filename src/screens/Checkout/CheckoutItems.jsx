@@ -99,7 +99,7 @@ export default function CheckoutItems({ backend, loggedIn, showItems, grabShowIt
                 
                 // Update items state to store the list of items
                 setItems(cartItemsData.cart)
-                setSubtotal(cartItemsData.cart.TotalCartPrice) // update the subtotal state to get the subtotal price
+                setSubtotal(cartItemsData.totalCartPrice) // update the subtotal state to get the subtotal price
                 setCheckoutItemsLoading(false)
             }
         }
@@ -190,7 +190,7 @@ export default function CheckoutItems({ backend, loggedIn, showItems, grabShowIt
                                     <TableCell component="th" scope="row">
                                         Subtotal
                                     </TableCell>
-                                    <TableCell align="right">{subtotal}</TableCell>
+                                    <TableCell align="right">${subtotal}</TableCell>
                                 </TableRow>
 
                                 <TableRow key={"shipping-fee"}>
@@ -207,7 +207,7 @@ export default function CheckoutItems({ backend, loggedIn, showItems, grabShowIt
                                 
                                 <TableRow key={"total"}>
                                     <TableCell component="th" scope="row">Total</TableCell>
-                                    <TableCell align="right">{subtotal}</TableCell>
+                                    <TableCell align="right">${subtotal}</TableCell>
                                 </TableRow>
                             </TableBody>
                         </Table>
