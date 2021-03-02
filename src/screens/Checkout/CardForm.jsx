@@ -7,8 +7,8 @@ import Spinner from 'react-bootstrap/Spinner'
 export default function CardForm ({ loggedIn, paymentMethod, processing, handleSubmitCardForm, handleCardChange, handleBillingChange, handleBillingStateChange, handleCardholderNameChange, cardholderName, billing, collectCVV, redisplayCardElement, closeAddNewModal, error, disabled, sameAsShipping, handleSameAsShipping, billingInputErrorDisableButton, disableButtonAfterMakingRequest, guestProcessingPayment }) {
 
     return(
-        <form id={(!loggedIn() || loggedIn() && !paymentMethod.paymentMethodID) ? "guest-card-form" : "card-form" } onSubmit={handleSubmitCardForm}>
-            <h2 id={(!loggedIn() || loggedIn() && !paymentMethod.paymentMethodID) ? "guest-add-card-heading" : "add-card-heading" }>Enter Credit Card</h2>
+        <form id={(!loggedIn() || (loggedIn() && !paymentMethod.paymentMethodID)) ? "guest-card-form" : "card-form" } onSubmit={handleSubmitCardForm}>
+            <h2 id={(!loggedIn() || (loggedIn() && !paymentMethod.paymentMethodID)) ? "guest-add-card-heading" : "add-card-heading" }>Enter Credit Card</h2>
             {/* Show Card Element */}
             <CollectCard loggedIn={loggedIn} handleCardChange={handleCardChange} collectCVV={collectCVV} redisplayCardElement={redisplayCardElement} cardholderName={cardholderName} handleCardholderNameChange={handleCardholderNameChange} />
 
@@ -16,7 +16,7 @@ export default function CardForm ({ loggedIn, paymentMethod, processing, handleS
             {error && <div className="card-error" role="alert">{error}</div>}
 
             <h2 className="billing-address-heading">Enter Billing Address</h2>
-            <div id={(!loggedIn() || loggedIn() && !paymentMethod.paymentMethodID) ? "guest-same-billing-shipping-container" : "same-billing-shipping-container"} >
+            <div id={(!loggedIn() || (loggedIn() && !paymentMethod.paymentMethodID)) ? "guest-same-billing-shipping-container" : "same-billing-shipping-container"} >
                 <input id="sameAsShipping" type="checkbox" defaultChecked={sameAsShipping} onChange={handleSameAsShipping}/>
                 <label className="same-billing-shipping-label">Same as Shipping Address </label>
             </div>
@@ -24,11 +24,11 @@ export default function CardForm ({ loggedIn, paymentMethod, processing, handleS
             {(!sameAsShipping || (!sameAsShipping && !paymentMethod.paymentMethodID)) && <BillingInput loggedIn={loggedIn} handleBillingChange={handleBillingChange} handleBillingStateChange={handleBillingStateChange} billing={billing} paymentMethod={paymentMethod} />}
 
             {sameAsShipping && (
-                <div id={(!loggedIn() || loggedIn() && !paymentMethod.paymentMethodID) ? "guest-display-same-billing-shipping-info-container" : "display-same-billing-shipping-info-container"}>
-                    <p id={(!loggedIn() || loggedIn() && !paymentMethod.paymentMethodID) ? "guest-billing-names": "billing-names"}><b>{billing.firstName} {billing.lastName}</b></p>
-                    <p id={(!loggedIn() || loggedIn() && !paymentMethod.paymentMethodID) ? "guest-billing-line1" : "billing-line1"}>{billing.line1}</p>
-                    {(billing.line2 !== 'null' || billing.line2 !== '') && <p id={(!loggedIn() || loggedIn() && !paymentMethod.paymentMethodID) ? 'guest-billing-line2' : 'billing-line2' }>{billing.line2}</p>}
-                    <p id={(!loggedIn() || loggedIn() && !paymentMethod.paymentMethodID) ? "guest-billing-cityStateZipcode" : "billing-cityStateZipcode"}>{billing.city}, {billing.state} {billing.postalCode}</p>
+                <div id={(!loggedIn() || (loggedIn() && !paymentMethod.paymentMethodID)) ? "guest-display-same-billing-shipping-info-container" : "display-same-billing-shipping-info-container"}>
+                    <p id={(!loggedIn() || (loggedIn() && !paymentMethod.paymentMethodID)) ? "guest-billing-names": "billing-names"}><b>{billing.firstName} {billing.lastName}</b></p>
+                    <p id={(!loggedIn() || (loggedIn() && !paymentMethod.paymentMethodID)) ? "guest-billing-line1" : "billing-line1"}>{billing.line1}</p>
+                    {(billing.line2 !== 'null' || billing.line2 !== '') && <p id={(!loggedIn() || (loggedIn() && !paymentMethod.paymentMethodID)) ? 'guest-billing-line2' : 'billing-line2' }>{billing.line2}</p>}
+                    <p id={(!loggedIn() || (loggedIn() && !paymentMethod.paymentMethodID)) ? "guest-billing-cityStateZipcode" : "billing-cityStateZipcode"}>{billing.city}, {billing.state} {billing.postalCode}</p>
                 </div>
             )}
 

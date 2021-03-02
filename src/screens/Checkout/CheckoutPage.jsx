@@ -320,6 +320,7 @@ function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCar
             /^[0-9]*$/g.test(billing.postalCode) !== true 
             || billing.postalCode === undefined
             || billing.postalCode === ''
+            || billing.postalCode.length !== 5
         )
     }
     const [processingPayment, setProcessingPayment] = useState(false)

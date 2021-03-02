@@ -179,6 +179,7 @@ function PaymentMethod ({ backend, processing, loggedIn, error, grabError, disab
 
     // When Save is clicked, handleUpdatePayment() runs
     const handleUpdatePayment = async(event) => {
+        console.log("hi")
         console.log(editExpiration.month, typeof editExpiration.month)
 
         // Make sure user is logged in in order to update
@@ -368,11 +369,42 @@ function PaymentMethod ({ backend, processing, loggedIn, error, grabError, disab
 
     // Test if the expiration is only numbers; function will return true if test fails
     const editExpirationError = () => {
-        console.log(/^[0-9]*$/g.test(editExpiration.month))
+        console.log(/^[0-9]*$/g.test(editExpiration.month) !== true)
+        console.log(/^[0-9]*$/g.test(editExpiration.year) !== true)
+        console.log(editExpiration.month === '')
         console.log(editExpiration.month === undefined)
+        console.log(editExpiration.year === '')
+        console.log(editExpiration.year === undefined)
+        console.log(editExpiration.month.length < 2)
+        console.log(editExpiration.year.length < 4)
+        console.log(Number(editExpiration.month)> 13)
+        console.log(Number(editExpiration.year) < 2021)
+        console.log(editExpiration.year === '2021' && (Number(editExpiration.month) < new Date().getMonth() + 1))
+        console.log((
+            /^[0-9]*$/g.test(editExpiration.month) !== true
+            || /^[0-9]*$/g.test(editExpiration.year) !== true
+            || editExpiration.month === ''
+            || editExpiration.month === undefined
+            || editExpiration.year === ''
+            || editExpiration.year === undefined
+            || editExpiration.month.length < 2
+            || editExpiration.year.length < 4
+            || Number(editExpiration.month)> 13
+            || Number(editExpiration.month) < 2021
+            || (editExpiration.year === '2021' && (Number(editExpiration.month) < new Date().getMonth() + 1) )
+          ))
        return (
-           (/^[0-9]*$/g.test(editExpiration.month) !== true && editExpiration.month !== '')
-           || (/^[0-9]*$/g.test(editExpiration.year) !== true && editExpiration.month !== '')
+          /^[0-9]*$/g.test(editExpiration.month) !== true
+          || /^[0-9]*$/g.test(editExpiration.year) !== true
+          || editExpiration.month === ''
+          || editExpiration.month === undefined
+          || editExpiration.year === ''
+          || editExpiration.year === undefined
+          || editExpiration.month.length < 2
+          || editExpiration.year.length < 4
+          || Number(editExpiration.month)> 12
+          || Number(editExpiration.year) < 2021
+          || (editExpiration.year === '2021' && (Number(editExpiration.month) < new Date().getMonth() + 1) )
         )
     }
 
@@ -573,7 +605,8 @@ function PaymentMethod ({ backend, processing, loggedIn, error, grabError, disab
                         <BillingInput loggedIn={loggedIn} billing={billing} handleBillingChange={handleBillingChange} handleBillingStateChange={handleBillingStateChange} editPayment={editPayment} paymentMethod={paymentMethod} />
                         <div id="edit-buttons-container">
                             <Button size='lg' variant='dark' className="edit-buttons" onClick={closeEditModal}>Close</Button>
-                            <Button size='lg' variant='dark' className="edit-buttons" disabled={ billingInputErrorDisableButton() || billingPostalCodeInputErrorDisableButton() || editExpirationError() || disableButtonAfterMakingRequest || billing.state === 'Select'}>Save</Button>
+                            <Button size='lg' variant='dark' className="edit-buttons" type="submit" disabled={ billingInputErrorDisableButton() || billingPostalCodeInputErrorDisableButton() || editExpirationError() || disableButtonAfterMakingRequest || billing.state === 'Select'}>Save</Button>
+                            <button type="button" onClick={() => console.log("disable after making request: ", disableButtonAfterMakingRequest, "billing input: ", billingInputErrorDisableButton(), "edit exp error: ", editExpirationError(), "postal code: ", billingInputErrorDisableButton(), "billing state: ", billing.state)}>click</button>
                         </div>
                     
                     </div>
