@@ -109,18 +109,22 @@ export default function CartItemPage ({ backend, loggedIn, id, name, image, quan
     return (
         <>
         <div className='individual-cart-item'>
-            <div className="cart-item-image-container">
-                <img className="cart-item-image" src={image} alt={name} />
+            <div className="cart-item-image-name-container">
+                <div className="cart-item-image-container">
+                    <img className="cart-item-image" src={image} alt={name} />
+                </div>
+                {/* <div className="cart-right-container"> */}
+                <div className="cart-item-name-container">
+                    <Link className="homepage-items" to={{
+                        pathname:`/item/${name}`,
+                        search: `id=${id}`
+                    }}>
+                        <div className="cart-item-name">{name}</div>
+                    </Link>
+                    <div className="cart-item-totalPrice1">${totalPrice.toFixed(2)}</div>
+                </div>
             </div>
-            <div className="cart-right-container">
-                <Link className="homepage-items" to={{
-                    pathname:`/item/${name}`,
-                    search: `id=${id}`
-                }}>
-                    <div className="cart-item-name">{name}</div>
-                </Link>
-
-                {/* <input type="number" min="1" value={cartQuantity} onChange={handleQuantity}/> */}
+            <div className="cart-item-quantity-total-remove-container">
                 <div className="cart-item-quantity">
                         <select className="cart-item-select-quantity" id={id} value={cartQuantity} onChange={handleUpdateItemQuantity}  >
                         <option value={1}>01</option>
@@ -135,10 +139,11 @@ export default function CartItemPage ({ backend, loggedIn, id, name, image, quan
                         <option value={10}>10</option>
                     </select>
                 </div>
-                <div className="cart-item-totalPrice">${totalPrice.toFixed(2)}</div>
+                <div className="cart-item-totalPrice2">${totalPrice.toFixed(2)}</div>
                 <div className="cart-item-remove-icon"><FontAwesomeIcon id={id} onClick={handleDeleteCartItem} icon={faTimes}>Remove</FontAwesomeIcon></div>
             </div>
         </div>
+        {/* </div> */}
         </>
     )
 }
