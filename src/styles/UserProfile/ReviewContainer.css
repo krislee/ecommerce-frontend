@@ -7,11 +7,17 @@
     justify-content: center;
     align-items: center;
     flex-direction: column;
+    font-family: 'Average Sans', sans-serif;
+}
+
+.review-user-container > div > div {
+    font-family: 'Mukta Vaani', sans-serif;
 }
 
 .user-review-button-container {
     display: flex;
     justify-content: flex-end;
+    margin-top: 1rem;
 }
 
 .user-review-button-container > button:nth-child(1) {

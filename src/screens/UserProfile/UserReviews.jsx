@@ -21,6 +21,8 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     flexDirection: 'column',
     width: '80%',
+    marginBottom: '1rem',
+    borderRadius: '1rem',
     '& > * + *': {
       marginTop: theme.spacing(1),
     },
@@ -59,6 +61,8 @@ export default function UserReviews({ backend, loggedIn, reviewData, grabReviewD
 
     const openUpdateReviewModal = async (event) => {
         if(loggedIn()) {
+            console.log(event.target.id);
+            console.log(event.target)
             const retrieveOneReviewResponse = await fetch(`${backend}/buyer/electronic/review/${event.target.id}`, {
                 method: 'GET',
                 headers: {

@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import Rating from '@material-ui/lab/Rating';
 import { Link } from 'react-router-dom'
-import Button from '@material-ui/core/Button'
+import Button from 'react-bootstrap/Button'
 import '../../styles/UserProfile/ReviewContainer.css';
 
-export default function UserReviewComponent({ review, index, classes, openUpdateReviewModal, openDeleteReviewModal}) {
+export default function UserReviewComponent({ review, classes, openUpdateReviewModal, openDeleteReviewModal}) {
 
     // Getter and Setter to display the full length of the review message or just the preview 
     const [showMoreReview, setShowMoreReview] = useState(false);
@@ -24,17 +24,20 @@ export default function UserReviewComponent({ review, index, classes, openUpdate
             <div>
             {/* What is displayed depends on whether users want to view the longer version or the shorter version of the review when users click on the show more and show less button */}
             {!showMoreReview ?  
-            <div>
+            <div style={{
+                display: 'inline'
+            }}>
             {/* Reviews are split to splice in order cut down the text, and then rejoined to form a new review which is a shorter preview of the full review */}
-            <p>{`${review.Comment.split(" ").splice(0, 50).join(" ")}...`}</p> 
+            <div>{`${review.Comment.split(" ").splice(0, 50).join(" ")}...`}
+            <span style={{cursor: 'pointer', color: '#057BFE'}} onClick={() => setShowMoreReview(true)}> see more</span>
+            </div> 
             {/* Button to display the full review */}
-            <div style={{cursor: 'pointer'}} onClick={() => setShowMoreReview(true)}>Show More...</div>
             </div> : 
             <div>
             {/* The original full review */}
-            <p>{review.Comment}</p> 
+            <div>{review.Comment}
             {/* Button to display the shortened version of the review */}
-            <div style={{cursor: 'pointer'}} onClick={() => setShowMoreReview(false)}>Show Less...</div>
+            <span style={{cursor: 'pointer', color: '#057BFE'}} onClick={() => setShowMoreReview(false)}> see less</span></div> 
             </div>}
             </div>
             // If the review has less than 60 words, then show the whole review
@@ -42,11 +45,11 @@ export default function UserReviewComponent({ review, index, classes, openUpdate
             <div 
             className="user-review-button-container">
             <Button 
-            variant="contained"
+            variant="primary"
             id={review._id} 
             onClick={openUpdateReviewModal}>Update</Button>
             <Button 
-            variant="contained"
+            variant="primary"
             id={review._id} 
             onClick={openDeleteReviewModal}>Delete</Button>
             </div>

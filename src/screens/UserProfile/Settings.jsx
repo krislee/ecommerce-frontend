@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Toast from 'react-bootstrap/Toast';
-import Button from '@material-ui/core/Button'
+import Button from 'react-bootstrap/Button'
 import '../../styles/UserProfile/SettingsContainer.css'
 
 export default function Settings({ backend, loggedIn, settingData, grabSettingData, grabTotalCartQuantity, grabRedirect }) {
@@ -307,7 +307,7 @@ export default function Settings({ backend, loggedIn, settingData, grabSettingDa
                     <div className="information-info">{settingData.email}</div>
                     </div>
                     <Button 
-                    variant="contained"
+                    variant="primary"
                     disabled={showPasswordInput || showEmailInput}
                     onClick={openChangeEmailForm}>Edit</Button>
                     </div>
@@ -316,12 +316,12 @@ export default function Settings({ backend, loggedIn, settingData, grabSettingDa
                         <form className="change-form">
                             <input type="email" value={emailInput} onChange={handleEmailInputChange}/>
                             <Button 
-                            variant="contained"
+                            variant="primary"
                             disabled={!emailInput || disableButtonAfterFetching} 
                             onClick={handleEmailUpdate}>Submit</Button>
                         </form>
                         <Button
-                        variant="contained"
+                        variant="primary"
                         onClick={closeChangeEmailForm}>Close</Button>
                         </div>
                     )} 
@@ -331,7 +331,7 @@ export default function Settings({ backend, loggedIn, settingData, grabSettingDa
                     <div className="information-password-info">●●●●●●●●</div>
                     </div>
                     <Button 
-                    variant="contained"
+                    variant="primary"
                     disabled={showPasswordInput || showEmailInput} 
                     onClick={openChangePasswordForm}>Edit</Button>
                     </div>
@@ -340,24 +340,15 @@ export default function Settings({ backend, loggedIn, settingData, grabSettingDa
                         <form className="change-form">
                             <input type="password" value={passwordInput} onChange={handlePasswordInputChange}/>
                             <Button 
-                            variant="contained"
+                            variant="primary"
                             disabled={!passwordInput.length || disableButtonAfterFetching} 
                             onClick={handleResetPassword}>Submit</Button>
                         </form>
                         <Button
-                        variant="contained"
+                        variant="primary"
                         onClick={closeChangePasswordForm}>Close</Button>
                         </div>
                     )}
-                    {/* <Toast onClose={() => setPasswordInvalid(false)} show={passwordInvalid} delay={3000} autohide>
-                        <Toast.Body style={{backgroundColor: 'rgb(255, 51, 51)'}}>Your password must be at least 8 characters long.</Toast.Body>
-                    </Toast>  
-                    <Toast onClose={() => setPasswordErrorMessage(false)} show={passwordErrorMessage} delay={3000} autohide>
-                        <Toast.Body style={{backgroundColor: 'rgb(255, 51, 51)'}}> Your password cannot be your 5 most recently used passwords.</Toast.Body>
-                    </Toast>  
-                    <Toast onClose={() => setResetPasswordSuccess(false)} show={resetPasswordSuccess} delay={3000} autohide>
-                        <Toast.Body style={{backgroundColor: 'rgb(57, 172, 57)'}}>Your password is successfully changed.</Toast.Body>
-                    </Toast> */}
                     </div>    
                 </div>   
             </div>
