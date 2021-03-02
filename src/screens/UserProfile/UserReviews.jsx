@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import ReviewForm from '../../components/Reviews/ReviewForm';
 import Modal from 'react-modal';
-import Rating from '@material-ui/lab/Rating';
 import { makeStyles } from '@material-ui/core/styles';
 import { Pagination } from '@material-ui/lab';
+import '../../styles/UserProfile/ReviewContainer.css'
+import UserReviewComponent from '../../components/UserProfile/UserReview'
 
 
 const paginationUseStyles = makeStyles((theme) => ({
@@ -19,12 +20,19 @@ const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
     flexDirection: 'column',
+    width: '80%',
     '& > * + *': {
       marginTop: theme.spacing(1),
     },
+    padding: '1rem',
+    backgroundColor: '#21212B'
   },
+  linkTitle: {
+      color: '#fff !important',
+      display: 'inline-block',
+      fontWeight: 'bold'
+  }
 }));
-
 export default function UserReviews({ backend, loggedIn, reviewData, grabReviewData, reviewsTotal, grabReviewsTotal, reviewLoading, reviewsPage, grabReviewsPage, grabTotalCartQuantity, grabRedirect }) {
 
     const classes = useStyles();
@@ -43,8 +51,6 @@ export default function UserReviews({ backend, loggedIn, reviewData, grabReviewD
     const [ratingValue, setRatingValue] = useState(5);
     const [ratingHover, setRatingHover] = useState(-1);
     const [commentsValue, setCommentsValue] = useState('');
-    // Getter and Setter to display the full length of the review message or just the preview 
-    const [showMoreReview, setShowMoreReview] = useState(false);
 
     // pass grabRatingValue and grabRatingHover to ReviewForm and Rating component inside ReviewForm component for onChange callback
     // pass handleCommentsChange for textarea onchange callback
@@ -175,45 +181,46 @@ export default function UserReviews({ backend, loggedIn, reviewData, grabReviewD
 
     if(reviewLoading) return null
     return (
-        <>
-            {reviewData.length === 0 ? <p>Go ahead and leave a review for the items you have purchased!</p> : (
+        <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center'
+        }}>
+            <div style={{
+                display: 'flex',
+                justifyContent: 'space-around',
+                alignItems: 'center',
+                padding: '1rem',
+            }}>
+            <header style={{
+                textAlign: 'center',
+                color: '#fff',
+                fontWeight: 'bold',
+                fontSize: '2rem'
+            }}>Reviews</header>
+            </div>
+            {reviewData.length === 0 ? <p style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: '100%',
+            }}>Go ahead and leave a review for the items you have purchased!</p> : (
                 <>
-                {reviewData.map((review, index) => { return (
-                    <div className={classes.root} key={index} >
-                        <Link to={{
-                            pathname:`/item/${review.ElectronicItem[0].Name}`,
-                            search: `id=${review.ElectronicItem[0]._id}`
-                        }}>
-                            <p><b>{review.ElectronicItem[0].Brand} {review.ElectronicItem[0].Name}</b></p>
-                        </Link>
-                        <Rating name="size-small" value={review.Rating} size="small" readOnly/>
-                        {/* If the review has more than 60 words, then show a preview of the review */}
-                        {review.Comment.length > 60 ? 
-                        <div>
-                        {/* What is displayed depends on whether users want to view the longer version or the shorter version of the review when users click on the show more and show less button */}
-                        {!showMoreReview ?  
-                        <div>
-                        {/* Reviews are split to splice in order cut down the text, and then rejoined to form a new review which is a shorter preview of the full review */}
-                        <p>{`${review.Comment.split(" ").splice(0, 50).join(" ")}...`}</p> 
-                        {/* Button to display the full review */}
-                        <div style={{cursor: 'pointer'}} onClick={() => setShowMoreReview(true)}>Show More...</div>
-                        </div> : 
-                        <div>
-                        {/* The original full review */}
-                        <p>{review.Comment}</p> 
-                        {/* Button to display the shortened version of the review */}
-                        <div style={{cursor: 'pointer'}} onClick={() => setShowMoreReview(false)}>Show Less...</div>
-                        </div>}
-                        </div>
-                        // If the review has less than 60 words, then show the whole review
-                        : <p>{review.Comment}</p>}
-                        <button id={review._id} onClick={openUpdateReviewModal}>Update</button>
-                        <button id={review._id} onClick={openDeleteReviewModal}>Delete</button>
-                    </div>
-                )})}
-                <div className={paginationClass.root}>
-                    <Pagination showFirstButton showLastButton size="large" variant="outlined" shape="rounded" count={reviewsTotal} page={Number(reviewsPage)} siblingCount={1} boundaryCount={2} onChange={handlePageOnChange} />
-                </div>  
+                <div
+                className="review-user-container">
+                    {reviewData.map((review, index) => { return (
+                       <UserReviewComponent 
+                       review={review} 
+                       index={index}
+                       classes={classes}
+                       openDeleteReviewModal={openDeleteReviewModal}
+                       openUpdateReviewModal={openUpdateReviewModal}
+                       />
+                    )})}
+                    <div className={paginationClass.root}>
+                        <Pagination showFirstButton showLastButton size="large" variant="outlined" shape="rounded" count={reviewsTotal} page={Number(reviewsPage)} siblingCount={1} boundaryCount={2} onChange={handlePageOnChange} />
+                    </div>  
+                </div>
                 {editReviewForm && (
                     <Modal isOpen={editReviewForm} onRequestClose={closeEditReviewModal} ariaHideApp={false} contentLabel="Edit Review">
                         <form onSubmit={handleUpdateReview}>
@@ -233,7 +240,7 @@ export default function UserReviews({ backend, loggedIn, reviewData, grabReviewD
                 )}
                 </>
             )}
-        </>
+        </div>
     )
     
 }

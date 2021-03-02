@@ -47,6 +47,20 @@ export default function Orders ({ backend, loggedIn, orderData, grabOrderData, o
     if(orderLoading) return null
     return (
         <>
+        <div style={{
+            display: 'flex',
+            justifyContent: 'space-around',
+            alignItems: 'center',
+            width: '100%',
+            padding: '1rem',
+        }}>
+        <header style={{
+            textAlign: 'center',
+            color: '#fff',
+            fontWeight: 'bold',
+            fontSize: '2rem'
+        }}>Orders</header>
+        </div>
         {orderData.length === 0 ? <p>No purchases yet, but you could become the next owner of the latest gadget!</p> : (
             <div className="orders">
             {orderData.map((order, index) => {
