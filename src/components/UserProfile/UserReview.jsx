@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Rating from '@material-ui/lab/Rating';
 import { Link } from 'react-router-dom'
+import Button from '@material-ui/core/Button'
 import '../../styles/UserProfile/ReviewContainer.css';
 
 export default function UserReviewComponent({ review, index, classes, openUpdateReviewModal, openDeleteReviewModal}) {
@@ -9,7 +10,7 @@ export default function UserReviewComponent({ review, index, classes, openUpdate
     const [showMoreReview, setShowMoreReview] = useState(false);
     
     return (
-        <div className={classes.root} key={index}>
+        <div className={classes.root}>
             <p>
             <Link to={{
                 pathname:`/item/${review.ElectronicItem[0].Name}`,
@@ -38,8 +39,17 @@ export default function UserReviewComponent({ review, index, classes, openUpdate
             </div>
             // If the review has less than 60 words, then show the whole review
             : <p>{review.Comment}</p>}
-            <button id={review._id} onClick={openUpdateReviewModal}>Update</button>
-            <button id={review._id} onClick={openDeleteReviewModal}>Delete</button>
+            <div 
+            className="user-review-button-container">
+            <Button 
+            variant="contained"
+            id={review._id} 
+            onClick={openUpdateReviewModal}>Update</Button>
+            <Button 
+            variant="contained"
+            id={review._id} 
+            onClick={openDeleteReviewModal}>Delete</Button>
+            </div>
         </div>
     )
 

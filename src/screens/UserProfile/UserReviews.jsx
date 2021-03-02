@@ -47,7 +47,6 @@ export default function UserReviews({ backend, loggedIn, reviewData, grabReviewD
 
     const [brandName, setBrandName] = useState('') ;
     const [itemName, setItemName] = useState('');
-
     const [ratingValue, setRatingValue] = useState(5);
     const [ratingHover, setRatingHover] = useState(-1);
     const [commentsValue, setCommentsValue] = useState('');
@@ -68,6 +67,7 @@ export default function UserReviews({ backend, loggedIn, reviewData, grabReviewD
                 }
             });
             const retrieveOneReviewData = await retrieveOneReviewResponse.json();
+            console.log(retrieveOneReviewData);
             setRatingValue(retrieveOneReviewData.singleReview.Rating); // update the rating state --> pass to ReviewForm and Rating component inside ReviewForm component --> prefill the rating stars section
             setCommentsValue(retrieveOneReviewData.singleReview.Comment); // update the comments --> pass to ReviewForm and Rating component --> prefill the comment section
             setBrandName(retrieveOneReviewData.singleReview.ElectronicItem[0].Brand); // update the brand and item name to populate in the modal
@@ -215,6 +215,7 @@ export default function UserReviews({ backend, loggedIn, reviewData, grabReviewD
                        classes={classes}
                        openDeleteReviewModal={openDeleteReviewModal}
                        openUpdateReviewModal={openUpdateReviewModal}
+                       key={index}
                        />
                     )})}
                     <div className={paginationClass.root}>
