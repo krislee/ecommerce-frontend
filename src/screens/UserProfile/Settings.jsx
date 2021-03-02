@@ -46,13 +46,11 @@ export default function Settings({ backend, loggedIn, settingData, grabSettingDa
                 setEmailInvalid(false); // do not show error message
                 setShowEmailInput(false); // hide input 
                 setEmailInput(''); // empty input
-            }
-            if(emailUpdateData.msg) {
+            } else if(emailUpdateData.msg) {
                 setEmailErrorMessage(true);
                 setEmailInvalid(false);
                 setEmailInput(''); // empty input
-            }
-            if(emailUpdateData.details && emailUpdateData.details[0].message) {
+            } else if(emailUpdateData.details && emailUpdateData.details[0].message) {
                 setEmailInvalid(true);
                 setEmailErrorMessage(false);
                 setEmailInput(''); // empty input
@@ -80,19 +78,17 @@ export default function Settings({ backend, loggedIn, settingData, grabSettingDa
                 body: JSON.stringify({password: passwordInput})
             });
             const resetPasswordData = await resetPasswordResponse.json();
-            if(!resetPasswordData.msg && !resetPasswordData.details); {
+            if(!resetPasswordData.msg && !resetPasswordData.details) {
                 setResetPasswordSuccess(true); // show success message
                 setPasswordErrorMessage(false);
                 setPasswordInvalid(false);
                 setShowPasswordInput(false); // hide input
                 setPasswordInput(''); // empty input
-            }
-            if(resetPasswordData.msg) {
+            } else if(resetPasswordData.msg) {
                 setPasswordErrorMessage(true);
                 setPasswordInvalid(false);
                 setPasswordInput(''); // empty input
-            }
-            if(resetPasswordData.details && resetPasswordData.details[0].message) {
+            } else if(resetPasswordData.details && resetPasswordData.details[0].message) {
                 setPasswordInvalid(true);
                 setPasswordErrorMessage(false);
                 setPasswordInput(''); // empty input
