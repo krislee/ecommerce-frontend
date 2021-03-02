@@ -37,14 +37,6 @@ function BillingInput({ loggedIn, billing, handleBillingChange, handleBillingSta
                     {/* <input id="billing-input-state" className="billing-input" value={billing.state || ""} name="state" placeholder="State" onChange={handleBillingChange} maxLength="2" required/> */}
                     
                     <select 
-                        // id={
-                        //     (loggedIn() && /^[a-z ,.'-]+$/i.test(billing.city) !== true && billing.city !== "") 
-                        //     ? "billing-input-state-city-error" : loggedIn() 
-                        //     ? "billing-input-state" : (!loggedIn() && (/^[a-z ,.'-]+$/i.test(billing.city) !== true && billing.city !== "")) 
-                        //     ? "guest-billing-input-state-city-error" 
-                        //     : "guest-billing-input-state"
-                        // } 
-
                         id={
                             (!loggedIn() && /^[a-z ,.'-]+$/i.test(billing.city) !== true && billing.city !== "")
                             || (loggedIn() && !paymentMethod.paymentMethodID && /^[a-z ,.'-]+$/i.test(billing.city) !== true && billing.city !== "")

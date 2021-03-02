@@ -28,6 +28,8 @@ const customStyles = {
     }
 };
 
+Modal.setAppElement('#root');
+
 // Theme for overriding Speed Dial styles
 let theme = createMuiTheme({})
 theme = { ...theme,
@@ -554,7 +556,7 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
         )
     } else if(addShipping || editShipping ) {
         return (
-            <Modal style={customStyles} isOpen={showModal} onRequestClose={ closeModal } ariaHideApp={false} contentLabel="Add or Edit Shipping">
+            <Modal styles={customStyles} isOpen={showModal} onRequestClose={ closeModal } ariaHideApp={false} contentLabel="Add or Edit Shipping">
                 <ShippingForm backend={backend} loggedIn={loggedIn} shipping={shipping} shippingInput={shippingInput} grabShippingInput={grabShippingInput} grabPaymentLoading={grabPaymentLoading} addShipping={addShipping} grabAddNewShipping={grabAddNewShipping} cartID={cartID} updateShippingState={updateShippingState} updateShippingInputState={updateShippingInputState} editShipping={editShipping} handleEditShipping={handleEditShipping} closeModal={closeModal} collapse={collapse} grabMultipleShipping={grabMultipleShipping} grabTotalCartQuantity={grabTotalCartQuantity} disableButtonAfterMakingRequest={disableButtonAfterMakingRequest} grabDisableButtonAfterMakingRequest={grabDisableButtonAfterMakingRequest} addAdditionalSaveShipping={addAdditionalSaveShipping} /> 
             </Modal>
         )

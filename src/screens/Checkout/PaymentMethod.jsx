@@ -73,6 +73,8 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+Modal.setAppElement('#root');
+
 function PaymentMethod ({ backend, processing, loggedIn, error, grabError, disabled, grabDisabled,  paymentLoading, grabPaymentLoading, billing, grabBilling, handleBillingChange, handleBillingStateChange, paymentMethod, grabPaymentMethod, cardholderName, grabCardholderName, handleCardholderNameChange, handleCardChange, collectCVV, grabCollectCVV, editPayment, grabEditPayment, redisplayCardElement, grabRedisplayCardElement, grabShowSavedCards, handleConfirmPayment, showSavedCards, editExpiration, grabEditExpiration, showPayment, sameAsShipping, handleSameAsShipping, shippingInput, grabBillingWithShipping, recheckSameAsShippingButton, grabTotalCartQuantity, billingInputErrorDisableButton, billingPostalCodeInputErrorDisableButton, processingPayment, guestProcessingPayment, grabGuestProcessingPayment, disableButtonAfterMakingRequest, grabDisableButtonAfterMakingRequest}) {
 
     /* ------- STRIPE VARIABLES ------ */
@@ -369,30 +371,18 @@ function PaymentMethod ({ backend, processing, loggedIn, error, grabError, disab
 
     // Test if the expiration is only numbers; function will return true if test fails
     const editExpirationError = () => {
-        console.log(/^[0-9]*$/g.test(editExpiration.month) !== true)
-        console.log(/^[0-9]*$/g.test(editExpiration.year) !== true)
-        console.log(editExpiration.month === '')
-        console.log(editExpiration.month === undefined)
-        console.log(editExpiration.year === '')
-        console.log(editExpiration.year === undefined)
-        console.log(editExpiration.month.length < 2)
-        console.log(editExpiration.year.length < 4)
-        console.log(Number(editExpiration.month)> 13)
-        console.log(Number(editExpiration.year) < 2021)
-        console.log(editExpiration.year === '2021' && (Number(editExpiration.month) < new Date().getMonth() + 1))
-        console.log((
-            /^[0-9]*$/g.test(editExpiration.month) !== true
-            || /^[0-9]*$/g.test(editExpiration.year) !== true
-            || editExpiration.month === ''
-            || editExpiration.month === undefined
-            || editExpiration.year === ''
-            || editExpiration.year === undefined
-            || editExpiration.month.length < 2
-            || editExpiration.year.length < 4
-            || Number(editExpiration.month)> 13
-            || Number(editExpiration.month) < 2021
-            || (editExpiration.year === '2021' && (Number(editExpiration.month) < new Date().getMonth() + 1) )
-          ))
+        // console.log(/^[0-9]*$/g.test(editExpiration.month) !== true)
+        // console.log(/^[0-9]*$/g.test(editExpiration.year) !== true)
+        // console.log(editExpiration.month === '')
+        // console.log(editExpiration.month === undefined)
+        // console.log(editExpiration.year === '')
+        // console.log(editExpiration.year === undefined)
+        // console.log(editExpiration.month.length < 2)
+        // console.log(editExpiration.year.length < 4)
+        // console.log(Number(editExpiration.month)> 13)
+        // console.log(Number(editExpiration.year) < 2021)
+        // console.log(editExpiration.year === '2021' && (Number(editExpiration.month) < new Date().getMonth() + 1))
+       
        return (
           /^[0-9]*$/g.test(editExpiration.month) !== true
           || /^[0-9]*$/g.test(editExpiration.year) !== true
@@ -601,7 +591,7 @@ function PaymentMethod ({ backend, processing, loggedIn, error, grabError, disab
                 
                     {/* { editExpirationError() && <div className="warning">You must enter only numbers for your expiration date</div> } */}
 
-                    <div>
+                    <div id="edit-container">
                         <BillingInput loggedIn={loggedIn} billing={billing} handleBillingChange={handleBillingChange} handleBillingStateChange={handleBillingStateChange} editPayment={editPayment} paymentMethod={paymentMethod} />
                         <div id="edit-buttons-container">
                             <Button size='lg' variant='dark' className="edit-buttons" onClick={closeEditModal}>Close</Button>
