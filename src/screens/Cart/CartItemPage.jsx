@@ -1,9 +1,10 @@
 import { Link } from 'react-router-dom'
 import React, {useEffect, useState} from 'react'
+import Button from 'react-bootstrap/Button';
 import '../../styles/CartPage.css'
 
 
-export default function CartItemPage ({ backend, loggedIn, id, name, quantity, totalPrice, grabItems, grabTotalPrice, grabTotalCartQuantity }) {
+export default function CartItemPage ({ backend, loggedIn, id, name, image, quantity, totalPrice, grabItems, grabTotalPrice, grabTotalCartQuantity }) {
     const [cartQuantity, setCartQuantity] = useState(quantity)
     const [prevLoggedIn, setPrevLoggedIn] = useState('')
     const [itemID, setItemID] = useState('')
@@ -106,14 +107,19 @@ export default function CartItemPage ({ backend, loggedIn, id, name, quantity, t
 
     return (
         <div>
+            <div className="cart-item-image-container">
+                <img className="cart-item-image" src={image} alt={name} />
+            </div>
+
             <Link className="homepage-items" to={{
                 pathname:`/item/${name}`,
                 search: `id=${id}`
             }}>
-                <div>{name}</div>
+                <div className="cart-item-name">{name}</div>
             </Link>
+
             {/* <input type="number" min="1" value={cartQuantity} onChange={handleQuantity}/> */}
-            <select id={id} value={cartQuantity} onChange={handleUpdateItemQuantity}>
+            <select id={id} value={cartQuantity} onChange={handleUpdateItemQuantity} className="cart-item-quantity" >
                 <option value={1}>01</option>
                 <option value={2}>02</option>
                 <option value={3}>03</option>
@@ -125,8 +131,8 @@ export default function CartItemPage ({ backend, loggedIn, id, name, quantity, t
                 <option value={9}>09</option>
                 <option value={10}>10</option>
             </select>
-            <p>${totalPrice}</p>
-            <button id={id} onClick={handleDeleteCartItem}>Delete</button>
+            <div className="cart-item-totalPrice">${totalPrice}</div>
+            <Button className="cart-item-remove-button" id={id} onClick={handleDeleteCartItem} variant="dark" size="sm">Remove</Button>
         </div>
     )
 }

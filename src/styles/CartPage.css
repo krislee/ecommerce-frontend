@@ -4,9 +4,9 @@
     padding: 0 2rem;
 }
 
-.cart-items > div {
+/* .cart-items > div {
     margin-bottom: 1rem;
-}
+} */
 
 .noItems {
     margin-top: 10vh;
@@ -17,4 +17,9 @@
 
 .cart-page-container {
     width: 100vw;
+}
+
+.cart-items {
+    display: grid;
+    grid-template-columns: 2fr 3fr 1fr 1fr 1fr;
 }

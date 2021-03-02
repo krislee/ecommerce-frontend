@@ -1,9 +1,11 @@
 import React, {useEffect, useState} from 'react'
 import { Link } from 'react-router-dom';
-import '../../styles/CartPage.css'
-// import NavBar from '../../components/NavigationBar'
 import Footer from '../../components/Footer'
 import CartItemPage from './CartItemPage'
+import Button from 'react-bootstrap/Button'
+import '../../styles/CartPage.css'
+// import NavBar from '../../components/NavigationBar'
+
 
 function CartPage ({ backend, loggedIn, cartQuantity, grabCartQuantity, totalCartQuantity, grabTotalCartQuantity } ) {
 
@@ -87,7 +89,7 @@ function CartPage ({ backend, loggedIn, cartQuantity, grabCartQuantity, totalCar
         return (
             <>
             {/* <NavBar totalCartQuantity={totalCartQuantity} grabTotalCartQuantity={grabTotalCartQuantity} backend={backend} loggedIn={loggedIn}/> */}
-            <h2 className="noItems">No Items...</h2>
+            <div style={{display: 'flex', justifyContent: 'center', alignContent: 'center'}}><h1 className="noItems"><b>Empty Cart</b></h1></div>
             </>
         )
     } else if(items.length >0) {
@@ -95,14 +97,15 @@ function CartPage ({ backend, loggedIn, cartQuantity, grabCartQuantity, totalCar
             <>
             <div className="cart-page-container">
                 {/* <NavBar totalCartQuantity={totalCartQuantity} grabTotalCartQuantity={grabTotalCartQuantity}/> */}
+                <h2>Shopping Cart</h2>
                 <div className="cart">
                     <div className="cart-items">
-                        {items.map((item) => { return <CartItemPage backend={backend} loggedIn={loggedIn} key={item.ItemId} id={item.ItemId} name={item.Name} quantity={item.Quantity} totalPrice={item.TotalPrice} grabItems={grabItems} grabTotalPrice={grabTotalPrice} grabTotalCartQuantity={grabTotalCartQuantity} cartQuantity={cartQuantity} grabCartQuantity={grabCartQuantity} /> })}
-                        <p><b>Total Price: ${totalPrice}</b></p>
+                        {items.map((item) => { return <CartItemPage backend={backend} loggedIn={loggedIn} key={item.ItemId} id={item.ItemId} name={item.Name} image={item.Image} quantity={item.Quantity} totalPrice={item.TotalPrice} grabItems={grabItems} grabTotalPrice={grabTotalPrice} grabTotalCartQuantity={grabTotalCartQuantity} cartQuantity={cartQuantity} grabCartQuantity={grabCartQuantity} /> })}
+                        <p><b>${totalPrice}</b></p>
                     </div>
                         
                     <Link to="/checkout">
-                        <button>Checkout</button>
+                        <Button variant="dark" size="lg">Checkout</Button>
                     </Link>
                 </div>
                
