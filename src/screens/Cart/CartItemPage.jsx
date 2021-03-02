@@ -1,9 +1,11 @@
 import { Link } from 'react-router-dom'
 import React, {useEffect, useState} from 'react'
+import Button from 'react-bootstrap/Button';
 import '../../styles/CartPage.css'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faTimes } from '@fortawesome/free-solid-svg-icons'
 
-
-export default function CartItemPage ({ backend, loggedIn, id, name, quantity, totalPrice, grabItems, grabTotalPrice, grabTotalCartQuantity }) {
+export default function CartItemPage ({ backend, loggedIn, id, name, image, quantity, totalPrice, grabItems, grabTotalPrice, grabTotalCartQuantity }) {
     const [cartQuantity, setCartQuantity] = useState(quantity)
     const [prevLoggedIn, setPrevLoggedIn] = useState('')
     const [itemID, setItemID] = useState('')
@@ -75,7 +77,8 @@ export default function CartItemPage ({ backend, loggedIn, id, name, quantity, t
     const handleDeleteCartItem = async(event) => {
         if(loggedIn()) {
             console.log("deleting logged in")
-            const deleteCartItemResponse = await fetch(`${backend}/buyer/electronic/cart/${event.target.id}`, {
+            
+            const deleteCartItemResponse = await fetch(`${backend}/buyer/electronic/cart/${event.target.parentElement.parentElement.id}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
@@ -91,7 +94,7 @@ export default function CartItemPage ({ backend, loggedIn, id, name, quantity, t
         } else {
             if(prevLoggedIn) return grabTotalCartQuantity(0)
             console.log("deleting guest")
-            const deleteCartItemResponse = await fetch(`${backend}/buyer/electronic/cart/${event.target.id}`, {
+            const deleteCartItemResponse = await fetch(`${backend}/buyer/electronic/cart/${event.target.parentElement.parentElement.id}`, {
                 method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include'
@@ -105,28 +108,43 @@ export default function CartItemPage ({ backend, loggedIn, id, name, quantity, t
     }
 
     return (
-        <div>
-            <Link className="homepage-items" to={{
-                pathname:`/item/${name}`,
-                search: `id=${id}`
-            }}>
-                <div>{name}</div>
-            </Link>
-            {/* <input type="number" min="1" value={cartQuantity} onChange={handleQuantity}/> */}
-            <select id={id} value={cartQuantity} onChange={handleUpdateItemQuantity}>
-                <option value={1}>01</option>
-                <option value={2}>02</option>
-                <option value={3}>03</option>
-                <option value={4}>04</option>
-                <option value={5}>05</option>
-                <option value={6}>06</option>
-                <option value={7}>07</option>
-                <option value={8}>08</option>
-                <option value={9}>09</option>
-                <option value={10}>10</option>
-            </select>
-            <p>${totalPrice}</p>
-            <button id={id} onClick={handleDeleteCartItem}>Delete</button>
+        <>
+        <div className='individual-cart-item'>
+            <div className="cart-item-image-name-container">
+                <div className="cart-item-image-container">
+                    <img className="cart-item-image" src={image} alt={name} />
+                </div>
+                {/* <div className="cart-right-container"> */}
+                <div className="cart-item-name-container">
+                    <Link className="homepage-items" to={{
+                        pathname:`/item/${name}`,
+                        search: `id=${id}`
+                    }}>
+                        <div className="cart-item-name">{name}</div>
+                    </Link>
+                    <div className="cart-item-totalPrice1">${totalPrice.toFixed(2)}</div>
+                </div>
+            </div>
+            <div className="cart-item-quantity-total-remove-container">
+                <div className="cart-item-quantity">
+                        <select className="cart-item-select-quantity" id={id} value={cartQuantity} onChange={handleUpdateItemQuantity}  >
+                        <option value={1}>01</option>
+                        <option value={2}>02</option>
+                        <option value={3}>03</option>
+                        <option value={4}>04</option>
+                        <option value={5}>05</option>
+                        <option value={6}>06</option>
+                        <option value={7}>07</option>
+                        <option value={8}>08</option>
+                        <option value={9}>09</option>
+                        <option value={10}>10</option>
+                    </select>
+                </div>
+                <div className="cart-item-totalPrice2">${totalPrice.toFixed(2)}</div>
+                <div className="cart-item-remove-icon"id={id} ><FontAwesomeIcon onClick={handleDeleteCartItem} icon={faTimes}>Remove</FontAwesomeIcon></div>
+            </div>
         </div>
+        {/* </div> */}
+        </>
     )
 }

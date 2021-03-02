@@ -38,11 +38,11 @@ theme = { ...theme,
         MuiTableCell: {
             root: {
                padding: '10px',
-               [theme.breakpoints.down(800)]: {
+               [theme.breakpoints.down(600)]: {
                     padding: "5px"
                 }
             }
-        },
+        }
     }
 };
 
@@ -153,7 +153,7 @@ export default function CheckoutItems({ backend, loggedIn, showItems, grabShowIt
                 <div className="Heading-Edit">
                     <h2 id="cart-heading">Your Cart</h2>
                     {/* <p id="edit" onClick={editCheckoutCart}><u>Edit</u></p> */}
-                    <FontAwesomeIcon className="home" icon={faShoppingBasket} onClick={editCheckoutCart}/>
+                    <FontAwesomeIcon className="shopping-basket" icon={faShoppingBasket} onClick={editCheckoutCart}/>
                 </div>
 
                 <div className="checkout-items-sub-container">
@@ -190,7 +190,7 @@ export default function CheckoutItems({ backend, loggedIn, showItems, grabShowIt
                                     <TableCell component="th" scope="row">
                                         Subtotal
                                     </TableCell>
-                                    <TableCell align="right">${subtotal}</TableCell>
+                                    <TableCell align="right">${subtotal.toFixed(2)}</TableCell>
                                 </TableRow>
 
                                 <TableRow key={"shipping-fee"}>
@@ -207,7 +207,7 @@ export default function CheckoutItems({ backend, loggedIn, showItems, grabShowIt
                                 
                                 <TableRow key={"total"}>
                                     <TableCell component="th" scope="row">Total</TableCell>
-                                    <TableCell align="right">${subtotal}</TableCell>
+                                    <TableCell align="right">${subtotal.toFixed(2)}</TableCell>
                                 </TableRow>
                             </TableBody>
                         </Table>

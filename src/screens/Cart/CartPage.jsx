@@ -1,9 +1,11 @@
 import React, {useEffect, useState} from 'react'
 import { Link } from 'react-router-dom';
-import '../../styles/CartPage.css'
-// import NavBar from '../../components/NavigationBar'
 import Footer from '../../components/Footer'
 import CartItemPage from './CartItemPage'
+import Button from 'react-bootstrap/Button'
+import '../../styles/CartPage.css'
+// import NavBar from '../../components/NavigationBar'
+
 
 function CartPage ({ backend, loggedIn, cartQuantity, grabCartQuantity, totalCartQuantity, grabTotalCartQuantity } ) {
 
@@ -87,7 +89,7 @@ function CartPage ({ backend, loggedIn, cartQuantity, grabCartQuantity, totalCar
         return (
             <>
             {/* <NavBar totalCartQuantity={totalCartQuantity} grabTotalCartQuantity={grabTotalCartQuantity} backend={backend} loggedIn={loggedIn}/> */}
-            <h2 className="noItems">No Items...</h2>
+            <div style={{display: 'flex', justifyContent: 'center', alignContent: 'center'}}><h1 className="noItems"><b>Empty Cart</b></h1></div>
             </>
         )
     } else if(items.length >0) {
@@ -95,14 +97,17 @@ function CartPage ({ backend, loggedIn, cartQuantity, grabCartQuantity, totalCar
             <>
             <div className="cart-page-container">
                 {/* <NavBar totalCartQuantity={totalCartQuantity} grabTotalCartQuantity={grabTotalCartQuantity}/> */}
+                <div><h2 id="shopping-cart-heading"><b>Shopping Cart</b></h2></div>
                 <div className="cart">
                     <div className="cart-items">
-                        {items.map((item) => { return <CartItemPage backend={backend} loggedIn={loggedIn} key={item.ItemId} id={item.ItemId} name={item.Name} quantity={item.Quantity} totalPrice={item.TotalPrice} grabItems={grabItems} grabTotalPrice={grabTotalPrice} grabTotalCartQuantity={grabTotalCartQuantity} cartQuantity={cartQuantity} grabCartQuantity={grabCartQuantity} /> })}
-                        <p><b>Total Price: ${totalPrice}</b></p>
+                        {items.map((item) => { return <CartItemPage backend={backend} loggedIn={loggedIn} key={item.ItemId} id={item.ItemId} name={item.Name} image={item.Image} quantity={item.Quantity} totalPrice={item.TotalPrice} grabItems={grabItems} grabTotalPrice={grabTotalPrice} grabTotalCartQuantity={grabTotalCartQuantity} cartQuantity={cartQuantity} grabCartQuantity={grabCartQuantity} /> })}
+                        {/* <div id="cart-total"> */}
+                            <div id="cart-total-heading"><span><b>Total Price: </b></span><b>${totalPrice.toFixed(2)}</b></div>
+                        {/* </div> */}
                     </div>
                         
                     <Link to="/checkout">
-                        <button>Checkout</button>
+                        <Button id="cart-checkout-button" variant="dark" size="lg"><b>Checkout</b></Button>
                     </Link>
                 </div>
                
