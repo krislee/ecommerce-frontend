@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import ReviewForm from '../../components/Reviews/ReviewForm';
 import Modal from 'react-modal';
 import { makeStyles } from '@material-ui/core/styles';

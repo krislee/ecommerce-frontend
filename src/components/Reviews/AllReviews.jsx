@@ -64,7 +64,7 @@ export default function AllReviews({allReviews}) {
                                 <p>{review.Comment}</p>
                             </div>
                         )
-                    };
+                    }
                 })
             )}
         </>

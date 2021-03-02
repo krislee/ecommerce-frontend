@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Modal from 'react-modal';
 import PaymentContainer from '../../components/UserProfile/PaymentContainer';
-import {useStripe, useElements, CardElement, CardExpiryElement, CardCvcElement, CardNumberElement} from '@stripe/react-stripe-js';
+import {useStripe, useElements, CardExpiryElement, CardCvcElement, CardNumberElement} from '@stripe/react-stripe-js';
 
 function UserProfilePayment ({ backend, paymentData, grabPaymentData, defaultFirstPayment, loggedIn, capitalize, capitalizeArray, grabRedirect }) {
 
@@ -233,7 +233,7 @@ function UserProfilePayment ({ backend, paymentData, grabPaymentData, defaultFir
                 grabRedirect={grabRedirect}
                 />
             );
-        };
+        }
     });
 
     return (

@@ -122,7 +122,7 @@ function UserProfileAddress ({ backend, addressData, defaultFirst, grabAddressDa
                 grabTotalCartQuantity={grabTotalCartQuantity}
                 grabRedirect={grabRedirect}/>
             );
-        };
+        }
     });
 
     return (

@@ -20,7 +20,7 @@ const StyledBadge = withStyles((theme) => ({
 }))(Badge);
 
 
-function NavBar ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuantity }) {
+function NavBar ({ totalCartQuantity, grabTotalCartQuantity }) {
 
     const location = useLocation()
     
