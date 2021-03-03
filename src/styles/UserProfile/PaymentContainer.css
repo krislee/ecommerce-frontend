@@ -71,6 +71,7 @@ button {
 
     .update-buttons > button {
         margin-right: 0px !important;
+        margin-bottom: 0.5rem;
     }
     
 }

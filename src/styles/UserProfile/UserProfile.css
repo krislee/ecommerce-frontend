@@ -20,15 +20,15 @@
 }
 
 .highlighted-tab {
-    background-color: #fff !important;
-    color: #000 !important; 
+    /* background-color: #fff !important; */
+    color: #fff !important;
 }
 
 .left-bar > div {
     cursor: pointer;
     width: 100%;
     height: 5rem;
-    color: #fff;
+    color: #737373;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -36,13 +36,6 @@
     font-family: 'Mukta Vaani', sans-serif;
 }
 
-/* .right-side {
-    height: 100%;
-} */
-
-.side-bar > div:hover {
-    background-color: #c8c8c8;
-}
 
 .addresses-container-noInfo, .payments-container-noInfo {
     width: 100%;

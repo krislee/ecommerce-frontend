@@ -24,7 +24,7 @@
 }
 
 .account-information-container { 
-    width: 20rem;
+    width: 25rem;
     background-color: #21212B;
     color: #fff;
     display: flex;
@@ -88,6 +88,18 @@
 }
 
 @media screen and (max-width: 599px) {
+
+    .account-information-container {
+        width: 20rem;
+    }
+
+    .settings > header {
+        font-size: 1.5rem;
+    }
+
+}
+
+@media screen and (max-width: 399px) {
 
     .account-information-container {
         width: 95%;
