@@ -25,6 +25,7 @@ function AllItems ({ loggedIn, grabURL, backend, totalCartQuantity, grabTotalCar
 
     const [items, setItems] = useState([]); // store all the items in items state
     const [totalItemsPage, setTotalItemsPage] = useState(0)
+    const [pageLimit, setPageLimit] = useState(0)
 
     useEffect(() => {
         
@@ -42,6 +43,7 @@ function AllItems ({ loggedIn, grabURL, backend, totalCartQuantity, grabTotalCar
             console.log(data.allElectronic);
             setItems(data.allElectronic);
             setTotalItemsPage(data.totalPages)
+            setPageLimit(data.pageLimit)
             setFooterLoading(false)
         };
 
@@ -81,11 +83,19 @@ function AllItems ({ loggedIn, grabURL, backend, totalCartQuantity, grabTotalCar
         </div>
     )
 
-
+    const retrieveDivID = () => {
+        if(pageIndex === totalItemsPage) {
+            if(items.length % pageLimit === 0) return 'even'
+            else return 'odd'
+        } else {
+            if(pageLimit % 2 === 0) return 'even'
+            else return 'odd'
+        }
+    }
     return (
         <>
         <div className="homepage-container">
-            {<div className={ totalItemsPage % items.length === 0 ? 'store-item-container-even' :'store-item-container-odd'}>
+            {<div className={ retrieveDivID() === 'even' ? 'store-item-container-even' :'store-item-container-odd'}>
                 {itemList}     
             </div>}
             <div className={classes.root}>

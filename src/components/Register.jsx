@@ -18,6 +18,7 @@ export default function Register ({backend, loggedIn, grabLoginInfo, buyer, sell
     const [usernameError, setUsernameError] = useState(false)
     const [usernameInvalid, setUsernameInvalid] = useState(false)
     const [passwordInvalid, setPasswordInvalid] = useState(false)
+    const [emailInvalid, setEmailInvalid] = useState(false)
 
     const handleRegister = async (event) => {
         event.preventDefault();
@@ -43,10 +44,12 @@ export default function Register ({backend, loggedIn, grabLoginInfo, buyer, sell
                 setEmailError(true)
             } else if(registerData.usernameMsg) {
                 setUsernameError(true)
-            } else if(registerData.details && registerData.details[0].message === 'username length must be at least 8 characters long') {
+            } else if(registerData.details && registerData.details[0].message === "\"username\" length must be at least 8 characters long") {
                 setUsernameInvalid(true)
-            } else if(registerData.details && registerData.details[0].message === 'password length must be at least 8 characters long"') {
+            } else if(registerData.details && registerData.details[0].message === "\"password\" length must be at least 8 characters long") {
                 setPasswordInvalid(true)
+            } else if(registerData.details && registerData.details[0].message === "\"email\" must be a valid email") {
+                setEmailInvalid(true)
             }
             if (registerData.success === true) {
                 localStorage.setItem('token', registerData.token)
@@ -108,17 +111,20 @@ export default function Register ({backend, loggedIn, grabLoginInfo, buyer, sell
                 {(email === '' || fullName.firstName === '' || fullName.lastName === '' || password === '' || username === '') ? <Button className="submit-button-disabled" type="submit" variant="dark" size='lg' disabled={true}>Submit</Button> :  <Button size='lg' className="submit-button" variant="dark" type="submit">Submit</Button> }
 
             </form>
+            <Toast onClose={() => setEmailInvalid(false)} show={emailInvalid} delay={3000} autohide>
+                <Toast.Body>Invalid email</Toast.Body>
+            </Toast>
             <Toast onClose={() => setEmailError(false)} show={emailError} delay={3000} autohide>
-                <Toast.Body>Email is already taken.</Toast.Body>
+                <Toast.Body>This email has been registered already.</Toast.Body>
             </Toast>
             <Toast onClose={() => setUsernameError(false)} show={usernameError} delay={3000} autohide>
-                <Toast.Body>Username is already taken.</Toast.Body>
+                <Toast.Body>Username has been taken</Toast.Body>
             </Toast>
             <Toast onClose={() => setUsernameInvalid(false)} show={usernameInvalid} delay={3000} autohide>
                 <Toast.Body>Username needs to be at least 8 characters.</Toast.Body>
             </Toast>
             <Toast onClose={() => setPasswordInvalid(false)} show={passwordInvalid} delay={3000} autohide>
-                <Toast.Body>Password nneeds to be at least 8 characters.</Toast.Body>
+                <Toast.Body>Password needs to be at least 8 characters.</Toast.Body>
             </Toast>
          </div>
         )
