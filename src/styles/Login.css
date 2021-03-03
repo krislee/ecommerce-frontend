@@ -3,11 +3,12 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-gap: 1rem;
-    height: 115vh;
+    /* height: 115vh; */
+    height: 100vh;
     width: 100vw;
     /* margin-top: 7rem; */
     /* padding-top: 7rem; */
-    padding-top: 8.5rem;
+    /* padding-top: 8.5rem; */
     /* margin-bottom: 3rem; */
     background-color: #21212B;
 }
@@ -18,9 +19,11 @@
 }
 
 #register-heading {
-    padding-top: 0px;
-    padding-bottom: 40px;
-    margin-left: 2rem;
+    /* padding-top: 0px; */
+    padding-top: 2rem;
+    /* padding-bottom: 40px; */
+    margin: 0rem 0rem 0rem 2rem;
+    /* margin-left: 2rem; */
     color: white;
 }
 
@@ -31,6 +34,7 @@
     flex-direction: column;
     align-self: normal;
     box-shadow: none;
+    margin-left: 1rem;
 }
 /* Form's Input */
 .register-form > .register-input {
@@ -47,46 +51,34 @@
 
 .carousel-item {
     /* height: 40rem */
-    height: 37rem
+    /* height: 37rem */
+    height: 100vh;
 }
-
-.register-form > .submit-button, .submit-button-disabled {
-    margin-top: 2rem;
-}
-
-/* .register-form > .submit-button{
-    background-color: black;
-    color: white;
-    border: 1px solid #fff;
+.register-form > .btn-dark {
     margin-top: 1rem;
-    width: 3rem;
-    font-size: 16px;
-    cursor: pointer;
-    font-family: 'Roboto', sans-serif;
-    border-radius: 0px;
 }
 
-.register-form > .submit-button:hover {
-    background-color: white;
-    color: black;
-    transition: 0.2s all ease-in;
-    border: 1px solid #000;
-}
-
-.register-form > .submit-button-disabled {
-    background-color: #c3c3c3;
-    color: white;
-    border: 1px solid #fff;
-    font-size: 16px;
-    font-family: 'Roboto', sans-serif;
-    border-radius: 0px;
-    margin-bottom: 2rem;
+.register-form > #submit-button, .register-form > #submit-button-disabled {
     margin-top: 2rem;
-    width: 45%;
-    height: 100%;
-} */
+    margin-top: 1rem;
+}
 
-
+#toast-container {
+    margin-top: 4.5rem;
+    display: flex;
+    justify-content: center;
+}
+#heading-form-container .toast {
+    /* position: absolute;
+    top: 4.5rem;
+    left: 2.5rem; */
+    width: 100%;
+    border-radius: 3rem;
+    
+}
+#heading-form-container .toast-body {
+    text-align: center;
+}
 
 /* MEDIA QUERIES */
 
@@ -108,7 +100,7 @@
 @media only screen and (max-width: 600px) {
     .buyer-login {
         grid-template-columns: 1fr;
-        height: 107vh;
+        /* height: 107vh; */
     }
     #register-heading {
         font-size: 1.5rem !important;
@@ -120,7 +112,7 @@
     #buyer-carousel {
         display: none;
     }
-    .register-form > .submit-button, .submit-button-disabled {
+    .register-form > #submit-button, #submit-button-disabled {
         width: auto;
         height: auto;
         padding: none;

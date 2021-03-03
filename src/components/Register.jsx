@@ -20,9 +20,10 @@ export default function Register ({backend, loggedIn, grabLoginInfo, buyer, sell
     const [passwordInvalid, setPasswordInvalid] = useState(false)
     const [emailInvalid, setEmailInvalid] = useState(false)
 
+    const [disabled, setDisabled] = useState(false)
     const handleRegister = async (event) => {
         event.preventDefault();
-
+        setDisabled(true)
         const registerInfo = {
             username: username,
             password: password,
@@ -71,14 +72,17 @@ export default function Register ({backend, loggedIn, grabLoginInfo, buyer, sell
      /* ------- UPDATE INPUT STATES ------- */
     const handleChangeUsername = e => {
         setUsername(e.target.value)
+        // setDisabled(false)
     }
 
     const handleChangePassword = e => {
         setPassword(e.target.value)
+        // setDisabled(false)
     }
 
     const handleChangeEmail = e => {
         setEmail(e.target.value)
+        // setDisabled(false)
     }
 
     const handleChangeName = (e) => {
@@ -86,6 +90,7 @@ export default function Register ({backend, loggedIn, grabLoginInfo, buyer, sell
         setFullName((prevName) => ({
             ...prevName, [name]: value
         }))
+        // setDisabled(false)
     }
 
     
@@ -96,8 +101,62 @@ export default function Register ({backend, loggedIn, grabLoginInfo, buyer, sell
     } else {
         return (
             <div id="heading-form-container">
+                <div id = "toast-container">
+
+                    <Toast onClose={() => {
+                        setEmailInvalid(false)
+                        setDisabled(false)
+                    }} show={emailInvalid} 
+                    delay={3000} 
+                    autohide >
+                        <Toast.Body>Invalid email</Toast.Body>
+                    </Toast>
+
+                    <Toast onClose={() => {
+                        setEmailError(false)
+                        setDisabled(false)
+                    }} 
+                    show={emailError} 
+                    delay={3000} 
+                    autohide >
+                        <Toast.Body>This email has been registered already.</Toast.Body>
+                    </Toast>
+
+                    <Toast onClose={() => {
+                        setUsernameError(false)
+                        setDisabled(false)
+                    }} 
+                    show={usernameError} 
+                    delay={3000} 
+                    autohide >
+                        <Toast.Body>Username has been taken</Toast.Body>
+                    </Toast>
+
+                    <Toast onClose={() => {
+                        setUsernameInvalid(false)
+                        setDisabled(false)
+                    }} 
+                    show={usernameInvalid} 
+                    delay={3000} 
+                    autohide >
+                        <Toast.Body>Username needs to be at least 8 characters.</Toast.Body>
+                    </Toast>
+
+                    <Toast onClose={() => {
+                        setPasswordInvalid(false)
+                        setDisabled(false)
+                    }} 
+                    show={passwordInvalid} 
+                    delay={3000} 
+                    autohide >
+                        <Toast.Body>Password needs to be at least 8 characters.</Toast.Body>
+                    </Toast>
+                </div>
+
             <h2 id="register-heading">Register</h2>
-            <form className="register-form" onSubmit={handleRegister}>
+            <div className="register-form" 
+            // onSubmit={handleRegister}
+            >
                 <input className="register-input" type="text" placeholder="First Name" name="firstName" value={fullName.firstName || ""} onChange={handleChangeName}></input>
 
                 <input  className="register-input" type="text" placeholder="Last Name" name ="lastName" value={fullName.lastName || ""} onChange={handleChangeName}></input>
@@ -108,24 +167,9 @@ export default function Register ({backend, loggedIn, grabLoginInfo, buyer, sell
 
                 <input className="register-input" type="password" placeholder="Password" value={password} onChange={handleChangePassword}  autoComplete="current-password"></input>
 
-                {(email === '' || fullName.firstName === '' || fullName.lastName === '' || password === '' || username === '') ? <Button className="submit-button-disabled" type="submit" variant="dark" size='lg' disabled={true}>Submit</Button> :  <Button size='lg' className="submit-button" variant="dark" type="submit">Submit</Button> }
+                {(email === '' || fullName.firstName === '' || fullName.lastName === '' || password === '' || username === '' || disabled) ? <Button id="submit-button-disabled" type="submit" variant="dark" size='lg' disabled={true}>Submit</Button> :  <Button size='lg' id="submit-button" variant="dark" type="button" onClick={handleRegister} >Submit</Button> }
 
-            </form>
-            <Toast onClose={() => setEmailInvalid(false)} show={emailInvalid} delay={3000} autohide>
-                <Toast.Body>Invalid email</Toast.Body>
-            </Toast>
-            <Toast onClose={() => setEmailError(false)} show={emailError} delay={3000} autohide>
-                <Toast.Body>This email has been registered already.</Toast.Body>
-            </Toast>
-            <Toast onClose={() => setUsernameError(false)} show={usernameError} delay={3000} autohide>
-                <Toast.Body>Username has been taken</Toast.Body>
-            </Toast>
-            <Toast onClose={() => setUsernameInvalid(false)} show={usernameInvalid} delay={3000} autohide>
-                <Toast.Body>Username needs to be at least 8 characters.</Toast.Body>
-            </Toast>
-            <Toast onClose={() => setPasswordInvalid(false)} show={passwordInvalid} delay={3000} autohide>
-                <Toast.Body>Password needs to be at least 8 characters.</Toast.Body>
-            </Toast>
+            </div>
          </div>
         )
     }
