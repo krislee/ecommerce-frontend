@@ -44,6 +44,14 @@
     font-size: 1rem !important;
     border-radius: 0.85rem;
 }
+.register-form > .register-invalid-username-input, .register-form > .register-invalid-email-input, .register-form > .register-invalid-password-input {
+    margin: 1rem;
+    width: 90%;
+    padding: 1.5rem !important;
+    font-size: 1rem !important;
+    border-radius: 0.85rem;
+    border: 1re solid red;
+}
 
 :focus {
     outline: none !important;
@@ -54,9 +62,9 @@
     /* height: 37rem */
     height: 100vh;
 }
-.register-form > .btn-dark {
+/* .register-form > .btn-dark {
     margin-top: 1rem;
-}
+} */
 
 .register-form > #submit-button, .register-form > #submit-button-disabled {
     margin-top: 2rem;
@@ -74,7 +82,8 @@
     left: 2.5rem; */
     width: 100%;
     border-radius: 3rem;
-    
+    background-color: #e5383b;
+    color: white;
 }
 #heading-form-container .toast-body {
     text-align: center;
@@ -97,7 +106,7 @@
     } */
 }
 
-@media only screen and (max-width: 600px) {
+@media only screen and (max-width: 700px) {
     .buyer-login {
         grid-template-columns: 1fr;
         /* height: 107vh; */
