@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import {Link, useParams, useHistory} from 'react-router-dom';
 import Item from '../../components/Item';
-import '../../styles/Homepage.css'
+import '../../styles/Items/AllItems.css'
 // import NavBar from '../../components/NavigationBar'
 import Footer from '../../components/Footer'
 import { makeStyles } from '@material-ui/core/styles';
-import { Pagination, PaginationItem } from '@material-ui/lab';
+import { Pagination } from '@material-ui/lab';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -64,39 +64,41 @@ function AllItems ({ loggedIn, grabURL, backend, totalCartQuantity, grabTotalCar
     }
 
     const itemList = items.map((item, index) => 
-        <React.Fragment key={index}>
-        <Link className="homepage-items" to={{
-            pathname:`/item/${item.Name}`,
-            search: `id=${item._id}`
-        }}>
-            <Item 
-            name={item.Name}
-            itemUrl={`${backend}/buyer/electronic/${item._id}`}
-            grabURL={grabURL}
-            />
-        </Link>
-        </React.Fragment>
+        <div className="individual-store-item-container" key={index}>
+            <div className="individual-store-item-img"><img src={item.Image[0]} /></div>
+            <div className="item-name-link">
+            <Link className="homepage-items" to={{
+                pathname:`/item/${item.Name}`,
+                search: `id=${item._id}`
+            }}>
+                <Item 
+                name={item.Name}
+                itemUrl={`${backend}/buyer/electronic/${item._id}`}
+                grabURL={grabURL}
+                />
+            </Link>
+            </div>
+        </div>
     )
 
 
     return (
+        <>
         <div className="homepage-container">
-            {/* <NavBar totalCartQuantity={totalCartQuantity} grabTotalCartQuantity={grabTotalCartQuantity} backend={backend} loggedIn={loggedIn}/> */}
-
-            <div className="display-item-container">
-                {<div className={loggedIn() ? 'itemContainerLoggedIn' : 'itemContainer'}>
-                    {itemList}
-                    <div className={classes.root}>
-                        <Pagination showFirstButton showLastButton size="large" variant="outlined" shape="rounded" page={Number(pageIndex)} count={totalItemsPage} siblingCount={1} boundaryCount={2} onChange={handlePageOnChange} />
-                    </div>        
-                </div>}
-            </div>
-     
-            <Footer footerLoading={footerLoading}/>
+            {<div className={ totalItemsPage % items.length === 0 ? 'store-item-container-even' :'store-item-container-odd'}>
+                {itemList}     
+            </div>}
+            <div className={classes.root}>
+                <Pagination size="large" variant="outlined" shape="rounded" count={totalItemsPage} onChange={handlePageOnChange} siblingCount={0} />
+            </div>   
         </div>
+        <Footer footerLoading={footerLoading}/>
+        </>
     )
 }
 
 
 
 export default AllItems
+// 002424
+// tabindex="-1"

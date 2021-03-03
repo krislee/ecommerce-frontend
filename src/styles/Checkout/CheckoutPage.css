@@ -58,17 +58,6 @@ h2 {
     font-style: italic;
 }
 
-
-/* .modal {
-    top: '35%';
-    left: '50%';
-    right: 'auto';
-    bottom: 'auto';
-    margin-right: '-50%';
-    width: '60%';
-    transform: 'translate(-40%, -10%)';
-} */
-
 @media only screen and (max-width: 800px) {
     #payment-form {
         display: flex;

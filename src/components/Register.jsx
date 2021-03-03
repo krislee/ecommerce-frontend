@@ -1,7 +1,8 @@
 import React, {useState} from 'react'
 import {Redirect} from 'react-router-dom';
-import '../styles/Login.css'
+// import '../styles/Login.css'
 import Toast from 'react-bootstrap/Toast'
+import Button from 'react-bootstrap/Button'
 
 export default function Register ({backend, loggedIn, grabLoginInfo, buyer, seller}) {
 
@@ -42,9 +43,9 @@ export default function Register ({backend, loggedIn, grabLoginInfo, buyer, sell
                 setEmailError(true)
             } else if(registerData.usernameMsg) {
                 setUsernameError(true)
-            } else if(registerData.details && registerData.details[0].message === '\"username\" length must be at least 8 characters long') {
+            } else if(registerData.details && registerData.details[0].message === 'username length must be at least 8 characters long') {
                 setUsernameInvalid(true)
-            } else if(registerData.details && registerData.details[0].message === '\"password\" length must be at least 8 characters long"') {
+            } else if(registerData.details && registerData.details[0].message === 'password length must be at least 8 characters long"') {
                 setPasswordInvalid(true)
             }
             if (registerData.success === true) {
@@ -91,14 +92,21 @@ export default function Register ({backend, loggedIn, grabLoginInfo, buyer, sell
         )
     } else {
         return (
-            <>
-            <form className="login" onSubmit={handleRegister}>
-                <input type="text" placeholder="First Name" name="firstName" value={fullName.firstName || ""} onChange={handleChangeName}></input>
-                <input type="text" placeholder="Last Name" name ="lastName" value={fullName.lastName || ""} onChange={handleChangeName}></input>
-                <input type="text" placeholder="Username" value={username} onChange={handleChangeUsername}></input>
-                <input type="email" placeholder="Email" value={email} onChange={handleChangeEmail}></input>
-                <input type="password" placeholder="Password" value={password} onChange={handleChangePassword}  autoComplete="current-password"></input>
-                {(email === '' || fullName.firstName === '' || fullName.lastName === '' || password === '' || username === '') ? <input className="submit-button-disabled" type="submit" disabled={true}/> :  <input className="submit-button" type="submit" />}
+            <div id="heading-form-container">
+            <h2 id="register-heading">Register</h2>
+            <form className="register-form" onSubmit={handleRegister}>
+                <input className="register-input" type="text" placeholder="First Name" name="firstName" value={fullName.firstName || ""} onChange={handleChangeName}></input>
+
+                <input  className="register-input" type="text" placeholder="Last Name" name ="lastName" value={fullName.lastName || ""} onChange={handleChangeName}></input>
+
+                <input className="register-input" type="text" placeholder="Username" value={username} onChange={handleChangeUsername}></input>
+
+                <input className="register-input" type="email" placeholder="Email" value={email} onChange={handleChangeEmail}></input>
+
+                <input className="register-input" type="password" placeholder="Password" value={password} onChange={handleChangePassword}  autoComplete="current-password"></input>
+
+                {(email === '' || fullName.firstName === '' || fullName.lastName === '' || password === '' || username === '') ? <Button className="submit-button-disabled" type="submit" variant="dark" size='lg' disabled={true}>Submit</Button> :  <Button size='lg' className="submit-button" variant="dark" type="submit">Submit</Button> }
+
             </form>
             <Toast onClose={() => setEmailError(false)} show={emailError} delay={3000} autohide>
                 <Toast.Body>Email is already taken.</Toast.Body>
@@ -112,7 +120,7 @@ export default function Register ({backend, loggedIn, grabLoginInfo, buyer, sell
             <Toast onClose={() => setPasswordInvalid(false)} show={passwordInvalid} delay={3000} autohide>
                 <Toast.Body>Password nneeds to be at least 8 characters.</Toast.Body>
             </Toast>
-         </>
+         </div>
         )
     }
 }

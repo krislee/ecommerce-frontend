@@ -1,61 +1,128 @@
-.login {
-    margin-top: 30px;
+
+.buyer-login {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 1rem;
+    height: 115vh;
+    width: 100vw;
+    /* margin-top: 7rem; */
+    /* padding-top: 7rem; */
+    padding-top: 8.5rem;
+    /* margin-bottom: 3rem; */
+    background-color: #21212B;
+}
+
+#heading-form-container {
     display: flex;
-    justify-content: center;
-    align-items: center;
     flex-direction: column;
 }
 
-.login > input {
-    margin: 5px;
-    height: 30px;
-    width: 200px;
-    padding: 5px;
-    border: 1px solid #c3c3c3;
+#register-heading {
+    padding-top: 0px;
+    padding-bottom: 40px;
+    margin-left: 2rem;
+    color: white;
+}
+
+/* Form */
+.register-form {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    align-self: normal;
+    box-shadow: none;
+}
+/* Form's Input */
+.register-form > .register-input {
+    margin: 1rem;
+    width: 90%;
+    padding: 1.5rem !important;
+    font-size: 1rem !important;
+    border-radius: 0.85rem;
 }
 
 :focus {
     outline: none !important;
 }
 
-.login > .submit-button{
+.carousel-item {
+    /* height: 40rem */
+    height: 37rem
+}
+
+.register-form > .submit-button, .submit-button-disabled {
+    margin-top: 2rem;
+}
+
+/* .register-form > .submit-button{
     background-color: black;
     color: white;
     border: 1px solid #fff;
-    margin: 30px;
-    height: 50px;
-    width: 80px;
+    margin-top: 1rem;
+    width: 3rem;
     font-size: 16px;
     cursor: pointer;
     font-family: 'Roboto', sans-serif;
     border-radius: 0px;
 }
 
-.login > .submit-button:hover {
+.register-form > .submit-button:hover {
     background-color: white;
     color: black;
     transition: 0.2s all ease-in;
     border: 1px solid #000;
 }
 
-.login > .submit-button-disabled {
+.register-form > .submit-button-disabled {
     background-color: #c3c3c3;
     color: white;
     border: 1px solid #fff;
-    margin: 30px;
-    height: 50px;
-    width: 80px;
     font-size: 16px;
-    /* cursor: pointer; */
     font-family: 'Roboto', sans-serif;
     border-radius: 0px;
+    margin-bottom: 2rem;
+    margin-top: 2rem;
+    width: 45%;
+    height: 100%;
+} */
+
+
+
+/* MEDIA QUERIES */
+
+@media only screen and (max-width: 800px) {
+    .carousel-item {
+        /* height: 35rem; */
+        
+    }
+    .register-form {
+        height: 30rem;
+
+    }
+    /* .register-form > .register-input {
+        margin: 0.7rem;
+        padding: 1rem !important;
+    } */
 }
 
-.seller-login, .buyer-login {
-    display: flex;
-    justify-content: space-between;
-    flex-direction: column;
-    align-items: center;
-    height: 100%;
-    width: 100vw;
+@media only screen and (max-width: 600px) {
+    .buyer-login {
+        grid-template-columns: 1fr;
+        height: 107vh;
+    }
+    #register-heading {
+        font-size: 1.5rem !important;
+        padding-bottom: 0px
+    }
+    #heading-form-container {
+        width: 100vw;
+    }
+    #buyer-carousel {
+        display: none;
+    }
+    .register-form > .submit-button, .submit-button-disabled {
+        width: auto;
+        height: auto;
+        padding: none;
+    }
 }
