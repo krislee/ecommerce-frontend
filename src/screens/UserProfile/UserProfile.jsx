@@ -297,7 +297,7 @@ function UserProfile ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuant
                         onClick={handleClickAddresses} 
                         className={addressesTabOpen === true ? "highlighted-tab" : null}>
                             <FontAwesomeIcon style={{fontSize: '1.5rem', marginBottom: '0.2rem'}} icon={faAddressCard}/>
-                            Addresses
+                            <div>Addresses</div>
                         </div>
                         <div 
                         style={{
@@ -307,7 +307,7 @@ function UserProfile ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuant
                         onClick={handleClickPayments} 
                         className={paymentsTabOpen === true ? "highlighted-tab" : null}>
                             <FontAwesomeIcon style={{fontSize: '1.5rem', marginBottom: '0.2rem'}} icon={faCreditCard}/>
-                            Payments
+                            <div>Payments</div>
                         </div>
                         <div 
                         style={{
@@ -317,7 +317,7 @@ function UserProfile ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuant
                         onClick={handleClickOrders} 
                         className={ordersTabOpen === true ? "highlighted-tab" : null}>
                             <FontAwesomeIcon style={{fontSize: '1.5rem', marginBottom: '0.2rem'}} icon={faReceipt}/>
-                           Orders
+                            <div>Orders</div>
                         </div>
                         <div 
                         style={{
@@ -327,7 +327,7 @@ function UserProfile ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuant
                         onClick={handleClickReviews} 
                         className={reviewsTabOpen === true ? "highlighted-tab" : null}>
                             <FontAwesomeIcon style={{fontSize: '1.5rem', marginBottom: '0.2rem'}} icon={faPen}/>
-                           Reviews
+                            <div>Reviews</div>
                         </div>
                     </div>
                    <div className="right-side">

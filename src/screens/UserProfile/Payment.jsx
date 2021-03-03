@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import Modal from 'react-modal';
 import PaymentContainer from '../../components/UserProfile/PaymentContainer';
 import {useStripe, useElements, CardExpiryElement, CardCvcElement, CardNumberElement} from '@stripe/react-stripe-js';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
 function UserProfilePayment ({ backend, paymentData, grabPaymentData, defaultFirstPayment, loggedIn, capitalize, capitalizeArray, grabRedirect }) {
 
@@ -245,6 +247,11 @@ function UserProfilePayment ({ backend, paymentData, grabPaymentData, defaultFir
                 className="add-address" 
                 onClick={openModal}>
                         Add Payment
+                </div>
+                <div 
+                className="add-address-media add-address"
+                onClick={openModal}>
+                    <FontAwesomeIcon icon={faPlus} />
                 </div>
             </div>
             {/* If there are no payment methods, then return a statement that tells users to add a payment method, otherwise the user will see all the payments they have decided to save */}

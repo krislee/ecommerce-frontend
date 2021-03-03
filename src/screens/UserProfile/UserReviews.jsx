@@ -188,7 +188,7 @@ export default function UserReviews({ backend, loggedIn, reviewData, grabReviewD
         <div style={{
             display: 'flex',
             flexDirection: 'column',
-            justifyContent: 'center',
+            justifyContent: 'flex-start',
             height: '100%'
         }}>
             <div style={{

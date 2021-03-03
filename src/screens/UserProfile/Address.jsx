@@ -1,3 +1,5 @@
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useState } from 'react';
 import Modal from 'react-modal';
 import Input from '../../components/Input';
@@ -134,6 +136,11 @@ function UserProfileAddress ({ backend, addressData, defaultFirst, grabAddressDa
                 className="add-address" 
                 onClick={openModal}>
                     Add Address
+                </div>
+                <div 
+                className="add-address-media add-address" 
+                onClick={openModal}>
+                    <FontAwesomeIcon icon={faPlus}/>
                 </div>
             </div>
             {/* If there are no addresses, then return a statement that tells users to add an address, otherwise the user will see all the addresses they have decided to save */}

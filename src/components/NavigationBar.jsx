@@ -36,7 +36,7 @@ function NavBar ({ totalCartQuantity, grabTotalCartQuantity }) {
                 key: uuidv4(),
                 state: {prevPath: location.pathname }
             }}>
-                <div className="home-container" >
+                <div className="home-container">
                     <FontAwesomeIcon className="home" icon={faHome}/>
                 </div>
             </Link>

@@ -46,3 +46,23 @@
 .order-container > a > div > div > div > span:nth-child(2) {
     text-align: end;
 }
+
+@media screen and (max-width: 599px) {
+
+    .order-container {
+        width: 20rem;
+    }
+
+    .date-and-time {
+        font-size: 1.2rem;
+    }
+
+}
+
+@media screen and (max-width: 399px) {
+
+    .order-container {
+        width: 15rem;
+    }
+
+}

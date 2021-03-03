@@ -24,7 +24,7 @@
 }
 
 .account-information-container { 
-    width: 45%;
+    width: 20rem;
     background-color: #21212B;
     color: #fff;
     display: flex;
@@ -85,4 +85,16 @@
 
 .MuiButton-contained.Mui-disabled {
     background-color: #e0e0e0 !important;
+}
+
+@media screen and (max-width: 599px) {
+
+    .account-information-container {
+        width: 95%;
+    }
+
+    .settings > header {
+        font-size: 1.5rem;
+    }
+
 }

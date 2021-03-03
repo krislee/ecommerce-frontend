@@ -52,7 +52,7 @@
     position: relative;
     top: 45%;
     display: flex;
-    width: 25%;
+    width: 5rem;
     font-size: 1rem;
     justify-content: space-between;
 }
@@ -61,7 +61,7 @@
     position: relative;
     top: 30%;
     display: flex;
-    width: 25%;
+    width: 5rem;
     font-size: 1rem;
     justify-content: space-between;
 }

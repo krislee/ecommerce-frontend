@@ -61,3 +61,16 @@ button {
 .MuiSvgIcon-root {
     fill: #fff !important;
 }
+
+@media screen and (max-width: 599px) {
+
+    .update-buttons {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .update-buttons > button {
+        margin-right: 0px !important;
+    }
+    
+}
