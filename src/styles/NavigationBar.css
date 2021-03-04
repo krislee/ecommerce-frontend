@@ -41,7 +41,7 @@ a {
 
 .cart-profile-container {
     display: flex;
-    width: 10rem;
+    /* width: 10rem; */
     justify-content: space-between;
     align-items: center;
     height: 100%;

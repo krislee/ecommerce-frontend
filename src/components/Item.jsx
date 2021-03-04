@@ -8,9 +8,9 @@ function Item ({ name, itemUrl, grabURL }) {
     };
 
     return (
-        <div className="item" onClick={() => grabAndLogURL()}>
+        <div className="store-item-name-container" onClick={() => grabAndLogURL()}>
             {name.length < 50 ? <div>{name}</div> :
-            <div>{`${name.split(" ").splice(0, 8).join(" ")}...`}</div>}
+            <div className="store-item-name">{`${name.split(" ").splice(0, 8).join(" ")}...`}</div>}
         </div>
     );
 };
