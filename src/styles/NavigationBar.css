@@ -39,13 +39,23 @@ a {
     color: #b8b8b8;
 }
 
-.cart-profile-container {
+.login-cart-profile-nav-container {
     display: flex;
-    /* width: 10rem; */
+    width: 10rem;
     justify-content: space-between;
     align-items: center;
     height: 100%;
-    margin-right: 2vw;
+    margin-right: 3.5vw;
+    /* position: absolute;
+    right: 0; */
+}
+
+.guest-cart-nav-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 100%;
+    margin-right: 4vw;
     /* position: absolute;
     right: 0; */
 }
@@ -180,4 +190,27 @@ a {
 .dropdown-item.active, .dropdown-item:active {
     background-color: #fff !important;
     color: #000 !important;
+}
+
+
+
+/* HAMBURGER */
+
+#navbar-hamburger {
+    display: none
+}
+
+@media only screen and (max-width: 600px) {
+    .navbar {
+        
+    }
+    #navbar-hamburger {
+        display: block;
+    }
+    #navbar-hamburger .MuiButtonBase-root {
+        color: white;
+    }
+    #nav-bar-dropdown, .login-button-container {
+        display: none
+    }
 }
