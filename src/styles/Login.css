@@ -1,7 +1,7 @@
 
 .buyer-login {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 2fr;
     grid-gap: 1rem;
     /* height: 115vh; */
     height: 100vh;
@@ -20,7 +20,7 @@
 
 #register-heading {
     /* padding-top: 0px; */
-    padding-top: 2rem;
+    padding-top: 6rem;
     /* padding-bottom: 40px; */
     margin: 0rem 0rem 0rem 2rem;
     /* margin-left: 2rem; */
@@ -37,22 +37,35 @@
     margin-left: 1rem;
 }
 /* Form's Input */
-.register-form > .register-input {
+/* .register-form > .register-input {
     margin: 1rem;
     width: 90%;
     padding: 1.5rem !important;
     font-size: 1rem !important;
     border-radius: 0.85rem;
-}
-.register-form > .register-invalid-username-input, .register-form > .register-invalid-email-input, .register-form > .register-invalid-password-input {
+} */
+/* .register-form > .register-invalid-username-input, .register-form > .register-invalid-email-input, .register-form > .register-invalid-password-input {
     margin: 1rem;
     width: 90%;
     padding: 1.5rem !important;
     font-size: 1rem !important;
     border-radius: 0.85rem;
     border: 1re solid red;
+} */
+.register-form form {
+    box-shadow: none !important;
+    padding-bottom: 0;
 }
+#register-container label{ 
+    color: white;
 
+}
+#register-container input{ 
+    padding: 1.5rem 0rem 0.5rem 12px !important;
+    margin-top: 10px;
+    color: white;
+    border-radius: 5px !important;
+}
 :focus {
     outline: none !important;
 }
@@ -62,13 +75,11 @@
     /* height: 37rem */
     height: 100vh;
 }
-/* .register-form > .btn-dark {
-    margin-top: 1rem;
-} */
 
 .register-form > #submit-button, .register-form > #submit-button-disabled {
-    margin-top: 2rem;
-    margin-top: 1rem;
+    /* margin-top: 2rem;
+    margin-top: 1rem; */
+    margin-top: 0px;
 }
 
 #toast-container {
@@ -77,9 +88,6 @@
     justify-content: center;
 }
 #heading-form-container .toast {
-    /* position: absolute;
-    top: 4.5rem;
-    left: 2.5rem; */
     width: 100%;
     border-radius: 3rem;
     background-color: #e5383b;
@@ -90,15 +98,20 @@
 }
 
 /* MEDIA QUERIES */
-
-@media only screen and (max-width: 800px) {
-    .carousel-item {
-        /* height: 35rem; */
-        
+@media only screen and (max-width: 1050px) {
+    .buyer-login {
+        grid-template-columns: 1fr 1fr;
     }
+}
+@media only screen and (max-width: 800px) {
+
     .register-form {
         height: 30rem;
+    }
 
+    .register-form form {
+        padding-left: 0;
+        padding-right: 0
     }
     /* .register-form > .register-input {
         margin: 0.7rem;
@@ -113,17 +126,28 @@
     }
     #register-heading {
         font-size: 1.5rem !important;
-        padding-bottom: 0px
+        padding-bottom: 1rem;
+    }
+    .register-form {
+        margin-left: 0;
+    }
+    .register-form form {
+        padding-left: 2rem;
+        padding-right: 2rem
     }
     #heading-form-container {
         width: 100vw;
     }
+    #register-container label {
+        font-size: 0.75rem ;
+    }
     #buyer-carousel {
         display: none;
     }
-    .register-form > #submit-button, #submit-button-disabled {
-        width: auto;
-        height: auto;
-        padding: none;
+    .register-form > #submit-button, .register-form > #submit-button-disabled {
+        width: auto !important;
+        height: auto !important;
+        padding: .375rem .75rem !important;
+        margin-top:  1rem;
     }
 }

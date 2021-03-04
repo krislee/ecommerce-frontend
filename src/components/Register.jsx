@@ -3,6 +3,8 @@ import {Redirect} from 'react-router-dom';
 // import '../styles/Login.css'
 import Toast from 'react-bootstrap/Toast'
 import Button from 'react-bootstrap/Button'
+import TextField from '@material-ui/core/TextField';
+import { makeStyles } from '@material-ui/core/styles';
 
 export default function Register ({backend, loggedIn, grabLoginInfo, buyer, seller}) {
 
@@ -24,9 +26,29 @@ export default function Register ({backend, loggedIn, grabLoginInfo, buyer, sell
     const [emailInvalidInput, setEmailInvalidInput] = useState(false)
     const [disabled, setDisabled] = useState(false)
 
+    const useStyles = makeStyles((theme) => ({
+        root: {
+          '& .MuiTextField-root': {
+            'margin-bottom': '1.75rem',
+            width: "100%"
+
+          },
+        },
+    }));
+
+    const classes = useStyles();
+
     const handleRegister = async (event) => {
         event.preventDefault();
-        setDisabled(true)
+
+        setDisabled(true) // disable button after submitting to prevent user making consecutive requests; renable the button after typing in the input
+
+        // If there was any error, make the error false so that we do not see it
+        setEmailError(false)
+        setEmailInvalid(false)
+        setUsernameError(false)
+        setUsernameInvalid(false)
+        setPasswordInvalid(false)
 
         const registerInfo = {
             username: username,
@@ -35,6 +57,7 @@ export default function Register ({backend, loggedIn, grabLoginInfo, buyer, sell
             name: `${fullName.firstName}, ${fullName.lastName}`
         }
         console.log(registerInfo)
+
         if(buyer) {
             const registerResponse = await fetch(`${backend}/auth/buyer/register`, {
                 method: 'POST',
@@ -49,16 +72,16 @@ export default function Register ({backend, loggedIn, grabLoginInfo, buyer, sell
                 setEmailError(true)
             } else if(registerData.usernameMsg) {
                 setUsernameError(true)
-                setUsernameInvalidInput(true)
+                // setUsernameInvalidInput(true)
             } else if(registerData.details && registerData.details[0].message === "\"username\" length must be at least 8 characters long") {
                 setUsernameInvalid(true)
-                setUsernameInvalidInput(true)
+                // setUsernameInvalidInput(true)
             } else if(registerData.details && registerData.details[0].message === "\"password\" length must be at least 8 characters long") {
                 setPasswordInvalid(true)
-                setPasswordInvalidInput(true)
+                // setPasswordInvalidInput(true)
             } else if(registerData.details && registerData.details[0].message === "\"email\" must be a valid email") {
                 setEmailInvalid(true)
-                setEmailInvalidInput(true)
+                // setEmailInvalidInput(true)
             }
             if (registerData.success === true) {
                 localStorage.setItem('token', registerData.token)
@@ -80,16 +103,19 @@ export default function Register ({backend, loggedIn, grabLoginInfo, buyer, sell
      /* ------- UPDATE INPUT STATES ------- */
     const handleChangeUsername = e => {
         setUsername(e.target.value)
-        setUsernameInvalidInput(false)
+        setDisabled(false)
+        // setUsernameInvalidInput(false)
     }
     const handleChangePassword = e => {
         setPassword(e.target.value)
-        setPasswordInvalidInput(false)
+        setDisabled(false)
+        // setPasswordInvalidInput(false)
     }
 
     const handleChangeEmail = e => {
         setEmail(e.target.value)
-        setEmailInvalidInput(false)
+        setDisabled(false)
+        // setEmailInvalidInput(false)
     }
 
     const handleChangeName = (e) => {
@@ -97,6 +123,7 @@ export default function Register ({backend, loggedIn, grabLoginInfo, buyer, sell
         setFullName((prevName) => ({
             ...prevName, [name]: value
         }))
+        setDisabled(false)
     }
 
     
@@ -107,7 +134,7 @@ export default function Register ({backend, loggedIn, grabLoginInfo, buyer, sell
     } else {
         return (
             <div id="heading-form-container">
-                <div id = "toast-container">
+                {/* <div id = "toast-container">
 
                     <Toast onClose={() => {
                         setEmailInvalid(false)
@@ -157,13 +184,13 @@ export default function Register ({backend, loggedIn, grabLoginInfo, buyer, sell
                     autohide >
                         <Toast.Body>Password needs to be at least 8 characters.</Toast.Body>
                     </Toast>
-                </div>
+                </div> */}
 
             <h2 id="register-heading">Register</h2>
             <div className="register-form" 
             // onSubmit={handleRegister}
             >
-                <input className="register-input" type="text" placeholder="First Name" name="firstName" value={fullName.firstName || ""} onChange={handleChangeName}></input>
+                {/* <input className="register-input" type="text" placeholder="First Name" name="firstName" value={fullName.firstName || ""} onChange={handleChangeName}></input>
 
                 <input  className="register-input" type="text" placeholder="Last Name" name ="lastName" value={fullName.lastName || ""} onChange={handleChangeName}></input>
 
@@ -171,7 +198,60 @@ export default function Register ({backend, loggedIn, grabLoginInfo, buyer, sell
 
                 <input className={emailInvalidInput || emailError ? "register-invalid-email-input" : "register-input"} type="email" placeholder="Email" value={email} onChange={handleChangeEmail}></input>
 
-                <input className={passwordInvalidInput ? "register-invalid-password-input" : "register-input"} type="password" placeholder="Password" value={password} onChange={handleChangePassword}  autoComplete="current-password"></input>
+                <input className={passwordInvalidInput ? "register-invalid-password-input" : "register-input"} type="password" placeholder="Password" value={password} onChange={handleChangePassword}  autoComplete="current-password"></input> */}
+
+                <form className={classes.root} noValidate autoComplete="off">
+                    <div id="register-container">
+                        <TextField
+                        error={emailInvalid || emailError}
+                        id="filled-error-helper-text"
+                        label="Email"
+                        size="medium"
+                        fullWidth
+                        // defaultValue="Enter Email"
+                        helperText={emailInvalid ? "Invalid email" : emailError ? "This email has been registered already" : ""}
+                        variant="filled"
+                        onChange={handleChangeEmail}
+                        />
+                        <TextField
+                        error={usernameInvalid || usernameError}
+                        id="filled-error-helper-text"
+                        label="Username"
+                        size="medium"
+                        // defaultValue="Enter Username"
+                        helperText={usernameInvalid ? "Username needs to be at least 8 characters" : usernameError ? "This username has been registered already" : ""}
+                        variant="filled"
+                        onChange={handleChangeUsername}
+                
+                        />
+                        <TextField
+                        error={passwordInvalid}
+                        size="medium"
+                        id="filled-error-helper-text"
+                        label="Password"
+                        // defaultValue="Enter Password"
+                        helperText={passwordInvalid ?  "Password needs to be at least 8 characters" : ""}
+                        variant="filled"
+                        onChange={handleChangePassword}
+                        />
+                        <TextField
+                        id="filled-error-helper-text"
+                        label="First Name"
+                        size="medium"
+                        // defaultValue="Enter First Name"
+                        variant="filled"
+                        onChange={handleChangeName}
+                        />
+                        <TextField
+                        id="filled-error-helper-text"
+                        label="Last Name"
+                        size="medium"
+                        // defaultValue="Enter Last Name"
+                        variant="filled"
+                        onChange={handleChangeName}
+                        />
+                    </div>
+                </form>
 
                 {(email === '' || fullName.firstName === '' || fullName.lastName === '' || password === '' || username === '' || disabled) ? <Button id="submit-button-disabled" type="submit" variant="dark" size='lg' disabled={true}>Submit</Button> :  <Button size='lg' id="submit-button" variant="dark" type="button" onClick={handleRegister} >Submit</Button> }
 
