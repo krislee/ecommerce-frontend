@@ -63,6 +63,7 @@ function AllItems ({ loggedIn, grabURL, backend, totalCartQuantity, grabTotalCar
         const data = await resp.json();
         console.log(data.allElectronic);
         setItems(data.allElectronic)
+        // setTotalItemsPage(data.totalPages)
     }
 
     const itemList = items.map((item, index) => 
@@ -84,10 +85,13 @@ function AllItems ({ loggedIn, grabURL, backend, totalCartQuantity, grabTotalCar
     )
 
     const retrieveDivID = () => {
-        if(pageIndex === totalItemsPage) {
+        console.log(87, pageIndex, totalItemsPage)
+        if(Number(pageIndex) === totalItemsPage) {
+            console.log(88, items.length % pageLimit)
             if(items.length % pageLimit === 0) return 'even'
             else return 'odd'
         } else {
+            console.log(92, pageLimit % 2)
             if(pageLimit % 2 === 0) return 'even'
             else return 'odd'
         }

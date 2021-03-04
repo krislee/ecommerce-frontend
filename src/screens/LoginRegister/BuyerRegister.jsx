@@ -1,14 +1,13 @@
 import React from 'react'
-import {Link} from 'react-router-dom';
-import Register from '../../components/Register'
+import Register from '../../components/LoginRegister/Register'
 import Footer from '../../components/Footer'
 import Carousel from 'react-bootstrap/Carousel'
-// import '../../styles/Login.css'
+import '../../styles/LoginRegister/Register.css'
 
 function BuyerRegister ({backend, loggedIn, }) {
     return (
         <>
-        <div className="buyer-login">
+        <div className="buyer-register">
             {/* <Link to="/">
                 <button>Back</button> 
             </Link> */}
@@ -20,21 +19,21 @@ function BuyerRegister ({backend, loggedIn, }) {
                     <Carousel.Item>
                         <img
                         className="d-block w-100"
-                        src="https://images.unsplash.com/photo-1537822427422-52c6d57db73c?ixid=MXwxMjA3fDB8MHxzZWFyY2h8MTJ8fGxhcHRvcCUyMGFuZCUyMGNhbWVyYXxlbnwwfHwwfA%3D%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=700&q=60"
+                        src={require("../../styles/LoginRegister/images/register1.png")}
                         alt="First slide"
                         />
                     </Carousel.Item>
                     <Carousel.Item>
                         <img
                         className="d-block w-100"
-                        src="https://images.unsplash.com/photo-1558247578-2f9456cedb33?ixid=MXwxMjA3fDB8MHxzZWFyY2h8MjN8fGxhcHRvcCUyMGFuZCUyMGNhbWVyYXxlbnwwfHwwfA%3D%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=700&q=60"
+                        src={require("../../styles/LoginRegister/images/register3.png")}
                         alt="Second slide"
                         />
                     </Carousel.Item>
                     <Carousel.Item>
                         <img
                         className="d-block w-100"
-                        src="https://images.unsplash.com/photo-1586171680404-d9376632f9e4?ixid=MXwxMjA3fDB8MHxzZWFyY2h8NTF8fGxhcHRvcCUyMGFuZCUyMGNhbWVyYXxlbnwwfHwwfA%3D%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=700&q=60"
+                        src={require("../../styles/LoginRegister/images/register2.png")}
                         alt="Third slide"
                         />
                     </Carousel.Item>

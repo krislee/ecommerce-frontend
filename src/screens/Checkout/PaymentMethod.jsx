@@ -20,7 +20,7 @@ import AddIcon from '@material-ui/icons/Add';
 import EditIcon from '@material-ui/icons/Edit';
 import PaymentRoundedIcon from '@material-ui/icons/PaymentRounded';
 
-import '../../styles/Checkout/Shipping.css'
+// import '../../styles/Checkout/Shipping.css'
 
 // Theme for overriding Speed Dial styles
 let theme = createMuiTheme({})
