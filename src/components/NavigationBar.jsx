@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom';
 // import Button from '../components/Button'
 import '../styles/NavigationBar.css'
@@ -6,16 +6,16 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faHome, faShoppingCart, faUser } from '@fortawesome/free-solid-svg-icons'
 import { Dropdown } from 'react-bootstrap'
 import Badge from '@material-ui/core/Badge';
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles, makeStyles, createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
 import MenuRoundedIcon from '@material-ui/icons/MenuRounded';
-import { makeStyles } from '@material-ui/core/styles';
 import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
 import Button from '@material-ui/core/Button';
 import List from '@material-ui/core/List';
 import Divider from '@material-ui/core/Divider';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
+import { useResizeDetector } from 'react-resize-detector';
 
 import { v4 as uuidv4 } from 'uuid';
 
@@ -33,11 +33,44 @@ const useStyles = makeStyles((theme) => ({
         width: '50vw',
         [theme.breakpoints.down(450)]: {
             width: "80vw"
-        }
+        },
+        // [theme.breakpoints.up('sm')] : {
+        //     width: '0'
+        // }
     }
 }));
 
+// let theme = createMuiTheme({})
+// theme = { ...theme,
+//     overrides: {
+//         MuiBackdrop: {
+//             root: {
+//                [theme.breakpoints.up('sm')]: {
+//                     display: 'none'
+//                 }
+//             }
+//         }
+//     }
+// };
+
 function NavBar ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuantity }) {
+    const { width, height, ref } = useResizeDetector();
+
+    const location = useLocation()
+
+    useEffect(() => {
+        const resizeWindow = () => {
+            if(width > 600) {
+                return setHamburgerState({ ...hamburgerState, 'left':false})
+            }
+        }
+        resizeWindow()
+    }, [width])
+
+    const handleLogout = () => {
+        localStorage.clear();
+        grabTotalCartQuantity()
+    }
 
     // Hamburger
     const classes = useStyles();
@@ -47,15 +80,12 @@ function NavBar ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuantity }
         top: false,
         bottom: false
     });
-
     const toggleDrawer = (anchor, open) => (event) => {
         if (event && event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
             return;
         }
-    
         setHamburgerState({ ...hamburgerState, [anchor]: open });
     };
-    
     const list = (anchor) => (
         <div
             className={classes.list}
@@ -81,31 +111,27 @@ function NavBar ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuantity }
                 </ListItem>
             </List>
         </div>
+        
     );
 
-    const location = useLocation()
-
-    const handleLogout = () => {
-        localStorage.clear();
-        grabTotalCartQuantity()
-    }
-
-
+    
 
     return (
-        <div className="navbar">
-            <div id="navbar-hamburger">
+        <div className="navbar" ref={ref} >
+            <div id="navbar-hamburger"  >
                 <Button onClick={toggleDrawer("left", true)}><MenuRoundedIcon /></Button>
-                <SwipeableDrawer
-                    anchor={"left"}
-                    open={hamburgerState["left"]}
-                    onClose={toggleDrawer("left", false)}
-                    onOpen={toggleDrawer("left", true)}
-                    SlideProps={{ unmountOnExit: true }}
-                >
-                    {list("left")}
-                </SwipeableDrawer>
-          
+                {/* <ThemeProvider theme={theme}> */}
+                    <SwipeableDrawer
+                        anchor={"left"}
+                        open={hamburgerState["left"]}
+                        onClose={toggleDrawer("left", false)}
+                        onOpen={toggleDrawer("left", true)}
+                        SlideProps={{ unmountOnExit: true }}
+
+                    >
+                        {list("left")}
+                    </SwipeableDrawer>
+                {/* </ThemeProvider> */}
             </div>
 
             <Link to={{
