@@ -209,4 +209,17 @@ a {
     #nav-bar-dropdown, .login-button-container {
         display: none
     }
+    .home-container {
+        /* margin-left: 20vw; */
+        /* justify-content: center; */
+        margin-left: 0;
+        position: unset;
+    }
+    .login-cart-profile-nav-container .MuiButtonBase-root {
+        /* margin-right: 20px; */
+        justify-content: flex-end;
+    }
+    .login-cart-profile-nav-container {
+        width: auto;
+    }
 }

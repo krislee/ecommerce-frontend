@@ -19,6 +19,7 @@ import { useResizeDetector } from 'react-resize-detector';
 
 import { v4 as uuidv4 } from 'uuid';
 
+// Nav Bar Shopping Cart Badge
 const StyledBadge = withStyles((theme) => ({
   badge: {
     right: -3,
@@ -28,49 +29,33 @@ const StyledBadge = withStyles((theme) => ({
   },
 }))(Badge);
 
+// Nav Bar Swipe Drawer
 const useStyles = makeStyles((theme) => ({
     list: {
         width: '50vw',
         [theme.breakpoints.down(450)]: {
             width: "80vw"
-        },
-        // [theme.breakpoints.up('sm')] : {
-        //     width: '0'
-        // }
+        }
     }
 }));
 
-// let theme = createMuiTheme({})
-// theme = { ...theme,
-//     overrides: {
-//         MuiBackdrop: {
-//             root: {
-//                [theme.breakpoints.up('sm')]: {
-//                     display: 'none'
-//                 }
-//             }
-//         }
-//     }
-// };
 
 function NavBar ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuantity }) {
-    const { width, height, ref } = useResizeDetector();
-
     const location = useLocation()
-
-    useEffect(() => {
-        const resizeWindow = () => {
-            if(width > 600) {
-                return setHamburgerState({ ...hamburgerState, 'left':false})
-            }
-        }
-        resizeWindow()
-    }, [width])
 
     const handleLogout = () => {
         localStorage.clear();
         grabTotalCartQuantity()
     }
+
+    const { width, height, ref } = useResizeDetector(); // returns the width and height of the window; 
+
+    useEffect(() => {
+        console.log(54, width)
+        if(width > 568) { // since the width returned from useResizeDetector() hook does not include the  padding of the .navbar element, which is 16px for left padding and 16px for right padding, we need to deduct 32px from 600px; so when the .navbar element is 568px in width, the .navbar element is actually 600px when we include the 32px of left and right padding combined
+            return setHamburgerState({ ...hamburgerState, 'left': false}) // close the swipe drawer by setting 'left' to false when the window width is greater than 600px
+        }
+    }, [width]) // run the use effect everytime the width changes since we need to check if we need to close the swipe drawer 
 
     // Hamburger
     const classes = useStyles();
@@ -114,35 +99,32 @@ function NavBar ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuantity }
         
     );
 
-    
 
     return (
         <div className="navbar" ref={ref} >
             <div id="navbar-hamburger"  >
                 <Button onClick={toggleDrawer("left", true)}><MenuRoundedIcon /></Button>
-                {/* <ThemeProvider theme={theme}> */}
-                    <SwipeableDrawer
-                        anchor={"left"}
-                        open={hamburgerState["left"]}
-                        onClose={toggleDrawer("left", false)}
-                        onOpen={toggleDrawer("left", true)}
-                        SlideProps={{ unmountOnExit: true }}
+                <SwipeableDrawer
+                    anchor={"left"}
+                    open={hamburgerState["left"]}
+                    onClose={toggleDrawer("left", false)}
+                    onOpen={toggleDrawer("left", true)}
+                    SlideProps={{ unmountOnExit: true }}
 
-                    >
-                        {list("left")}
-                    </SwipeableDrawer>
-                {/* </ThemeProvider> */}
+                >
+                    {list("left")}
+                </SwipeableDrawer>
             </div>
 
             <Link to={{
             pathname: "/",
             // key: uuidv4(),
             // state: {prevPath: location.pathname }
-        }}>
-            <div className="home-container" >
-                <FontAwesomeIcon className="home" icon={faHome}/>
-            </div>
-        </Link>
+            }}>
+                <div className="home-container" >
+                    <FontAwesomeIcon className="home" icon={faHome}/>
+                </div>
+            </Link>
 
             <div className= {localStorage.getItem('token') ? "login-cart-profile-nav-container" : "guest-cart-nav-container"}>
                 {/*  reload the cart page in case user clears local storage and then re-clicks on the cart icon */}
