@@ -127,22 +127,7 @@ function NavBar ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuantity }
             </Link>
 
             <div className= {localStorage.getItem('token') ? "login-cart-profile-nav-container" : "guest-cart-nav-container"}>
-                {/*  reload the cart page in case user clears local storage and then re-clicks on the cart icon */}
-                <Link to={{
-                    pathname: "/cart",
-                    // key: uuidv4(),
-                    // state: { prevPath: location.pathname }
-                }} > 
-                    <IconButton aria-label="cart" onClick={() => {
-                        if(location.pathname === '/cart') return grabTotalCartQuantity(0) // if logged in user cleared local storage, and is already on the cart page, we want to reload the page and update nav bar
-                    }}>
-                        <StyledBadge badgeContent={totalCartQuantity} color="secondary">
-                            <FontAwesomeIcon className="cart-icon" icon={faShoppingCart}/>
-                        </StyledBadge>
-                    </IconButton>
-                </Link>
-
-                {localStorage.getItem('token') ? (
+            {localStorage.getItem('token') ? (
                 <Dropdown id="nav-bar-dropdown">
                     <Dropdown.Toggle>
                     {localStorage.getItem('token') ? 
@@ -180,6 +165,23 @@ function NavBar ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuantity }
                 </div>
                 </>
                 )}
+                
+                {/*  reload the cart page in case user clears local storage and then re-clicks on the cart icon */}
+                <Link to={{
+                    pathname: "/cart",
+                    // key: uuidv4(),
+                    // state: { prevPath: location.pathname }
+                }} > 
+                    <IconButton aria-label="cart" onClick={() => {
+                        if(location.pathname === '/cart') return grabTotalCartQuantity(0) // if logged in user cleared local storage, and is already on the cart page, we want to reload the page and update nav bar
+                    }}>
+                        <StyledBadge badgeContent={totalCartQuantity} color="secondary">
+                            <FontAwesomeIcon className="cart-icon" icon={faShoppingCart}/>
+                        </StyledBadge>
+                    </IconButton>
+                </Link>
+
+                
             </div>
         </div>
     )
