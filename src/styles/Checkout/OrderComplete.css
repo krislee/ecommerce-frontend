@@ -67,14 +67,36 @@
     word-wrap: break-word;
 }
 
-@media only screen and (max-width: 1000px) {
+#order-complete-total-container {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr;
+    float: right;
+    margin-top: 10px;
+}
+#order-complete-total-heading-container, #order-complete-total-prices-container {
+    display: flex;
+    flex-direction: column;
+}
+#order-complete-total-heading-container {
+    align-items: flex-end;
+    margin-right: 5px;
+}
+#order-complete-total-prices-container {
+    align-items: flex-end;
+}
+#order-complete-tax {
+    padding-bottom: 0.5rem;
+}
 
+
+/* MEDIA QUERIES */
+
+@media only screen and (max-width: 1000px) {
     #order-complete-container {
        font-size: 0.85rem;
     }
 }
 @media only screen and (max-width: 800px) {
-
     #order-complete-container {
         width: 100%;
         padding-right: 6rem;
@@ -82,15 +104,16 @@
     }
 }
 @media only screen and (max-width: 600px) {
-
     #order-complete-container {
        font-size: 0.75rem;
        padding-left: 1rem;
        padding-right: 1rem;
     }
+    #order-complete-details-shipping-container, #order-complete-pm-billing-container {
+        grid-gap: 2rem;
+    }
 }
 @media only screen and (max-width: 400px) {
-
     #order-complete-container {
        font-size: 0.5rem;
     }

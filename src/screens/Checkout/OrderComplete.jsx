@@ -19,7 +19,8 @@ export default function OrderComplete({ backend, loggedIn, cartID, socket, grabT
     const [orderPayment, setOrderPayment] = useState({})
     const [orderNumber, setOrderNumber] = useState('')
     const [orderDate, setOrderDate] = useState('')
-    const [prevLoggedIn, setPrevLoggedIn] = useState(loggedIn())
+    const [orderTotal, setOrderTotal] = useState(0)
+    const [prevLoggedIn] = useState(loggedIn())
 
     const location = useLocation()
 
@@ -42,6 +43,7 @@ export default function OrderComplete({ backend, loggedIn, cartID, socket, grabT
                     setOrderNumber(orderData.order.OrderNumber)
                     setOrderPayment(orderData.payment)
                     setOrderDate(orderData.order.OrderDate)
+                    setOrderTotal(orderData.order.TotalPrice)
                     setOrderLoading(false)
                     socket.emit('end', {cartID: cartID}) // end socket connect
                 })
@@ -70,6 +72,7 @@ export default function OrderComplete({ backend, loggedIn, cartID, socket, grabT
                         setOrderShipping(shipping)
                         setOrderShippingName(completeOrderData.order.Shipping.Name.replace(", ", " "))
                         setOrderNumber(completeOrderData.order.OrderNumber)
+                        setOrderTotal(completeOrderData.order.TotalPrice)
                         setOrderPayment(completeOrderData.payment)
                         setOrderDate(new Date(completeOrderData.order.OrderDate).toDateString())
                         setOrderLoading(false)
@@ -176,6 +179,22 @@ export default function OrderComplete({ backend, loggedIn, cartID, socket, grabT
                                 <div className="order-complete-price">${orderItem.TotalPrice.toFixed(2)}</div>
                             </div>
                         )})}
+                    </div>
+                    <div id="order-complete-total-container">
+                        <div id="order-complete-total-heading-container">
+                            <div>Subtotal: </div>
+                            <div>Shipping: </div>
+                            <div id="order-complete-tax">Tax: </div>
+                            <div><b>Total: </b></div>
+                        </div>
+                
+                        <div id="order-complete-total-prices-container">
+                            <div>${(orderTotal/100).toFixed(2)}</div>
+                            <div>$0</div>
+                            <div id="order-complete-tax">$0</div>
+                            <div><b>${(orderTotal/100).toFixed(2)}</b></div>
+                        </div>
+                        
                     </div>
                 </div>
             </div>
