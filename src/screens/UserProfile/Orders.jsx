@@ -5,6 +5,7 @@ import { Link, useHistory } from 'react-router-dom';
 // import ConvertDate from './ConvertDate'
 import { makeStyles } from '@material-ui/core/styles';
 import { Pagination } from '@material-ui/lab';
+import '../../styles/UserProfile/OrderContainer.css'
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -46,20 +47,41 @@ export default function Orders ({ backend, loggedIn, orderData, grabOrderData, o
     if(orderLoading) return null
     return (
         <>
-        {orderData.length === 0 ? <p>No purchases yet, but you could become the next owner of the latest gadget!</p> : (
-            <>
+        <div style={{
+            display: 'flex',
+            justifyContent: 'space-around',
+            alignItems: 'center',
+            padding: '1rem',
+            height: '100%',
+            flexDirection: 'column'
+        }}>
+        <header style={{
+            textAlign: 'center',
+            color: '#fff',
+            fontWeight: 'bold',
+            fontSize: '2rem',
+            fontFamily: 'Average Sans, sans-serif'
+        }}>Orders</header>
+        {orderData.length === 0 ? <p style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: '100%',
+            fontFamily: 'Mukta Vaani, sans-serif'
+        }}>No purchases yet, but you could become the next owner of the latest gadget!</p> : (
+            <div className="orders">
             {orderData.map((order, index) => {
                 return (
-                    <div key={index}>
-                    {index === 0 && <h3>{new Date((orderData[0].OrderDate)).toDateString()}</h3>}
-                    {index !== 0 && new Date(order.OrderDate).toDateString() !== new Date(orderData[index-1].OrderDate).toDateString() && <h3>{new Date(order.OrderDate).toDateString()}</h3>}
+                    <div className="order-container" key={index}>
+                    {index === 0 && <div className="date-and-time">{new Date((orderData[0].OrderDate)).toDateString()}</div>}
+                    {index !== 0 && new Date(order.OrderDate).toDateString() !== new Date(orderData[index-1].OrderDate).toDateString() && <div className="date-and-time">{new Date(order.OrderDate).toDateString()}</div>}
                     <Link to={{
                         pathname: "/order",
                         search: `orderNumber=${order.OrderNumber}`,
                     }}>
-                        <Card>
+                        <Card className={classes.container}>
                             <CardHeader
-                                title={`Order Number:  ${order.OrderNumber}`}
+                                title={`Order: ${order.OrderNumber}`}
                                 subheader={new Date(order.OrderDate).toDateString()}
                             />
                         </Card>
@@ -70,9 +92,9 @@ export default function Orders ({ backend, loggedIn, orderData, grabOrderData, o
             <div className={classes.root}>
                 <Pagination showFirstButton showLastButton size="large" variant="outlined" shape="rounded" count={ordersTotal} page={Number(ordersPage)} siblingCount={1} boundaryCount={2} onChange={handlePageOnChange} />
             </div>  
-            </>
-
+            </div>
         )}
+        </div>
         </>
     )
    

@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import Modal from 'react-modal';
 import PaymentContainer from '../../components/UserProfile/PaymentContainer';
-import {useStripe, useElements, CardElement, CardExpiryElement, CardCvcElement, CardNumberElement} from '@stripe/react-stripe-js';
+import {useStripe, useElements, CardExpiryElement, CardCvcElement, CardNumberElement} from '@stripe/react-stripe-js';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
 function UserProfilePayment ({ backend, paymentData, grabPaymentData, defaultFirstPayment, loggedIn, capitalize, capitalizeArray, grabRedirect }) {
 
@@ -233,11 +235,11 @@ function UserProfilePayment ({ backend, paymentData, grabPaymentData, defaultFir
                 grabRedirect={grabRedirect}
                 />
             );
-        };
+        }
     });
 
     return (
-        <div className="payments-container">
+        <div className={paymentData[0] === undefined ? "payments-container-noInfo" : "payments-container"}>
             <div className="header-container">
                 <div className="header">Saved Payments</div>
                 {/* The button that opens the modal that users can use to create new payment methods */}
@@ -246,10 +248,23 @@ function UserProfilePayment ({ backend, paymentData, grabPaymentData, defaultFir
                 onClick={openModal}>
                         Add Payment
                 </div>
+                <div 
+                className="add-address-media add-address"
+                onClick={openModal}>
+                    <FontAwesomeIcon icon={faPlus} />
+                </div>
             </div>
             {/* If there are no payment methods, then return a statement that tells users to add a payment method, otherwise the user will see all the payments they have decided to save */}
             {paymentData[0] === undefined ? 
-                <div>Add Your Payment Above</div> : 
+                <div 
+                style={{
+                    display: 'flex',
+                    color: '#fff',
+                    justifyContent: 'center',
+                    height: '100%',
+                    alignItems: 'center',
+                    fontFamily: 'Mukta Vaani, sans-serif'
+                }}>Looks like you don't have any payments saved yet! Click the Add Payment button to add your first one.</div> : 
             <>
                 <div className="all-payment-container">
                     <div className="all-payments-container">{paymentData.length !== 0 && allPayments}

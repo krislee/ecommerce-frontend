@@ -1,0 +1,68 @@
+.MuiPaper-root {
+    background-color: #21212B !important;
+}
+
+.order-container {
+    width: 30rem;
+    margin: 0.5rem;
+}
+
+.order-container > a > div {
+    border-radius: 1rem;
+}
+
+.orders {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+}
+
+.MuiTypography-h5 {
+    font-size: 1rem !important;
+}
+
+.MuiTypography-body1 {
+    font-size: 0.8rem !important;
+}
+
+.date-and-time {
+    font-size: 1.5rem;
+    font-weight: bold;
+    font-family: 'Average Sans', sans-serif;
+}
+
+.MuiPaginationItem-outlined {
+    border: 1px solid #fff !important;
+}
+
+.MuiPagination-ul > li > button {
+    background-color: #21212B !important;
+    color: #fff !important;
+}
+
+.order-container > a > div > div > div > span:nth-child(2) {
+    text-align: end;
+}
+
+@media screen and (max-width: 599px) {
+
+    .order-container {
+        width: 20rem;
+    }
+
+    .date-and-time {
+        font-size: 1.2rem;
+    }
+
+}
+
+@media screen and (max-width: 399px) {
+
+    .order-container {
+        width: 15rem;
+    }
+
+}
