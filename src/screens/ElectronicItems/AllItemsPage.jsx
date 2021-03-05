@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import {Link, useParams, useHistory} from 'react-router-dom';
 import Item from '../../components/Item';
-import '../../styles/Items/AllItems.css'
-// import NavBar from '../../components/NavigationBar'
 import Footer from '../../components/Footer'
 import { makeStyles } from '@material-ui/core/styles';
 import { Pagination } from '@material-ui/lab';
-import { FormHelperText } from '@material-ui/core';
+import '../../styles/Items/AllItems.css'
+import '../../styles/Footer.css'
 
 const useStyles = makeStyles((theme) => ({
     root: {

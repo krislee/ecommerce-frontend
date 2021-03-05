@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faHome, faShoppingCart, faUser } from '@fortawesome/free-solid-svg-icons'
 import { Dropdown } from 'react-bootstrap'
 import Badge from '@material-ui/core/Badge';
-import { withStyles, makeStyles, createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
+import { withStyles, makeStyles } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
 import MenuRoundedIcon from '@material-ui/icons/MenuRounded';
 import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
@@ -48,7 +48,7 @@ function NavBar ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuantity }
         grabTotalCartQuantity()
     }
 
-    const { width, height, ref } = useResizeDetector(); // returns the width and height of the window; 
+    const { width, ref } = useResizeDetector(); // returns the width and height of the window; 
 
     useEffect(() => {
         // console.log(54, width)
