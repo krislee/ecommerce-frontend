@@ -80,25 +80,30 @@ function NavBar ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuantity }
         >
             <List>
                 <ListItem button >
-                    <ListItemText primary= {<Link to="/shop/1">Shop All </Link>} />
+                    <ListItemText primary={
+                    <Link to="/shop/1">
+                        <div onClick={() => {
+                            if(!loggedIn()) grabTotalCartQuantity(0)
+                        }}>Shop All</div>
+                    </Link>}/>
                 </ListItem>
             </List>
             <Divider />
             <List>
                 <ListItem button >
-                    <ListItemText primary={localStorage.getItem('token') ? 
+                    <ListItemText primary={loggedIn() ? 
                     <Link to="/profile/setting">
                         <div>Account Setting</div>
                     </Link> 
-                    : <Link to="/login/buyer">Login</Link>} />
+                    : <Link to="/login/buyer"><div>Login</div></Link>} />
                 </ListItem>
             </List>
             <Divider />
             <List>
                 <ListItem button >
-                    <ListItemText primary={localStorage.getItem('token') ? 
+                    <ListItemText primary={loggedIn() ? 
                     <div onClick={handleLogout}>Sign Out</div>
-                    : <Link to="/register/buyer">Register</Link>} />
+                    : <Link to="/register/buyer"><div>Register</div></Link>} />
                 </ListItem>
             </List>
         </div>
@@ -132,11 +137,11 @@ function NavBar ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuantity }
                 </div>
             </Link>
 
-            <div className= {localStorage.getItem('token') ? "login-cart-profile-nav-container" : "guest-cart-nav-container"}>
-            {localStorage.getItem('token') ? (
+            <div className= {loggedIn() ? "login-cart-profile-nav-container" : "guest-cart-nav-container"}>
+            {loggedIn() ? (
                 <Dropdown id="nav-bar-dropdown">
                     <Dropdown.Toggle>
-                    {localStorage.getItem('token') ? 
+                    {loggedIn() ? 
                         <FontAwesomeIcon className="user-icon" icon={faUser}/>
                     : null}
                     </Dropdown.Toggle>
