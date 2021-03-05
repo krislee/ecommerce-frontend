@@ -6,7 +6,9 @@ import Settings from './Settings'
 import Address from './Address';
 import Payment from './Payment'
 import Orders from './Orders'
-import UserReviews from './UserReviews'
+import UserReviews from './UserReviews';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faWrench, faAddressCard, faCreditCard, faReceipt, faPen } from '@fortawesome/free-solid-svg-icons'
 import '../../styles/UserProfile/UserProfile.css';
 
 function UserProfile ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuantity }) {
@@ -275,29 +277,60 @@ function UserProfile ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuant
                 {/* <Navbar totalCartQuantity={totalCartQuantity} grabTotalCartQuantity={grabTotalCartQuantity} backend={backend} loggedIn={loggedIn}/> */}
                 <div className="user-profile-container">
                     {/* This bar represents the sections that users can click on to switch between the address, payments, and order components (screens) */}
-                    <div className='top-bar'>
-                         <div style={{borderLeft: '1px solid #000'}} onClick={handleClickSettings} 
+                    <div className="user-profile">
+                    <div className='left-bar'>
+                        <div
+                        style={{
+                            display: 'flex',
+                            flexDirection: 'column'
+                        }}
+                        onClick={handleClickSettings} 
                         className={settingsTabOpen === true ? "highlighted-tab" : null}>
-                            Settings
+                            <FontAwesomeIcon style={{fontSize: '1.5rem', marginBottom: '0.2rem'}} icon={faWrench}/>
+                            <div>Settings</div>
                         </div>
-                        <div onClick={handleClickAddresses} 
+                        <div 
+                        style={{
+                            display: 'flex',
+                            flexDirection: 'column'
+                        }}
+                        onClick={handleClickAddresses} 
                         className={addressesTabOpen === true ? "highlighted-tab" : null}>
-                            Addresses
+                            <FontAwesomeIcon style={{fontSize: '1.5rem', marginBottom: '0.2rem'}} icon={faAddressCard}/>
+                            <div>Addresses</div>
                         </div>
-                        <div onClick={handleClickPayments} 
+                        <div 
+                        style={{
+                            display: 'flex',
+                            flexDirection: 'column'
+                        }}
+                        onClick={handleClickPayments} 
                         className={paymentsTabOpen === true ? "highlighted-tab" : null}>
-                            Payments
+                            <FontAwesomeIcon style={{fontSize: '1.5rem', marginBottom: '0.2rem'}} icon={faCreditCard}/>
+                            <div>Payments</div>
                         </div>
-                        <div onClick={handleClickOrders} 
+                        <div 
+                        style={{
+                            display: 'flex',
+                            flexDirection: 'column'
+                        }}
+                        onClick={handleClickOrders} 
                         className={ordersTabOpen === true ? "highlighted-tab" : null}>
-                           Orders
+                            <FontAwesomeIcon style={{fontSize: '1.5rem', marginBottom: '0.2rem'}} icon={faReceipt}/>
+                            <div>Orders</div>
                         </div>
-                        <div onClick={handleClickReviews} 
+                        <div 
+                        style={{
+                            display: 'flex',
+                            flexDirection: 'column'
+                        }}
+                        onClick={handleClickReviews} 
                         className={reviewsTabOpen === true ? "highlighted-tab" : null}>
-                           Reviews
+                            <FontAwesomeIcon style={{fontSize: '1.5rem', marginBottom: '0.2rem'}} icon={faPen}/>
+                            <div>Reviews</div>
                         </div>
                     </div>
-                   
+                   <div className="right-side">
                     {/* This component renders only when the profileTabOpen is open  */}
                     {settingsTabOpen && 
                         <Settings backend={backend} loggedIn={loggedIn} settingData={settingData} grabSettingData={grabSettingData} grabTotalCartQuantity={grabTotalCartQuantity} grabRedirect={grabRedirect} />
@@ -362,11 +395,13 @@ function UserProfile ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuant
                         grabTotalCartQuantity={grabTotalCartQuantity} 
                         grabRedirect={grabRedirect} />
                     }
+                    </div>
+                    </div>
                     {!footerLoading && <Footer />}
                 </div>
             </>
         );
-    };
+    }
 };
 
 export default UserProfile

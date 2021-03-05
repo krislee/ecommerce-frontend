@@ -1,3 +1,5 @@
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useState } from 'react';
 import Modal from 'react-modal';
 import Input from '../../components/Input';
@@ -122,11 +124,11 @@ function UserProfileAddress ({ backend, addressData, defaultFirst, grabAddressDa
                 grabTotalCartQuantity={grabTotalCartQuantity}
                 grabRedirect={grabRedirect}/>
             );
-        };
+        }
     });
 
     return (
-        <div className="addresses-container">
+        <div className={addressData[0] === undefined ? "addresses-container-noInfo" : "addresses-container"}>
             <div className="header-container">
                 <div className="header">Saved Addresses</div>
                 {/* The button that opens the modal that users can use to create new addresses */}
@@ -135,13 +137,32 @@ function UserProfileAddress ({ backend, addressData, defaultFirst, grabAddressDa
                 onClick={openModal}>
                     Add Address
                 </div>
+                <div 
+                className="add-address-media add-address" 
+                onClick={openModal}>
+                    <FontAwesomeIcon icon={faPlus}/>
+                </div>
             </div>
             {/* If there are no addresses, then return a statement that tells users to add an address, otherwise the user will see all the addresses they have decided to save */}
             {addressData[0] === undefined ? 
-                <div>Add Your Address Above</div> : 
+                <div 
+                style={{
+                    display: 'flex',
+                    color: '#fff',
+                    justifyContent: 'center',
+                    height: '100%',
+                    alignItems: 'center',
+                    fontFamily: 'Mukta Vaani, sans-serif'
+                }}>Looks like you don't have any addresses saved yet! Click the Add Address button to add your first one.</div> : 
             <>
                 <div className="all-address-container">
                     <div className="all-addresses-container">{addressData.length !== 0 && allAddresses}
+                    {addressData.length % 3 === 1 ? 
+                    <>
+                    <div className="one-address-container-empty"></div>
+                    <div className="one-address-container-empty"></div>
+                    </> : addressData.length % 3 === 2 ? 
+                    <div className="one-address-container-empty"></div>: <div></div>}
                     </div>
                 </div>
             </>}

@@ -24,7 +24,10 @@ button {
 
 .MuiPaper-elevation1 {
     box-shadow: none !important;
-    border: 1px solid #c8c8c8;
+}
+
+.MuiCardHeader-content > span {
+    color: #fff;
 }
 
 .update-buttons {
@@ -45,4 +48,30 @@ button {
     font-size: 14px;
     width: 4rem;
     margin-bottom: 0.5rem;
+}
+
+.MuiCardContent-root:last-child > p {
+    color: #fff !important;
+}
+
+.MuiTypography-colorTextSecondary {
+    color: #fff !important;
+}
+
+.MuiSvgIcon-root {
+    fill: #fff !important;
+}
+
+@media screen and (max-width: 599px) {
+
+    .update-buttons {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .update-buttons > button {
+        margin-right: 0px !important;
+        margin-bottom: 0.5rem;
+    }
+    
 }

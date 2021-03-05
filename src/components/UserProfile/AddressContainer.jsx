@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import '../../styles/UserProfile/AddressContainer.css'
 import Modal from 'react-modal';
 import Input from '../Input'
-import { Redirect } from 'react-router-dom';
+// import { Redirect } from 'react-router-dom';
 
 function AddressContainer ({ index, address, backend, grabAddressData, defaultFirst, capitalize, capitalizeArray, loggedIn, grabRedirect }) {
 
@@ -225,7 +225,7 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
         } else {
             // If name is not above 25 characters, then we return the name
             return name;
-        };
+        }
     };
     const newAddress = address.Address.split(',')
     // Capitalize the address line one even if users enter it lowercased

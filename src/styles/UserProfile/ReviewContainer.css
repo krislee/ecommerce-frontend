@@ -1,0 +1,33 @@
+.MuiPagination-ul {
+    justify-content: center;
+}
+
+.review-user-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    font-family: 'Average Sans', sans-serif;
+}
+
+.review-user-container > div > div {
+    font-family: 'Mukta Vaani', sans-serif;
+}
+
+.user-review-button-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 1rem;
+}
+
+.user-review-button-container > button:nth-child(1) {
+    margin-right: 1rem;
+}
+
+@media screen and (max-width: 599px) {
+
+    header {
+        font-size: 1.5rem !important;
+    }
+
+}

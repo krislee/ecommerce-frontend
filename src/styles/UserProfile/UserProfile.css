@@ -1,66 +1,69 @@
 .user-profile-container {
+    margin-top: 5rem;
     width: 100vw;
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    background-color: #101016;
 }
 
-.top-bar {
-    /* position: fixed; */
-    /* left: 0; */
-    margin-top: 8rem;
-    width: 60%;
-    height: 2rem;
+.user-profile {
+    display: grid;
+    grid-template-columns: 15% 85%;
+    height: 100%;
+}
+
+.left-bar {
     display: flex;
-    justify-content: center;
-    /* flex-direction: column; */
+    height: 100%;
+    flex-direction: column;
+    background-color: #21212B;
 }
 
 .highlighted-tab {
-    background-color: #000 !important;
-    color: #fff !important; 
+    /* background-color: #fff !important; */
+    color: #fff !important;
 }
 
-.top-bar > div {
+.left-bar > div {
     cursor: pointer;
-    width: 20%;
-    background-color: #e8e8e8;
-    color: #000;
-    border-bottom: 1px solid #000;
-    border-right: 1px solid #000;
-    border-top: 1px solid #000;
+    width: 100%;
+    height: 5rem;
+    color: #737373;
     display: flex;
     justify-content: center;
     align-items: center;
     font-size: 1rem;
+    font-family: 'Mukta Vaani', sans-serif;
 }
 
-.side-bar > div:hover {
-    background-color: #c8c8c8;
+
+.addresses-container-noInfo, .payments-container-noInfo {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
 .addresses-container, .payments-container {
-    margin-top: 5rem;
-    height: 100%;
     width: 100%;
     display: flex;
     flex-direction: column;
-    align-items: center;
 }
 
 .header-container {
     display: flex;
-    justify-content: space-between;
+    justify-content: space-around;
     align-items: center;
-    width: 50rem;
-    margin-bottom: 1rem;
-    /* margin: 3rem; */
+    width: 100%;
+    padding: 1rem;
+    font-family: 'Average Sans', sans-serif;
 }
 
 .header {
     text-align: center;
-    font-size: 24px;
+    color: #fff;
+    font-weight: bold;
+    font-size: 2rem;
 }
 
 .add-address {
@@ -68,29 +71,31 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    border: 1px solid #fff;
+    /* border: 1px solid #fff; */
     cursor: pointer;
     font-size: 24px;
     padding: 0.5rem;
     border-radius: 1rem;
     color: #fff;
-    background-color: #000;
+    background-color: #21212B;
+    font-weight: bold;
+}
+
+.add-address-media {
+    display: none;
 }
 
 .add-address:hover {
     color: #000;
     background-color: #fff;
-    border: 1px solid #000;
+    /* border: 1px solid #000; */
 }
 
 .all-address-container, .all-payment-container {
     display: flex;
-    /* align-items: center; */
-    /* width: 70vw;
+    align-items: flex-start;
+    width: 100%;
     height: 100%;
-    justify-content: space-between; */
-    flex-wrap: wrap;
-    width: 70%;
     justify-content: center;
 }
 
@@ -98,13 +103,20 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    width: 40rem;
-    /* justify-content: space-between; */
+    height: 100%;
     flex-wrap: wrap;
+    justify-content: flex-start;
+}
+
+.all-payments-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
 }
 
 .all-addresses-container {
-    width: 50rem;
+    display: flex;
+    justify-content: center;
 }
 
 .form > h2 {
@@ -137,4 +149,56 @@ input[type=checkbox] {
     flex-direction: row-reverse;
     justify-content: space-between;
     align-items: center;
+}
+
+@media screen and (max-width: 599px) {
+
+    .left-bar {
+       flex-direction: row;
+       height: 5rem;
+       width: 100%;
+       position: fixed;
+       z-index: 1;
+    }
+
+    .user-profile {
+        grid-template-columns: 100%;
+        /* grid-template-rows: 100% 50%; */
+    }
+
+    .right-side {
+        margin-top: 5rem;
+    }
+
+    .add-address {
+        display: none;
+    }
+
+    .add-address-media {
+        display: flex;
+    }
+
+    .header {
+        font-size: 1.5rem;
+    }
+
+    .all-payments-container > div {
+        width: 80%;
+    }
+
+    .all-addresses-container {
+        width: 80%
+    }
+}
+
+@media screen and (max-width: 399px) {
+
+    .left-bar > div > div {
+        display: none;
+    }
+
+    .all-payments-container > div > div > div:nth-child(3) {
+        display: none
+    }
+
 }

@@ -10,7 +10,7 @@ import Avatar from '@material-ui/core/Avatar';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import Button from '@material-ui/core/Button';
+import Button from 'react-bootstrap/Button';
 
 function PaymentContainer ({ backend, payment, defaultFirstPayment, grabPaymentData, capitalize, capitalizeArray, loggedIn, grabRedirect }) {
     /* ------- STATES ------- */
@@ -76,7 +76,7 @@ function PaymentContainer ({ backend, payment, defaultFirstPayment, grabPaymentD
             return `0${expDateSplit[0]}`
           } else {
             return expDateSplit[0]
-          };
+          }
         };
         // Prefill the inputs regarding the first edit modal for the payment methods with the information received back from paymentData
         setEditCardHolderInput({
@@ -105,7 +105,7 @@ function PaymentContainer ({ backend, payment, defaultFirstPayment, grabPaymentD
           } else {
             const secondAddressLine = capitalizeArray(billingDetailsAddress.line2.split(" "), capitalizedSecondAddressLine)
             return secondAddressLine;
-          };
+          }
         };
         // Capitalize the city name
         const city = capitalizeArray(billingDetailsAddress.city.split(" "), capitalizedCity);
@@ -356,14 +356,17 @@ function PaymentContainer ({ backend, payment, defaultFirstPayment, grabPaymentD
     // Styles pertaining to the cards used to display the payment methods
     const useStyles = makeStyles((theme) => ({
         root: {
-          width: '100%',
-          backgroundColor: '#e8e8e8'
+          width: '60%',
+          backgroundColor: '#21212B',
+          margin: '0.5rem',
+          fontFamily: 'Mukta Vaani, sans-serif'
         },
         header: {
-          cursor: 'pointer'
+          cursor: 'pointer',
+          fontFamily: 'Mukta Vaani, sans-serif'
         },
         avatar: {
-          backgroundColor: '#e8e8e8',
+          backgroundColor: '#fff',
           position: 'static'
         },
         avatarVisa: {
@@ -377,11 +380,12 @@ function PaymentContainer ({ backend, payment, defaultFirstPayment, grabPaymentD
         expirationDate: {
           paddingTop: '0.5rem',
           paddingBottom: '1rem !important',
-          cursor: 'pointer'
+          cursor: 'pointer',
+          fontFamily: 'Mukta Vaani, sans-serif'
         },
         collapsedContent: {
-          borderTop: '1px solid #c8c8c8',
-          backgroundColor: '#fff'
+          borderTop: '1px solid #101016',
+          backgroundColor: '#21212B'
         }
       }));
 
@@ -419,7 +423,7 @@ function PaymentContainer ({ backend, payment, defaultFirstPayment, grabPaymentD
         // if the name does not have a comma, then we split by the space in between
         const billingNameCapitalizedSplit = capitalizeArray(billingInfo.name.split(' '), billingNameCapitalized);
         return billingNameCapitalizedSplit;
-      };
+      }
     };
     // Capitalize the city name
     const billingCity = capitalizeArray(billingInfo.address.city.split(' '), capitalizedBillingCity);
@@ -437,7 +441,7 @@ function PaymentContainer ({ backend, payment, defaultFirstPayment, grabPaymentD
         let billingAddressCapitalizedLineOne = capitalizeArray(splitBillingAddressLineOne, splitBillingAddressCapitalizedLineOne);
         let billingAddressCapitalizedLineTwo = capitalizeArray(splitBillingAddressLineTwo, splitBillingAddressCapitalizedLineTwo);
         return `${billingAddressCapitalizedLineOne} ${billingAddressCapitalizedLineTwo}`;
-      };
+      }
     };
     // Combining the city, state and postal code (zipcode) into one line
     const billingAddressTwo = `${billingCity}, ${billingInfo.address.state} ${billingInfo.address.postalCode}`;
@@ -466,9 +470,9 @@ function PaymentContainer ({ backend, payment, defaultFirstPayment, grabPaymentD
       } else if (cardBrand === 'diners') {
         return (
           <img 
-          src="https://1000logos.net/wp-content/uploads/2020/04/Diners-Club-International-Logo.png"
+          src="https://cdn.worldvectorlogo.com/logos/diners-club-international-2.svg"
           alt="Diners Club"
-          style={{height: '60%'}}/>
+          style={{width: '100%'}}/>
         );
         // If the cardbrand was Discover
       } else if (cardBrand === 'discover') {
@@ -490,25 +494,25 @@ function PaymentContainer ({ backend, payment, defaultFirstPayment, grabPaymentD
       } else if (cardBrand === 'mastercard') {
         return (
           <img 
-          src ="https://www.mastercard.com/content/dam/mccom/global/logos/logo-mastercard-mobile.svg"
+          src ="https://static.dezeen.com/uploads/2016/07/mastercard-logo-redesign-pentagram-square_dezeen_936_0.jpg"
           alt="Mastercard"
-          style={{height: '60%'}}/>
+          style={{width: '90%'}}/>
         );
         // If the cardbrand was Visa
       } else if (cardBrand === 'visa') {
         return (
           <img 
-          src ="https://metapay.eu/images/reference/visa.png"
+          src ="https://lavca.org/wp-content/uploads/2019/07/VISA-logo-square.png"
           alt="Visa"
-          style={{height: '70%'}}/>
+          style={{width: '100%', backgroundColor: '#fff'}}/>
         );
         // If the cardbrand was UnionPay
       } else if (cardBrand === 'unionpay') {
         return (
           <img 
-          src ="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/UnionPay_logo.svg/1200px-UnionPay_logo.svg.png"
+          src ="https://www.logolynx.com/images/logolynx/bf/bf02dfe1aff8179c8902f04a4c227a82.png"
           alt="UnionPay"
-          style={{height: '50%'}}/>
+          style={{width: '150%'}}/>
         );
       };
     };
@@ -566,11 +570,11 @@ function PaymentContainer ({ backend, payment, defaultFirstPayment, grabPaymentD
             <div className="update-buttons">
               {/* Button will be different based on whether or not the payment method is default or not. If it is default, then the remove default button will show, but if it isn't default, then the add default button will appear instead */}
               {defaultCard ? 
-              <Button variant="contained" onClick={handleEditPaymentDefaultStatus}>Remove Default</Button> : 
-              <Button variant="contained" onClick={handleEditPaymentDefaultStatus}>Make Default</Button> }
+              <Button variant="primary" onClick={handleEditPaymentDefaultStatus}>Remove Default</Button> : 
+              <Button variant="primary" onClick={handleEditPaymentDefaultStatus}>Make Default</Button> }
               {/* Buttons to open the edit modal or the delete modal */}
-              <Button variant="contained" onClick={openEditModal}>Edit</Button>
-              <Button variant="contained" color="secondary" onClick={openDeleteModal}>Delete</Button>
+              <Button variant="primary" onClick={openEditModal}>Edit</Button>
+              <Button variant="danger"  onClick={openDeleteModal}>Delete</Button>
             </div>
           </CardContent>
         </Collapse>

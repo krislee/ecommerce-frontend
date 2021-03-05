@@ -39,7 +39,6 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-
 function NavBar ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuantity }) {
     const location = useLocation()
 
@@ -132,7 +131,7 @@ function NavBar ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuantity }
             // key: uuidv4(),
             // state: {prevPath: location.pathname }
             }}>
-                <div className="home-container" >
+                <div className="home-container">
                     <FontAwesomeIcon className="home" icon={faHome}/>
                 </div>
             </Link>

@@ -13,7 +13,11 @@ import Paper from '@material-ui/core/Paper';
 const useStyles = makeStyles({
     table: {
       minWidth: 650,
+      color: '#fff'
     },
+    white: {
+        color: '#fff !important'
+    }
 });
   
   
@@ -89,23 +93,26 @@ export default function IndividualOrder({ backend, loggedIn, grabTotalCartQuanti
                 <Table className={classes.table} aria-label="simple table">
                 <TableHead>
                     <TableRow>
-                    <TableCell>Item</TableCell>
-                    <TableCell align="right">Quantity</TableCell>
-                    <TableCell align="right">SubTotal</TableCell>
+                    <TableCell className={classes.white}>Item</TableCell>
+                    <TableCell className={classes.white} align="right">Quantity</TableCell>
+                    <TableCell className={classes.white} align="right">SubTotal</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
                     {orderItems.map((item, index) => (
                     <TableRow key={index}>                
                         <TableCell component="th" scope="row">
-                            <Link className="homepage-items" to={{
+                            <Link 
+                            className="homepage-items"
+                            className={classes.white}
+                            to={{
                                 pathname:`/item/${item.Name}`,
                                 search: `id=${item.ItemId}`}} >
                             {item.Brand} {item.Name}
                             </Link>
                         </TableCell>
-                        <TableCell align="right">{item.Quantity}</TableCell>
-                        <TableCell align="right">{item.TotalPrice}</TableCell>
+                        <TableCell className={classes.white} align="right">{item.Quantity}</TableCell>
+                        <TableCell className={classes.white} align="right">{item.TotalPrice}</TableCell>
                     </TableRow>
                     ))}
                 </TableBody>
