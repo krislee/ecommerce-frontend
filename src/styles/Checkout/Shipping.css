@@ -1,0 +1,171 @@
+#shipping-form-container {
+    margin-left: 30px;
+    margin-right: 30px;
+    padding-bottom: 30px;
+}
+#shipping-container {
+    margin-left: 10px;
+    display: flex;
+    flex-direction: column;
+    /* width: 100vw;
+    max-width:100%; */
+    
+}
+/* Shipping heading */
+h2 {
+    padding-bottom: 20px;
+}
+/* Shipping Info */
+#shipping-icon-name-container1, #shipping-icon-name-container2, #shipping-icon-address-container1, #shipping-icon-address-container2,#shipping-icon-phone-container1, #shipping-icon-phone-container2 {
+    display: flex;
+}
+#shipping-name1, #shipping-name2, #phone1, #phone2 {
+    padding-left: 0.5rem;
+}
+#shipping-address1 {
+    display: flex;
+    flex-direction: column;
+    padding-left: 0.5rem;
+    width: 70%;
+}
+#shipping-address2 {
+    display: flex;
+    flex-direction: column;
+    padding-left: 0.5rem;
+    width: 70%;
+}
+#shipping-line1-1, #shipping-line1-2, #shipping-cityStateZipcode1, #shipping-cityStateZipcode2 {
+    word-wrap: break-word;
+}
+#shipping-line1-1, #shipping-line1-2, #shipping-line2-1, #shipping-line2-2 {
+    margin-bottom: 0rem;
+}
+#shipping-cityStateZipcode1, #shipping-cityStateZipcode2 {
+    margin-bottom: 1rem;
+}
+
+/* Next button + Speed Dial OR Edit button only */
+.next-edit-container {
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 2.5rem;
+    /* margin-bottom: 20px;
+    padding-bottom: 20px; */
+}
+/* Next button */
+.btn-dark {
+    /* padding-bottom: 15px; */
+    margin-top: 40px;
+    /* align-self: flex-end */
+}
+/* Div surrounding Speed Dial */
+#control-speed-dial-margin {
+   margin-top: 65px;
+   width: 20px;
+}
+
+/* INPUTS */
+input {
+    font-size: 0.9rem !important;
+    padding: 10px !important;
+}
+
+#save-cancel-shipping-buttons {
+    display: flex;
+    justify-content: space-between;
+}
+
+/* SAVED ADDRESS MODAL */
+.ReactModal__Content {
+    width: 35% !important;
+    height: 50% !important;
+    margin: auto;
+    /* margin-right: 0px; */
+}
+
+#all-addresses-container {
+    width: 100%;
+}
+#single-saved-address {
+    width: 50vw;
+    line-height: 0.5;
+    margin-right: 0px !important;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+#saved-shipping-modal-heading {
+    padding-top: 0px;
+    margin-right: 0px;
+}
+.select-save-shipping-button {
+    margin-top:5px;
+    margin-bottom: 20px;
+}
+#close-saved-address-button {
+    margin-top: 25px;
+    /* float: right; */
+}
+.close-saved-address-button-container{
+    float: right;
+ }
+
+ @media only screen and (max-width: 1200px) {
+    .ReactModal__Content {
+        width: 45% !important;
+    }
+}
+
+@media only screen and (max-width: 1000px) {
+    .ReactModal__Content {
+        width: 50% !important;
+    }
+}
+
+@media only screen and (max-width: 800px) {
+    .ReactModal__Content {
+        width: 60% !important;
+    }
+}
+
+@media only screen and (max-width: 600px) {
+    .btn-dark{
+        width: 55px;
+        font-size: 1em !important;
+        height: 40px;
+        margin-bottom: 0px;
+        padding: 0rem !important; /* font size changed, causing the text to not be aligned, so remove padding to recenter text */
+    } 
+    #control-speed-dial-margin {
+        margin-top: 60px;
+        width: 15px;
+    }
+
+    .ReactModal__Content {
+        width: 70% !important;
+    }
+
+    /* SAVED ADDRESSES */
+    #single-saved-address {
+        font-size: 0.75rem !important;
+    }
+    .select-save-shipping-button {
+        margin-top: 0px;
+        margin-bottom: 10px;
+        height: 28px;
+    }
+
+    /* INPUTS */
+    input {
+        font-size: 0.75rem !important;
+        padding: 5px !important;
+    }
+}
+
+@media only screen and (max-width: 500px) {
+    .ReactModal__Content {
+        width: 90% !important;
+        inset: 1rem !important
+    }
+    
+}

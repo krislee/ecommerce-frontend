@@ -17,7 +17,7 @@
     color: #fff;
     position: absolute;
     top: 0;
-    margin-left: 5vw;
+    margin-left: 4vw;
 }
 
 a {
@@ -37,15 +37,21 @@ a {
     color: #b8b8b8;
 }
 
-.cart-profile-container {
+.login-cart-profile-nav-container {
     display: flex;
     width: 10rem;
     justify-content: space-between;
     align-items: center;
     height: 100%;
-    margin-right: 2vw;
-    /* position: absolute;
-    right: 0; */
+    margin-right: 3.5vw;
+}
+
+.guest-cart-nav-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 100%;
+    margin-right: 4vw;
 }
 
 .cart-icon {
@@ -175,4 +181,36 @@ a {
 .dropdown-item.active, .dropdown-item:active {
     background-color: #fff !important;
     color: #000 !important;
+}
+
+
+
+/* HAMBURGER */
+#navbar-hamburger {
+    display: none;
+}
+
+@media only screen and (max-width: 600px) {
+    #navbar-hamburger {
+        display: block;
+    }
+    #navbar-hamburger .MuiButtonBase-root {
+        color: white;
+    }
+    #nav-bar-dropdown, .login-button-container {
+        display: none
+    }
+    .home-container {
+        /* margin-left: 20vw; */
+        /* justify-content: center; */
+        margin-left: 0;
+        position: unset;
+    }
+    .login-cart-profile-nav-container .MuiButtonBase-root {
+        /* margin-right: 20px; */
+        justify-content: flex-end;
+    }
+    .login-cart-profile-nav-container {
+        width: auto;
+    }
 }

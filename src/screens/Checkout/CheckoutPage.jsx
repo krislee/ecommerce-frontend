@@ -8,7 +8,7 @@ import CheckoutItems from './CheckoutItems'
 // import OrderComplete from './OrderComplete'
 
 import createPaymentMethod from './CreatePayment'
-import '../../styles/CheckoutPage.css';
+import '../../styles/Checkout/CheckoutPage.css';
 
 
 function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCartID, grabTotalCartQuantity, socket }) {
@@ -56,6 +56,9 @@ function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCar
     // editExpiration state gets updated when we edit the payment
     const [editExpiration, setEditExpiration] = useState({})
     
+    // disableButtonAfterMakingRequest state gets updated to true when we click on Save for adding, editing, or selecting a card; we pass down grabDisableButtonAfterMakingRequest to PaymentMethod component to update the state
+    const [disableButtonAfterMakingRequest, setDisableButtonAfterMakingRequest] = useState(false)
+
     /* ------- SHIPPING STATES ------- */
     
     const [sameAsShipping, setSameAsShipping] = useState(true) // checkbox state 
@@ -65,9 +68,9 @@ function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCar
     const [shippingInput, setShippingInput] = useState({})
     
     // The following Shipping states controls if we show or hide the CheckoutItems, Shipping, and PaymentMethod component:
-    const [showShipping, setShowShipping] = useState(false) // showShipping state is updated in either CheckoutItems and PaymentMethod components to show the Shipping details or form
-    const [readOnly, setReadOnly] = useState(false) // Shipping form is enabled by default until we click Next button in CheckoutItems component, updating readOnly state to true to disable the shipping form. When we are showing the Payment component, and then click Edit in the Shipping component, we enable the shipping form to edit
-    const [showButtons, setShowButtons] = useState(false) // If showButtons state is true, it will show 3 buttons: Add New, Edit, and Saved Shipping in the Shipping component. showButtons state is updated when we click Next button in CheckoutItems component and when we are in the Payment component but click on the Edit button in the Shipping component
+    const [showShipping, setShowShipping] = useState(true) // showShipping state is updated in either CheckoutItems and PaymentMethod components to show the Shipping details or form
+    const [readOnly, setReadOnly] = useState(true) // Shipping form is enabled by default until we click Next button in CheckoutItems component, updating readOnly state to true to disable the shipping form. When we are showing the Payment component, and then click Edit in the Shipping component, we enable the shipping form to edit
+    const [showButtons, setShowButtons] = useState(true) // If showButtons state is true, it will show 3 buttons: Add New, Edit, and Saved Shipping in the Shipping component. showButtons state is updated when we click Next button in CheckoutItems component and when we are in the Payment component but click on the Edit button in the Shipping component
     const [showPayment, setShowPayment] = useState(false) // showPayment state is passed to both PaymentMethod component, and is updated in the Shipping Component when we click Next or Edit button in the Shipping Component
     const [showItems, setShowItems] = useState(true) //showItems state is updated in CheckoutItems component
 
@@ -171,6 +174,7 @@ function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCar
     // Show Errors in the div when Saving new card or Confirming card payment. If there is an error, disable Save or Confirm Payment button.
     const grabError = (error) => {
         setError(error)
+        setDisableButtonAfterMakingRequest(false)
     }
 
     // When we are typing in the Card Element, handleCardChange() runs, making the grabDisabled() to run. This update the disable state to false, enabling the Confirm Payment or Save (in the Add New Card) button. 
@@ -180,6 +184,8 @@ function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCar
         setDisabled(disabled)
     }
 
+    // Disable payment-related buttons after saving something (making a request to server) so we do not run consecutive request
+    const grabDisableButtonAfterMakingRequest = (disableButtonAfterMakingRequest) => setDisableButtonAfterMakingRequest(disableButtonAfterMakingRequest)
     /* ------- FUNCTIONS UPDATING SHIPPING-RELATED STATES  ------- */  
 
     const grabPrevLoggedIn = (prevLoggedIn) => setPrevLoggedIn(prevLoggedIn)
@@ -204,7 +210,7 @@ function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCar
 
     /* ------- LISTEN TO INPUT CHANGES TO UPDATE STATES ------- */  
 
-    // handleBillingChange() gets passed down as prop to Checkout/PaymentMethod, and then to Component/BillingInput
+    // handleBillingChange() and handleBillingStateChange() gets passed down as prop to Checkout/PaymentMethod, and then to Component/BillingInput
     const handleBillingChange = (event) => {
         const { name, value } = event.target
         
@@ -212,6 +218,14 @@ function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCar
             ...prevBilling, [name] : value // need the previous billing state when updating the billing state (hence the ...prevBilling) or else the other input values will be empty
         }))
     }
+
+    const handleBillingStateChange = (event) => {
+        console.log(event.target.value)
+        setBilling((prevBilling) => ({
+            ...prevBilling, "state": event.target.value
+        }))
+    }
+    
     
     const recheckSameAsShippingButton = (sameAsShipping) => setSameAsShipping(sameAsShipping)
 
@@ -233,7 +247,7 @@ function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCar
             })
         } else {
             // If the checkbox is not checked, then leave the billing input fields empty
-            setBilling({})
+            setBilling({"state": "Select"})
         }
     }
 
@@ -254,8 +268,28 @@ function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCar
     const grabRedirect = (redirect) => setRedirect(redirect) // aside from using redirect state at CheckoutPage component, redirect state is also passed down to the 2 other child components (CheckoutItems and Shipping) to be used for users who cleared local storage.
 
     const billingInputErrorDisableButton = () => {
+        // console.log (cardholderName, billing)
+        // console.log("disabled", disabled, "error", error, typeof error)
+        // console.log(/^[a-z ,.'-]+$/i.test(cardholderName) !== true 
+        // || cardholderName === undefined
+        // || cardholderName === '')
+        // console.log(billing.firstName === ""
+        // || billing.firstName === undefined
+        // || /^[a-z ,.'-]+$/i.test(billing.lastName) !== true )
+        // console.log(/^[a-z ,.'-]+$/i.test(billing.lastName) !== true 
+        // || billing.lastName === ""
+        // || billing.lastName === undefined)
+        // console.log(billing.line1 === ""
+        // || billing.line1 === undefined)
+        // console.log(/^[a-z ,.'-]+$/i.test(billing.city) !== true 
+        // || billing.city === ""
+        // || billing.city === undefined)
+        // console.log(/^[a-z][a-z\s]*$/i.test(billing.state) !== true 
+        // || billing.state === ""
+        // || billing.state === undefined
+        // || billing.state.length !== 2)
         return (
-            /^[a-z][a-z\s]*$/i.test(cardholderName) !== true 
+            /^[a-z ,.'-]+$/i.test(cardholderName) !== true 
             || cardholderName === undefined
             || cardholderName === ''
             || /^[a-z ,.'-]+$/i.test(billing.firstName) !== true 
@@ -269,10 +303,10 @@ function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCar
             || /^[a-z ,.'-]+$/i.test(billing.city) !== true 
             || billing.city === ""
             || billing.city === undefined
-            || /^[a-z][a-z\s]*$/i.test(billing.state) !== true 
-            || billing.state === ""
-            || billing.state === undefined
-            || billing.state.length !== 2
+            // || /^[a-z][a-z\s]*$/i.test(billing.state) !== true 
+            // || billing.state === ""
+            // || billing.state === undefined
+            // || billing.state.length !== 2
             // || /^[0-9]+$/.test(billing.postalCode) !== true 
             // || billing.postalCode === ""
             // || billing.postalCode === undefined
@@ -286,10 +320,12 @@ function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCar
             /^[0-9]*$/g.test(billing.postalCode) !== true 
             || billing.postalCode === undefined
             || billing.postalCode === ''
+            || billing.postalCode.length !== 5
         )
     }
-
-
+    const [processingPayment, setProcessingPayment] = useState(false)
+    const [guestProcessingPayment, setGuestProcessingPayment] = useState(false)
+    const grabGuestProcessingPayment = (guestProcessingPayment) => setGuestProcessingPayment(guestProcessingPayment)
 
     /* ------- CREATE NEW OR UPDATE EXISTING PAYMENT INTENT AFTER RENDERING DOM ------- */
     useEffect(() => {
@@ -385,6 +421,8 @@ function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCar
         grabDisabled(true) // Disable Confirm Payment button once we hit it
         setProcessing(true) // Create a spinner by updating processing state to true
         // We don't want to let default form submission happen here, which would refresh the page.
+        setGuestProcessingPayment(true)
+        setProcessingPayment(true)
         event.preventDefault();
 
         // Check if Stripe.js has loaded yet.
@@ -473,6 +511,8 @@ function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCar
             grabError(`Payment failed. ${confirmCardResult.error.message}`);
             // Don't disable the button to let user be able to click Confirm Payment again after fixing card details.
             grabDisabled(false);
+            setGuestProcessingPayment(false)
+            setProcessingPayment(false)
             setProcessing(false) // Stop the spinner
         } else if(confirmCardResult.paymentIntent.status === 'succeeded'){
             // The payment has been processed!
@@ -496,12 +536,19 @@ function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCar
             <>
             
             <div id="payment-form">
+                <div className="checkout-items">
                 <CheckoutItems backend={backend} loggedIn={loggedIn} showItems={showItems} grabShowItems={grabShowItems} grabShowShipping={grabShowShipping} grabShowButtons={grabShowButtons} grabShowPayment={grabShowPayment} grabReadOnly={grabReadOnly} grabTotalCartQuantity={grabTotalCartQuantity} grabRedirect={grabRedirect} shipping={shipping} grabTotalCartQuantity={grabTotalCartQuantity} prevLoggedIn={prevLoggedIn} grabPrevLoggedIn={grabPrevLoggedIn} paymentMethod={paymentMethod} grabRedirect={grabRedirect} />
-
-                <Shipping backend={backend} loggedIn={loggedIn} grabPaymentLoading={grabPaymentLoading} cartID={cartID} showPayment={showPayment} grabShowPayment={grabShowPayment} grabShowItems={grabShowItems} shipping={shipping} grabShipping={grabShipping} grabBillingWithShipping={grabBillingWithShipping} shippingInput={shippingInput} grabShippingInput={grabShippingInput} paymentMethod={paymentMethod} grabCardholderName={grabCardholderName} grabShowButtons={grabShowButtons} showButtons={showButtons} showShipping={showShipping} grabShowShipping={grabShowShipping} grabShowItems={grabShowItems} readOnly={readOnly} grabReadOnly={grabReadOnly} grabTotalCartQuantity={grabTotalCartQuantity} grabError={grabError} grabDisabled={grabDisabled} grabRedirect={grabRedirect} paymentMethod={paymentMethod} prevLoggedIn={prevLoggedIn} grabPrevLoggedIn={grabPrevLoggedIn} />
-
-                <PaymentMethod backend={backend} loggedIn={loggedIn} error={error} grabError={grabError} disabled={disabled} grabDisabled={grabDisabled} paymentLoading={paymentLoading} grabPaymentLoading={grabPaymentLoading} billing={billing} handleBillingChange={handleBillingChange} grabBilling={grabBilling} paymentMethod={paymentMethod} grabPaymentMethod={grabPaymentMethod} cardholderName={cardholderName} grabCardholderName={grabCardholderName}handleCardholderNameChange={handleCardholderNameChange} handleCardChange={handleCardChange} collectCVV={collectCVV} grabCollectCVV={grabCollectCVV} editPayment={editPayment} grabEditPayment={grabEditPayment} redisplayCardElement={redisplayCardElement} grabRedisplayCardElement={grabRedisplayCardElement} grabShowSavedCards={grabShowSavedCards} handleConfirmPayment={handleConfirmPayment} showSavedCards={showSavedCards} editExpiration={editExpiration} grabEditExpiration={grabEditExpiration} loggedOut={loggedOut} grabLoggedOut={grabLoggedOut} showPayment={showPayment} sameAsShipping={sameAsShipping} handleSameAsShipping={handleSameAsShipping} shippingInput={shippingInput} grabBillingWithShipping={grabBillingWithShipping} shipping={shipping} recheckSameAsShippingButton={recheckSameAsShippingButton} grabTotalCartQuantity={grabTotalCartQuantity}grabRedirect={grabRedirect} billingInputErrorDisableButton={billingInputErrorDisableButton} billingPostalCodeInputErrorDisableButton={billingPostalCodeInputErrorDisableButton} />
+                </div>
                 
+                <div id="checkout-shipping-payment">
+                <div className="checkout-shipping">
+                <Shipping backend={backend} loggedIn={loggedIn} grabPaymentLoading={grabPaymentLoading} cartID={cartID} showPayment={showPayment} grabShowPayment={grabShowPayment} grabShowItems={grabShowItems} shipping={shipping} grabShipping={grabShipping} grabBillingWithShipping={grabBillingWithShipping} shippingInput={shippingInput} grabShippingInput={grabShippingInput} paymentMethod={paymentMethod} grabCardholderName={grabCardholderName} grabShowButtons={grabShowButtons} showButtons={showButtons} showShipping={showShipping} grabShowShipping={grabShowShipping} grabShowItems={grabShowItems} readOnly={readOnly} grabReadOnly={grabReadOnly} grabTotalCartQuantity={grabTotalCartQuantity} grabError={grabError} grabDisabled={grabDisabled} grabRedirect={grabRedirect} paymentMethod={paymentMethod} prevLoggedIn={prevLoggedIn} grabPrevLoggedIn={grabPrevLoggedIn} />
+                </div>
+
+                <div className="checkout-payment">
+                <PaymentMethod backend={backend} loggedIn={loggedIn} error={error} grabError={grabError} disabled={disabled} grabDisabled={grabDisabled} paymentLoading={paymentLoading} grabPaymentLoading={grabPaymentLoading} billing={billing} handleBillingChange={handleBillingChange} handleBillingStateChange={handleBillingStateChange} grabBilling={grabBilling} paymentMethod={paymentMethod} grabPaymentMethod={grabPaymentMethod} cardholderName={cardholderName} grabCardholderName={grabCardholderName}handleCardholderNameChange={handleCardholderNameChange} handleCardChange={handleCardChange} collectCVV={collectCVV} grabCollectCVV={grabCollectCVV} editPayment={editPayment} grabEditPayment={grabEditPayment} redisplayCardElement={redisplayCardElement} grabRedisplayCardElement={grabRedisplayCardElement} grabShowSavedCards={grabShowSavedCards} handleConfirmPayment={handleConfirmPayment} showSavedCards={showSavedCards} editExpiration={editExpiration} grabEditExpiration={grabEditExpiration} loggedOut={loggedOut} grabLoggedOut={grabLoggedOut} showPayment={showPayment} sameAsShipping={sameAsShipping} handleSameAsShipping={handleSameAsShipping} shippingInput={shippingInput} grabBillingWithShipping={grabBillingWithShipping} shipping={shipping} recheckSameAsShippingButton={recheckSameAsShippingButton} grabTotalCartQuantity={grabTotalCartQuantity}grabRedirect={grabRedirect} billingInputErrorDisableButton={billingInputErrorDisableButton} billingPostalCodeInputErrorDisableButton={billingPostalCodeInputErrorDisableButton} processingPayment={processingPayment} guestProcessingPayment={guestProcessingPayment} grabGuestProcessingPayment={grabGuestProcessingPayment} disableButtonAfterMakingRequest={disableButtonAfterMakingRequest} grabDisableButtonAfterMakingRequest={grabDisableButtonAfterMakingRequest} />
+                </div>
+                </div>
             </div>         
             </>
         )

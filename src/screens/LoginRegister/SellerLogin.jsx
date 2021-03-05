@@ -1,8 +1,8 @@
 import React from 'react'
 import {Link} from 'react-router-dom';
-import Login from '../../components/Login'
+import Login from '../../components/LoginRegister/Login'
 import Footer from '../../components/Footer'
-import '../../styles/Login.css'
+// import '../../styles/Login.css'
 
 function SellerLogin ({backend, loggedIn }) {
     return (

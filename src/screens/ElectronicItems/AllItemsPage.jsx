@@ -1,16 +1,20 @@
 import React, { useEffect, useState } from 'react'
 import {Link, useParams, useHistory} from 'react-router-dom';
 import Item from '../../components/Item';
-import '../../styles/Homepage.css'
+import '../../styles/Items/AllItems.css'
 // import NavBar from '../../components/NavigationBar'
 import Footer from '../../components/Footer'
 import { makeStyles } from '@material-ui/core/styles';
-import { Pagination, PaginationItem } from '@material-ui/lab';
+import { Pagination } from '@material-ui/lab';
+import { FormHelperText } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
     root: {
       '& > *': {
-        marginTop: theme.spacing(2),
+          marginTop: theme.spacing(2),
+          display: 'flex',
+          "justify-content": 'center',
+          'margin-bottom': '5rem'
       },
     },
 }));
@@ -24,6 +28,8 @@ function AllItems ({ loggedIn, grabURL, backend, totalCartQuantity, grabTotalCar
     const history = useHistory()
 
     const [items, setItems] = useState([]); // store all the items in items state
+    const [totalItemsPage, setTotalItemsPage] = useState(0)
+    const [pageLimit, setPageLimit] = useState(0)
 
     useEffect(() => {
         
@@ -37,8 +43,11 @@ function AllItems ({ loggedIn, grabURL, backend, totalCartQuantity, grabTotalCar
                 signal: signal
             });
             const data = await resp.json();
+            console.log(data)
             console.log(data.allElectronic);
             setItems(data.allElectronic);
+            setTotalItemsPage(data.totalPages)
+            setPageLimit(data.pageLimit)
             setFooterLoading(false)
         };
 
@@ -58,42 +67,56 @@ function AllItems ({ loggedIn, grabURL, backend, totalCartQuantity, grabTotalCar
         const data = await resp.json();
         console.log(data.allElectronic);
         setItems(data.allElectronic)
+        // setTotalItemsPage(data.totalPages)
     }
 
     const itemList = items.map((item, index) => 
-        <React.Fragment key={index}>
-        <Link className="homepage-items" to={{
-            pathname:`/item/${item.Name}`,
-            search: `id=${item._id}`
-        }}>
-            <Item 
-            name={item.Name}
-            itemUrl={`${backend}/buyer/electronic/${item._id}`}
-            grabURL={grabURL}
-            />
-        </Link>
-        </React.Fragment>
+        <div className="individual-store-item-container" key={index}>
+            <div className="individual-store-item-img"><img src={item.Image[0]} /></div>
+            <div className="item-name-link">
+            <Link className="homepage-items" to={{
+                pathname:`/item/${item.Name}`,
+                search: `id=${item._id}`
+            }}>
+                <Item 
+                name={item.Name}
+                itemUrl={`${backend}/buyer/electronic/${item._id}`}
+                grabURL={grabURL}
+                />
+            </Link>
+            </div>
+        </div>
     )
 
-
+    const retrieveDivID = () => {
+        console.log(87, pageIndex, totalItemsPage)
+        if(Number(pageIndex) === totalItemsPage) {
+            console.log(88, items.length % pageLimit)
+            if(items.length % pageLimit === 0) return 'even'
+            else return 'odd'
+        } else {
+            console.log(92, pageLimit % 2)
+            if(pageLimit % 2 === 0) return 'even'
+            else return 'odd'
+        }
+    }
     return (
+        <>
         <div className="homepage-container">
-            {/* <NavBar totalCartQuantity={totalCartQuantity} grabTotalCartQuantity={grabTotalCartQuantity} backend={backend} loggedIn={loggedIn}/> */}
-
-            <div className="display-item-container">
-                {<div className={loggedIn() ? 'itemContainerLoggedIn' : 'itemContainer'}>
-                    {itemList}
-                    <div className={classes.root}>
-                        <Pagination showFirstButton showLastButton size="large" variant="outlined" shape="rounded" page={Number(pageIndex)} count={2} siblingCount={1} boundaryCount={2} onChange={handlePageOnChange} />
-                    </div>        
-                </div>}
-            </div>
-     
-            <Footer footerLoading={footerLoading}/>
+            {<div className={ retrieveDivID() === 'even' ? 'store-item-container-even' :'store-item-container-odd'}>
+                {itemList}     
+            </div>}
+            <div className={classes.root}>
+                <Pagination size="large" variant="outlined" shape="rounded" count={totalItemsPage} onChange={handlePageOnChange} siblingCount={0} />
+            </div>   
         </div>
+        <Footer footerLoading={footerLoading}/>
+        </>
     )
 }
 
 
 
 export default AllItems
+// 002424
+// tabindex="-1"
