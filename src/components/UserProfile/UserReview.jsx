@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Rating from '@material-ui/lab/Rating';
 import { Link } from 'react-router-dom'
 import Button from 'react-bootstrap/Button'
-import '../../styles/UserProfile/ReviewContainer.css';
+// import '../../styles/UserProfile/ReviewContainer.css';
 
 export default function UserReviewComponent({ review, classes, openUpdateReviewModal, openDeleteReviewModal}) {
 

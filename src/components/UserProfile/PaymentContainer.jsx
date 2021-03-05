@@ -12,7 +12,68 @@ import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Button from 'react-bootstrap/Button';
 
+// Styles for the Modal
+const customStyles = {
+  content : {
+    top: '50%',
+    left: '50%',
+    right: 'auto',
+    bottom: 'auto',
+    transform: 'translate(-50%, -50%)',
+    zIndex: 3
+  }
+};
+
+Modal.setAppElement('#root');
+
+
+// Styles pertaining to the cards used to display the payment methods
+const useStyles = makeStyles((theme) => ({
+  root: {
+    width: '60%',
+    backgroundColor: '#21212B',
+    margin: '0.5rem',
+    fontFamily: 'Mukta Vaani, sans-serif'
+  },
+  header: {
+    cursor: 'pointer',
+    fontFamily: 'Mukta Vaani, sans-serif'
+  },
+  avatar: {
+    backgroundColor: '#fff',
+    position: 'static'
+  },
+  avatarVisa: {
+    backgroundColor: '#14287F',
+    position: 'static'
+  },
+  avatarJCB: {
+    backgroundColor: '#fff',
+    position: 'static'
+  },
+  expirationDate: {
+    paddingTop: '0.5rem',
+    paddingBottom: '1rem !important',
+    cursor: 'pointer',
+    fontFamily: 'Mukta Vaani, sans-serif'
+  },
+  collapsedContent: {
+    borderTop: '1px solid #101016',
+    backgroundColor: '#21212B'
+  }
+}));
+
+  const backgroundStyling = {
+    backgroundSize: 'cover',
+    height: '100%',
+    width: '100%'
+  };
+  
+
 function PaymentContainer ({ backend, payment, defaultFirstPayment, grabPaymentData, capitalize, capitalizeArray, loggedIn, grabRedirect }) {
+
+    const classes = useStyles();
+
     /* ------- STATES ------- */
 
     // Getter and Setter to expand the cards (dropdown)
@@ -33,20 +94,6 @@ function PaymentContainer ({ backend, payment, defaultFirstPayment, grabPaymentD
     const [overlayClickCloseEditPaymentModal, setOverlayClickCloseEditPaymentModal] = useState(true);
     const [disabledOnSubmitDeletePaymentModal, setDisabledOnSubmitDeletePaymentModal] = useState(false);
     const [overlayClickCloseDeletePaymentModal, setOverlayClickCloseDeletePaymentModal] = useState(true);
-
-    // Styles for the Modal
-    const customStyles = {
-      content : {
-        top: '50%',
-        left: '50%',
-        right: 'auto',
-        bottom: 'auto',
-        transform: 'translate(-50%, -50%)',
-        zIndex: 3
-      }
-    };
-
-    Modal.setAppElement('#root');
 
     // Function that runs when the edit modal opens
     const openEditModal = async (e) => {
@@ -351,50 +398,6 @@ function PaymentContainer ({ backend, payment, defaultFirstPayment, grabPaymentD
       } else {
         grabRedirect();
       };
-    };
-
-    // Styles pertaining to the cards used to display the payment methods
-    const useStyles = makeStyles((theme) => ({
-        root: {
-          width: '60%',
-          backgroundColor: '#21212B',
-          margin: '0.5rem',
-          fontFamily: 'Mukta Vaani, sans-serif'
-        },
-        header: {
-          cursor: 'pointer',
-          fontFamily: 'Mukta Vaani, sans-serif'
-        },
-        avatar: {
-          backgroundColor: '#fff',
-          position: 'static'
-        },
-        avatarVisa: {
-          backgroundColor: '#14287F',
-          position: 'static'
-        },
-        avatarJCB: {
-          backgroundColor: '#fff',
-          position: 'static'
-        },
-        expirationDate: {
-          paddingTop: '0.5rem',
-          paddingBottom: '1rem !important',
-          cursor: 'pointer',
-          fontFamily: 'Mukta Vaani, sans-serif'
-        },
-        collapsedContent: {
-          borderTop: '1px solid #101016',
-          backgroundColor: '#21212B'
-        }
-      }));
-
-    const classes = useStyles();
-
-    const backgroundStyling = {
-      backgroundSize: 'cover',
-      height: '100%',
-      width: '100%'
     };
 
     // Regular card information
