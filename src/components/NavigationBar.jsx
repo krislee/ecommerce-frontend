@@ -51,7 +51,7 @@ function NavBar ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuantity }
     const { width, height, ref } = useResizeDetector(); // returns the width and height of the window; 
 
     useEffect(() => {
-        console.log(54, width)
+        // console.log(54, width)
         if(width > 568) { // since the width returned from useResizeDetector() hook does not include the  padding of the .navbar element, which is 16px for left padding and 16px for right padding, we need to deduct 32px from 600px; so when the .navbar element is 568px in width, the .navbar element is actually 600px when we include the 32px of left and right padding combined
             return setHamburgerState({ ...hamburgerState, 'left': false}) // close the swipe drawer by setting 'left' to false when the window width is greater than 600px
         }

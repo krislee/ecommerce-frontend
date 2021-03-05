@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from 'react';
 // import NavBar from '../../components/NavigationBar';
+import brandImage from '../../components/Checkout/creditcardIcons.jsx'
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { useLocation, Link, Redirect } from 'react-router-dom';
 import Modal from 'react-modal';
+
+import '../../styles/Checkout/OrderComplete.css'
 
 export default function OrderComplete({ backend, loggedIn, cartID, socket, grabTotalCartQuantity, totalCartQuantity }) {
  
@@ -15,6 +18,7 @@ export default function OrderComplete({ backend, loggedIn, cartID, socket, grabT
     const [orderShippingName, setOrderShippingName] = useState('')
     const [orderPayment, setOrderPayment] = useState({})
     const [orderNumber, setOrderNumber] = useState('')
+    const [orderDate, setOrderDate] = useState('')
     const [prevLoggedIn, setPrevLoggedIn] = useState(loggedIn())
 
     const location = useLocation()
@@ -37,6 +41,7 @@ export default function OrderComplete({ backend, loggedIn, cartID, socket, grabT
                     setOrderShippingName(orderData.order.Shipping.Name.replace(", ", " "))
                     setOrderNumber(orderData.order.OrderNumber)
                     setOrderPayment(orderData.payment)
+                    setOrderDate(orderData.order.OrderDate)
                     setOrderLoading(false)
                     socket.emit('end', {cartID: cartID}) // end socket connect
                 })
@@ -66,6 +71,7 @@ export default function OrderComplete({ backend, loggedIn, cartID, socket, grabT
                         setOrderShippingName(completeOrderData.order.Shipping.Name.replace(", ", " "))
                         setOrderNumber(completeOrderData.order.OrderNumber)
                         setOrderPayment(completeOrderData.payment)
+                        setOrderDate(new Date(completeOrderData.order.OrderDate).toDateString())
                         setOrderLoading(false)
                        
                 } else {
@@ -104,34 +110,76 @@ export default function OrderComplete({ backend, loggedIn, cartID, socket, grabT
         return null
     } else {
         return (
-            <>
-                <h2>Thank you for your purchase! </h2>
-                <h3>Order #: {orderNumber}</h3>
-                    
-                <div>
-                    <h4>Items</h4>
-                    {orderItems.map((orderItem, index) => { return (
-                        <div key={index}>
-                            <p>{orderItem.Name}</p>
-                            <p>{orderItem.Quantity}</p>
+            <div id="order-complete-container">
+            <h2 id="order-complete-heading">Thank you for your purchase! </h2>
+            
+                <div id="order-complete-details-shipping-container">
+                    <div id="order-compelete-details-container">
+                        <div id="order-complete-details-heading"><b>Order Details</b></div>
+                        <div id="order-complete-number">Order #: {orderNumber}</div>
+                        <div id="order-complete-date">Order placed on {orderDate}</div>
+                    </div>
+                    <div id="order-complete-shipping-container">
+                        <div id="order-complete-shipping-heading"><b>Shipping Address</b></div>
+                        <div id="order-complete-shipping-info">
+                            <p className="order-complete-name">{orderShippingName}</p>
+                            <p className="order-complete-line1">{orderShipping[0]}</p>
+                            {orderShipping[1] !== "null" && <p className="order-complete-line2">{orderShipping[1]}</p>}
+                            <p className="order-complete-cityStatePostal">{orderShipping[2]}, {orderShipping[3]} {orderShipping[4]} </p>
                         </div>
-                    )})}
-
-                    <h4>Shipping</h4>
-                    {/* <p>{order.Shipping.Name.split(", ")[0]} {order.Shipping.Name.split(", ")[1]} </p> */}
-                    <p>{orderShippingName}</p>
-                    <p>{orderShipping[0]}</p>
-                    <p>{orderShipping[1] === "null" ? "" : orderShipping[1]}</p>
-                    <p>{orderShipping[2]}, {orderShipping[3]} {orderShipping[4]} </p>
-                    
-                    <h4>Billing Details</h4>
-                    <p>{orderPayment.brand[0].toUpperCase()}{orderPayment.brand.slice(1)} ending in {orderPayment.last4}</p>
-                    <p>{orderPayment.billingDetails.name.split(", ")[0]} {orderPayment.billingDetails.name.split(", ")[1]} </p>
-                    <p>{orderPayment.billingDetails.address.line1}</p>
-                    <p>{orderPayment.billingDetails.address.line2 === "null" || orderPayment.billingDetails.address.line2 === "undefined" ? "" : orderPayment.billingDetails.address.line2}</p>
-                    <p>{orderPayment.billingDetails.address.city}, {orderPayment.billingDetails.address.state} {orderPayment.billingDetails.address.postalCode}</p>
+                    </div>
                 </div>
-            </>
+
+                <div id="order-complete-pm-billing-container">
+                    <div id="order-complete-pm-container">
+                        <div id="order-complete-pm-heading">
+                            <b>Payment Method</b>
+                        </div>
+                        <div id="order-complete-pm-info">
+                            <div id="order-complete-card-img-container">
+                                {brandImage(orderPayment.brand)}
+                            </div>
+                            <div id="order-complete-card-number-container">
+                                {orderPayment.brand === 'amex' ? <p id='order-completecard-number'>****   ******   {orderPayment.last4}</p> : <p id='order-completecard-number'>****   ****   ****   {orderPayment.last4}</p>}
+                            </div>
+                        
+                        </div>
+                    </div>
+                    <div id="order-complete-billing-container">
+                        <div id="order-complete-billing-heading">
+                            <b>Billing Details</b>
+                        </div>
+                        <div id="order-complete-billing-info">
+                            <p className="order-complete-name">{orderPayment.billingDetails.name.split(", ")[0]} {orderPayment.billingDetails.name.split(", ")[1]} </p>
+                            <p className="order-complete-line1">{orderPayment.billingDetails.address.line1}</p>
+                            {orderPayment.billingDetails.address.line2 !== "null" && <p className="order-complete-line2">{orderPayment.billingDetails.address.line2}</p>}
+                            <p className="order-complete-cityStatePostal">{orderPayment.billingDetails.address.city}, {orderPayment.billingDetails.address.state} {orderPayment.billingDetails.address.postalCode}</p>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div id="order-complete-items-container">
+                    <div id="order-complete-items-heading"><b>Here is what you ordered:</b></div>
+                    <div id="order-complete-items-table-heading">
+                        <div>Item</div>
+                        <div></div>
+                        <div>Qty</div>
+                        <div>Total</div>
+                    </div>
+                    <div id="order-complete-item-container">
+                        {orderItems.map((orderItem, index) => { return (
+                            <div className="order-complete-item" key={index}>
+                                <div className="order-complete-img-container"><img src={orderItem.Image} /></div>
+                                <div className="order-complete-name">{orderItem.Name}</div>
+                                <div className="order-complete-quantity">{orderItem.Quantity}</div>
+                                <div className="order-complete-price">${orderItem.TotalPrice.toFixed(2)}</div>
+                            </div>
+                        )})}
+                    </div>
+                </div>
+            </div>
+           
         )
     }
 }
