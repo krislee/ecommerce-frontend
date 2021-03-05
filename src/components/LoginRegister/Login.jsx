@@ -107,7 +107,7 @@ function Login ({backend, loggedIn, grabLoginInfo, buyer, seller, grabTotalCartQ
                 {/* <input type="password" placeholder="Password" value={password} onChange={handleChangePassword}  autoComplete="current-password"></input> */}
 
                 <TextField
-                id="filled-error-helper-text"
+                className="filled-error-helper-text"
                 label="Username"
                 size="medium"
                 placeholder="Enter Username"
@@ -117,7 +117,7 @@ function Login ({backend, loggedIn, grabLoginInfo, buyer, seller, grabTotalCartQ
                 />
                 <TextField
                 size="medium"
-                id="filled-error-helper-text"
+                className="filled-error-helper-text"
                 label="Password"
                 type="password"
                 placeholder="Enter Password"

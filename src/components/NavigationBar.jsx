@@ -80,19 +80,25 @@ function NavBar ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuantity }
         >
             <List>
                 <ListItem button >
-                    <ListItemText primary="Shop All" />
+                    <ListItemText primary= {<Link to="/shop/1">Shop All </Link>} />
                 </ListItem>
             </List>
             <Divider />
             <List>
                 <ListItem button >
-                    <ListItemText primary={localStorage.getItem('token') ? "Account Setting" : "Login"} />
+                    <ListItemText primary={localStorage.getItem('token') ? 
+                    <Link to="/profile/setting">
+                        <div>Account Setting</div>
+                    </Link> 
+                    : <Link to="/login/buyer">Login</Link>} />
                 </ListItem>
             </List>
             <Divider />
             <List>
                 <ListItem button >
-                    <ListItemText primary={localStorage.getItem('token') ? "Sign Out" : "Register"} />
+                    <ListItemText primary={localStorage.getItem('token') ? 
+                    <div onClick={handleLogout}>Sign Out</div>
+                    : <Link to="/register/buyer">Register</Link>} />
                 </ListItem>
             </List>
         </div>

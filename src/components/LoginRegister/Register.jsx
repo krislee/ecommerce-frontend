@@ -204,7 +204,7 @@ export default function Register ({backend, loggedIn, grabLoginInfo, buyer, sell
                 <form className={classes.root} noValidate autoComplete="off">
                     <div id="register-container">
                         <TextField
-                        id="filled-error-helper-text"
+                        className="filled-error-helper-text"
                         label="First Name"
                         size="medium"
                         placeholder="Enter First Name"
@@ -214,7 +214,7 @@ export default function Register ({backend, loggedIn, grabLoginInfo, buyer, sell
                         onChange={handleChangeName}
                         />
                         <TextField
-                        id="filled-error-helper-text"
+                        className="filled-error-helper-text"
                         label="Last Name"
                         size="medium"
                         placeholder="Enter Last Name"
@@ -225,7 +225,7 @@ export default function Register ({backend, loggedIn, grabLoginInfo, buyer, sell
                         />
                         <TextField
                         error={emailInvalid || emailError}
-                        id="filled-error-helper-text"
+                        className="filled-error-helper-text"
                         label="Email"
                         size="medium"
                         placeholder="Enter Email"
@@ -236,7 +236,7 @@ export default function Register ({backend, loggedIn, grabLoginInfo, buyer, sell
                         />
                         <TextField
                         error={usernameInvalid || usernameError}
-                        id="filled-error-helper-text"
+                        className="filled-error-helper-text"
                         label="Username"
                         size="medium"
                         placeholder="Enter Username"
@@ -249,7 +249,7 @@ export default function Register ({backend, loggedIn, grabLoginInfo, buyer, sell
                         <TextField
                         error={passwordInvalid}
                         size="medium"
-                        id="filled-error-helper-text"
+                        className="filled-error-helper-text"
                         label="Password"
                         type="password"
                         placeholder="Enter Password"

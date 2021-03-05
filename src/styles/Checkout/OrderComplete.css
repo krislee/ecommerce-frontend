@@ -9,7 +9,9 @@
     font-family: 'Average Sans', sans-serif;
     font-size: 1rem;
 }
-
+#order-complete-heading {
+    text-align: center;
+}
 #order-complete-details-heading, #order-complete-shipping-heading, #order-complete-pm-heading, #order-complete-billing-heading {
    border-bottom: 3px solid #dee2ea;
 }

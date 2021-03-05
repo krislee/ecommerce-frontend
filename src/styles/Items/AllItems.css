@@ -61,7 +61,7 @@
 
 /* PAGINATION */
 
-.homepage-container > .makeStyles-root-2 {
+.homepage-container > .makeStyles-root {
     display: flex;
     justify-content: center;
     margin-bottom: 3rem;
