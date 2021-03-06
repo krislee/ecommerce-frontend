@@ -324,7 +324,7 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
                 body: JSON.stringify({
                     name: `${shippingInput.firstName}, ${shippingInput.lastName}`,
                     address: `${shippingInput.line1}, ${shippingInput.line2}, ${shippingInput.city}, ${shippingInput.state}, ${shippingInput.postalCode}`,
-                    phone: shippingInput.phone
+                    phone: shippingInput.phone.replace(/\D/g,'')
                 })
             })
             const editShippingData = await editShippingResponse.json()
@@ -352,7 +352,7 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
                 body: JSON.stringify({
                     name: `${shippingInput.firstName}, ${shippingInput.lastName}`,
                     address: `${shippingInput.line1}, ${shippingInput.line2}, ${shippingInput.city}, ${shippingInput.state}, ${shippingInput.postalCode}`,
-                    phone: shippingInput.phone
+                    phone: shippingInput.phone.replace(/\D/g,'')
                 })
             })
             const saveNewShippingData = await saveNewShippingResponse.json()
@@ -393,7 +393,7 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
                         city: shippingInput.city,
                         state: shippingInput.state,
                         postalCode: shippingInput.postalCode,
-                        phone: shippingInput.phone,
+                        phone: shippingInput.phone.replace(/\D/g,''),
                     },
                     saveShipping: (checkbox && checkbox.checked) ? true : false,
                     lastUsedShipping: shipping.firstName ? shipping.id : undefined
@@ -420,7 +420,7 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
                         city: shippingInput.city,
                         state: shippingInput.state,
                         postalCode: shippingInput.postalCode,
-                        phone: shippingInput.phone,
+                        phone: shippingInput.phone.replace(/\D/g,''),
                     },
                     saveShipping: false
                 })

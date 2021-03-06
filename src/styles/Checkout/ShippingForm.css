@@ -10,12 +10,12 @@
 
 .city-state-zipcode {
     display: grid;
-    grid-template-areas: 'city state postalCode';
+    grid-template-areas: 'state postalCode';
     /* grid-template-columns: 40% 20% 40%; */
     grid-column-gap: 10px;
 }
 #city-container {
-    grid-area: city;
+    /* grid-area: city; */
     width: 100%;
 }
 #shipping-input-state {
@@ -73,17 +73,66 @@ input[name="line1"], input[name="line2"], #names-container, .city-state-zipcode,
 #checkout-shipping-state-container .MuiFormControl-root > .MuiInputBase-root {
     padding-top: 0rem !important;
 }
-#checkout-shipping-line1, #checkout-shipping-line2 {
+#checkout-shipping-line1, #checkout-shipping-line2, #city-container {
     margin-bottom: 10px;
 }
 #checkout-shipping-state-container .MuiFormControl-root {
     margin: 0 !important;
 }
+
+#checkout-shipping-state-container .MuiSelect-root {
+    padding-top: 1.5rem !important;
+}
+
+#checkout-shipping-state-container .MuiSelect-iconFilled {
+    right: 0px !important;
+}
+#postalcode-container .MuiInputBase-root {
+    line-height: 0 !important;
+    padding-top: 9px !important;
+}
+#postalcode-container .MuiSelect-iconFilled {
+    left: 60px;
+}
+
+#shipping-phoneNumber > .MuiFormControl-root {
+    width: 100%;
+    border-radius: 4px;
+    background-color: #e8e8e8;
+}
+#shipping-phoneNumber label {
+    margin-left: 10px !important;
+    /* margin-bottom: 2rem !important; */
+    margin-bottom: 0rem !important;
+    margin-top: 7px;
+}
+
+#shipping-phoneNumber .MuiInputBase-input {
+    padding-top: 0.75rem !important;
+}
+#shipping-phoneNumber .MuiInputBase-root {
+    padding-top: 0 !important;
+}
+
+#shipping-form input {
+    margin-bottom: 0px !important;
+}
+.MuiPopover-root .MuiPaper-root {
+    color: white;
+}
+
+
+
 #next-shipping-button, #save-shipping-button, #cancel-shipping-button{
     margin-top: 20px;
 }
 #save-shipping-button {
     margin-right: 10px;
+}
+@media only screen and (max-width: 950px) {
+    #checkout-shipping-state-container .MuiSvgIcon-root {
+        margin-top: 0.5rem;
+    }
 }
 @media only screen and (max-width: 800px) {
     #shipping-form {
@@ -91,3 +140,11 @@ input[name="line1"], input[name="line2"], #names-container, .city-state-zipcode,
     }
 }
 
+@media only screen and (max-width: 600px) {
+    #shipping-form  .MuiInputBase-root, #shipping-phoneNumber > .MuiFormLabel-root{
+        font-size: 0.75rem !important;
+    }
+    #checkout-shipping-state-container .MuiSelect-root {
+        padding-top: 1.25rem !important;
+    }
+}

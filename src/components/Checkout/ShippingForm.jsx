@@ -51,6 +51,8 @@ const useStyles = makeStyles((theme) => ({
 //       },
 //     },
 //   }));
+
+
   
 function TextMaskCustom(props) {
     const { inputRef, ...other } = props;
@@ -141,12 +143,41 @@ export default function ShippingForm({ loggedIn, readOnly, shipping, addShipping
             || shippingInput.postalCode === ""
             || shippingInput.postalCode === undefined
             || shippingInput.postalCode.length !== 5
-            || /^[0-9]+$/.test(shippingInput.phone) !== true 
+            || Number(shippingInput.phone.replace(/\D/g,'')) !== true 
             || shippingInput.phone === ""
             || shippingInput.phone === undefined
             // || shippingInput.phone.length !== 10
-            || shippingInput.phone.toString().length !==10
+            || shippingInput.phone.replace(/\D/g,'').toString().length !==10
         )
+    }
+
+    const x = () => {
+        console.log(154, disableButtonAfterMakingRequest)
+        console.log( 155,  /^[a-z ,.'-]+$/i.test(shippingInput.firstName) !== true 
+        || shippingInput.firstName === ""
+        || shippingInput.firstName === undefined)
+        console.log( 158, /^[a-z ,.'-]+$/i.test(shippingInput.lastName) !== true 
+        || shippingInput.lastName === ""
+        || shippingInput.lastName === undefined)
+        console.log( 161, shippingInput.line1 === ""
+        || shippingInput.line1 === undefined)
+        console.log(163, /^[a-z ,.'-]+$/i.test(shippingInput.city) !== true 
+        || shippingInput.city === ""
+        || shippingInput.city === undefined)
+        console.log(165, shippingInput.state)
+        console.log(166, /^[a-z][a-z\s]*$/i.test(shippingInput.state) !== true 
+        || shippingInput.state === ""
+        || shippingInput.state === undefined)
+        console.log(
+        /^[0-9]+$/.test(170, shippingInput.postalCode) !== true 
+        || shippingInput.postalCode === ""
+        || shippingInput.postalCode === undefined
+        || shippingInput.postalCode.length !== 5)
+        console.log(
+        /^[0-9]+$/.test(175, Number(shippingInput.phone.replace(/\D/g,''))) !== true 
+        || shippingInput.phone === ""
+        || shippingInput.phone === undefined
+        || shippingInput.phone.replace(/\D/g,'').toString().length !==10 )
     }
     
     return (
@@ -237,29 +268,30 @@ export default function ShippingForm({ loggedIn, readOnly, shipping, addShipping
                 onChange={handleShippingChange}
                 />
             </div>
+            <div id="city-container">
+                {/* <input value={shippingInput.city || ""} name="city" placeholder="City" onChange={handleShippingChange} readOnly={readOnly} required/>
+                {(/^[a-z ,.'-]+$/i.test(shippingInput.city) !== true && shippingInput.city !== "") && <div className="warning"><i>Only letters and ", . ' -" are accepted</i></div>} */}
+                <TextField
+                label="City"
+                fullWidth
+                className="filled-margin-none"
+                placeholder="Enter City"
+                variant="filled"
+                className={classes.textField}
+                readOnly={readOnly} 
+                required
+                onFocus={() => setOnCityBlurEvent(false)}
+                onBlur={() => {
+                    if(cityInputError2(shippingInput)) setOnCityBlurEvent(true)
+                }}
+                error={cityInputError(shippingInput) || onCityBlurEvent}
+                helperText={(onCityBlurEvent && "Required field") ||  (cityInputError(shippingInput) && "Only letters and ', . ' -' are allowed") || ""}
+                value={shippingInput.city || ""} 
+                name="city"
+                onChange={handleShippingChange}
+                />
+            </div>
             <div className="city-state-zipcode">
-                <div id="city-container">
-                    {/* <input value={shippingInput.city || ""} name="city" placeholder="City" onChange={handleShippingChange} readOnly={readOnly} required/>
-                    {(/^[a-z ,.'-]+$/i.test(shippingInput.city) !== true && shippingInput.city !== "") && <div className="warning"><i>Only letters and ", . ' -" are accepted</i></div>} */}
-                    <TextField
-                    label="City"
-                    className="filled-margin-none"
-                    placeholder="Enter City"
-                    variant="filled"
-                    className={classes.textField}
-                    readOnly={readOnly} 
-                    required
-                    onFocus={() => setOnCityBlurEvent(false)}
-                    onBlur={() => {
-                        if(cityInputError2(shippingInput)) setOnCityBlurEvent(true)
-                    }}
-                    error={cityInputError(shippingInput) || onCityBlurEvent}
-                    helperText={(onCityBlurEvent && "Required field") ||  (cityInputError(shippingInput) && "Only letters and ', . ' -' are allowed") || ""}
-                    value={shippingInput.city || ""} 
-                    name="city"
-                    onChange={handleShippingChange}
-                    />
-                </div>
                 
                 {/* <select 
                 className="state" 
@@ -286,20 +318,20 @@ export default function ShippingForm({ loggedIn, readOnly, shipping, addShipping
                 </select> */}
                 <div id="checkout-shipping-state-container">
                     <FormControl variant="filled" className={classes.formControl}>
-                        <InputLabel id="demo-simple-select-filled-label">State
-                        </InputLabel>
-
+                    <InputLabel htmlFor="filled-age-native-simple">State</InputLabel>    
                         <Select
+                        // native
+                        label="State"
                         labelId="demo-simple-select-filled-label"
                         id="demo-simple-select-filled"
-                        defaultValue={shippingInput.state || "Select"} 
+                        value={shippingInput.state || "Select"} 
                         onFocus={() => setOnStateBlurEvent(false)}
                         onBlur={() => {
                             if(stateInputError(shippingInput)) setOnStateBlurEvent(true)
                         }}
                         onChange={handleShippingStateChange}
                         >
-                        <MenuItem value="select">Select</MenuItem>
+                        <MenuItem value="Select">State</MenuItem>
                         {usStates.map((state, index) => { return (
                                 <MenuItem key={state.abbreviation} value={state.name}>{state.name}</MenuItem>
                         )})}
@@ -335,29 +367,34 @@ export default function ShippingForm({ loggedIn, readOnly, shipping, addShipping
 
             {/* <input value={shippingInput.phone || ""} name="phone" placeholder="Phone Number" onChange={handleShippingChange} maxLength="10" readOnly={readOnly} required />
             {(/^[0-9]+$/.test(shippingInput.phone) !== true && shippingInput.phone !== "" && shippingInput.phone !== undefined) && <div className="warning">You must enter only numbers for your phone number</div>} */}
-            <FormControl>
-            <Input
-            fullWidth
-            value={shippingInput.phone}
-            onChange={handleShippingChange}
-            onFocus={() => setOnPhoneBlurEvent(false)}
-            onBlur={() => {
-                if(phoneInputError3(shippingInput) || phoneInputError2(shippingInput)) setOnPhoneBlurEvent(true)
-            }}
-            error ={onPhoneBlurEvent}
-            name="phone"
-            id="formatted-text-mask-input"
-            inputComponent={TextMaskCustom}
-            />
-            {onPhoneBlurEvent && <FormHelperText>Required field</FormHelperText>}
-            </FormControl>
+            <div id="shipping-phoneNumber">
+                <FormControl>
+                    <InputLabel>Phone Number</InputLabel>
+                    <Input
+                    fullWidth
+                    required
+                    label="Phone Number"
+                    value={shippingInput.phone}
+                    onChange={handleShippingChange}
+                    onFocus={() => setOnPhoneBlurEvent(false)}
+                    onBlur={() => {
+                        if(phoneInputError3(shippingInput) || phoneInputError2(shippingInput)) setOnPhoneBlurEvent(true)
+                    }}
+                    error ={onPhoneBlurEvent}
+                    name="phone"
+                    id="formatted-text-mask-input"
+                    inputComponent={TextMaskCustom}
+                    />
+                </FormControl>
 
-            {(loggedIn() && !shipping.firstName) && (
-                <div id="save-default-container">
-                    <label id="address-default-label" htmlFor="addressDefault">Save as default</label>
-                    <input name="saveAddress" type="checkbox" disabled={readOnly} />
-                </div>
-            )}
+                {(loggedIn() && !shipping.firstName) && (
+                    <div id="save-default-container">
+                        <label id="address-default-label" htmlFor="addressDefault">Save as default</label>
+                        <input name="saveAddress" type="checkbox" disabled={readOnly} />
+                    </div>
+                )}
+            </div>
+            {onPhoneBlurEvent && <FormHelperText>Required field</FormHelperText>}
 
         {shipping.firstName ? (
             <div id="save-cancel-shipping-buttons">
@@ -385,7 +422,7 @@ export default function ShippingForm({ loggedIn, readOnly, shipping, addShipping
                 Next
             </Button>   
         }
-
+    <Button onClick={x}>Click</Button>
         </form>
         {/* {shipping.firstName ? (
             <>

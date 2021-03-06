@@ -73,15 +73,17 @@ const phoneInputError = (input) => {
 }
        
 const phoneInputError2 = (input) => {
+    console.log(76, input.phone)
     return (
-        (input.phone === undefined && input.phone !== "") 
-        && input.phone.toString().length !== 10
+        (input.phone !== undefined && input.phone !== "") 
+        && input.phone.replace(/\D/g,'').toString().length !== 10
     )
 }
 
 const phoneInputError3 = (input) => {
+    console.log(84, input.phone)
     return (
-        (input.phone === undefined || input.phone !== "") 
+        (input.phone === undefined || input.phone === "") 
     )
 }
 
