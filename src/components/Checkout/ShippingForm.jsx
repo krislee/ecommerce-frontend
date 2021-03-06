@@ -75,7 +75,7 @@ function TextMaskCustom(props) {
   };
 
 export default function ShippingForm({ loggedIn, readOnly, shipping, addShipping, shippingInput, grabShippingInput, editShipping, handleEditShipping, closeModal, collapse, disableButtonAfterMakingRequest, grabDisableButtonAfterMakingRequest, addAdditionalSaveShipping}) {
-    
+    console.log(78, readOnly)
     const classes = useStyles();
 
     const [onFirstNameBlurEvent, setOnFirstNameBlurEvent] = useState(false)
@@ -139,45 +139,46 @@ export default function ShippingForm({ loggedIn, readOnly, shipping, addShipping
             || shippingInput.state === ""
             || shippingInput.state === undefined
             // || shippingInput.state.length !== 2
-            || /^[0-9]+$/.test(shippingInput.postalCode) !== true 
+            || /^[0-9]+$/.test(Number(shippingInput.postalCode)) !== true 
             || shippingInput.postalCode === ""
             || shippingInput.postalCode === undefined
             || shippingInput.postalCode.length !== 5
-            || Number(shippingInput.phone.replace(/\D/g,'')) !== true 
+            || (shippingInput.phone &&  /^[0-9]+$/.test(Number(shippingInput.phone.replace(/\D/g,''))) !== true)
             || shippingInput.phone === ""
             || shippingInput.phone === undefined
             // || shippingInput.phone.length !== 10
-            || shippingInput.phone.replace(/\D/g,'').toString().length !==10
+            || (shippingInput.phone && shippingInput.phone.replace(/\D/g,'').toString().length!==10)
         )
     }
 
     const x = () => {
-        console.log(154, disableButtonAfterMakingRequest)
-        console.log( 155,  /^[a-z ,.'-]+$/i.test(shippingInput.firstName) !== true 
+        console.log(155, disableButtonAfterMakingRequest)
+        console.log( 156,  /^[a-z ,.'-]+$/i.test(shippingInput.firstName) !== true 
         || shippingInput.firstName === ""
         || shippingInput.firstName === undefined)
-        console.log( 158, /^[a-z ,.'-]+$/i.test(shippingInput.lastName) !== true 
+        console.log( 159, /^[a-z ,.'-]+$/i.test(shippingInput.lastName) !== true 
         || shippingInput.lastName === ""
         || shippingInput.lastName === undefined)
-        console.log( 161, shippingInput.line1 === ""
+        console.log( 162, shippingInput.line1 === ""
         || shippingInput.line1 === undefined)
-        console.log(163, /^[a-z ,.'-]+$/i.test(shippingInput.city) !== true 
+        console.log(164, /^[a-z ,.'-]+$/i.test(shippingInput.city) !== true 
         || shippingInput.city === ""
         || shippingInput.city === undefined)
-        console.log(165, shippingInput.state)
-        console.log(166, /^[a-z][a-z\s]*$/i.test(shippingInput.state) !== true 
+        console.log(167, shippingInput.state)
+        console.log(168, /^[a-z][a-z\s]*$/i.test(shippingInput.state) !== true 
         || shippingInput.state === ""
         || shippingInput.state === undefined)
-        console.log(
-        /^[0-9]+$/.test(170, shippingInput.postalCode) !== true 
+        console.log(171, 
+        /^[0-9]+$/.test(Number(shippingInput.postalCode)) !== true 
         || shippingInput.postalCode === ""
         || shippingInput.postalCode === undefined
         || shippingInput.postalCode.length !== 5)
-        console.log(
-        /^[0-9]+$/.test(175, Number(shippingInput.phone.replace(/\D/g,''))) !== true 
+        console.log(176,
+        shippingInput.phone && /^[0-9]+$/.test(Number(shippingInput.phone.replace(/\D/g,''))) !== true 
         || shippingInput.phone === ""
         || shippingInput.phone === undefined
-        || shippingInput.phone.replace(/\D/g,'').toString().length !==10 )
+        || (shippingInput.phone && shippingInput.phone.replace(/\D/g,'').toString().length !==10 ))
+        console.log(disableButton(), readOnly, shippingInput.state === 'Select', disableButtonAfterMakingRequest)
     }
     
     return (
@@ -194,7 +195,9 @@ export default function ShippingForm({ loggedIn, readOnly, shipping, addShipping
                     placeholder="Enter First Name"
                     className={classes.textField}
                     variant="filled"
-                    readOnly={readOnly} 
+                    InputProps={{
+                        readOnly: readOnly,
+                    }}
                     required
                     error={firstNameInputError(shippingInput) || onFirstNameBlurEvent}
                     onFocus={() => setOnFirstNameBlurEvent(false)}
@@ -216,7 +219,9 @@ export default function ShippingForm({ loggedIn, readOnly, shipping, addShipping
                     placeholder="Enter Last Name"
                     variant="filled"
                     className={classes.textField}
-                    readOnly={readOnly} 
+                    InputProps={{
+                        readOnly: readOnly,
+                    }}
                     required
                     onFocus={() => setOnLastNameBlurEvent(false)}
                     onBlur={() => {
@@ -240,7 +245,9 @@ export default function ShippingForm({ loggedIn, readOnly, shipping, addShipping
                 variant="filled"
                 fullWidth
                 className={classes.textField}
-                readOnly={readOnly} 
+                InputProps={{
+                    readOnly: readOnly,
+                }}
                 required
                 onFocus={() => setOnLine1BlurEvent(false)}
                 onBlur={() => {
@@ -262,7 +269,9 @@ export default function ShippingForm({ loggedIn, readOnly, shipping, addShipping
                 variant="filled"
                 fullWidth
                 className={classes.textField}
-                readOnly={readOnly} 
+                InputProps={{
+                    readOnly: readOnly,
+                }}
                 value={shippingInput.line2 || ""}
                 name="line2"
                 onChange={handleShippingChange}
@@ -278,8 +287,10 @@ export default function ShippingForm({ loggedIn, readOnly, shipping, addShipping
                 placeholder="Enter City"
                 variant="filled"
                 className={classes.textField}
-                readOnly={readOnly} 
                 required
+                InputProps={{
+                    readOnly: readOnly,
+                }}
                 onFocus={() => setOnCityBlurEvent(false)}
                 onBlur={() => {
                     if(cityInputError2(shippingInput)) setOnCityBlurEvent(true)
@@ -321,6 +332,7 @@ export default function ShippingForm({ loggedIn, readOnly, shipping, addShipping
                     <InputLabel htmlFor="filled-age-native-simple">State</InputLabel>    
                         <Select
                         // native
+                        // autoWidth={true}
                         label="State"
                         labelId="demo-simple-select-filled-label"
                         id="demo-simple-select-filled"
@@ -350,7 +362,12 @@ export default function ShippingForm({ loggedIn, readOnly, shipping, addShipping
                     placeholder="Enter zipcode"
                     variant="filled"
                     className={classes.textField}
-                    readOnly={readOnly} 
+                    InputProps={{
+                        readOnly: readOnly,
+                    }}
+                    inputProps={{
+                        maxLength: 5
+                    }}
                     required
                     onFocus={() => setOnPostalCodeBlurEvent(false)}
                     onBlur={() => {
@@ -384,6 +401,7 @@ export default function ShippingForm({ loggedIn, readOnly, shipping, addShipping
                     name="phone"
                     id="formatted-text-mask-input"
                     inputComponent={TextMaskCustom}
+                    readOnly={readOnly}
                     />
                 </FormControl>
 
@@ -422,7 +440,7 @@ export default function ShippingForm({ loggedIn, readOnly, shipping, addShipping
                 Next
             </Button>   
         }
-    <Button onClick={x}>Click</Button>
+
         </form>
         {/* {shipping.firstName ? (
             <>
