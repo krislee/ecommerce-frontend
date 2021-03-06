@@ -1,29 +1,34 @@
 #names-container {
     display: grid;
-    grid-template-columns: auto auto;
-    grid-column-gap: 10px;
+    grid-template-columns: 50% 50%;
+    /* grid-column-gap: 10px; */
 }
 #first-name-container, #last-name-container {
     display: flex;
     flex-direction: column;
 }
-
+#first-name-container {
+    margin-right: 10px;
+}
 .city-state-zipcode {
     display: grid;
-    grid-template-areas: 'city state postalCode';
-    /* grid-template-columns: 40% 20% 40%; */
-    grid-column-gap: 10px;
+    /* grid-template-areas: '1fr 1fr'; */
+    grid-template-columns: 50% 50%;
+    /* grid-column-gap: 10px; */
 }
 #city-container {
-    grid-area: city;
+    /* grid-area: city; */
     width: 100%;
 }
 #shipping-input-state {
-    grid-area: state;
+    /* grid-area: state; */
     width: 100%;
 }
+#checkout-shipping-state-container {
+    margin-right: 10px;
+}
 #postalcode-container {
-    grid-area: postalCode;
+    /* grid-area: postalCode; */
     width: 100%;
 }
 #city-container, .zipcode, #postalcode-container {
@@ -70,24 +75,96 @@ input[name="line1"], input[name="line2"], #names-container, .city-state-zipcode,
     padding-top: 1rem !important;
 }
 
+#checkout-shipping-state-container > .MuiFormControl-root {
+    width: 100%;
+}
 #checkout-shipping-state-container .MuiFormControl-root > .MuiInputBase-root {
     padding-top: 0rem !important;
+    width: 100%;
 }
-#checkout-shipping-line1, #checkout-shipping-line2 {
+#checkout-shipping-line1, #checkout-shipping-line2, #city-container {
     margin-bottom: 10px;
 }
 #checkout-shipping-state-container .MuiFormControl-root {
     margin: 0 !important;
 }
+
+#checkout-shipping-state-container .MuiSelect-root {
+    padding-top: 1.5rem !important;
+    height: 0 !important;
+
+}
+
+#checkout-shipping-state-container .MuiSelect-iconFilled {
+    right: 0px !important;
+}
+#postalcode-container .MuiInputBase-root {
+    line-height: 0 !important;
+    padding-top: 9px !important;
+}
+#postalcode-container .MuiSelect-iconFilled {
+    left: 60px;
+}
+
+#shipping-phoneNumber > .MuiFormControl-root {
+    width: 100%;
+    border-radius: 4px;
+    background-color: #DEDEDE;
+}
+#shipping-phoneNumber label {
+    margin-left: 10px !important;
+    /* margin-bottom: 2rem !important; */
+    margin-bottom: 0rem !important;
+    margin-top: 7px;
+}
+
+#shipping-phoneNumber .MuiInputBase-input {
+    padding-top: 0.75rem !important;
+}
+#shipping-phoneNumber .MuiInputBase-root {
+    padding-top: 0 !important;
+}
+
+#shipping-form input {
+    margin-bottom: 0px !important;
+}
+.MuiPopover-root .MuiPaper-root {
+    color: white;
+}
+
 #next-shipping-button, #save-shipping-button, #cancel-shipping-button{
     margin-top: 20px;
 }
 #save-shipping-button {
     margin-right: 10px;
 }
+@media only screen and (max-width: 950px) {
+    #checkout-shipping-state-container .MuiSvgIcon-root {
+        margin-top: 0.5rem;
+    }
+}
 @media only screen and (max-width: 800px) {
     #shipping-form {
         width: 100%
+    }
+}
+
+@media only screen and (max-width: 600px) {
+    #shipping-form  .MuiInputBase-root, #shipping-phoneNumber > .MuiFormLabel-root, #shipping-form  label{
+        font-size: 0.75rem !important;
+    }
+    #checkout-shipping-state-container .MuiSelect-root {
+        padding-top: 1.25rem !important;
+    }
+    .city-state-zipcode {
+        display: block;
+       
+    }
+    #checkout-shipping-state-container {
+        margin-bottom: 10px;
+    }
+    #checkout-shipping-state-container {
+        margin-right: 0px !important;
     }
 }
 

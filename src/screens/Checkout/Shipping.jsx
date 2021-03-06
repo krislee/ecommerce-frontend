@@ -87,7 +87,7 @@ const useStyles = makeStyles((theme) => ({
 }));
   
 
-function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, grabShowPayment, shipping, grabShipping, grabBillingWithShipping, shippingInput, grabShippingInput, paymentMethod, grabCardholderName, showButtons, grabShowButtons, showShipping, grabShowShipping, grabError, grabDisabled, grabReadOnly, grabTotalCartQuantity, grabRedirect, prevLoggedIn }) {
+function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, grabShowPayment, shipping, grabShipping, grabBillingWithShipping, shippingInput, grabShippingInput, paymentMethod, grabCardholderName, showButtons, grabShowButtons, showShipping, grabShowShipping, grabError, grabDisabled, readOnly, grabReadOnly, grabTotalCartQuantity, grabRedirect, prevLoggedIn }) {
     
     // Speed Dial State and Functions
     const classes = useStyles();
@@ -324,7 +324,7 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
                 body: JSON.stringify({
                     name: `${shippingInput.firstName}, ${shippingInput.lastName}`,
                     address: `${shippingInput.line1}, ${shippingInput.line2}, ${shippingInput.city}, ${shippingInput.state}, ${shippingInput.postalCode}`,
-                    phone: shippingInput.phone
+                    phone: shippingInput.phone.replace(/\D/g,'')
                 })
             })
             const editShippingData = await editShippingResponse.json()
@@ -352,7 +352,7 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
                 body: JSON.stringify({
                     name: `${shippingInput.firstName}, ${shippingInput.lastName}`,
                     address: `${shippingInput.line1}, ${shippingInput.line2}, ${shippingInput.city}, ${shippingInput.state}, ${shippingInput.postalCode}`,
-                    phone: shippingInput.phone
+                    phone: shippingInput.phone.replace(/\D/g,'')
                 })
             })
             const saveNewShippingData = await saveNewShippingResponse.json()
@@ -393,7 +393,7 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
                         city: shippingInput.city,
                         state: shippingInput.state,
                         postalCode: shippingInput.postalCode,
-                        phone: shippingInput.phone,
+                        phone: shippingInput.phone.replace(/\D/g,''),
                     },
                     saveShipping: (checkbox && checkbox.checked) ? true : false,
                     lastUsedShipping: shipping.firstName ? shipping.id : undefined
@@ -420,7 +420,7 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
                         city: shippingInput.city,
                         state: shippingInput.state,
                         postalCode: shippingInput.postalCode,
-                        phone: shippingInput.phone,
+                        phone: shippingInput.phone.replace(/\D/g,''),
                     },
                     saveShipping: false
                 })
@@ -498,7 +498,7 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
                 {/* When the Next button in CheckoutItems component is clicked, showShipping state is updated to true, and only then the form will be shown */}
                 {showShipping && (
                     <>
-                    <ShippingForm backend={backend} loggedIn={loggedIn} shipping={shipping} shippingInput={shippingInput} grabShippingInput={grabShippingInput} grabPaymentLoading={grabPaymentLoading} addShipping={addShipping} grabAddNewShipping={grabAddNewShipping} cartID={cartID} updateShippingState={updateShippingState} updateShippingInputState={updateShippingInputState} editShipping={editShipping} handleEditShipping={handleEditShipping} closeModal={closeModal} collapse={collapse} addNewShipping={addNewShipping} disableButtonAfterMakingRequest={disableButtonAfterMakingRequest} grabAfterMakingRequestDisable={grabDisableButtonAfterMakingRequest} disableButtonAfterMakingRequest={disableButtonAfterMakingRequest} /> 
+                    <ShippingForm backend={backend} loggedIn={loggedIn} shipping={shipping} shippingInput={shippingInput} grabShippingInput={grabShippingInput} grabPaymentLoading={grabPaymentLoading} addShipping={addShipping} grabAddNewShipping={grabAddNewShipping} cartID={cartID} updateShippingState={updateShippingState} updateShippingInputState={updateShippingInputState} editShipping={editShipping} handleEditShipping={handleEditShipping} closeModal={closeModal} collapse={collapse} addNewShipping={addNewShipping} disableButtonAfterMakingRequest={disableButtonAfterMakingRequest} grabAfterMakingRequestDisable={grabDisableButtonAfterMakingRequest} disableButtonAfterMakingRequest={disableButtonAfterMakingRequest} readOnly={readOnly}/> 
                     </>
                 )} 
                 {/* When we click Next button in Shipping component, collapse() runs and showPayment state is updated to true to show the Payment Component. We need to make sure to still show the shipping details and Edit button when we do show the payment section*/}
@@ -557,7 +557,7 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
     } else if(addShipping || editShipping ) {
         return (
             <Modal styles={customStyles} isOpen={showModal} onRequestClose={ closeModal } ariaHideApp={false} contentLabel="Add or Edit Shipping">
-                <ShippingForm backend={backend} loggedIn={loggedIn} shipping={shipping} shippingInput={shippingInput} grabShippingInput={grabShippingInput} grabPaymentLoading={grabPaymentLoading} addShipping={addShipping} grabAddNewShipping={grabAddNewShipping} cartID={cartID} updateShippingState={updateShippingState} updateShippingInputState={updateShippingInputState} editShipping={editShipping} handleEditShipping={handleEditShipping} closeModal={closeModal} collapse={collapse} grabMultipleShipping={grabMultipleShipping} grabTotalCartQuantity={grabTotalCartQuantity} disableButtonAfterMakingRequest={disableButtonAfterMakingRequest} grabDisableButtonAfterMakingRequest={grabDisableButtonAfterMakingRequest} addAdditionalSaveShipping={addAdditionalSaveShipping} /> 
+                <ShippingForm backend={backend} loggedIn={loggedIn} shipping={shipping} shippingInput={shippingInput} grabShippingInput={grabShippingInput} grabPaymentLoading={grabPaymentLoading} addShipping={addShipping} grabAddNewShipping={grabAddNewShipping} cartID={cartID} updateShippingState={updateShippingState} updateShippingInputState={updateShippingInputState} editShipping={editShipping} handleEditShipping={handleEditShipping} closeModal={closeModal} collapse={collapse} grabMultipleShipping={grabMultipleShipping} grabTotalCartQuantity={grabTotalCartQuantity} disableButtonAfterMakingRequest={disableButtonAfterMakingRequest} grabDisableButtonAfterMakingRequest={grabDisableButtonAfterMakingRequest} addAdditionalSaveShipping={addAdditionalSaveShipping} readOnly={readOnly} /> 
             </Modal>
         )
     } else if(shipping.firstName) {

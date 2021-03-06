@@ -69,7 +69,7 @@ function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCar
     
     // The following Shipping states controls if we show or hide the CheckoutItems, Shipping, and PaymentMethod component:
     const [showShipping, setShowShipping] = useState(true) // showShipping state is updated in either CheckoutItems and PaymentMethod components to show the Shipping details or form
-    const [readOnly, setReadOnly] = useState(true) // Shipping form is enabled by default until we click Next button in CheckoutItems component, updating readOnly state to true to disable the shipping form. When we are showing the Payment component, and then click Edit in the Shipping component, we enable the shipping form to edit
+    const [readOnly, setReadOnly] = useState(false) // Shipping form is enabled by default until we click Next button in CheckoutItems component, updating readOnly state to true to disable the shipping form. When we are showing the Payment component, and then click Edit in the Shipping component, we enable the shipping form to edit
     const [showButtons, setShowButtons] = useState(true) // If showButtons state is true, it will show 3 buttons: Add New, Edit, and Saved Shipping in the Shipping component. showButtons state is updated when we click Next button in CheckoutItems component and when we are in the Payment component but click on the Edit button in the Shipping component
     const [showPayment, setShowPayment] = useState(false) // showPayment state is passed to both PaymentMethod component, and is updated in the Shipping Component when we click Next or Edit button in the Shipping Component
     const [showItems, setShowItems] = useState(true) //showItems state is updated in CheckoutItems component
