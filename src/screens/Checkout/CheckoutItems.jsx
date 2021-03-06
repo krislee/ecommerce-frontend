@@ -180,39 +180,57 @@ export default function CheckoutItems({ backend, loggedIn, showItems, grabShowIt
                         </div>
                     )})}
                 </div>
-
+                
+                {/* <div id="checkout-table">
+                    <div id="checkout-subtotal-container">
+                        <div id="checkout-subtotal-heading"><b>Subtotal</b></div>
+                        <div id="checkout-subtotal">${subtotal.toFixed(2)}</div>
+                    </div>
+                    <div id="checkout-shipping-container">
+                        <div id="checkout-shipping-heading"><b>Shipping Fee</b></div>
+                        <div id="checkout-shipping">$0.00</div>
+                    </div>
+                    <div id="checkout-tax-container">
+                        <div id="checkout-tax-heading"><b>Tax</b></div>
+                        <div id="checkout-tax">$0.00</div>
+                    </div>
+                    <div id="checkout-total-container">
+                        <div id="checkout-total-heading"><b>Total</b></div>
+                        <div id="checkout-total">${subtotal.toFixed(2)}</div>
+                    </div>
+                </div> */}
                 <ThemeProvider theme={theme}>
-                <div id="table">
-                    <TableContainer component={Paper} className={classes.tableContainer}>
-                        <Table className={classes.table} aria-label="simple table" >
-                            <TableBody>
-                                <TableRow key={"subtotal"}>
-                                    <TableCell component="th" scope="row">
-                                        Subtotal
-                                    </TableCell>
-                                    <TableCell align="right">${subtotal.toFixed(2)}</TableCell>
-                                </TableRow>
+                    <div id="table">
+                        <TableContainer component={Paper} className={classes.tableContainer}>
+                            <Table className={classes.table} aria-label="simple table" >
+                                <TableBody>
+                                    <TableRow key={"subtotal"}>
+                                        <TableCell component="th" scope="row">
+                                            Subtotal
+                                        </TableCell>
+                                        <TableCell align="right">${subtotal.toFixed(2)}</TableCell>
+                                    </TableRow>
 
-                                <TableRow key={"shipping-fee"}>
-                                    <TableCell component="th" scope="row">
-                                        Shipping Fee
-                                    </TableCell>
-                                    <TableCell align="right">$0.00</TableCell>
-                                </TableRow>
+                                    <TableRow key={"shipping-fee"}>
+                                        <TableCell component="th" scope="row">
+                                            Shipping Fee
+                                        </TableCell>
+                                        <TableCell align="right">$0.00</TableCell>
+                                    </TableRow>
 
-                                <TableRow key={"tax"}>
-                                    <TableCell component="th" scope="row"> Taxes </TableCell>
-                                    <TableCell align="right">$0.00</TableCell>
-                                </TableRow>
-                                
-                                <TableRow key={"total"}>
-                                    <TableCell component="th" scope="row">Total</TableCell>
-                                    <TableCell align="right">${subtotal.toFixed(2)}</TableCell>
-                                </TableRow>
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
-                </div>
+                                    <TableRow key={"tax"}>
+                                        <TableCell component="th" scope="row"> Taxes </TableCell>
+                                        <TableCell align="right">$0.00</TableCell>
+                                    </TableRow>
+                                    
+                                    <TableRow key={"total"}>
+                                        <TableCell component="th" scope="row">Total</TableCell>
+                                        <TableCell align="right">${subtotal.toFixed(2)}</TableCell>
+                                    </TableRow>
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
+                    </div>
                 </ThemeProvider>
             </div>
         )

@@ -73,7 +73,7 @@ const useStyles = makeStyles((theme) => ({
         height: 20,
         transform: 'translateZ(0px)',
         flexGrow: 0.5,
-        "margin-right": 30,
+        // "margin-right": 30,
         // [theme.breakpoints.down("xs")]: {
         //     "margin-right": 10,
         //     "margin-bottom": 20

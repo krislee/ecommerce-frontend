@@ -26,9 +26,9 @@
 #billing-input-postalCode-error-container {
     margin-left: 10px;
 }
-#billing-input-city-error-container {
-    /* width: 60%; */
-}
+/* #billing-input-city-error-container {
+    width: 60%;
+} */
 
 #edit-container > #billing-input-cityStateZipcode-container {
     display: grid;

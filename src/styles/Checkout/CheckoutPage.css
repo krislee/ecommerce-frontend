@@ -1,5 +1,6 @@
 .checkout-items { 
     grid-area: side;
+    /* border: 1px solid #E8EAED; */
 }
 #checkout-shipping-payment {
     /* background-color: #312f2f; */
@@ -10,11 +11,14 @@
     margin-bottom: 20px;
     
 }
+.checkout-items-sub-container {
+    /* border: 1px solid purple; */
+}
 .checkout-shipping { 
     grid-area: main1; 
     background-color: #E8EAED;
     border-radius: 2rem;
-    margin-left: 20px;
+    /* margin-left: 20px; */
     margin-top: 30px;
     /* font-size: 1.5em; */
     /* height: 50vh; */
@@ -25,21 +29,25 @@
     grid-area: main2; 
     background-color: #f2f3f5;
     border-radius: 2rem;
-    margin-left: 20px;
+    /* margin-left: 20px; */
     margin-top: 20px;
+    padding-right: 30px;
+    padding-left: 30px;
 }
 
 #payment-form {
-    margin-top: 50px;
+    margin-top: 4rem;
     display: grid;
     grid-template-areas: 
         'main1 main1 main1 side'
         'main2 main2 main2 side';
     grid-column-gap: 10px;
     grid-template-columns: 55%;
-    margin-right: 20px;
+    /* margin-right: 20px; */
     /* margin-left: 10px; */
     width: 100vw;
+    padding-right: 2rem;
+    padding-left: 2rem;
     
 }
 
@@ -62,7 +70,12 @@ h2 {
     #payment-form {
         display: flex;
         flex-wrap: wrap;
+        /* padding-right */
     }
+    .checkout-items { 
+        width: 100%;
+    }
+   
 }
 @media only screen and (max-width: 600px) {
     #payment-form {

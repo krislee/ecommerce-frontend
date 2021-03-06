@@ -1,3 +1,6 @@
+@import url('https://fonts.googleapis.com/css2?family=Mukta:wght@200&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Average+Sans&display=swap');
+
 .navbar {
     background-color: #21212B;
     width: 100%;
@@ -91,7 +94,7 @@ a {
     /* border: 1px solid #fff; */
     font-size: 16px;
     cursor: pointer;
-    font-family: 'Roboto', sans-serif;
+    font-family: 'Average Sans', sans-serif;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -212,5 +215,12 @@ a {
     }
     .login-cart-profile-nav-container {
         width: auto;
+    }
+    .hamburger {
+       color: white !important;
+       font-family: 'Average Sans', sans-serif;
+    }
+    .hamburger + .MuiDivider-root {
+        color: white !important;
     }
 }

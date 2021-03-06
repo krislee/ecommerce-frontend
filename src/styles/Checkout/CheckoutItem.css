@@ -1,6 +1,6 @@
 .checkout-items-container {
     margin-top: 30px;
-    margin-left: 20px;
+    /* margin-left: 20px; */
     /* background-color: thistle; */
 }
 .Heading-Edit {
@@ -41,11 +41,13 @@ img {
     margin-right:1rem;
 }
 #table {
-    margin-top: 25px;
+    padding-top: 1rem;
 
 }
 
-
+#table .MuiPaper-root {
+    background-color: white !important;
+}
 /* MEDIA QUERIES */
 
 @media only screen and (max-width: 900px) {
@@ -62,6 +64,7 @@ img {
         max-height: 100%;
         display: flex;
         overflow-x: scroll;
+        /* width: 100vw */
     }
     #table {
         width: 100%;
@@ -73,10 +76,11 @@ img {
     }
     .shopping-basket {
         margin-bottom: 6px;
-        margin-top: 17px;
+        margin-top: 11px;
     }
     .checkout-item-img-container {
-        width: 100%;
+        /* width: 100%; */
+        width: 30vw;
     }
 }
 
@@ -90,11 +94,11 @@ img {
     #edit {
         font-size: 0.3em;
     }
-    .checkout-item-img-container {
+    /* .checkout-item-img-container {
         width: 75%;
-    }
+    } */
     .shopping-basket {
-        font-size: 25px;
+        font-size: 19px;
     }
     .makeStyles-tableContainer-3 {
         width: 100% !important

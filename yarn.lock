@@ -2919,6 +2919,7 @@
     "anymatch" "^2.0.0"
     "async-each" "^1.0.1"
     "braces" "^2.3.2"
+    "fsevents" "^1.2.7"
     "glob-parent" "^3.1.0"
     "inherits" "^2.0.3"
     "is-binary-path" "^1.0.0"
@@ -2938,6 +2939,7 @@
     "anymatch" "^2.0.0"
     "async-each" "^1.0.1"
     "braces" "^2.3.2"
+    "fsevents" "^1.2.7"
     "glob-parent" "^3.1.0"
     "inherits" "^2.0.3"
     "is-binary-path" "^1.0.0"
@@ -2956,6 +2958,7 @@
   dependencies:
     "anymatch" "~3.1.1"
     "braces" "~3.0.2"
+    "fsevents" "~2.3.1"
     "glob-parent" "~5.1.0"
     "is-binary-path" "~2.1.0"
     "is-glob" "~4.0.1"
@@ -4305,6 +4308,7 @@
     "estraverse" "^4.2.0"
     "esutils" "^2.0.2"
     "optionator" "^0.8.1"
+    "source-map" "~0.6.1"
   optionalDependencies:
     "source-map" "~0.6.1"
 
@@ -5009,6 +5013,7 @@
   "resolved" "https://registry.npmjs.org/framer-motion/-/framer-motion-3.7.0.tgz"
   "version" "3.7.0"
   dependencies:
+    "@emotion/is-prop-valid" "^0.8.2"
     "framesync" "^5.1.0"
     "hey-listen" "^1.0.8"
     "popmotion" "9.2.1"
@@ -5346,6 +5351,7 @@
     "minimist" "^1.2.5"
     "neo-async" "^2.6.0"
     "source-map" "^0.6.1"
+    "uglify-js" "^3.1.4"
     "wordwrap" "^1.0.0"
   optionalDependencies:
     "uglify-js" "^3.1.4"
@@ -6886,6 +6892,8 @@
   "integrity" "sha1-h3Gq4HmbZAdrdmQPygWPnBDjPss="
   "resolved" "https://registry.npmjs.org/jsonfile/-/jsonfile-4.0.0.tgz"
   "version" "4.0.0"
+  dependencies:
+    "graceful-fs" "^4.1.6"
   optionalDependencies:
     "graceful-fs" "^4.1.6"
 
@@ -9182,7 +9190,7 @@
     "react-is" "^16.3.2"
     "warning" "^4.0.0"
 
-"prop-types@^15.0.0", "prop-types@^15.5.10", "prop-types@^15.5.8", "prop-types@^15.6.1", "prop-types@^15.6.2", "prop-types@^15.7.2":
+"prop-types@^15.0.0", "prop-types@^15.5.10", "prop-types@^15.5.6", "prop-types@^15.5.8", "prop-types@^15.6.1", "prop-types@^15.6.2", "prop-types@^15.7.2":
   "integrity" "sha512-8QQikdH7//R2vurIJSutZ1smHYTcLpRWEOlHnzcWHmBYrOGUysKwSsrC89BCiFj3CbrfJ/nXFdJepOVrY1GCHQ=="
   "resolved" "https://registry.npmjs.org/prop-types/-/prop-types-15.7.2.tgz"
   "version" "15.7.2"
@@ -9577,6 +9585,7 @@
     "eslint-plugin-react" "7.11.1"
     "file-loader" "2.0.0"
     "fs-extra" "7.0.0"
+    "fsevents" "1.2.4"
     "html-webpack-plugin" "4.0.0-alpha.2"
     "identity-obj-proxy" "3.0.0"
     "jest" "23.6.0"
@@ -9602,6 +9611,13 @@
     "workbox-webpack-plugin" "3.6.2"
   optionalDependencies:
     "fsevents" "1.2.4"
+
+"react-text-mask@^5.4.3":
+  "integrity" "sha1-mR77QpnjDC5sLEbRP2FxaUY+DS0="
+  "resolved" "https://registry.npmjs.org/react-text-mask/-/react-text-mask-5.4.3.tgz"
+  "version" "5.4.3"
+  dependencies:
+    "prop-types" "^15.5.6"
 
 "react-transition-group@^2.3.1":
   "integrity" "sha512-+HzNTCHpeQyl4MJ/bdE0u6XRMe9+XG/+aL4mCxVN4DnPBQ0/5bfHWPDuOZUzYdMj94daZaZdCCc1Dzt9R/xSSg=="
@@ -10115,6 +10131,7 @@
     "capture-exit" "^1.2.0"
     "exec-sh" "^0.2.0"
     "fb-watchman" "^2.0.0"
+    "fsevents" "^1.2.3"
     "micromatch" "^3.1.4"
     "minimist" "^1.1.1"
     "walker" "~1.0.5"
@@ -11583,8 +11600,10 @@
   "resolved" "https://registry.npmjs.org/watchpack/-/watchpack-1.7.5.tgz"
   "version" "1.7.5"
   dependencies:
+    "chokidar" "^3.4.1"
     "graceful-fs" "^4.1.2"
     "neo-async" "^2.5.0"
+    "watchpack-chokidar2" "^2.0.1"
   optionalDependencies:
     "chokidar" "^3.4.1"
     "watchpack-chokidar2" "^2.0.1"

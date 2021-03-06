@@ -70,6 +70,9 @@
     background-color: white !important;
     color: black !important;
 }
+.homepage-container .MuiPaginationItem-outlined {
+    border: 1px solid black !important;
+}
 .homepage-container .MuiPaginationItem-root {
     background-color: #212529 !important;
     color: white !important;

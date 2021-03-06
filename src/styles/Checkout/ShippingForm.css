@@ -57,10 +57,27 @@ input[name="line1"], input[name="line2"], #names-container, .city-state-zipcode,
     margin-bottom: 0rem;
 }
 
-#form {
+#shipping-form {
     box-shadow: none;
     padding: 0px;
 
+}
+#shipping-form .MuiInputBase-root {
+    padding-top: 1rem !important;
+    padding-left: 7px;
+}
+#shipping-form .MuiInputBase-input {
+    padding-top: 1rem !important;
+}
+
+#checkout-shipping-state-container .MuiFormControl-root > .MuiInputBase-root {
+    padding-top: 0rem !important;
+}
+#checkout-shipping-line1, #checkout-shipping-line2 {
+    margin-bottom: 10px;
+}
+#checkout-shipping-state-container .MuiFormControl-root {
+    margin: 0 !important;
 }
 #next-shipping-button, #save-shipping-button, #cancel-shipping-button{
     margin-top: 20px;
@@ -69,7 +86,7 @@ input[name="line1"], input[name="line2"], #names-container, .city-state-zipcode,
     margin-right: 10px;
 }
 @media only screen and (max-width: 800px) {
-    #form {
+    #shipping-form {
         width: 100%
     }
 }

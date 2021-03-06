@@ -81,7 +81,7 @@ function NavBar ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuantity }
                 <ListItem button >
                     <ListItemText primary={
                     <Link to="/shop/1">
-                        <div onClick={() => {
+                        <div className="hamburger" onClick={() => {
                             if(!loggedIn()) grabTotalCartQuantity(0)
                         }}>Shop All</div>
                     </Link>}/>
@@ -92,17 +92,17 @@ function NavBar ({ backend, loggedIn, totalCartQuantity, grabTotalCartQuantity }
                 <ListItem button >
                     <ListItemText primary={loggedIn() ? 
                     <Link to="/profile/setting">
-                        <div>Account Setting</div>
+                        <div className="hamburger">Account Setting</div>
                     </Link> 
-                    : <Link to="/login/buyer"><div>Login</div></Link>} />
+                    : <Link to="/login/buyer"><div className="hamburger">Login</div></Link>} />
                 </ListItem>
             </List>
             <Divider />
             <List>
                 <ListItem button >
                     <ListItemText primary={loggedIn() ? 
-                    <div onClick={handleLogout}>Sign Out</div>
-                    : <Link to="/register/buyer"><div>Register</div></Link>} />
+                    <div className="hamburger" onClick={handleLogout}>Sign Out</div>
+                    : <Link to="/register/buyer"><div className="hamburger" >Register</div></Link>} />
                 </ListItem>
             </List>
         </div>

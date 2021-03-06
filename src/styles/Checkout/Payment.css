@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Orbitron&display=swap');
 /* font-family: 'Orbitron', sans-serif; */
 #payment-container {
-    margin-left: 30px;
+    /* margin-left: 30px; */
 } 
 
 
@@ -101,6 +101,7 @@
 /* GUEST DISPLAYING BILLING INFO IF SHIPPING LABEL IS CHECKED */
 #guest-payment-container {
     padding-left: 20px;
+    padding-right: 20px;
 }
 #guest-payment-heading {
     padding-left: 20px;
@@ -308,6 +309,7 @@
 #edit-cardholder-name, #saved-cardholder-name, #display-cardholder-name {
     grid-area: cardholderName;
     margin-left: 10px;
+    color: white;
 }
 #expiry-date-title {
     grid-area: expires;
@@ -356,12 +358,12 @@
         width: 70%;
     }
     .display-credit-card {
-        width: 67%; 
+        width: 65%; 
     }
 }
 @media only screen and (max-width: 800px) {
     .display-credit-card {
-        width: 45%; 
+        width: 50%; 
     }
 }
 @media only screen and (max-width: 600px) {
@@ -388,7 +390,8 @@
     }
 
     .display-credit-card {
-        width: 57%; 
+        /* width:75%;  */
+        width: 50vw; 
     }
     .saved-credit-card {
         width: 80%
@@ -424,7 +427,7 @@
         width: 90%
     }
     .display-credit-card {
-        width: 75%; 
+        width: 100%; 
     }
     /* SAVED CARDS MODAL */
     #display-saved-payment-info {
