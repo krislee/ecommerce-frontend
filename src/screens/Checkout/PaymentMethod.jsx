@@ -6,6 +6,13 @@ import { useStripe, CardElement, useElements, CardCvcElement } from "@stripe/rea
 import createPaymentMethod from './CreatePayment'
 import CardForm from './CardForm'
 import brandImage from '../../components/Checkout/creditcardIcons.jsx'
+import TextField from '@material-ui/core/TextField';
+import Input from '@material-ui/core/Input';
+import InputLabel from '@material-ui/core/InputLabel';
+import FormControl from '@material-ui/core/FormControl';
+import FormHelperText from '@material-ui/core/FormHelperText';
+
+import {firstNameInputError, firstNameInputError2, lastNameInputError, lastNameInputError2, line1InputError, cityInputError, cityInputError2, stateInputError, stateInputError2, postalCodeInputError, postalCodeInputError2, postalCodeInputError3, cardholderNameInputError, cardholderNameInputError2, invalidMonthInput, invalidYearInput, monthInputError, yearInputError, monthLengthInputError, yearLengthInputError, expInvalidInput} from '../../components/Checkout/inputsErrors'
 
 import Button from 'react-bootstrap/Button';
 import Spinner from 'react-bootstrap/Spinner'
@@ -20,7 +27,6 @@ import AddIcon from '@material-ui/icons/Add';
 import EditIcon from '@material-ui/icons/Edit';
 import PaymentRoundedIcon from '@material-ui/icons/PaymentRounded';
 
-// import '../../styles/Checkout/Shipping.css'
 
 // Theme for overriding Speed Dial styles
 let theme = createMuiTheme({})
@@ -29,6 +35,10 @@ theme = { ...theme,
         MuiFab: {
             root: {
                 [theme.breakpoints.down("sm")]: {
+                    width: 34,
+                    height: 30
+                },
+                [theme.breakpoints.up("sm")]: {
                     width: 45,
                     height: 45
                 },
@@ -46,11 +56,6 @@ theme = { ...theme,
             }
             
         },
-        "makeStyles-speedDial-7": {
-            [theme.breakpoints.down("950px")]: {
-                "bottom": "5.25em"
-            }
-        },
         MuiSpeedDialAction: {
             staticTooltipLabel : {
                 padding: '5px',
@@ -62,18 +67,31 @@ theme = { ...theme,
 
 // Speed Dial Styles
 const useStyles = makeStyles((theme) => ({
-    root: {
+    speedDialRoot: {
         transform: 'translateZ(0px)',
         flexGrow: 1,
     },
     speedDial: {
         position: 'absolute',
-        bottom: '-5.5rem', 
-        right: '1.5rem', 
+        bottom: '-5rem', 
+        // right: '1.5rem', 
+        right: '-11px'
+    },
+    formRoot: {
+        '& .MuiTextField-root': {
+          'margin-bottom': '1.75rem',
+          width: "100%"
+  
+        },
+    },
+    formControl: {
+          margin: theme.spacing(1),
+          // minWidth: 120,
     },
 }));
 
 Modal.setAppElement('#root');
+
 
 function PaymentMethod ({ backend, processing, loggedIn, error, grabError, disabled, grabDisabled,  paymentLoading, grabPaymentLoading, billing, grabBilling, handleBillingChange, handleBillingStateChange, paymentMethod, grabPaymentMethod, cardholderName, grabCardholderName, handleCardholderNameChange, handleCardChange, collectCVV, grabCollectCVV, editPayment, grabEditPayment, redisplayCardElement, grabRedisplayCardElement, grabShowSavedCards, handleConfirmPayment, showSavedCards, editExpiration, grabEditExpiration, showPayment, sameAsShipping, handleSameAsShipping, shippingInput, grabBillingWithShipping, recheckSameAsShippingButton, grabTotalCartQuantity, billingInputErrorDisableButton, billingPostalCodeInputErrorDisableButton, processingPayment, guestProcessingPayment, grabGuestProcessingPayment, disableButtonAfterMakingRequest, grabDisableButtonAfterMakingRequest}) {
 
@@ -96,6 +114,10 @@ function PaymentMethod ({ backend, processing, loggedIn, error, grabError, disab
     const [savedCards, setSavedCards] = useState([])
     const [showModal, setShowModal] = useState(false)
     const [multipleSavedCards, setMultipleSavedCards] = useState(false)
+    const [onCardholderBlur, setOnCardholderBlur] = useState(false)
+    const [onMonthBlur, setOnMonthBlur] = useState(false)
+    const [onYearBlur, setOnYearBlur] = useState(false)
+
     // const [disableButtonAfterMakingRequest, setDisableButtonAfterMakingRequest] = useState(false)
 
     useEffect(() => {
@@ -169,16 +191,26 @@ function PaymentMethod ({ backend, processing, loggedIn, error, grabError, disab
 
     // Listen to the month and year input changes
     const handleEditExpiration = (event) => {
+        // console.log(197, event.target)
         const { name, value } = event.target
+        // console.log(name, value)
+        // if (event.target.value.length > event.target.maxLength) {
+        //     event.target.value = event.target.value.slice(0, event.target.maxLength)
+        //     console.log(event.target.value)
+        // }
         grabEditExpiration((prevEditExpiration) => ({...prevEditExpiration, [name]: value }))
     }
     
     const handleMaxExpLength = (event) => {
+        console.log(204, event.target)
         if (event.target.value.length > event.target.maxLength) {
             event.target.value = event.target.value.slice(0, event.target.maxLength)
         }
     }
 
+    const handleNonNumericExpiration =(event) => {
+        if(event.which != 8 && event.which != 0 && event.which < 48 || event.which > 57) return event.preventDefault()
+    }
     // When Save is clicked, handleUpdatePayment() runs
     const handleUpdatePayment = async(event) => {
         console.log("hi")
@@ -406,7 +438,7 @@ function PaymentMethod ({ backend, processing, loggedIn, error, grabError, disab
         return collectCVV !== 'true' && (
             <div id="guest-payment-container">
             <h2 id="guest-payment-heading">Payment Method</h2>
-            {showPayment && <CardForm loggedIn={loggedIn} paymentMethod={paymentMethod} handleSubmitCardForm={handleConfirmPayment} handleCardChange={handleCardChange} handleBillingChange={handleBillingChange} handleBillingStateChange={handleBillingStateChange} handleCardholderNameChange={handleCardholderNameChange} cardholderName={cardholderName} billing={billing} grabBilling={grabBilling} collectCVV={collectCVV} redisplayCardElement={redisplayCardElement} closeAddNewModal={closeAddNewModal} disabled={disabled} error={error} sameAsShipping={sameAsShipping} handleSameAsShipping={handleSameAsShipping} billingInputErrorDisableButton={billingInputErrorDisableButton} processing={processing} guestProcessingPayment={guestProcessingPayment} grabGuestProcessingPayment={grabGuestProcessingPayment} />}
+            {showPayment && <CardForm loggedIn={loggedIn} paymentMethod={paymentMethod} handleSubmitCardForm={handleConfirmPayment} handleCardChange={handleCardChange} handleBillingChange={handleBillingChange} handleBillingStateChange={handleBillingStateChange} handleCardholderNameChange={handleCardholderNameChange} cardholderName={cardholderName} billing={billing} grabBilling={grabBilling} collectCVV={collectCVV} redisplayCardElement={redisplayCardElement} closeAddNewModal={closeAddNewModal} disabled={disabled} error={error} sameAsShipping={sameAsShipping} handleSameAsShipping={handleSameAsShipping} billingInputErrorDisableButton={billingInputErrorDisableButton} processing={processing} guestProcessingPayment={guestProcessingPayment} grabGuestProcessingPayment={grabGuestProcessingPayment} classes={classes} />}
             </div>
         )      
 
@@ -414,7 +446,7 @@ function PaymentMethod ({ backend, processing, loggedIn, error, grabError, disab
         // When Add New Card button is clicked
         return collectCVV !== 'true' && (
             <Modal isOpen={showModal} onRequestClose={closeAddNewModal} ariaHideApp={false} contentLabel="Add Card">
-                <CardForm loggedIn={loggedIn} paymentMethod={paymentMethod} handleSubmitCardForm={saveNewCard} handleCardChange={handleCardChange} handleBillingChange={handleBillingChange} handleBillingStateChange={handleBillingStateChange} handleCardholderNameChange={handleCardholderNameChange} cardholderName={cardholderName} billing={billing} collectCVV={collectCVV} redisplayCardElement={redisplayCardElement} closeAddNewModal={closeAddNewModal} disabled={disabled} error={error} sameAsShipping={sameAsShipping} handleSameAsShipping={handleSameAsShipping} billingInputErrorDisableButton={billingInputErrorDisableButton} disableButtonAfterMakingRequest={disableButtonAfterMakingRequest} />
+                <CardForm loggedIn={loggedIn} paymentMethod={paymentMethod} handleSubmitCardForm={saveNewCard} handleCardChange={handleCardChange} handleBillingChange={handleBillingChange} handleBillingStateChange={handleBillingStateChange} handleCardholderNameChange={handleCardholderNameChange} cardholderName={cardholderName} billing={billing} collectCVV={collectCVV} redisplayCardElement={redisplayCardElement} closeAddNewModal={closeAddNewModal} disabled={disabled} error={error} sameAsShipping={sameAsShipping} handleSameAsShipping={handleSameAsShipping} billingInputErrorDisableButton={billingInputErrorDisableButton} disableButtonAfterMakingRequest={disableButtonAfterMakingRequest} classes={classes} />
             </Modal>
         )  
     } else if(paymentMethod.paymentMethodID && !editPayment) {
@@ -466,7 +498,7 @@ function PaymentMethod ({ backend, processing, loggedIn, error, grabError, disab
 
                     {/* <div id="control-speed-dial-payment-margin"> */}
                         <ThemeProvider theme={theme}>
-                            <div className={classes.root}>
+                            <div className={classes.speedDialRoot}>
                                 <SpeedDial 
                                     ariaLabel="SpeedDial openIcon"
                                     className={classes.speedDial}
@@ -559,7 +591,7 @@ function PaymentMethod ({ backend, processing, loggedIn, error, grabError, disab
         // When the Edit button is clicked this modal is shown
         return (
             <Modal isOpen={showModal} onRequestClose={closeEditModal} ariaHideApp={false} contentLabel="Edit Card">
-                <form onSubmit={handleUpdatePayment}>
+                <form classes={classes.root} noValidate autoComplete="off" onSubmit={handleUpdatePayment}>
                     <h2 id="edit-payment-heading">Edit Payment</h2>
                     <div id="display-edit-payment-info">  
                         <div id={paymentMethod.brand} className="edit-credit-card">
@@ -577,26 +609,87 @@ function PaymentMethod ({ backend, processing, loggedIn, error, grabError, disab
                             <div id="expiry-date"><b>{paymentMethod.expDate}</b></div>
                         </div>
                     </div>
-                    <div id="edit-cardholder-name-exp-dates-container">
-                        <div id="edit-cardholder-name-container">
-                            <input id="edit-cardholder-name-input" value={cardholderName || ""} name="name" placeholder="Name on card" onChange={handleCardholderNameChange}/>
-                            {(/^[a-z ,.'-]+$/i.test(cardholderName) !== true  &&  cardholderName !== "") && <div className="warning" id="edit-cardholder-name-error">You must enter only letters as your full name</div>}
-                        </div>
-                        <div className="expiration-container" >
-                            <input id="edit-exp-month" value = {editExpiration.month} type="number" maxLength="2" name="month" placeholder="MM" maxLength="2" size="2" required={true} onChange={handleEditExpiration} onInput={handleMaxExpLength}/>
-                            <span id="edit-expiration-slash">/</span>
-                            <input id="edit-exp-year" value = {editExpiration.year} type="number" maxLength="4" name="year" placeholder="YY" maxLength="4" size="3" required={true} onChange={handleEditExpiration} onInput={handleMaxExpLength} />
-                        </div>
+                    <div id="edit-cardholder-name-container">
+                        <TextField
+                        id="edit-cardholder-name-input"
+                        label="Name on card"
+                        className="filled-margin-none"
+                        placeholder="Enter cardholder's name"
+                        variant="filled"
+                        required
+                        fullWidth
+                        value={cardholderName || ""} 
+                        name="name"
+                        onChange={handleCardholderNameChange}
+                        onFocus={() => setOnCardholderBlur(false)}
+                        onBlur={() => {
+                            if(cardholderNameInputError2(cardholderName)) setOnCardholderBlur(true)
+                        }}
+                        error={cardholderNameInputError(cardholderName) || onCardholderBlur}
+                        helperText={(onCardholderBlur && "Required field") || (cardholderNameInputError(cardholderName) && "Only letters and ', . ' -' are allowed")}
+                        />
                     </div>
-                
-                    {/* { editExpirationError() && <div className="warning">You must enter only numbers for your expiration date</div> } */}
+                    <div className="expiration-container" >
+                        <div id="edit-month-container">
+                            <TextField
+                            id="edit-exp-month"
+                            label="Exp. Month"
+                            className="filled-margin-none"
+                            placeholder="MM"
+                            variant="filled"
+                            required
+                            inputProps={{
+                                type: "number",
+                                maxLength: 2
+                            }}
+                            value={editExpiration.month || ""}
+                            name="month"
+                            onInput={handleMaxExpLength}
+                            onKeyDown={handleNonNumericExpiration}
+                            onChange={handleEditExpiration} 
+                            onFocus={() => setOnMonthBlur(false)}
+                            onBlur={() => {
+                                if(monthInputError(editExpiration) || monthLengthInputError(editExpiration)) setOnMonthBlur(true)
+                            }}
+                            error={invalidMonthInput(editExpiration) || expInvalidInput(editExpiration) || onMonthBlur}
+                            helperText={(onMonthBlur && "Required field") ||  (invalidMonthInput(editExpiration) && "Invalid Month")}
+                            />
+                        </div>            
+                        
+                        <div id="edit-year-container">
+                            <TextField
+                            id="edit-exp-year"
+                            label="Exp. Year"
+                            className="filled-margin-none"
+                            placeholder="YYYY"
+                            variant="filled"
+                            required
+                            value={editExpiration.year || ""}
+                            name="year"
+                            inputProps={{
+                                type: "number",
+                                maxLength: 4
+                            }}
+                            onInput={handleMaxExpLength}
+                            onKeyDown={handleNonNumericExpiration}
+                            onChange={handleEditExpiration}
+                            onFocus={() => setOnYearBlur(false)}
+                            onBlur={() => {
+                                if(yearInputError(editExpiration) || yearLengthInputError(editExpiration)) setOnYearBlur(true)
+                            }} 
+                            error={invalidYearInput(editExpiration) || onYearBlur || expInvalidInput(editExpiration)}
+                            helperText={(onYearBlur && "Required field") ||  (invalidYearInput(editExpiration) && "Invalid Year")}
+                            />
+                        </div>
+                        {expInvalidInput(editExpiration) && <FormHelperText>Expiration date is invalid</FormHelperText>}
+                    </div>
 
                     <div id="edit-container">
-                        <BillingInput loggedIn={loggedIn} billing={billing} handleBillingChange={handleBillingChange} handleBillingStateChange={handleBillingStateChange} editPayment={editPayment} paymentMethod={paymentMethod} />
+                        <BillingInput loggedIn={loggedIn} billing={billing} handleBillingChange={handleBillingChange} handleBillingStateChange={handleBillingStateChange} editPayment={editPayment} paymentMethod={paymentMethod} classes={classes}/>
                         <div id="edit-buttons-container">
                             <Button size='lg' variant='dark' className="edit-buttons" onClick={closeEditModal}>Close</Button>
-                            <Button size='lg' variant='dark' className="edit-buttons" type="submit" disabled={ billingInputErrorDisableButton() || billingPostalCodeInputErrorDisableButton() || editExpirationError() || disableButtonAfterMakingRequest || billing.state === 'Select'}>Save</Button>
-                            <button type="button" onClick={() => console.log("disable after making request: ", disableButtonAfterMakingRequest, "billing input: ", billingInputErrorDisableButton(), "edit exp error: ", editExpirationError(), "postal code: ", billingInputErrorDisableButton(), "billing state: ", billing.state)}>click</button>
+                            <Button size='lg' variant='dark' className="edit-buttons" type="submit" disabled={ billingInputErrorDisableButton() || editExpirationError() || disableButtonAfterMakingRequest || billing.state === 'Select'}>Save</Button>
+                            {/* <button type="button" onClick={() => console.log("disable after making request: ", disableButtonAfterMakingRequest, "billing input: ", billingInputErrorDisableButton(), "edit exp error: ", editExpirationError(), "postal code: ", billingInputErrorDisableButton(), "billing state: ", billing.state)}>click</button> */}
                         </div>
                     
                     </div>

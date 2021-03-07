@@ -12,6 +12,7 @@ const createPaymentMethod = async (stripe,cardElement, billing, cardholderName, 
                 line2: `${billing.line2}`,
                 city: `${billing.city}`,
                 state: `${billing.state}`,
+                postal_code: billing.postalCode,
                 country: 'US'
             }
         },

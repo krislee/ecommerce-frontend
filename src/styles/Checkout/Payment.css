@@ -1,7 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=Orbitron&display=swap');
-/* font-family: 'Orbitron', sans-serif; */
+@import url('https://fonts.googleapis.com/css2?family=Mukta:wght@200&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Average+Sans&display=swap');
+
 #payment-container {
     /* margin-left: 30px; */
+    margin-left: 0px !important;
 } 
 
 
@@ -24,6 +26,7 @@
 /* GUEST FORM */
 #guest-card-form {
     box-shadow: none;
+    padding: 0px;
 }
 #save-card-container {
     display: flex;
@@ -75,10 +78,13 @@
 }
 
 /* Display billing info if shipping label is checked */
-#display-same-billing-shipping-container {
+/* #display-same-billing-shipping-container {
     padding-top: 15px;
     width: 60%;
     font-size: 1rem;
+} */
+#display-same-billing-shipping-info-container p {
+    margin-bottom: 0;
 }
 
 #billing-line1, #billing-cityStateZipcode {
@@ -87,6 +93,7 @@
 #add-card-buttons-container {
     display: flex;
     justify-content: space-between;
+    margin-top: 30px;
 }
 #save-card-button, #cancel-save-button {
     margin-top: 20px;
@@ -99,13 +106,12 @@
     font-weight: bold;
 }
 /* GUEST DISPLAYING BILLING INFO IF SHIPPING LABEL IS CHECKED */
-#guest-payment-container {
+/* #guest-payment-container {
     padding-left: 20px;
     padding-right: 20px;
-}
+} */
 #guest-payment-heading {
-    padding-left: 20px;
-    padding-bottom: 0px;
+    padding-bottom: 25px;
 }
 #guest-add-card-heading {
     padding-top: 0px;
@@ -123,42 +129,43 @@
 #display-edit-payment-info, #display-saved-payment-info, #display-payment-info {
     border-radius: 5px;
 }
-#edit-cardholder-name-exp-dates-container {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 10px;
-}
 #edit-cardholder-name-container {
-    display: flex;
-    flex-direction: column;
-    width: 60%;
-    /* margin-right: 10px; */
+    margin-bottom: 10px;
 }
 
 /* Edit Expiration */
+
 .expiration-container {
-    border: 1px solid #bbb;
-    border-radius: 5px;
-    display: flex;
-    width: 5rem;
-    height: 50%;
+    display: grid;
+    grid-template-columns: 50% 50%;
+    width: 100%;
+    margin-bottom: 10px;
 }
-#edit-exp-month, #edit-exp-year {
-    border: none;
-    margin-bottom: 0px !important;
-    padding: 0px !important;
+
+#edit-cardholder-name-container #edit-cardholder-name-input {
+    padding-left: 11px !important;
+    padding-top: 2rem !important  
 }
-#edit-exp-month {
-    text-align: right;
-    width: 34%;
+
+#edit-month-container .MuiFilledInput-root {
+    border-top-right-radius: 0px !important;
 }
-#edit-exp-year {
-    text-align: left;
-    width: 66%;
+#edit-year-container .MuiFilledInput-root {
+    border-top-left-radius: 0px !important;
 }
-#edit-expiration-slash {
-    padding: 0.5rem 0.2rem 0.2rem 0.2rem;
+.expiration-container .MuiInputBase-root{
+    height: 100% !important;
+    padding-top: 1rem !important;
 }
+.expiration-container .MuiInputBase-input {
+    padding-top: 1rem !important;
+    padding-left: 11px !important;
+}
+
+.expiration-container .MuiFormControl-root {
+    width: 100%;
+}
+
 /* Edit Buttons */
 #edit-buttons-container {
     display: flex;
@@ -184,15 +191,18 @@
     margin-top: 0px;
     align-self: center;
 }
-#close-saved-address-button {
-    /* float: right; */
-    position: absolute;
+#close-save-address-button {
+    float: right;
+    /* position: absolute;
     bottom: 0px;
     right: 0px;
     margin-right: 20px;
-    margin-bottom: 20px;
+    margin-bottom: 20px; */
 }
 
+#guest-display-same-billing-shipping-info-container, #display-same-billing-shipping-info-container, .same-billing-shipping-label {
+    font-family: 'Average Sans', sans-serif;
+}
 /* CREDIT CARD ILLUSTRATION DISPLAY */
 
 .edit-credit-card, .saved-credit-card, .display-credit-card {
@@ -323,6 +333,7 @@
     justify-content: flex-end;
     margin-right: 10px;
 }
+
 #cardholder-title, #edit-cardholder-name, #saved-cardholder-name, #display-cardholder-name #expiry-date-title, #expiry-date {
     color: white;
 }
@@ -365,6 +376,7 @@
     .display-credit-card {
         width: 50%; 
     }
+
 }
 @media only screen and (max-width: 600px) {
     #payment-container {

@@ -6,9 +6,9 @@
     padding-bottom: 30px;
 }
 #shipping-container {
-    /* margin-left: 10px; */
-    padding-left: 20px;
-    padding-right: 20px;
+    margin-left: 0px !important;
+    padding-left: 30px;
+    padding-right: 30px;
     display: flex;
     flex-direction: column;
     /* width: 100vw;
@@ -19,6 +19,14 @@
 h2 {
     padding-bottom: 20px;
 }
+#guest-shipping-heading1 {
+    margin-bottom: 0;
+    padding-bottom: 30px;
+}
+#guest-shipping-heading2 {
+    padding-top: 0px;
+}
+
 /* Shipping Info */
 #shipping-icon-name-container1, #shipping-icon-name-container2, #shipping-icon-address-container1, #shipping-icon-address-container2,#shipping-icon-phone-container1, #shipping-icon-phone-container2 {
     display: flex;
@@ -91,16 +99,26 @@ input {
     width: 100%;
 }
 #single-saved-address {
-    width: 50vw;
-    line-height: 0.5;
+    /* width: 50vw; */
+    /* line-height: 0.5; */
     margin-right: 0px !important;
-    display: flex;
-    justify-content: space-between;
+    /* display: flex;
+    justify-content: space-between; */
+    display: grid;
+    grid-template-columns: 4fr 1fr;
+    grid-gap: 10px;
     margin-bottom: 20px;
+}
+#single-saved-address-paragraph > #name, #single-saved-address-paragraph > #line1,  #single-saved-address-paragraph > #line2, #single-saved-address-paragraph > #cityStateZipcode{
+    margin-bottom: 0;
 }
 #saved-shipping-modal-heading {
     padding-top: 0px;
     margin-right: 0px;
+}
+#single-saved-select-button {
+    display: flex;
+    align-items: center;
 }
 .select-save-shipping-button {
     margin-top:5px;
@@ -151,6 +169,7 @@ input {
 
     /* SAVED ADDRESSES */
     #single-saved-address {
+        
         font-size: 0.75rem !important;
     }
     .select-save-shipping-button {

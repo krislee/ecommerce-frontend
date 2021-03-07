@@ -4,7 +4,7 @@ import BillingInput from "../../components/Checkout/BillingInput"
 import Button from 'react-bootstrap/Button'
 import Spinner from 'react-bootstrap/Spinner'
 
-export default function CardForm ({ loggedIn, paymentMethod, processing, handleSubmitCardForm, handleCardChange, handleBillingChange, handleBillingStateChange, handleCardholderNameChange, cardholderName, billing, collectCVV, redisplayCardElement, closeAddNewModal, error, disabled, sameAsShipping, handleSameAsShipping, billingInputErrorDisableButton, disableButtonAfterMakingRequest, guestProcessingPayment }) {
+export default function CardForm ({ loggedIn, paymentMethod, processing, handleSubmitCardForm, handleCardChange, handleBillingChange, handleBillingStateChange, handleCardholderNameChange, cardholderName, billing, collectCVV, redisplayCardElement, closeAddNewModal, error, disabled, sameAsShipping, handleSameAsShipping, billingInputErrorDisableButton, disableButtonAfterMakingRequest, guestProcessingPayment, classes }) {
 
     return(
         <form id={(!loggedIn() || (loggedIn() && !paymentMethod.paymentMethodID)) ? "guest-card-form" : "card-form" } onSubmit={handleSubmitCardForm}>
@@ -21,7 +21,7 @@ export default function CardForm ({ loggedIn, paymentMethod, processing, handleS
                 <label className="same-billing-shipping-label">Same as Shipping Address </label>
             </div>
             {/* If user does not have a saved payment method as indicated by !paymentMethod.paymentMethodID or if users who is adding an additionally new payment method at checkout does NOT check Same as Shipping box as indicated by !sameAsShipping, then show the input form */}
-            {(!sameAsShipping || (!sameAsShipping && !paymentMethod.paymentMethodID)) && <BillingInput loggedIn={loggedIn} handleBillingChange={handleBillingChange} handleBillingStateChange={handleBillingStateChange} billing={billing} paymentMethod={paymentMethod} />}
+            {(!sameAsShipping || (!sameAsShipping && !paymentMethod.paymentMethodID)) && <BillingInput loggedIn={loggedIn} handleBillingChange={handleBillingChange} handleBillingStateChange={handleBillingStateChange} billing={billing} paymentMethod={paymentMethod} classes={classes}/>}
 
             {sameAsShipping && (
                 <div id={(!loggedIn() || (loggedIn() && !paymentMethod.paymentMethodID)) ? "guest-display-same-billing-shipping-info-container" : "display-same-billing-shipping-info-container"}>

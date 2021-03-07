@@ -47,15 +47,16 @@
     text-align: center;
   }
   
-/* #card-element {
-    border-radius: 4px 4px 0 0;
-    padding: 12px;
-    border: 1px solid rgba(50, 50, 93, 0.1);
-    max-height: 44px;
-    width: 100%;
-    background: white;
-    box-sizing: border-box;
-} */
+  #addNewCardholderName .MuiFormControl-root {
+    margin-bottom: 10px;
+    font-family: 'Mukta', sans-serif;
+  }
+  #addNewCardholderName .MuiFilledInput-input {
+      padding-top: 2rem !important;
+      padding-bottom: 5px !important;
+      padding-left: 11px !important;
+      margin-bottom: 0px !important;
+  }
   
 #payment-request-button {
   margin-bottom: 32px;
@@ -66,7 +67,7 @@
 }
 
 #guest-card-container, #card-container {
-  padding: 10px 30px 10px 30px;
+  padding: 13px;
   margin-top: 10px;
   /* width: 93%; */
   border: 0.5px solid #dddfe2;
@@ -76,16 +77,15 @@
   align-items: center !important; */
 }
 
-#guest-card-container {
+/* #guest-card-container {
   padding-left: 30px;
-}
+} */
 #cvc-container {
   padding: 10px 30px 10px 30px;
   width: 35%;
   border: 0.5px solid #dddfe2;
   border-radius: 10px;
 }
-
 #label-cvc-container {
   display: flex;
   align-items: center;
@@ -104,9 +104,15 @@
     width: 100%;
   }
   #guest-card-container, #card-container {
-    padding: 10px;
+    /* padding: 10px; */
     width: 100%;
     font-size: 0.75rem !important
+  }
+  #recollect-cvv-heading {
+    font-size: 1rem;
+  }
+  #cvc-container {
+    padding: 10px;
   }
 }
 

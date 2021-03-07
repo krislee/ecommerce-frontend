@@ -1,63 +1,29 @@
+@import url('https://fonts.googleapis.com/css2?family=Mukta:wght@200&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Average+Sans&display=swap');
+
 #names-container {
     display: grid;
     grid-template-columns: 50% 50%;
-    /* grid-column-gap: 10px; */
 }
-#first-name-container, #last-name-container {
-    display: flex;
-    flex-direction: column;
+
+.state-zipcode {
+    display: grid;
+    grid-template-columns: 50% 50%;
 }
+
 #first-name-container {
     margin-right: 10px;
 }
-.city-state-zipcode {
-    display: grid;
-    /* grid-template-areas: '1fr 1fr'; */
-    grid-template-columns: 50% 50%;
-    /* grid-column-gap: 10px; */
-}
-#city-container {
-    /* grid-area: city; */
-    width: 100%;
-}
-#shipping-input-state {
-    /* grid-area: state; */
-    width: 100%;
-}
-#checkout-shipping-state-container {
-    margin-right: 10px;
-}
-#postalcode-container {
-    /* grid-area: postalCode; */
-    width: 100%;
-}
-#city-container, .zipcode, #postalcode-container {
-    display: flex;
-    flex-direction: column;
-}
 
-input, .zipcode {
-    height: 2.5rem
-}
-.zipcode {
-    border: 0px
-}
-
-input[name="line1"], input[name="line2"], #names-container, .city-state-zipcode, input[name="phone"] {
+#checkout-shipping-line1, #checkout-shipping-line2, #city-container, #names-container, .state-zipcode {
     margin-bottom: 10px !important;
-}
-
-#shipping-input-state-city-postalCode-error {
-    height: 60%;
-}
-#guest-shipping-input-state-city-postalCode-error {
-    height: 70%;
 }
 
 #save-default-container {
     display: flex;
     align-items: center;
 }
+
 #address-default-label {
     margin-bottom: 0rem;
 }
@@ -67,6 +33,8 @@ input[name="line1"], input[name="line2"], #names-container, .city-state-zipcode,
     padding: 0px;
 
 }
+
+/* ALL INPUTS */
 #shipping-form .MuiInputBase-root {
     padding-top: 1rem !important;
     padding-left: 7px;
@@ -74,30 +42,38 @@ input[name="line1"], input[name="line2"], #names-container, .city-state-zipcode,
 #shipping-form .MuiInputBase-input {
     padding-top: 1rem !important;
 }
+#shipping-form .MuiFormHelperText-root {
+    margin-left: 0px;
+    margin-right: 0px;
+}
+.MuiInputBase-input, .MuiFilledInput-input, .MuiFormLabel-root, .MuiFormHelperText-root {
+    font-family: 'Average Sans', sans-serif !important;
+}
 
+/* STATE INPUTS */
+#checkout-shipping-state-container {
+    margin-right: 10px;
+}
 #checkout-shipping-state-container > .MuiFormControl-root {
     width: 100%;
+    margin: 0 !important;
 }
 #checkout-shipping-state-container .MuiFormControl-root > .MuiInputBase-root {
     padding-top: 0rem !important;
     width: 100%;
 }
-#checkout-shipping-line1, #checkout-shipping-line2, #city-container {
-    margin-bottom: 10px;
-}
-#checkout-shipping-state-container .MuiFormControl-root {
-    margin: 0 !important;
-}
-
 #checkout-shipping-state-container .MuiSelect-root {
     padding-top: 1.5rem !important;
     height: 0 !important;
-
 }
-
 #checkout-shipping-state-container .MuiSelect-iconFilled {
     right: 0px !important;
 }
+.MuiFormHelperText-root {
+    color: red !important;
+}
+
+/* POSTAL CODE SELECT */
 #postalcode-container .MuiInputBase-root {
     line-height: 0 !important;
     padding-top: 9px !important;
@@ -105,7 +81,11 @@ input[name="line1"], input[name="line2"], #names-container, .city-state-zipcode,
 #postalcode-container .MuiSelect-iconFilled {
     left: 60px;
 }
+.MuiPopover-root .MuiPaper-root {
+    color: white;
+}
 
+/* PHONE NUMBER*/
 #shipping-phoneNumber > .MuiFormControl-root {
     width: 100%;
     border-radius: 4px;
@@ -125,12 +105,7 @@ input[name="line1"], input[name="line2"], #names-container, .city-state-zipcode,
     padding-top: 0 !important;
 }
 
-#shipping-form input {
-    margin-bottom: 0px !important;
-}
-.MuiPopover-root .MuiPaper-root {
-    color: white;
-}
+/* Buttons */
 
 #next-shipping-button, #save-shipping-button, #cancel-shipping-button{
     margin-top: 20px;
@@ -138,6 +113,9 @@ input[name="line1"], input[name="line2"], #names-container, .city-state-zipcode,
 #save-shipping-button {
     margin-right: 10px;
 }
+
+/* MEDIA QUERIES */
+
 @media only screen and (max-width: 950px) {
     #checkout-shipping-state-container .MuiSvgIcon-root {
         margin-top: 0.5rem;
@@ -151,12 +129,12 @@ input[name="line1"], input[name="line2"], #names-container, .city-state-zipcode,
 
 @media only screen and (max-width: 600px) {
     #shipping-form  .MuiInputBase-root, #shipping-phoneNumber > .MuiFormLabel-root, #shipping-form  label{
-        font-size: 0.75rem !important;
+        font-size: 0.9rem !important;
     }
     #checkout-shipping-state-container .MuiSelect-root {
         padding-top: 1.25rem !important;
     }
-    .city-state-zipcode {
+    .state-zipcode {
         display: block;
        
     }
