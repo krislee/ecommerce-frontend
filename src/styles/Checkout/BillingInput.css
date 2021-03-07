@@ -1,72 +1,100 @@
-#billing-input-names-container {
+/* #billing-input-names-container {
     display: flex;
     justify-content: space-between;
+} */
+#billing-input-names-container {
+    display: grid;
+    grid-template-columns: 50% 50%;
 }
 
-.billing-input {
+/* INPUTS */
+#billing-form .MuiFormControl-root {
     margin-bottom: 10px;
+    font-family: 'Mukta', sans-serif;
 }
-
-#billing-input-state {
+#billing-form .MuiFilledInput-input {
+    padding-top: 2rem !important;
+    padding-bottom: 5px !important;
+    padding-left: 11px !important;
+    margin-bottom: 0px !important;
+}
+/* CITY */
+#billing-input-city-error-container {
+    margin-right: 0px !important;
+}
+/* STATE & POSTAL CODE */
+#guest-billing-input-stateZipcode-container, #billing-input-stateZipcode-container {
+    display: grid;
+    grid-template-columns: 50% 50%;
+}
+/* STATE */
+#billing-input-state-error-container .MuiFormControl-root {
+    margin: 0px 0px 10px 0px;
     width: 100%;
-    height: 100%;
-    /* margin-bottom: 0px; */
 }
-#billing-input-state-city-error {
-    height: 60%;
+#billing-input-state-error-container .MuiSelect-root {
+    padding-top: 1.85rem !important;
 }
-#billing-input-state-city-or-zipcode-error {
-    height: 50%;
-    width: 100%;
-}
-#billing-input-firstName-error-container, #billing-input-city-error-container {
-    /*  #billing-input-state-error-container */
+#billing-input-state-error-container {
     margin-right: 10px;
 }
-#billing-input-postalCode-error-container {
-    margin-left: 10px;
-}
-/* #billing-input-city-error-container {
-    width: 60%;
-} */
-
-#edit-container > #billing-input-cityStateZipcode-container {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-}
-#billing-input-cityStateZipcode-container {
-    display: grid;
-    grid-template-columns: 2fr 1fr 2fr;
-    /* display: flex; */
-    /* justify-content: space-between; */
-}
-#billing-input-city-error-container, #billing-input-state-error-container, #billing-input-postalCode-error-container {
-    display: flex;
-    flex-direction: column;
-}
-
-/* #billing-input-state {
-    height: 60%;
+/* POSTAL CODE */
+#billing-input-postalCode-error-container .MuiFormControl-root {
     width: 100%;
-}  */
+}
+/* ZIPCODE */
+/* Hide the up/down arrow buttons in the expiration input (in Chrome, Safari, Edge, Opera) */
+#billing-postalCode-input::-webkit-outer-spin-button,
+#billing-postalCode-input::-webkit-inner-spin-button{
+  -webkit-appearance: none;
+  margin: 0;
+}
+/* Hide the up/down arrow buttons in the expiration input (in Firefox)*/
+#billing-postalCode-input{
+  -moz-appearance: textfield;
+}
 
-
-
-
-
+/* ERRORS */
+#billing-form .MuiFormHelperText-root {
+    margin-left: 0px;
+    margin-right: 0px;
+}
 
 /* GUEST */
-#guest-billing-input-firstName-error-container, #guest-billing-input-lastName-error-container, #guest-billing-input-city-error-container, #guest-billing-input-state-error-container, #guest-billing-input-state  {
-    width: 100%;
-}
-#guest-billing-input-firstName-error-container, #guest-billing-input-city-error-container {
+
+#guest-billing-input-firstName-error-container, #guest-billing-input-state-error-container  {
     margin-right: 10px;
 }
-#guest-billing-input-state  {
-    /* height: 100%; */
-    padding: 8px;
-}
-#guest-billing-input-state-city-error {
-    height: 60%;
+#guest-billing-input-state-error-container  > .MuiFormControl-root{
+    margin: 0px 10px 0px 0px;
     width: 100%;
+}
+#guest-billing-input-state-error-container .MuiSelect-root {
+    padding-top: 1.85rem !important
+}
+
+
+@media only screen and (max-width: 600px) {
+    /* #billing-form, #billing-input-state-error-container .MuiSelect-root  {
+        font-size: 0.75rem;
+    } */
+    #billing-input-state-error-container .MuiSelect-root {
+        padding-top: 1.7rem !important;
+    }
+    #billing-input-stateZipcode-container, #guest-billing-input-stateZipcode-container {
+        grid-template-columns: 100%;
+    }
+    #billing-input-state-error-container {
+        margin-right: 0px;
+    }
+    #guest-billing-input-state-error-container {
+        margin-bottom: 10px;
+        margin-right: 0px;
+    }
+    #guest-billing-input-state-error-container  > .MuiFormControl-root{
+        width: 100%
+    }
+    #billing-form  .MuiInputBase-root, #billing-form  label{
+        font-size: 0.9rem !important;
+    }
 }

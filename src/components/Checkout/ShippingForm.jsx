@@ -70,9 +70,9 @@ function TextMaskCustom(props) {
     );
 }
   
-  TextMaskCustom.propTypes = {
+TextMaskCustom.propTypes = {
     inputRef: PropTypes.func.isRequired,
-  };
+};
 
 export default function ShippingForm({ loggedIn, readOnly, shipping, addShipping, shippingInput, grabShippingInput, editShipping, handleEditShipping, closeModal, collapse, disableButtonAfterMakingRequest, grabDisableButtonAfterMakingRequest, addAdditionalSaveShipping}) {
     console.log(78, readOnly)
@@ -101,6 +101,17 @@ export default function ShippingForm({ loggedIn, readOnly, shipping, addShipping
         }))
     }
 
+    const handleMaxZipcodeLength = (event) => {
+        console.log(204, event.target)
+        if (event.target.value.length > event.target.maxLength) {
+            event.target.value = event.target.value.slice(0, event.target.maxLength)
+        }
+    }
+
+    const handleNonNumericZipcode =(event) => {
+        if(event.which != 8 && event.which != 0 && event.which < 48 || event.which > 57) return event.preventDefault()
+    }
+
     
     // Depending on if we are adding a shipping (indicated by addShipping state), editing a shipping (indicated by editShipping state), or saving our first address/guest user, different onSubmit form functions will run.
     const handleSubmit = async (event) => {
@@ -122,7 +133,6 @@ export default function ShippingForm({ loggedIn, readOnly, shipping, addShipping
     }
 
     const disableButton = () => {
-        console.log(shippingInput)
         return (
             /^[a-z ,.'-]+$/i.test(shippingInput.firstName) !== true 
             || shippingInput.firstName === ""
@@ -150,55 +160,22 @@ export default function ShippingForm({ loggedIn, readOnly, shipping, addShipping
             || (shippingInput.phone && shippingInput.phone.replace(/\D/g,'').toString().length!==10)
         )
     }
-
-    const x = () => {
-        console.log(155, disableButtonAfterMakingRequest)
-        console.log( 156,  /^[a-z ,.'-]+$/i.test(shippingInput.firstName) !== true 
-        || shippingInput.firstName === ""
-        || shippingInput.firstName === undefined)
-        console.log( 159, /^[a-z ,.'-]+$/i.test(shippingInput.lastName) !== true 
-        || shippingInput.lastName === ""
-        || shippingInput.lastName === undefined)
-        console.log( 162, shippingInput.line1 === ""
-        || shippingInput.line1 === undefined)
-        console.log(164, /^[a-z ,.'-]+$/i.test(shippingInput.city) !== true 
-        || shippingInput.city === ""
-        || shippingInput.city === undefined)
-        console.log(167, shippingInput.state)
-        console.log(168, /^[a-z][a-z\s]*$/i.test(shippingInput.state) !== true 
-        || shippingInput.state === ""
-        || shippingInput.state === undefined)
-        console.log(171, 
-        /^[0-9]+$/.test(Number(shippingInput.postalCode)) !== true 
-        || shippingInput.postalCode === ""
-        || shippingInput.postalCode === undefined
-        || shippingInput.postalCode.length !== 5)
-        console.log(176,
-        shippingInput.phone && /^[0-9]+$/.test(Number(shippingInput.phone.replace(/\D/g,''))) !== true 
-        || shippingInput.phone === ""
-        || shippingInput.phone === undefined
-        || (shippingInput.phone && shippingInput.phone.replace(/\D/g,'').toString().length !==10 ))
-        console.log(disableButton(), readOnly, shippingInput.state === 'Select', disableButtonAfterMakingRequest)
-    }
     
     return (
         <>
         <form id="shipping-form" name="form" onSubmit={handleSubmit} classes={classes.root} noValidate autoComplete="off">
             <div id="names-container">
                 <div id="first-name-container">
-                    {/* <input value={shippingInput.firstName || ""} name="firstName" placeholder="First Name" onChange={handleShippingChange} readOnly={readOnly} required/>
-                    {(/^[a-z ,.'-]+$/i.test(shippingInput.firstName) !== true && shippingInput.firstName !== "") && <div className="warning"><i>Only letters and ", . ' -" are accepted</i></div>} */}
-
                     <TextField
                     label="First Name"
                     className="filled-margin-none"
                     placeholder="Enter First Name"
-                    className={classes.textField}
                     variant="filled"
                     InputProps={{
                         readOnly: readOnly,
                     }}
                     required
+                    fullWidth
                     error={firstNameInputError(shippingInput) || onFirstNameBlurEvent}
                     onFocus={() => setOnFirstNameBlurEvent(false)}
                     onBlur={() => {
@@ -211,18 +188,16 @@ export default function ShippingForm({ loggedIn, readOnly, shipping, addShipping
                     />
                 </div>
                 <div id="last-name-container">
-                    {/* <input value={shippingInput.lastName || ""} name="lastName" placeholder="Last Name" onChange={handleShippingChange} readOnly={readOnly} required/>
-                    {(/^[a-z ,.'-]+$/i.test(shippingInput.lastName) !== true && shippingInput.lastName !== "") && <div className="warning"><i>Only letters and ", . ' -" are accepted</i></div>} */}
                     <TextField
                     label="Last Name"
                     className="filled-margin-none"
                     placeholder="Enter Last Name"
                     variant="filled"
-                    className={classes.textField}
                     InputProps={{
                         readOnly: readOnly,
                     }}
                     required
+                    fullWidth
                     onFocus={() => setOnLastNameBlurEvent(false)}
                     onBlur={() => {
                         if(lastNameInputError2(shippingInput)) setOnLastNameBlurEvent(true)
@@ -236,7 +211,6 @@ export default function ShippingForm({ loggedIn, readOnly, shipping, addShipping
                 </div>
             </div>
 
-            {/* <input value={shippingInput.line1 || ""} name="line1" placeholder="Address Line One" onChange={handleShippingChange} readOnly={readOnly} required/> */}
             <div id="checkout-shipping-line1">
                 <TextField
                 label="Address Line One"
@@ -244,7 +218,6 @@ export default function ShippingForm({ loggedIn, readOnly, shipping, addShipping
                 placeholder="Enter Address"
                 variant="filled"
                 fullWidth
-                className={classes.textField}
                 InputProps={{
                     readOnly: readOnly,
                 }}
@@ -260,7 +233,7 @@ export default function ShippingForm({ loggedIn, readOnly, shipping, addShipping
                 onChange={handleShippingChange}
                 />
             </div>
-            {/* <input value={shippingInput.line2 || ""} name="line2" placeholder="Address Line Two" onChange={handleShippingChange} readOnly={readOnly} /> */}
+
             <div id="checkout-shipping-line2">
                 <TextField
                 label="Address Line Two"
@@ -268,7 +241,6 @@ export default function ShippingForm({ loggedIn, readOnly, shipping, addShipping
                 placeholder="Apartment, Floor, Suite"
                 variant="filled"
                 fullWidth
-                className={classes.textField}
                 InputProps={{
                     readOnly: readOnly,
                 }}
@@ -277,16 +249,14 @@ export default function ShippingForm({ loggedIn, readOnly, shipping, addShipping
                 onChange={handleShippingChange}
                 />
             </div>
+
             <div id="city-container">
-                {/* <input value={shippingInput.city || ""} name="city" placeholder="City" onChange={handleShippingChange} readOnly={readOnly} required/>
-                {(/^[a-z ,.'-]+$/i.test(shippingInput.city) !== true && shippingInput.city !== "") && <div className="warning"><i>Only letters and ", . ' -" are accepted</i></div>} */}
                 <TextField
                 label="City"
                 fullWidth
                 className="filled-margin-none"
                 placeholder="Enter City"
                 variant="filled"
-                className={classes.textField}
                 required
                 InputProps={{
                     readOnly: readOnly,
@@ -297,53 +267,28 @@ export default function ShippingForm({ loggedIn, readOnly, shipping, addShipping
                 }}
                 error={cityInputError(shippingInput) || onCityBlurEvent}
                 helperText={(onCityBlurEvent && "Required field") ||  (cityInputError(shippingInput) && "Only letters and ', . ' -' are allowed") || ""}
-                value={shippingInput.city || ""} 
+                value={ shippingInput.city || "" } 
                 name="city"
                 onChange={handleShippingChange}
                 />
             </div>
-            <div className="city-state-zipcode">
-                
-                {/* <select 
-                className="state" 
-                value={shippingInput.state || "Select"} 
-                onChange={handleShippingStateChange}
-                id={
 
-                    ((!loggedIn() && /^[a-z ,.'-]+$/i.test(shippingInput.city) !== true && shippingInput.city !== "")
-                    || (!loggedIn() && /^[0-9]+$/.test(shippingInput.postalCode) !== true && shippingInput.postalCode !== "" && shippingInput.postalCode !== undefined)
-                    || (loggedIn() && !shipping.firstName && /^[0-9]+$/.test(shippingInput.postalCode) !== true && shippingInput.postalCode !== "" && shippingInput.postalCode !== undefined) 
-                    || (loggedIn() && !shipping.firstName && /^[a-z ,.'-]+$/i.test(shippingInput.city) !== true && shippingInput.city !== ""))
-                    ? 'guest-shipping-input-state-city-postalCode-error'
-                    : ((/^[0-9]+$/.test(shippingInput.postalCode) !== true && shippingInput.postalCode !== "" && shippingInput.postalCode !== undefined) 
-                    || (/^[a-z ,.'-]+$/i.test(shippingInput.city) !== true && shippingInput.city !== ""))
-                    ? 'shipping-input-state-city-postalCode-error'
-                    : 'shipping-input-state'
-                }
-                >
-                    <option value="Select">Select</option>
-                    {usStates.map((state, index) => { return (
-                        <option key={state.abbreviation} value={state.name}>{state.name}</option>
-                    )})}
-
-                </select> */}
+            <div className="state-zipcode">
                 <div id="checkout-shipping-state-container">
                     <FormControl variant="filled" className={classes.formControl}>
                     <InputLabel htmlFor="filled-age-native-simple">State</InputLabel>    
                         <Select
-                        // native
-                        // autoWidth={true}
                         label="State"
                         labelId="demo-simple-select-filled-label"
                         id="demo-simple-select-filled"
-                        value={shippingInput.state || "Select"} 
+                        value={ shippingInput.state } 
                         onFocus={() => setOnStateBlurEvent(false)}
                         onBlur={() => {
                             if(stateInputError(shippingInput)) setOnStateBlurEvent(true)
                         }}
                         onChange={handleShippingStateChange}
                         >
-                        <MenuItem value="Select">State</MenuItem>
+                        <MenuItem disabled value="Select">Select</MenuItem>
                         {usStates.map((state, index) => { return (
                                 <MenuItem key={state.abbreviation} value={state.name}>{state.name}</MenuItem>
                         )})}
@@ -353,37 +298,36 @@ export default function ShippingForm({ loggedIn, readOnly, shipping, addShipping
                     </FormControl>
                 </div>
                 <div id="postalcode-container">
-                    {/* <input value={shippingInput.postalCode || ""} name="postalCode" placeholder="Zipcode" onChange={handleShippingChange} maxLength="5" readOnly={readOnly} required />
-                    {(/^[0-9]+$/.test(shippingInput.postalCode) !== true && shippingInput.postalCode !== "" && shippingInput.postalCode !== undefined) && <div className="warning">You must enter only numbers for your zip code</div>} 
-                    */}
                     <TextField
+                    id="shipping-postalCode-input"
                     label="Zipcode"
                     className="filled-margin-none"
                     placeholder="Enter zipcode"
                     variant="filled"
-                    className={classes.textField}
                     InputProps={{
                         readOnly: readOnly,
                     }}
                     inputProps={{
+                        type: "number",
                         maxLength: 5
                     }}
+                    fullWidth
                     required
+                    onInput={handleMaxZipcodeLength}
+                    onKeyDown={handleNonNumericZipcode}
                     onFocus={() => setOnPostalCodeBlurEvent(false)}
                     onBlur={() => {
                         if(postalCodeInputError3(shippingInput) || postalCodeInputError2(shippingInput)) setOnPostalCodeBlurEvent(true)
                     }}
                     error={postalCodeInputError(shippingInput) || onPostalCodeBlurEvent}
                     helperText={(onPostalCodeBlurEvent && "Required field") || (postalCodeInputError(shippingInput) && "You must enter only numbers for your zip code") || ""}
-                    value={shippingInput.postalCode || ""} 
+                    value={ shippingInput.postalCode || "" } 
                     name="postalCode"
                     onChange={handleShippingChange}
                     />
                 </div>
             </div>
 
-            {/* <input value={shippingInput.phone || ""} name="phone" placeholder="Phone Number" onChange={handleShippingChange} maxLength="10" readOnly={readOnly} required />
-            {(/^[0-9]+$/.test(shippingInput.phone) !== true && shippingInput.phone !== "" && shippingInput.phone !== undefined) && <div className="warning">You must enter only numbers for your phone number</div>} */}
             <div id="shipping-phoneNumber">
                 <FormControl>
                     <InputLabel>Phone Number</InputLabel>
@@ -391,7 +335,7 @@ export default function ShippingForm({ loggedIn, readOnly, shipping, addShipping
                     fullWidth
                     required
                     label="Phone Number"
-                    value={shippingInput.phone}
+                    value={ shippingInput.phone || "" }
                     onChange={handleShippingChange}
                     onFocus={() => setOnPhoneBlurEvent(false)}
                     onBlur={() => {
@@ -425,10 +369,7 @@ export default function ShippingForm({ loggedIn, readOnly, shipping, addShipping
                 size='lg'
                 disabled={disableButton() || disableButtonAfterMakingRequest || shippingInput.state === 'Select' }>
                     Save
-                </Button> 
-                {/* <Button variant="dark" type="submit" disabled={disableButton() || disableButtonAfterMakingRequest }>Save</Button> */}
-                {/* <button type="button" onClick={closeModal}>Cancel</button> */}
-                
+                </Button>                
             </div>
         ) : <Button 
             id="next-shipping-button"
@@ -442,27 +383,7 @@ export default function ShippingForm({ loggedIn, readOnly, shipping, addShipping
         }
 
         </form>
-        {/* {shipping.firstName ? (
-            <>
-            <Button 
-            form="form" 
-            type="submit"
-            variant="dark"
-            disabled={disableButton() || disableButtonAfterMakingRequest }>
-                Save
-            </Button>  */}
-            {/* <Button variant="dark" type="submit" disabled={disableButton() || disableButtonAfterMakingRequest }>Save</Button> */}
-            {/* <button type="button" onClick={closeModal}>Cancel</button> */}
-            {/* <Button variant="dark" type="button" onClick={closeModal}>Cancel</Button>
-            </>
-        ) : <Button 
-            // form="form" 
-            type="submit"
-            variant="dark"
-            disabled={readOnly || disableButton() || disableButtonAfterMakingRequest }>
-                Next
-            </Button>   
-        } */}
+        
         </>      
     )
 }

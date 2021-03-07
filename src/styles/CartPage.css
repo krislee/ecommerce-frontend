@@ -55,11 +55,14 @@
     margin-top: 10px;
     justify-content: flex-end;
 }
-
+.cart-item-remove-icon svg {
+    font-size: 2em;
+}
 .cart-item-name-container, .cart-item-quantity, .cart-item-totalPrice2, .cart-item-remove-icon {
     display: flex;
     align-items: center;
 }
+
 #cart-total {
     float: right;
 }

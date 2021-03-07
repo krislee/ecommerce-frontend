@@ -153,7 +153,9 @@ export default function CheckoutItems({ backend, loggedIn, showItems, grabShowIt
                 <div className="Heading-Edit">
                     <h2 id="cart-heading">Your Cart</h2>
                     {/* <p id="edit" onClick={editCheckoutCart}><u>Edit</u></p> */}
-                    <FontAwesomeIcon className="shopping-basket" icon={faShoppingBasket} onClick={editCheckoutCart}/>
+                    <div id="checkout-shopping-basket-container" onClick={editCheckoutCart}>
+                        <FontAwesomeIcon className="shopping-basket" icon={faShoppingBasket} />
+                    </div>
                 </div>
 
                 <div className="checkout-items-sub-container">

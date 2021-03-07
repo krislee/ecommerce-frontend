@@ -72,7 +72,7 @@ const useStyles = makeStyles((theme) => ({
     root: {
         height: 20,
         transform: 'translateZ(0px)',
-        flexGrow: 0.5,
+        flexGrow: 1,
         // "margin-right": 30,
         // [theme.breakpoints.down("xs")]: {
         //     "margin-right": 10,
@@ -82,7 +82,7 @@ const useStyles = makeStyles((theme) => ({
     speedDial: {
       position: 'absolute',
       bottom: theme.spacing(0),
-      right: theme.spacing(0),
+      right: '-11px',
     },
 }));
   
@@ -92,15 +92,9 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
     // Speed Dial State and Functions
     const classes = useStyles();
     const [open, setOpen] = useState(false);
-    
-    const handleOpen = () => {
-        setOpen(true);
-    };
+    const handleOpen = () => setOpen(true);
+    const handleClose = () => setOpen(false);
 
-    const handleClose = () => {
-        setOpen(false);
-    };
-    
     
     /* ------- SHIPPING STATES ------ */
 
@@ -283,7 +277,7 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
     const openAddNewModal = () => {
         if(loggedIn()) {
             setAddShipping(true) // update the addShipping state to true to represent we are currently adding a shipping
-            grabShippingInput({}) // clear out the pre-filled input fields by updating shippingInput state to be an empty obj so user will see a shipping form with empty inputs
+            grabShippingInput({state: "Select"}) // clear out the pre-filled input fields by updating shippingInput state to be an empty obj so user will see a shipping form with empty inputs, and reset the state value to "Select"
             setShowModal(true) // open modal
         } else {
             grabTotalCartQuantity(0)
@@ -494,10 +488,11 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
         // If user is guest (as indicated by !loggedIn()), or logged in user does not have a shipping address (indicated by !shipping.address), we want to show the shipping form when the Next button from CheckoutItems component is clicked
         return (
             <div id="shipping-form-container">
-                <h2>Shipping Address</h2>
+                <h2 id="guest-shipping-heading1">Shipping Address</h2>
                 {/* When the Next button in CheckoutItems component is clicked, showShipping state is updated to true, and only then the form will be shown */}
                 {showShipping && (
                     <>
+                    <h2 id="guest-shipping-heading2">Enter Shipping Address</h2>
                     <ShippingForm backend={backend} loggedIn={loggedIn} shipping={shipping} shippingInput={shippingInput} grabShippingInput={grabShippingInput} grabPaymentLoading={grabPaymentLoading} addShipping={addShipping} grabAddNewShipping={grabAddNewShipping} cartID={cartID} updateShippingState={updateShippingState} updateShippingInputState={updateShippingInputState} editShipping={editShipping} handleEditShipping={handleEditShipping} closeModal={closeModal} collapse={collapse} addNewShipping={addNewShipping} disableButtonAfterMakingRequest={disableButtonAfterMakingRequest} grabAfterMakingRequestDisable={grabDisableButtonAfterMakingRequest} disableButtonAfterMakingRequest={disableButtonAfterMakingRequest} readOnly={readOnly}/> 
                     </>
                 )} 
@@ -539,12 +534,13 @@ function Shipping({ backend, loggedIn, grabPaymentLoading, cartID, showPayment, 
                         <div id="single-saved-address-paragraph">
                         <p id="name"><b>{savedShipping.Name.replace(", ", " ")}</b></p>
                         <p id="line1">{savedShipping.Address.split(", ")[0]}</p>
-                        <p id="line2">{savedShipping.Address.split(", ")[1] === "null" || savedShipping.Address.split(", ")[1] === "undefined" ? "" : savedShipping.Address.split(", ")[1]}</p>
+                        {(savedShipping.Address.split(", ")[1] !== "null" && savedShipping.Address.split(", ")[1] !== "undefined") && 
+                        <p id="line2">{savedShipping.Address.split(", ")[1]}</p>}
                         <p id="cityStateZipcode">{savedShipping.Address.split(", ")[2]}, {savedShipping.Address.split(", ")[3]} {savedShipping.Address.split(", ")[4]}</p>
                         </div>
-                        
-                        <Button className="select-save-shipping-button" variant="dark" size="sm" id={savedShipping._id} onClick={handleSelectedShipping}>Select</Button>
-                       
+                        <div id="single-saved-select-button">
+                            <Button className="select-save-shipping-button" variant="dark" size="sm" id={savedShipping._id} onClick={handleSelectedShipping}>Select</Button>
+                        </div>
 
                     </div>
                 )})}
