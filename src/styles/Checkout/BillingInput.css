@@ -42,6 +42,18 @@
 #billing-input-postalCode-error-container .MuiFormControl-root {
     width: 100%;
 }
+/* ZIPCODE */
+/* Hide the up/down arrow buttons in the expiration input (in Chrome, Safari, Edge, Opera) */
+#billing-postalCode-input::-webkit-outer-spin-button,
+#billing-postalCode-input::-webkit-inner-spin-button{
+  -webkit-appearance: none;
+  margin: 0;
+}
+/* Hide the up/down arrow buttons in the expiration input (in Firefox)*/
+#billing-postalCode-input{
+  -moz-appearance: textfield;
+}
+
 /* ERRORS */
 #billing-form .MuiFormHelperText-root {
     margin-left: 0px;

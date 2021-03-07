@@ -85,6 +85,18 @@
     color: white;
 }
 
+/* ZIPCODE */
+/* Hide the up/down arrow buttons in the expiration input (in Chrome, Safari, Edge, Opera) */
+#shipping-postalCode-input::-webkit-outer-spin-button,
+#shipping-postalCode-input::-webkit-inner-spin-button{
+  -webkit-appearance: none;
+  margin: 0;
+}
+/* Hide the up/down arrow buttons in the expiration input (in Firefox)*/
+#shipping-postalCode-input{
+  -moz-appearance: textfield;
+}
+
 /* PHONE NUMBER*/
 #shipping-phoneNumber > .MuiFormControl-root {
     width: 100%;

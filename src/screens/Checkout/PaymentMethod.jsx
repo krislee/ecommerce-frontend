@@ -191,24 +191,18 @@ function PaymentMethod ({ backend, processing, loggedIn, error, grabError, disab
 
     // Listen to the month and year input changes
     const handleEditExpiration = (event) => {
-        // console.log(197, event.target)
         const { name, value } = event.target
-        // console.log(name, value)
-        // if (event.target.value.length > event.target.maxLength) {
-        //     event.target.value = event.target.value.slice(0, event.target.maxLength)
-        //     console.log(event.target.value)
-        // }
         grabEditExpiration((prevEditExpiration) => ({...prevEditExpiration, [name]: value }))
     }
     
-    const handleMaxExpLength = (event) => {
+    const handleMaxExpOrZipcodeLength = (event) => {
         console.log(204, event.target)
         if (event.target.value.length > event.target.maxLength) {
             event.target.value = event.target.value.slice(0, event.target.maxLength)
         }
     }
 
-    const handleNonNumericExpiration =(event) => {
+    const handleNonNumericExpirationOrZipcode =(event) => {
         if(event.which != 8 && event.which != 0 && event.which < 48 || event.which > 57) return event.preventDefault()
     }
     // When Save is clicked, handleUpdatePayment() runs
@@ -438,7 +432,7 @@ function PaymentMethod ({ backend, processing, loggedIn, error, grabError, disab
         return collectCVV !== 'true' && (
             <div id="guest-payment-container">
             <h2 id="guest-payment-heading">Payment Method</h2>
-            {showPayment && <CardForm loggedIn={loggedIn} paymentMethod={paymentMethod} handleSubmitCardForm={handleConfirmPayment} handleCardChange={handleCardChange} handleBillingChange={handleBillingChange} handleBillingStateChange={handleBillingStateChange} handleCardholderNameChange={handleCardholderNameChange} cardholderName={cardholderName} billing={billing} grabBilling={grabBilling} collectCVV={collectCVV} redisplayCardElement={redisplayCardElement} closeAddNewModal={closeAddNewModal} disabled={disabled} error={error} sameAsShipping={sameAsShipping} handleSameAsShipping={handleSameAsShipping} billingInputErrorDisableButton={billingInputErrorDisableButton} processing={processing} guestProcessingPayment={guestProcessingPayment} grabGuestProcessingPayment={grabGuestProcessingPayment} classes={classes} />}
+            {showPayment && <CardForm loggedIn={loggedIn} paymentMethod={paymentMethod} handleSubmitCardForm={handleConfirmPayment} handleCardChange={handleCardChange} handleBillingChange={handleBillingChange} handleBillingStateChange={handleBillingStateChange} handleCardholderNameChange={handleCardholderNameChange} cardholderName={cardholderName} billing={billing} grabBilling={grabBilling} collectCVV={collectCVV} redisplayCardElement={redisplayCardElement} closeAddNewModal={closeAddNewModal} disabled={disabled} error={error} sameAsShipping={sameAsShipping} handleSameAsShipping={handleSameAsShipping} billingInputErrorDisableButton={billingInputErrorDisableButton} processing={processing} guestProcessingPayment={guestProcessingPayment} grabGuestProcessingPayment={grabGuestProcessingPayment} classes={classes} handleMaxExpOrZipcodeLength={handleMaxExpOrZipcodeLength} handleNonNumericExpirationOrZipcode={handleNonNumericExpirationOrZipcode} />}
             </div>
         )      
 
@@ -446,7 +440,7 @@ function PaymentMethod ({ backend, processing, loggedIn, error, grabError, disab
         // When Add New Card button is clicked
         return collectCVV !== 'true' && (
             <Modal isOpen={showModal} onRequestClose={closeAddNewModal} ariaHideApp={false} contentLabel="Add Card">
-                <CardForm loggedIn={loggedIn} paymentMethod={paymentMethod} handleSubmitCardForm={saveNewCard} handleCardChange={handleCardChange} handleBillingChange={handleBillingChange} handleBillingStateChange={handleBillingStateChange} handleCardholderNameChange={handleCardholderNameChange} cardholderName={cardholderName} billing={billing} collectCVV={collectCVV} redisplayCardElement={redisplayCardElement} closeAddNewModal={closeAddNewModal} disabled={disabled} error={error} sameAsShipping={sameAsShipping} handleSameAsShipping={handleSameAsShipping} billingInputErrorDisableButton={billingInputErrorDisableButton} disableButtonAfterMakingRequest={disableButtonAfterMakingRequest} classes={classes} />
+                <CardForm loggedIn={loggedIn} paymentMethod={paymentMethod} handleSubmitCardForm={saveNewCard} handleCardChange={handleCardChange} handleBillingChange={handleBillingChange} handleBillingStateChange={handleBillingStateChange} handleCardholderNameChange={handleCardholderNameChange} cardholderName={cardholderName} billing={billing} collectCVV={collectCVV} redisplayCardElement={redisplayCardElement} closeAddNewModal={closeAddNewModal} disabled={disabled} error={error} sameAsShipping={sameAsShipping} handleSameAsShipping={handleSameAsShipping} billingInputErrorDisableButton={billingInputErrorDisableButton} disableButtonAfterMakingRequest={disableButtonAfterMakingRequest} classes={classes} handleMaxExpOrZipcodeLength={handleMaxExpOrZipcodeLength} handleNonNumericExpirationOrZipcode={handleNonNumericExpirationOrZipcode}/>
             </Modal>
         )  
     } else if(paymentMethod.paymentMethodID && !editPayment) {
@@ -644,8 +638,8 @@ function PaymentMethod ({ backend, processing, loggedIn, error, grabError, disab
                             }}
                             value={editExpiration.month || ""}
                             name="month"
-                            onInput={handleMaxExpLength}
-                            onKeyDown={handleNonNumericExpiration}
+                            onInput={handleMaxExpOrZipcodeLength}
+                            onKeyDown={handleNonNumericExpirationOrZipcode}
                             onChange={handleEditExpiration} 
                             onFocus={() => setOnMonthBlur(false)}
                             onBlur={() => {
@@ -670,8 +664,8 @@ function PaymentMethod ({ backend, processing, loggedIn, error, grabError, disab
                                 type: "number",
                                 maxLength: 4
                             }}
-                            onInput={handleMaxExpLength}
-                            onKeyDown={handleNonNumericExpiration}
+                            onInput={handleMaxExpOrZipcodeLength}
+                            onKeyDown={handleNonNumericExpirationOrZipcode}
                             onChange={handleEditExpiration}
                             onFocus={() => setOnYearBlur(false)}
                             onBlur={() => {
@@ -685,7 +679,7 @@ function PaymentMethod ({ backend, processing, loggedIn, error, grabError, disab
                     </div>
 
                     <div id="edit-container">
-                        <BillingInput loggedIn={loggedIn} billing={billing} handleBillingChange={handleBillingChange} handleBillingStateChange={handleBillingStateChange} editPayment={editPayment} paymentMethod={paymentMethod} classes={classes}/>
+                        <BillingInput loggedIn={loggedIn} billing={billing} handleBillingChange={handleBillingChange} handleBillingStateChange={handleBillingStateChange} editPayment={editPayment} paymentMethod={paymentMethod} classes={classes} handleMaxExpOrZipcodeLength={handleMaxExpOrZipcodeLength} handleNonNumericExpirationOrZipcode={handleNonNumericExpirationOrZipcode} />
                         <div id="edit-buttons-container">
                             <Button size='lg' variant='dark' className="edit-buttons" onClick={closeEditModal}>Close</Button>
                             <Button size='lg' variant='dark' className="edit-buttons" type="submit" disabled={ billingInputErrorDisableButton() || editExpirationError() || disableButtonAfterMakingRequest || billing.state === 'Select'}>Save</Button>

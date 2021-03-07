@@ -101,6 +101,17 @@ export default function ShippingForm({ loggedIn, readOnly, shipping, addShipping
         }))
     }
 
+    const handleMaxZipcodeLength = (event) => {
+        console.log(204, event.target)
+        if (event.target.value.length > event.target.maxLength) {
+            event.target.value = event.target.value.slice(0, event.target.maxLength)
+        }
+    }
+
+    const handleNonNumericZipcode =(event) => {
+        if(event.which != 8 && event.which != 0 && event.which < 48 || event.which > 57) return event.preventDefault()
+    }
+
     
     // Depending on if we are adding a shipping (indicated by addShipping state), editing a shipping (indicated by editShipping state), or saving our first address/guest user, different onSubmit form functions will run.
     const handleSubmit = async (event) => {
@@ -288,6 +299,7 @@ export default function ShippingForm({ loggedIn, readOnly, shipping, addShipping
                 </div>
                 <div id="postalcode-container">
                     <TextField
+                    id="shipping-postalCode-input"
                     label="Zipcode"
                     className="filled-margin-none"
                     placeholder="Enter zipcode"
@@ -296,10 +308,13 @@ export default function ShippingForm({ loggedIn, readOnly, shipping, addShipping
                         readOnly: readOnly,
                     }}
                     inputProps={{
+                        type: "number",
                         maxLength: 5
                     }}
                     fullWidth
                     required
+                    onInput={handleMaxZipcodeLength}
+                    onKeyDown={handleNonNumericZipcode}
                     onFocus={() => setOnPostalCodeBlurEvent(false)}
                     onBlur={() => {
                         if(postalCodeInputError3(shippingInput) || postalCodeInputError2(shippingInput)) setOnPostalCodeBlurEvent(true)

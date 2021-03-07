@@ -6,15 +6,13 @@
     margin-left: 0px !important;
 } 
 
-
-/* Chrome, Safari, Edge, Opera */
+/* Hide the up/down arrow buttons in the expiration input (in Chrome, Safari, Edge, Opera) */
 #edit-exp-month::-webkit-outer-spin-button,#edit-exp-year::-webkit-outer-spin-button,
 #edit-exp-month::-webkit-inner-spin-button, #edit-exp-year::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
-
-/* Firefox */
+/* Hide the up/down arrow buttons in the expiration input (in Firefox)*/
 #edit-exp-month, #edit-exp-year {
   -moz-appearance: textfield;
 }

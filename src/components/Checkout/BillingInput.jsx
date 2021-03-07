@@ -11,7 +11,7 @@ import {firstNameInputError, firstNameInputError2, lastNameInputError, lastNameI
 
 import '../../styles/Checkout/BillingInput.css'
 
-function BillingInput({ loggedIn, billing, handleBillingChange, handleBillingStateChange, editPayment, paymentMethod, classes }) {
+function BillingInput({ loggedIn, billing, handleBillingChange, handleBillingStateChange, paymentMethod, classes, handleMaxExpOrZipcodeLength, handleNonNumericExpirationOrZipcode }) {
 
     const [onFirstNameBlurEvent, setOnFirstNameBlurEvent] = useState(false)
     const [onLastNameBlurEvent, setOnLastNameBlurEvent] = useState(false)
@@ -149,6 +149,7 @@ function BillingInput({ loggedIn, billing, handleBillingChange, handleBillingSta
 
                 <div id="billing-input-postalCode-error-container">
                     <TextField
+                    id="billing-postalCode-input"
                     label="Zipcode"
                     className="filled-margin-none"
                     placeholder="Enter zipcode"
@@ -156,9 +157,12 @@ function BillingInput({ loggedIn, billing, handleBillingChange, handleBillingSta
                     fullWidth
                     className={classes.textField}
                     inputProps={{
+                        type: "number",
                         maxLength: 5
                     }}
                     required
+                    onInput={handleMaxExpOrZipcodeLength}
+                    onKeyDown={handleNonNumericExpirationOrZipcode}
                     onFocus={() => setOnPostalCodeBlurEvent(false)}
                     onBlur={() => {
                         if(postalCodeInputError3(billing) || postalCodeInputError2(billing)) setOnPostalCodeBlurEvent(true)
