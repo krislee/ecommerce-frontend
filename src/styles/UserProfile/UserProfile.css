@@ -191,6 +191,13 @@ input[type=checkbox] {
     }
 }
 
+@media only screen and (max-width: 500px) {
+    #profile-add-modal {
+        transform: translate(0%, -50%) !important;
+        margin-bottom: 0;
+    }
+    
+}
 @media screen and (max-width: 399px) {
 
     .left-bar > div > div {

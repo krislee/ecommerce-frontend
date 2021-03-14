@@ -1,0 +1,97 @@
+#profile-form {
+    box-shadow: none;
+    padding: 20px 20px 0px;
+}
+#profile-form > h2 {
+    padding-top: 0;
+    margin-bottom: 0;
+}
+#profile-firstName, #profile-lastName, #profile-line1, #profile-line2,#profile-city, #profile-state, #profile-zipcode, #profile-phoneNumber {
+    margin-bottom: 10px;
+}
+
+#profile-names-container {
+    display: flex;
+}
+#profile-firstName, #profile-lastName {
+    width: 50%;
+}
+#profile-firstName {
+    margin-right: 10px;
+}
+
+/* INPUTS */
+#profile-form .MuiInputBase-root {
+    padding: 10px;
+}
+
+#profile-form input {
+    padding-top: 1rem !important;
+    padding-bottom: 0rem !important
+}
+
+/* STATE */
+#profile-state .MuiFormControl-root {
+    margin: 0px;
+    width: 100%;
+}
+#profile-state .MuiSelect-root {
+    padding-top: 1rem;
+    padding-bottom: 0rem;
+}
+#profile-state .MuiInputBase-root {
+    padding: 9px;
+    margin-right: 10px;
+}
+.profile-state-zipcode {
+    display: flex;
+}
+#profile-state, #profile-zipcode {
+    width: 50%;
+}
+
+/* PHONE */
+#profile-phoneNumber .MuiFormControl-root {
+    width: 100%;
+    background-color: #DEDEDE;
+    border-radius: 3px;
+}
+#profile-phoneNumber .MuiFormLabel-root {
+    padding-left: 1rem;
+    padding-top: 5px;
+}
+#profile-phoneNumber .MuiInputBase-root {
+    padding-top: 0;
+}
+#profile-phoneNumber input {
+    padding-top: 5px !important;
+}
+#profile-phoneNumber .MuiFormHelperText-root {
+    margin-left: 10px
+}
+
+#profile-submit-button-container {
+    display: flex;
+    width: 100%;
+    justify-content: flex-end;
+}
+#profile-submit-button-container > button {
+    width: 30%;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    float: right;
+}
+@media only screen and (max-width: 600px) {
+    #profile-form {
+        padding: 10px 10px 0px;
+    }
+   .profile-state-zipcode {
+       display: block;
+   }
+   #profile-state, #profile-zipcode {
+        width: 100%;
+    }
+    #profile-state .MuiInputBase-root {
+        margin-right: 0px;
+    }
+}

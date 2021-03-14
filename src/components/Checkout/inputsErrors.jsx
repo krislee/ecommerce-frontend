@@ -9,6 +9,8 @@ const lastNameInputError2 = (input) => input.lastName === undefined || input.las
 
 const line1InputError = (input) => input.line1 === undefined || input.line1 === ""
 
+const addressLineOneInputError = (input) => input.addressLineOne === undefined || input.addressLineOne === ""
+
 const cityInputError = (input) => input.city !== undefined && input.city !== ""  &&  /^[a-z ,.'-]+$/i.test(input.city) !== true 
 
 const cityInputError2 = (input) => input.city === undefined || input.city === ""
@@ -22,6 +24,12 @@ const postalCodeInputError = (input) => input.postalCode !== undefined && input.
 const postalCodeInputError2 = (input) => input.postalCode !== undefined && input.postalCode !== "" && input.postalCode.length !== 5
 
 const postalCodeInputError3 = (input) => input.postalCode === undefined || input.postalCode === ""
+
+const zipcodeInputError = (input) => input.zipcode !== undefined && input.zipcode !== ""  && /^[0-9]+$/.test(input.zipcode) !== true 
+
+const zipcodeInputError2 = (input) => input.zipcode !== undefined && input.zipcode !== "" && input.zipcode.length !== 5
+
+const zipcodeInputError3 = (input) => input.zipcode === undefined || input.zipcode === ""
           
 const phoneInputError = (input) => input.phone !== undefined && input.phone !== "" && /^[0-9]+$/.test(input.phone) !== true 
    
@@ -50,7 +58,7 @@ const expInvalidInput = (input) => input.year !== undefined && input.month !== u
 
 
 
-export {firstNameInputError, firstNameInputError2, lastNameInputError, lastNameInputError2, line1InputError, cityInputError, cityInputError2, stateInputError, stateInputError2, postalCodeInputError, postalCodeInputError2, postalCodeInputError3, phoneInputError, phoneInputError2, phoneInputError3, cardholderNameInputError, cardholderNameInputError2, invalidMonthInput, invalidYearInput, monthInputError, yearInputError, monthLengthInputError, yearLengthInputError, expInvalidInput}
+export {firstNameInputError, firstNameInputError2, lastNameInputError, lastNameInputError2, line1InputError, addressLineOneInputError, cityInputError, cityInputError2, stateInputError, stateInputError2, postalCodeInputError, postalCodeInputError2, postalCodeInputError3, zipcodeInputError, zipcodeInputError2, zipcodeInputError3, phoneInputError, phoneInputError2, phoneInputError3, cardholderNameInputError, cardholderNameInputError2, invalidMonthInput, invalidYearInput, monthInputError, yearInputError, monthLengthInputError, yearLengthInputError, expInvalidInput}
 
 
 
