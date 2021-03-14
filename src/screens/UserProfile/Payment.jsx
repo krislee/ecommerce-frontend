@@ -5,6 +5,21 @@ import {useStripe, useElements, CardExpiryElement, CardCvcElement, CardNumberEle
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
+ // Styles for the Modal
+ const customStyles = {
+    content : {
+      top: '50%',
+      left: '50%',
+      right: 'auto',
+      bottom: 'auto',
+      transform: 'translate(-50%, -50%)',
+      zIndex: 3
+    }
+  };
+
+Modal.setAppElement('#root');
+
+
 function UserProfilePayment ({ backend, paymentData, grabPaymentData, defaultFirstPayment, loggedIn, capitalize, capitalizeArray, grabRedirect }) {
 
     /* ------- STATES ------- */
@@ -33,20 +48,6 @@ function UserProfilePayment ({ backend, paymentData, grabPaymentData, defaultFir
     const elements = useElements();
     const stripe = useStripe();
     
-    // Styles for the Modal
-    const customStyles = {
-        content : {
-          top: '50%',
-          left: '50%',
-          right: 'auto',
-          bottom: 'auto',
-          transform: 'translate(-50%, -50%)',
-          zIndex: 3
-        }
-      };
-
-    Modal.setAppElement('#root');
-
     // Function that is used to open the modal when users plan to create
     const openModal = () => {
         if (loggedIn()) {

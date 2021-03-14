@@ -1,8 +1,8 @@
-#profile-form {
+#profile-form , .profile-edit-form{
     box-shadow: none;
     padding: 20px 20px 0px;
 }
-#profile-form > h2 {
+#profile-form > h2, .profile-edit-form > h2 {
     padding-top: 0;
     margin-bottom: 0;
 }
@@ -21,11 +21,11 @@
 }
 
 /* INPUTS */
-#profile-form .MuiInputBase-root {
+#profile-form .MuiInputBase-root, .profile-edit-form .MuiInputBase-root {
     padding: 10px;
 }
 
-#profile-form input {
+#profile-form input, .profile-edit-form input {
     padding-top: 1rem !important;
     padding-bottom: 0rem !important
 }
@@ -82,7 +82,7 @@
     float: right;
 }
 @media only screen and (max-width: 600px) {
-    #profile-form {
+    #profile-form, .profile-edit-form {
         padding: 10px 10px 0px;
     }
    .profile-state-zipcode {
@@ -93,5 +93,8 @@
     }
     #profile-state .MuiInputBase-root {
         margin-right: 0px;
+    }
+    #profile-state .MuiSelect-root {
+        font-size: 0.75rem;
     }
 }
