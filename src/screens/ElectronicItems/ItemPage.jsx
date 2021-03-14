@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react'
+import React, { useEffect, useState, useRef, useContext } from 'react'
 import {useLocation} from 'react-router-dom';
 import AddCartButton from '../../components/Buttons/AddCartButton';
 import AddReviewButton from '../../components/Buttons/AddReviewButton';
@@ -8,11 +8,20 @@ import AllReviews from '../../components/Reviews/AllReviews'
 
 import Rating from '@material-ui/lab/Rating';
 import { makeStyles } from '@material-ui/core/styles';
+import Collapse from '@material-ui/core/Collapse';
+import Toast from 'react-bootstrap/Toast';
+
+import VisibilitySensor from 'react-visibility-sensor';
+// import { useInView } from 'react-hook-inview'
+import { InView } from 'react-intersection-observer';
+
 import Pulse from 'react-reveal/Pulse';
 import Flip from 'react-reveal/Flip';
-import { useInView } from 'react-intersection-observer';
+// import { useInView } from 'react-intersection-observer';
 import { motion, useTransform, useViewportScroll } from 'framer-motion';
-import Toast from 'react-bootstrap/Toast'
+
+
+
 
 // import Swiper core and required modules
 import SwiperCore, { Navigation, Pagination, Scrollbar, A11y } from 'swiper';
@@ -29,13 +38,11 @@ import '../../styles/Items/ItemPage.css'
 SwiperCore.use([Navigation, Pagination, Scrollbar, A11y]);
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    display: 'flex',
-    flexDirection: 'column',
-    '& > * + *': {
-      marginTop: theme.spacing(1),
+    root: {
+        display: 'flex',
+        alignItems: 'center',
+        "margin-top": '1rem'
     },
-  },
 }));
 
 
@@ -44,15 +51,15 @@ function ItemPage ({ loggedIn, url, backend, totalCartQuantity, grabTotalCartQua
     const classes = useStyles()
 
     // const [ref, inView] = useInView({
-    //     triggerOnce: true,
+    //     // triggerOnce: true,
     //     // rootMargin: '300px 0px'
-    //     threshold: 0.5
+    //     threshold: 0.1
     // })
 
-    const { scrollYProgress } = useViewportScroll()
-    const scale = useTransform(scrollYProgress, [0, 1], [0.2, 2]);
+    // const [imgViz, setImgViz] = useState(false)
 
-
+    const [open, setOpen] = useState(false);
+    
     const [showItemDetails, setShowItemDetails] = useState(true)
     const [itemInfo, setItemInfo] = useState('');
     const [ownPageInfo, setOwnPageInfo] = useState('')
@@ -64,13 +71,16 @@ function ItemPage ({ loggedIn, url, backend, totalCartQuantity, grabTotalCartQua
 
     const [review, setReview] = useState("");
     const [allReviews, setAllReviews] = useState([]);
-    
+    const [allReviewsTotal, setAllReviewsTotal] = useState(1)
+    const [electronicID, setElectronicID] = useState(null)
+
     const [showAddItemAlert, setShowAddItemAlert] = useState(false)
     const [showAddItemDifferenceAlert, setShowAddItemDifferenceAlert] = useState(false)
     const [differenceQuantity, setDifferenceQuantity] = useState(0)
 
     const [prevLoggedIn, setPrevLoggedIn] = useState(localStorage.getItem('token')) // when we first load the item page check if user is logged in, storing the token value or null value to prevLoggedIn state, which then passes to AddCartButton; if user then clears the local storage once the item page is loaded, we will not be able to add an item (view at AddCartButton component)
 
+    const grabAllReviews = (allReviews) => setAllReviews(allReviews)
     const grabReview = (review) => setReview(review)
     const grabShowAddItemAlert = (showAddItemAlert) => setShowAddItemAlert(showAddItemAlert)
     const grabShowAddItemDifferenceAlert = (showAddItemDifferenceAlert) => setShowAddItemDifferenceAlert(showAddItemDifferenceAlert)
@@ -84,6 +94,12 @@ function ItemPage ({ loggedIn, url, backend, totalCartQuantity, grabTotalCartQua
         const signal = abortController.signal
 
         if(!loggedIn()) grabTotalCartQuantity(0) // If user clears local storage, and then clicks on the item from the individual order receipt, we need to update the shopping badge icon in the nav bar
+
+         // If we are going to the item page not through the homepage
+        // If the url to the backend is empty, then we need to grab the item using the id which is located in the url params
+        const queryParams = new URLSearchParams(location.search) // returns query obj
+        const electronicID = queryParams.get("id") // use the electronicID in the else statement
+        setElectronicID(electronicID) //send the electronicID down to reviews
 
         // If the url to the backend is not empty because users directly went to the item page going through the homepage first
         if (url !== '') {
@@ -104,6 +120,7 @@ function ItemPage ({ loggedIn, url, backend, totalCartQuantity, grabTotalCartQua
                 setNotOwnPageInfo(data.notOwnPageElectronic)
                 setNameOfItemLength(data.electronicItem.Name.length);
                 setAllReviews(data.review)
+                setAllReviewsTotal(data.totalReviews)
                 setAvgRating(data.avgRating)
                 setShowItemDetails(false)
             }
@@ -117,9 +134,10 @@ function ItemPage ({ loggedIn, url, backend, totalCartQuantity, grabTotalCartQua
 
             // If we are going to the item page not through the homepage
             // If the url to the backend is empty, then we need to grab the item using the id which is located in the url params
-            const queryParams = new URLSearchParams(location.search) // returns query obj
-            const electronicID = queryParams.get("id") // get the query value
-            console.log(electronicID)
+            // const queryParams = new URLSearchParams(location.search) // returns query obj
+            // const electronicID = queryParams.get("id") // get the query value
+            // console.log(electronicID)
+            // setElectronicID(electronicID)
             async function fetchData() {
                 let resp = await fetch(`${backend}/buyer/electronic/${electronicID}`,{
                     method: 'GET',
@@ -134,6 +152,7 @@ function ItemPage ({ loggedIn, url, backend, totalCartQuantity, grabTotalCartQua
                 setNotOwnPageInfo(data.notOwnPageElectronic)
                 setNameOfItemLength(data.electronicItem.Name.length);
                 setAllReviews(data.review)
+                setAllReviewsTotal(data.totalReviews)
                 setAvgRating(data.avgRating)
                 setShowItemDetails(false)
             }
@@ -163,8 +182,9 @@ function ItemPage ({ loggedIn, url, backend, totalCartQuantity, grabTotalCartQua
             <div className="item-info">
                 <div className="left-side-item-page">
                     
-                    <div className="item-image">Image of Item Here</div>
-                    {/* <Swiper
+                    {/* <div className="item-image">Image of Item Here</div> */}
+                    <Swiper
+                    id="main-swiper"
                     spaceBetween={0}
                     slidesPerView={1}
                     navigation
@@ -176,73 +196,101 @@ function ItemPage ({ loggedIn, url, backend, totalCartQuantity, grabTotalCartQua
                     {itemInfo.Image.map((image, index) =>{ return (
                         <SwiperSlide key={index}><div><img src={image} /></div></SwiperSlide>
                     )})}
-                    </Swiper> */}
+                    </Swiper>
                 </div>
                 <div className="right-side-item-page">
                     <div className="item-logistics">
                         <div>
-                            <div className="name">{itemInfo.Name}</div>
+                            <div className="item-name"><b id="item-brand">{itemInfo.Brand}</b> {itemInfo.Name}</div>
                             <div className={classes.root}>
-                                <Rating name="size-small" value={avgRating} size="small" precision={0.1} readOnly/>
+                                <div id="item-ratings-container">
+                                    <Rating name="size-small" value={avgRating} size="small" precision={0.1} readOnly/>
+                                    <div id="total-ratings">({allReviews.length})</div>
+                                </div>
+                                <div id="add-review-container">
+                                    <AddReviewButton backend={backend} loggedIn={loggedIn} electronicID={itemInfo._id} grabReview={grabReview} grabTotalCartQuantity={grabTotalCartQuantity} />
+                                </div>
                             </div>
-                            <div className="price">Price: ${itemInfo.Price}</div>
+                            <div className="price"><b>${itemInfo.Price.toFixed(2)}</b></div>
                             {/* <div className="description">Description: {itemInfo.Description}</div> */}
                         </div>
-                        <div className="input-info">
-                            <div className="quantity-tag">Quantity</div>
-                            <select value={quantity} onChange={handleAddItemQuantity}>
-                                <option value={1}>01</option>
-                                <option value={2}>02</option>
-                                <option value={3}>03</option>
-                                <option value={4}>04</option>
-                                <option value={5}>05</option>
-                                <option value={6}>06</option>
-                                <option value={7}>07</option>
-                                <option value={8}>08</option>
-                                <option value={9}>09</option>
-                                <option value={10}>10</option>
-                            </select>
-  
-                            <Toast onClose={() => setShowAddItemAlert(false)} show={showAddItemAlert} delay={3000} autohide>
-                                    <Toast.Body>The maximum quantity of this item has already been added to your cart.</Toast.Body>
-                            </Toast>
-
-                            <Toast onClose={() => setShowAddItemDifferenceAlert(false)} show={showAddItemDifferenceAlert} delay={3000} autohide>
-                                    <Toast.Body>{differenceQuantity} item(s) has been moved to your cart. You have now reached the maximum quantity of 10 for this item.`</Toast.Body>
-                            </Toast>
-                  
-                        <AddCartButton backend={backend} loggedIn={loggedIn} id={itemInfo._id} quantity={quantity} name={'Add To Cart'} grabTotalCartQuantity={grabTotalCartQuantity}  prevLoggedIn={prevLoggedIn} grabShowAddItemAlert={grabShowAddItemAlert} differenceQuantity={differenceQuantity} grabDifferenceQuantity={grabDifferenceQuantity} grabShowAddItemDifferenceAlert={grabShowAddItemDifferenceAlert} />
-
-                            <AddReviewButton backend={backend} loggedIn={loggedIn} electronicID={itemInfo._id} grabReview={grabReview} grabTotalCartQuantity={grabTotalCartQuantity} />
-                        </div>
                     </div>
+                        <Toast onClose={() => setShowAddItemAlert(false)} show={showAddItemAlert} 
+                         delay={3000} autohide
+                        >
+                            <Toast.Body>The maximum quantity of this item has already been added to your cart.</Toast.Body>
+                        </Toast>
+
+                        <Toast onClose={() => setShowAddItemDifferenceAlert(false)} show={showAddItemDifferenceAlert} 
+                        delay={3000} autohide
+                        >
+                            <Toast.Body>{differenceQuantity} item(s) has been moved to your cart. You have now reached the maximum quantity of 10 for this item.</Toast.Body>
+                        </Toast>
+                        <div className={showAddItemAlert || showAddItemDifferenceAlert ?"input-info-with-alert" : "input-info"}>
+                            <div id="quantity-container">
+                                <div className="quantity-tag">Quantity:</div>
+                                <select value={quantity} onChange={handleAddItemQuantity}>
+                                    <option value={1}>01</option>
+                                    <option value={2}>02</option>
+                                    <option value={3}>03</option>
+                                    <option value={4}>04</option>
+                                    <option value={5}>05</option>
+                                    <option value={6}>06</option>
+                                    <option value={7}>07</option>
+                                    <option value={8}>08</option>
+                                    <option value={9}>09</option>
+                                    <option value={10}>10</option>
+                                </select>
+                            </div>
+                  
+                            <AddCartButton backend={backend} loggedIn={loggedIn} id={itemInfo._id} quantity={quantity} name={'Add To Cart'} grabTotalCartQuantity={grabTotalCartQuantity}  prevLoggedIn={prevLoggedIn} grabShowAddItemAlert={grabShowAddItemAlert} differenceQuantity={differenceQuantity} grabDifferenceQuantity={grabDifferenceQuantity} grabShowAddItemDifferenceAlert={grabShowAddItemDifferenceAlert} />
+                        </div>
+                        
+                    
                 </div>
             </div>
             {/* Full window with image on the left side and description on left side*/}
-            <div>
-                {ownPageInfo.map((description) => {return (
-                    <div key={description._id}>
-                        <div className="left-side-item-page">
-                            <img src={description.Image}/>
+            <div id="all-own-page-container">
+                {ownPageInfo.map((description, index) => {return (
+                    <div key={description._id}className="own-page-item-container" >
+                        <div className="left-side-own-page-item-page">
+                            <div className="own-page-item-image">
+                                <img src={description.Image}/>
+                            </div>
                         </div>
-                        
-                        <h2>{description.Heading}</h2>
-
-                        <h5>{description.Paragraph}</h5>
+                        <div className="right-side-own-page-item-description">
+                            <h2 className="own-page-item-description-heading">{description.Heading}</h2>
+                            <h5>{description.Paragraph}</h5>
+                        </div>
                     </div>
+    
+                    
+
+                           
                 )})} 
             </div>
-            {/* Combine all the other description in a flex */}
-            <div>
-                {notOwnPageInfo.map((description) => {return (
-                    <div key={description._id}>
-                        <h3>{description.Heading}</h3>
-                        <p>{description.Paragraph}</p>
-                    </div>
+            
+            <div id={notOwnPageInfo.length <=1 ? "single-item-collapse-container" : "item-collapse-container"}>
+                <div
+                onClick={() => setOpen(!open)}
+                aria-controls="example-fade-text"
+                aria-expanded={open}
+                id="not-own-page-heading-container"
+                >
+                    <h2>More Features</h2>
+                </div>
 
+                <Collapse in={open} timeout="auto" unmountOnExit>
+
+                {notOwnPageInfo.map((description) => {return (
+                    <div className="not-own-page-container" key={description._id}>
+                        <h3 className="not-own-page-heading">{description.Heading}</h3>
+                        <p className="not-own-page-description">{description.Paragraph}</p>
+                    </div>
                 )})}
+                </Collapse>
             </div>
-            <AllReviews backend={backend} allReviews={allReviews} />
+            <AllReviews backend={backend} allReviews={allReviews} grabAllReviews={grabAllReviews} electronicID={electronicID} allReviewsTotal={allReviewsTotal} />
             <Footer />
         </div>
         )

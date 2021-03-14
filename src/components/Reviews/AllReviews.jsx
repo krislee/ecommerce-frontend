@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react'
 import Rating from '@material-ui/lab/Rating';
 import { makeStyles } from '@material-ui/core/styles';
+import { Pagination } from '@material-ui/lab';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -13,10 +14,15 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function AllReviews({allReviews}) {
-    
+
+
+export default function AllReviews({backend, allReviews, electronicID, grabAllReviews, allReviewsTotal}) {
+
     const classes = useStyles();
     const [reviewsLoading, setReviewsLoading] = useState(true);
+
+    const [reviewsPageNumber, setReviewsPageNumber] = useState(1)
+
     // Getter and Setter to display the full length of the review message or just the preview 
     const [showMoreComment, setShowMoreComment] =useState(false);
 
@@ -26,6 +32,15 @@ export default function AllReviews({allReviews}) {
         };
     }, [allReviews])
 
+    const handlePageOnChange = async(event, page) => {
+        const reviews= await fetch(`${backend}/buyer/electronic/public-reviews/${electronicID}?page=${page}`)
+        const data = await reviews.json();
+        console.log(data);
+        grabAllReviews(data.allReviews)
+        setReviewsPageNumber(page)
+    }
+
+    
     if(reviewsLoading) return null
     return (
         <>
@@ -67,6 +82,10 @@ export default function AllReviews({allReviews}) {
                     }
                 })
             )}
+
+            <div className={classes.root} id="item-reviews-pagination-container">  
+                <Pagination size="large" variant="outlined" shape="rounded" count={Number(allReviewsTotal)} page={Number(reviewsPageNumber)} onChange={handlePageOnChange} siblingCount={0} />
+            </div>  
         </>
     )
 }
