@@ -97,7 +97,7 @@ export default function OrderComplete({ backend, loggedIn, cartID, socket, grabT
     if(orderLoading && cartID) {
         return (
             <>
-            <h1>Please wait while we process your payment</h1>
+            <h1 id="order-complete-process-payment-heading"><b>Please wait while we process your payment</b></h1>
             <CircularProgress />
             </>
         )
@@ -117,7 +117,7 @@ export default function OrderComplete({ backend, loggedIn, cartID, socket, grabT
             <h2 id="order-complete-heading">Thank you for your purchase! </h2>
             
                 <div id="order-complete-details-shipping-container">
-                    <div id="order-compelete-details-container">
+                    <div id="order-complete-details-container">
                         <div id="order-complete-details-heading"><b>Order Details</b></div>
                         <div id="order-complete-number">Order #: {orderNumber}</div>
                         <div id="order-complete-date">Order placed on {orderDate}</div>

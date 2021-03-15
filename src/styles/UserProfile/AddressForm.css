@@ -94,6 +94,14 @@
     float: right;
 }
 
+.profile-delete-address-button-container {
+    display: flex;
+    justify-content: space-between;
+}
+.profile-delete-address-button-container button {
+    margin-top: 0;
+}
+
 /* MEDIA QUERIES */
 
 @media only screen and (max-width: 600px) {
@@ -124,6 +132,11 @@
     /* BUTTON */
     #profile-edit-address-submit-button, .profile-edit-address-default {
         width: auto !important;
+        padding: 5px !important;
+    }
+
+    .profile-delete-address-button-container button {
+        width: auto;
         padding: 5px !important;
     }
 }

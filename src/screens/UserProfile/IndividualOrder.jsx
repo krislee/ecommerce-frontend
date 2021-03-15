@@ -9,6 +9,8 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 // import ConvertDate from './ConvertDate'
+import '../../styles/Checkout/OrderComplete.css'
+import brandImage from '../../components/Checkout/creditcardIcons'
 
 const useStyles = makeStyles({
     table: {
@@ -29,9 +31,12 @@ export default function IndividualOrder({ backend, loggedIn, grabTotalCartQuanti
     const [orderLoading, setOrderLoading] = useState(true)
     const [order, setOrder] = useState({})
     const [orderItems, setOrderItems] = useState([])
-    const [orderPayment, setOrderPayment] = useState({})
+    const [orderNumber, setOrderNumber] = useState(null)
+    const [orderDate, setOrderDate] = useState(null)
+    const [orderTotal, setOrderTotal] = useState(0)
     const [orderShipping, setOrderShipping] = useState([])
     const [orderShippingName, setOrderShippingName] = useState([])
+    const [orderPayment, setOrderPayment] = useState({})
     const [redirect, setRedirect] = useState(false)
 
     // const {orderNumber} = useParams()
@@ -57,6 +62,9 @@ export default function IndividualOrder({ backend, loggedIn, grabTotalCartQuanti
                 console.log(orderData)
                 setOrder(orderData.order)
                 setOrderItems(orderData.order.Items)
+                setOrderNumber(orderData.order.OrderNumber)
+                setOrderDate(orderData.order.OrderDate)
+                setOrderTotal(orderData.order.TotalPrice)
                 setOrderPayment(orderData.payment)
                 setOrderShipping(orderData.order.Shipping.Address.split(", "))
                 setOrderShippingName(orderData.order.Shipping.Name.split(", "))
@@ -85,64 +93,89 @@ export default function IndividualOrder({ backend, loggedIn, grabTotalCartQuanti
         return <Redirect to="/"></Redirect>
     }else {
         return (
-            <>
-            <h4>Order #: {order.OrderNumber}</h4>
-            <h6>Placed on {new Date(order.OrderDate).toDateString()}</h6>
-            <div id='items'>
-                <TableContainer component={Paper}>
-                <Table className={classes.table} aria-label="simple table">
-                <TableHead>
-                    <TableRow>
-                    <TableCell className={classes.white}>Item</TableCell>
-                    <TableCell className={classes.white} align="right">Quantity</TableCell>
-                    <TableCell className={classes.white} align="right">SubTotal</TableCell>
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {orderItems.map((item, index) => (
-                    <TableRow key={index}>                
-                        <TableCell component="th" scope="row">
-                            <Link 
-                            className="homepage-items"
-                            className={classes.white}
-                            to={{
-                                pathname:`/item/${item.Name}`,
-                                search: `id=${item.ItemId}`}} >
-                            {item.Brand} {item.Name}
-                            </Link>
-                        </TableCell>
-                        <TableCell className={classes.white} align="right">{item.Quantity}</TableCell>
-                        <TableCell className={classes.white} align="right">{item.TotalPrice}</TableCell>
-                    </TableRow>
-                    ))}
-                </TableBody>
-                </Table>
-                </TableContainer>   
-            </div>  
-            <div style={{display: 'flex', justifyContent: 'space-around' }}>  
-                <div>
-                    <h4>Payment Summary</h4>
-                    <div style={{display: 'flex', justifyContent: 'space-between' }}>
-                        <div>
-                            <p>{orderPayment.brand[0].toUpperCase()}{orderPayment.brand.slice(1)} *** {orderPayment.last4} </p>
+            <div id="profile-order-complete-container">
+                <div id="order-complete-details-shipping-container">
+                    <div id="order-complete-details-container">
+                        <div id="order-complete-details-heading"><b>Order Details</b></div>
+                        <div id="order-complete-number">Order #: {orderNumber}</div>
+                        <div id="order-complete-date">Order placed on {orderDate}</div>
+                    </div>
+                    <div id="order-complete-shipping-container">
+                        <div id="order-complete-shipping-heading"><b>Shipping Address</b></div>
+                        <div id="order-complete-shipping-info">
+                            <p className="order-complete-name">{orderShippingName}</p>
+                            <p className="order-complete-line1">{orderShipping[0]}</p>
+                            {orderShipping[1] !== "null" && <p className="order-complete-line2">{orderShipping[1]}</p>}
+                            <p className="order-complete-cityStatePostal">{orderShipping[2]}, {orderShipping[3]} {orderShipping[4]} </p>
                         </div>
-                        <div>
-                            <p>{orderPayment.billingDetails.name.split(", ")[0]} {orderPayment.billingDetails.name.split(", ")[1]}</p>
-                            <p>{orderPayment.billingDetails.address.line1}</p>
-                            <p>{orderPayment.billingDetails.address.line2 === "null" || orderPayment.billingDetails.address.line2 === "undefined" ? "" : orderPayment.billingDetails.address.line2}</p>
-                            <p>{orderPayment.billingDetails.address.city}, {orderPayment.billingDetails.address.state} {orderPayment.billingDetails.address.postalCode}</p>
-                        </div> 
                     </div>
                 </div>
-                <div>
-                    <h4>Delivered to</h4>
-                    <p><b>{orderShippingName[0]} {orderShippingName[1]}</b></p>
-                    <p>{orderShipping[0]}</p>
-                    <p>{orderShipping[1] === "null" || orderShipping[1] === "undefined" ? "" : orderShipping[1]}</p>
-                    <p>{orderShipping[2]}, {orderShipping[3]} {orderShipping[4]}</p>
+
+                <div id="order-complete-pm-billing-container">
+                    <div id="order-complete-pm-container">
+                        <div id="order-complete-pm-heading">
+                            <b>Payment Method</b>
+                        </div>
+                        <div id="order-complete-pm-info">
+                            <div id="order-complete-card-img-container">
+                                {brandImage(orderPayment.brand)}
+                            </div>
+                            <div id="order-complete-card-number-container">
+                                {orderPayment.brand === 'amex' ? <p id='order-completecard-number'>****   ******   {orderPayment.last4}</p> : <p id='order-completecard-number'>****   ****   ****   {orderPayment.last4}</p>}
+                            </div>
+                        
+                        </div>
+                    </div>
+                    <div id="order-complete-billing-container">
+                        <div id="order-complete-billing-heading">
+                            <b>Billing Details</b>
+                        </div>
+                        <div id="order-complete-billing-info">
+                            <p className="order-complete-name">{orderPayment.billingDetails.name.split(", ")[0]} {orderPayment.billingDetails.name.split(", ")[1]} </p>
+                            <p className="order-complete-line1">{orderPayment.billingDetails.address.line1}</p>
+                            {orderPayment.billingDetails.address.line2 !== "null" && <p className="order-complete-line2">{orderPayment.billingDetails.address.line2}</p>}
+                            <p className="order-complete-cityStatePostal">{orderPayment.billingDetails.address.city}, {orderPayment.billingDetails.address.state} {orderPayment.billingDetails.address.postalCode}</p>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            </>      
+
+
+                <div id="order-complete-items-container">
+                    <div id="order-complete-items-heading"><b>Here is what you ordered:</b></div>
+                    <div id="order-complete-items-table-heading">
+                        <div>Item</div>
+                        <div></div>
+                        <div>Qty</div>
+                        <div>Total</div>
+                    </div>
+                    <div id="order-complete-item-container">
+                        {orderItems.map((orderItem, index) => { return (
+                            <div className="order-complete-item" key={index}>
+                                <div className="order-complete-img-container"><img src={orderItem.Image} /></div>
+                                <div className="order-complete-name">{orderItem.Name}</div>
+                                <div className="order-complete-quantity">{orderItem.Quantity}</div>
+                                <div className="order-complete-price">${orderItem.TotalPrice.toFixed(2)}</div>
+                            </div>
+                        )})}
+                    </div>
+                    <div id="order-complete-total-container">
+                        <div id="order-complete-total-heading-container">
+                            <div>Subtotal: </div>
+                            <div>Shipping: </div>
+                            <div id="order-complete-tax">Tax: </div>
+                            <div><b>Total: </b></div>
+                        </div>
+                
+                        <div id="order-complete-total-prices-container">
+                            <div>${(orderTotal/100).toFixed(2)}</div>
+                            <div>$0</div>
+                            <div id="order-complete-tax">$0</div>
+                            <div><b>${(orderTotal/100).toFixed(2)}</b></div>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>    
         )
     }
 }

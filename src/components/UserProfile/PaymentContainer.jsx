@@ -434,9 +434,9 @@ function PaymentContainer ({ backend, payment, defaultFirstPayment, grabPaymentD
     };
     const handleBillingStateChange = (event) => {
       if (loggedIn()) {
-          setEditBillingInput((prevBilling) => ({
-              ...prevBilling, "state": event.target.value
-          }))
+        setEditBillingInput((prevBilling) => ({
+          ...prevBilling, "editBillingState": event.target.value
+        }))
       } else {
           grabRedirect();
       };
@@ -1087,6 +1087,7 @@ function PaymentContainer ({ backend, payment, defaultFirstPayment, grabPaymentD
       </Modal>
       {/* Modal used to delete the address */}
       <Modal
+      id="profile-delete-payment-modal"
       shouldCloseOnOverlayClick={overlayClickCloseDeletePaymentModal}
       isOpen={deletePaymentModalIsOpen}
       onRequestClose={closeDeleteModal}
@@ -1094,20 +1095,26 @@ function PaymentContainer ({ backend, payment, defaultFirstPayment, grabPaymentD
       contentLabel="Delete Your Payment"
       >
         <form className="form" id="delete-payment-form">
-          <div style={{'marginBottom':'1rem'}}>Are you sure you want to delete this payment?</div>
+          <div style={{'marginBottom':'1rem'}}><b>Are you sure you want to delete this payment?</b></div>
           <div className="submit-default-button-container">
-          <button id={payment._id} 
+          <Button id={payment._id} 
+          variant="dark"
+          type="lg"
           type="submit"
           form="delete-address-form"
           value="Submit"
           // When user clicks to submit, the payment method will be deleted
           onClick={handleDeletePayment}
           disabled={disabledOnSubmitDeletePaymentModal}
-          >Delete</button>
-          <button 
+          >Delete
+          </Button>
+          <Button 
+          variant="dark"
+          type="lg"
           onClick={closeDeleteModal}
           disabled={disabledOnSubmitDeletePaymentModal}
-          >Cancel</button>
+          >Cancel
+          </Button>
           </div>
         </form>
       </Modal>

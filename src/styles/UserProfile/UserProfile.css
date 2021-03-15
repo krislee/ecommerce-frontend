@@ -151,7 +151,9 @@ input[type=checkbox] {
     align-items: center;
 }
 
-#profile-delete-address-modal, #profile-edit-payment-modal {
+/* MODAL HEIGHT */
+
+#profile-delete-address-modal, #profile-edit-payment-modal, #profile-delete-payment-modal, #profile-delete-review-modal {
     height: min-content !important;
 }
 
@@ -203,7 +205,8 @@ input[type=checkbox] {
         margin-bottom: 0;
     }
 
-    #profile-delete-address-modal, #profile-edit-payment-modal {
+    /* MODAL POSITION */
+    #profile-delete-address-modal, #profile-edit-payment-modal, #profile-delete-payment-modal, #profile-delete-review-modal {
         transform: translate(0%, 0%) !important;
     }
     

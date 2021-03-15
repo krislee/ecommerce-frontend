@@ -95,6 +95,15 @@
     margin-bottom: 1rem;
 }
 
+#delete-payment-form button {
+    margin-top: 0;
+}
+
+/* DELETE */
+#delete-payment-form {
+    box-shadow: none
+}
+
 @media only screen and (max-width: 600px) {
     #profile-payment-form {
         padding: 10px 10px 0px;
@@ -132,10 +141,11 @@
     }
 
     /* BUTTONS */
-    #profile-payment-add-back-button, #profile-payment-add-submit-button, #profile-payment-edit-back-button, #profile-payment-edit-submit-button {
+    #profile-payment-add-back-button, #profile-payment-add-submit-button, #profile-payment-edit-back-button, #profile-payment-edit-submit-button, #delete-payment-form button {
         width: auto;
         padding: 5px !important
     }
+
 }
 
 

@@ -677,11 +677,12 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
             contentLabel="Edit Your Address"
             >
             <form className="form" id="delete-address-form">
-            <div style={{'marginBottom':'1rem'}}>Are you sure you want to delete this address?</div>
-            <div className="submit-default-button-container">
+            <div style={{'marginBottom':'1rem'}}><b>Are you sure you want to delete this address?</b></div>
+            <div className="profile-delete-address-button-container">
             <Button id={address._id} 
             type="submit"
             variant="dark"
+            size="lg"
             form="delete-address-form"
             value="Submit"
             // When user clicks to submit, the address will be deleted
@@ -690,6 +691,7 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
             Delete</Button>
             <Button 
             variant="dark"
+            size="lg"
             onClick={closeModal}
             disabled={disabledOnSubmitDeleteAddressModal}>Cancel</Button>
             </div>
