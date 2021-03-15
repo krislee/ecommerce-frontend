@@ -1,0 +1,43 @@
+#video-button-container {
+    margin-top: 5rem;
+    background-color: black;
+    /* position: relative; */
+}
+/* #video-container {
+    position: relative;
+} */
+#video-container > video {
+    width: 100%;
+    display: block;
+    /* margin-top: 3rem; */
+}
+
+#shop-all-button-container {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    bottom: 50%;
+    /* z-index: 300000 */
+}
+
+#shop-all-button {
+    margin-top: 0 !important;
+    width: auto;
+    height: auto;
+    padding: 1rem !important;
+}
+
+#homepage-footer-container {
+    height: 100%;
+}
+#homepage-footer-container > .footer {
+    height: 100%;
+}
+@media only screen and (max-width: 600px) {
+    #shop-all-button-container h1 {
+        font-size: 2rem !important;
+    }
+    #shop-all-button {
+        padding: 0.75rem !important
+    }
+}

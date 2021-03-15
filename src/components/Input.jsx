@@ -1,7 +1,7 @@
 import React from 'react';
 import '../styles/Input.css'
 
-function Input ({ name, value, placeholder, type, onChange, pattern, maxLength, id }) {
+function CustomInput ({ name, value, placeholder, type, onChange, pattern, maxLength, id }) {
     return (
             <input 
             type={type} 
@@ -16,4 +16,4 @@ function Input ({ name, value, placeholder, type, onChange, pattern, maxLength, 
 }
 
 
-export default Input
+export default CustomInput

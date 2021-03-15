@@ -24,10 +24,30 @@
     margin-right: 1rem;
 }
 
+/* UPDATE MODAL */
+#profile-update-review-form {
+    box-shadow: none
+}
+/* UPDATE/DELETE MODAL BUTTONS*/
+#profile-review-update-buttons-container,  #profile-review-delete-buttons-container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1rem;
+}
+#profile-review-update-buttons-container > button, #profile-review-delete-buttons-container  > button {
+    margin-top: 0;
+}
+
+
 @media screen and (max-width: 599px) {
 
     header {
         font-size: 1.5rem !important;
+    }
+
+    #profile-review-update-buttons-container > button, #profile-review-delete-buttons-container  > button {
+        width: auto;
+        padding: 5px !important;
     }
 
 }

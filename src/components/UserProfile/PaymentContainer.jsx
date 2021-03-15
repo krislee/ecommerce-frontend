@@ -11,6 +11,15 @@ import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Button from 'react-bootstrap/Button';
+import usStates from '../../components/states'
+import TextField from '@material-ui/core/TextField';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormControl from '@material-ui/core/FormControl';
+import FormHelperText from '@material-ui/core/FormHelperText';
+import Select from '@material-ui/core/Select';
+
+import {profileFirstNameInputError, profileFirstNameInputError2, profileLastNameInputError, profileLastNameInputError2, profileAddressLineOneInputError, profileCityInputError, profileCityInputError2, profileStateInputError, profileStateInputError2, profileZipcodeInputError, profileZipcodeInputError2, profileZipcodeInputError3,  cardHolderNameInputError, cardHolderNameInputError2, invalidCardMonthExpDateInput, invalidCardYearExpInput, cardMonthExpDateInputError, cardYearExpDateInputError, cardMonthExpDateLengthInputError, cardYearExpDateLengthInputError, expInvalidInput2} from '../Checkout/inputsErrors'
 
 // Styles for the Modal
 const customStyles = {
@@ -86,14 +95,31 @@ function PaymentContainer ({ backend, payment, defaultFirstPayment, grabPaymentD
     const [editCardHolderInput, setEditCardHolderInput] = useState({});
     // Getter and Setter to store an object that will later be used to determine what users enter into inputs specifically regarding the editing payment function on the second edit modal (for billing information)
     const [editBillingInput, setEditBillingInput] = useState({});
+
     // Getter and Setter to display a warning message when users enter an invalid expiration date
-    const [invalidExpirationDate, setInvalidExpirationDate] = useState(false);
+    // const [invalidExpirationDate, setInvalidExpirationDate] = useState(false);
+
+    // If user submits an invalid card year, such as 60 years later from today's year, server sends an error back to client. When this happens update invalidCardYearUpdate state to true
+    const [invalidCardYearUpdate, setInvalidCardYearUpdate] = useState(false)
+
     // Getter and Setter to open and close the delete modal for payment methods
     const [deletePaymentModalIsOpen, setDeletePaymentModalIsOpen] = useState(false);
     const [disabledOnSubmitEditPaymentModal, setDisabledOnSubmitEditPaymentModal] = useState(false);
     const [overlayClickCloseEditPaymentModal, setOverlayClickCloseEditPaymentModal] = useState(true);
     const [disabledOnSubmitDeletePaymentModal, setDisabledOnSubmitDeletePaymentModal] = useState(false);
     const [overlayClickCloseDeletePaymentModal, setOverlayClickCloseDeletePaymentModal] = useState(true);
+
+    // States to handle required Inputs that user clicked on but did not enter any values and clicked away
+    const [onFirstNameBlurEvent, setOnFirstNameBlurEvent] = useState(false)
+    const [onLastNameBlurEvent, setOnLastNameBlurEvent] = useState(false)
+    const [onLine1BlurEvent, setOnLine1BlurEvent] = useState(false)
+    const [onCityBlurEvent, setOnCityBlurEvent] = useState(false)
+    const [onStateBlurEvent, setOnStateBlurEvent] = useState(false)
+    const [onPostalCodeBlurEvent, setOnPostalCodeBlurEvent] = useState(false)
+    const [onCardholderBlur, setOnCardholderBlur] = useState(false)
+    const [onMonthBlur, setOnMonthBlur] = useState(false)
+    const [onYearBlur, setOnYearBlur] = useState(false)
+
 
     // Function that runs when the edit modal opens
     const openEditModal = async (e) => {
@@ -197,7 +223,7 @@ function PaymentContainer ({ backend, payment, defaultFirstPayment, grabPaymentD
               line1: editBillingInput.editBillingFirstAddressLine,
               line2: editBillingInput.editBillingSecondAddressLine,
               city: editBillingInput.editBillingCity,
-              state: editBillingInput.editBillingState.toUpperCase(),
+              state: editBillingInput.editBillingState,
               postalCode: editBillingInput.editBillingZipcode,
               country: 'US',
               name: `${editBillingInput.editBillingFirstName} ${editBillingInput.editBillingLastName}`
@@ -210,6 +236,12 @@ function PaymentContainer ({ backend, payment, defaultFirstPayment, grabPaymentD
         });
         // Data regarding the payment methods that is received back from the request to the backend server when editing is finished to receive updated version of the data
         const editPaymentData = await editPaymentResponse.json();
+        if(editPaymentData.invalidCardYear) {
+          setEditModalIsOpen(true)
+          setEditModalTwoIsOpen(false)
+          setDisabledOnSubmitEditPaymentModal(false)
+          return setInvalidCardYearUpdate(true)
+        }
         // Being passed down as a prop from the parent component of UserProfile, we are able to reorder the data so it will display the default payment first on the list followed by the newest
         defaultFirstPayment(editPaymentData.paymentMethods);
         // Being passed down as a prop from the parent component of UserProfile, we are able to the set the data that we received back from the response of the server to the variable PaymentData, so we can reuse that data to map through and display the different PaymentContainer components
@@ -322,13 +354,13 @@ function PaymentContainer ({ backend, payment, defaultFirstPayment, grabPaymentD
           // If the month is the current or a month that will come in the future, we continue onto the second modal. If not, then we display a warning message saying that the month entered is not valid as it has already passed
           if (Number(editCardHolderInput.cardMonthExpDate) >= new Date().getMonth() + 1) {
             setEditModalTwoIsOpen(true);
-            setInvalidExpirationDate(false);
+            // setInvalidExpirationDate(false);
           } else {
-            setInvalidExpirationDate(true);
+            // setInvalidExpirationDate(true);
           };
         } else {
           setEditModalTwoIsOpen(true);
-          setInvalidExpirationDate(false);
+          // setInvalidExpirationDate(false);
         };
       } else {
         grabRedirect();
@@ -383,6 +415,7 @@ function PaymentContainer ({ backend, payment, defaultFirstPayment, grabPaymentD
         setEditCardHolderInput((prevEditCardHolder) => ({
             ...prevEditCardHolder, [name] : value
         }));
+        setInvalidCardYearUpdate(false)
       } else {
         grabRedirect();
       };
@@ -399,6 +432,28 @@ function PaymentContainer ({ backend, payment, defaultFirstPayment, grabPaymentD
         grabRedirect();
       };
     };
+    const handleBillingStateChange = (event) => {
+      if (loggedIn()) {
+        setEditBillingInput((prevBilling) => ({
+          ...prevBilling, "editBillingState": event.target.value
+        }))
+      } else {
+          grabRedirect();
+      };
+  }
+
+    // Only displays 2 characters in zipcode input, or display 2 characters in month input, or display 4 characters in year input
+    const handleMaxExpOrZipcodeLength = (event) => {
+      console.log(204, event.target)
+      if (event.target.value.length > event.target.maxLength) {
+        event.target.value = event.target.value.slice(0, event.target.maxLength)
+      }
+    }
+
+    // Does not allow user to enter anything but numbers on zipcode input and exp date inputs
+    const handleNonNumericExpirationOrZipcode =(event) => {
+      if(event.which != 8 && event.which != 0 && event.which < 48 || event.which > 57) return event.preventDefault()
+    }
 
     // Regular card information
     // Define arrays that will be used to capitalize strings with multiple words (like full name, or addresses)
@@ -584,26 +639,49 @@ function PaymentContainer ({ backend, payment, defaultFirstPayment, grabPaymentD
       </Card>
       {/* Modal that is used to edit the payment method card information section */}
       <Modal
+        id="profile-edit-payment-modal"
         isOpen={editModalIsOpen}
         onRequestClose={closeEditModal}
         style={customStyles}
         contentLabel="Edit Card Information Modal"
         >
-        <form className="form">
-        <h2>Edit Your Card Information</h2>
+        <form id="profile-payment-form" classes={classes.root} noValidate autoComplete="off">
+        <h2>Edit Payment</h2>
+
         {/* Input regarding the full name of the editing payment method modal */}
-        <input 
+        {/* <input 
         value={editCardHolderInput.cardName || ""} 
         name="cardName"
         type="text"
         placeholder="Card Name"
-        onChange={handleEditCardHolderNameChange}/>
+        onChange={handleEditCardHolderNameChange}/> */}
         {/* Appears when the input for full name has anything other than letters and certain characters like apostrophes, commas, periods and hyphens */}
-        {(/^[a-z ,.'-]+$/i.test(editCardHolderInput.cardName) !== true 
+        {/* {(/^[a-z ,.'-]+$/i.test(editCardHolderInput.cardName) !== true 
         && editCardHolderInput.cardName !== "") 
-        && <div className="warning">You must enter only letters as your name</div>}
+        && <div className="warning">You must enter only letters as your name</div>} */}
+        <div id="edit-cardholder-name-container">
+          <TextField
+          label="Name on card"
+          className="filled-margin-none"
+          placeholder="Enter cardholder's name"
+          variant="filled"
+          required
+          fullWidth
+          value={editCardHolderInput.cardName || ""} 
+          name="cardName"
+          onChange={handleEditCardHolderNameChange}
+          onFocus={() => setOnCardholderBlur(false)}
+          onBlur={() => {
+              if(cardHolderNameInputError2(editCardHolderInput)) setOnCardholderBlur(true)
+          }}
+          error={cardHolderNameInputError(editCardHolderInput) || onCardholderBlur}
+          helperText={(onCardholderBlur && "Required field") || (cardHolderNameInputError(editCardHolderInput) && "Only letters and ', . ' -' are allowed")}
+          />
+        </div>
+
+
         {/* Input regarding the expiration month of the editing payment method modal */}
-        <input 
+        {/* <input 
         value={editCardHolderInput.cardMonthExpDate || ''} 
         name="cardMonthExpDate" 
         placeholder="Month" 
@@ -611,15 +689,42 @@ function PaymentContainer ({ backend, payment, defaultFirstPayment, grabPaymentD
         min="1"
         max="12"
         type="text"
-        onChange={handleEditCardHolderNameChange}/>
+        onChange={handleEditCardHolderNameChange}/> */}
         {/* Appears when the input for the expiration month does not meet requirements like being above 12 and below 1, or if the input is left blank */}
-        {((editCardHolderInput.cardMonthExpDate > 12 
+        {/* {((editCardHolderInput.cardMonthExpDate > 12 
         || editCardHolderInput.cardMonthExpDate < 0) 
         || /^[0-9]+$/.test(editCardHolderInput.cardMonthExpDate) !== true
         && editCardHolderInput.cardMonthExpDate !== "")
-        && <div className="warning">You must enter a valid month</div>}
+        && <div className="warning">You must enter a valid month</div>} */}
+        <div id="profile-payment-exp-date-container">
+          <div id="profile-payment-month">
+            <TextField
+            label="Exp. Month"
+            className="filled-margin-none"
+            placeholder="MM"
+            fullWidth
+            variant="filled"
+            required
+            inputProps={{
+                type: "number",
+                maxLength: 2
+            }}
+            value={editCardHolderInput.cardMonthExpDate || ""}
+            name="cardMonthExpDate"
+            onInput={handleMaxExpOrZipcodeLength}
+            onKeyDown={handleNonNumericExpirationOrZipcode}
+            onChange={handleEditCardHolderNameChange} 
+            onFocus={() => setOnMonthBlur(false)}
+            onBlur={() => {
+                if(cardMonthExpDateInputError(editCardHolderInput) || cardMonthExpDateLengthInputError(editCardHolderInput)) setOnMonthBlur(true)
+            }}
+            error={invalidCardMonthExpDateInput(editCardHolderInput) || expInvalidInput2(editCardHolderInput) || onMonthBlur}
+            helperText={(onMonthBlur && "Required field") ||  (invalidCardMonthExpDateInput(editCardHolderInput) && "Invalid Month")}
+            />
+          </div>            
+
         {/* Input regarding the expiration year of the editing payment method modal */}
-        <input 
+        {/* <input 
         value={editCardHolderInput.cardYearExpDate || ""} 
         name="cardYearExpDate"
         maxLength="4"
@@ -627,150 +732,362 @@ function PaymentContainer ({ backend, payment, defaultFirstPayment, grabPaymentD
         max={new Date().getFullYear() + 10}
         type="text"
         placeholder="Year" 
-        onChange={handleEditCardHolderNameChange}/>
-        {/* Appears when the input for the expiration month does not meet requirements like being before this current year, being above over then ten years from the current year, or if the input is left blank */}
-        {((editCardHolderInput.cardYearExpDate > new Date().getFullYear() + 10 
+        onChange={handleEditCardHolderNameChange}/> */}
+        {/* Appears when the input for the expiration year does not meet requirements like being before this current year, being above over then ten years from the current year, or if the input is left blank */}
+        {/* {((
+        editCardHolderInput.cardYearExpDate > new Date().getFullYear() + 10 
         || editCardHolderInput.cardYearExpDate < new Date().getFullYear()) 
         || /^[0-9]+$/.test(editCardHolderInput.cardYearExpDate) !== true
         && editCardHolderInput.cardYearExpDate !== "") 
-        && <div className="warning">You must enter a valid year</div>}
+        && <div className="warning">You must enter a valid year</div>} */}
+          <div id="profile-payment-year">
+            <TextField
+            label="Exp. Year"
+            className="filled-margin-none"
+            placeholder="YYYY"
+            variant="filled"
+            fullWidth
+            required
+            value={editCardHolderInput.cardYearExpDate || ""}
+            name="cardYearExpDate"
+            inputProps={{
+                type: "number",
+                maxLength: 4
+            }}
+            onInput={handleMaxExpOrZipcodeLength}
+            onKeyDown={handleNonNumericExpirationOrZipcode}
+            onChange={handleEditCardHolderNameChange}
+            onFocus={() => setOnYearBlur(false)}
+            onBlur={() => {
+                if(cardYearExpDateInputError(editCardHolderInput) || cardYearExpDateLengthInputError(editCardHolderInput)) setOnYearBlur(true)
+            }} 
+            error={invalidCardYearExpInput(editCardHolderInput) || onYearBlur || expInvalidInput2(editCardHolderInput)}
+            helperText={(onYearBlur && "Required field") ||  ((invalidCardYearExpInput(editCardHolderInput) || invalidCardYearUpdate) && "Invalid Year")}
+            />
+          </div>
+
+          {expInvalidInput2(editCardHolderInput) && <FormHelperText>Expiration date is invalid</FormHelperText>}
+        </div>
+
         {/* Appears when the inputs for the expiration date are of the past */}
-        {invalidExpirationDate 
-        && <div className="warning">You must enter a valid expiration date</div>}
+        {/* {invalidExpirationDate 
+        && <div className="warning">You must enter a valid expiration date</div>} */}
+
         {/* Button to go onto the next modal where users will edit the billing address */}
-        <button onClick={openEditModalTwo} 
-        style={{marginTop: "1rem"}}
-        // Button will be disabled if the input fields are not filled in (except for the address line two input field)
-        disabled={
-          (/^[a-z ,.'-]+$/i.test(editCardHolderInput.cardName) !== true 
-          || editCardHolderInput.cardName === "") 
-          || ((editCardHolderInput.cardMonthExpDate > 12 
-          || editCardHolderInput.cardMonthExpDate < 1)
-          || editCardHolderInput.cardMonthExpDate === undefined
-          || editCardHolderInput.cardMonthExpDate.length !== 2
-          || /^[0-9]+$/.test(editCardHolderInput.cardMonthExpDate) !== true
-          || editCardHolderInput.cardMonthExpDate === "") 
-          || (editCardHolderInput.cardYearExpDate > new Date().getFullYear() + 10 
-          || editCardHolderInput.cardYearExpDate < new Date().getFullYear() 
-          || editCardHolderInput.cardYearExpDate === ""
-          || editCardHolderInput.cardYearExpDate === undefined
-          || /^[0-9]+$/.test(editCardHolderInput.cardYearExpDate) !== true
-          || editCardHolderInput.cardYearExpDate.length !== 4)
-        }>
-            Next
-        </button>
+          <div id="profile-payment-edit-button-div">
+            <Button onClick={openEditModalTwo} 
+            style={{marginTop: "1rem"}}
+            variant="dark"
+            size="lg"
+            // Button will be disabled if the input fields are not filled in (except for the address line two input field)
+            disabled={
+              (/^[a-z ,.'-]+$/i.test(editCardHolderInput.cardName) !== true 
+              || editCardHolderInput.cardName === "") 
+              || ((editCardHolderInput.cardMonthExpDate > 12 
+              || editCardHolderInput.cardMonthExpDate < 1)
+              || editCardHolderInput.cardMonthExpDate === "") 
+              || editCardHolderInput.cardMonthExpDate === undefined
+              || editCardHolderInput.cardMonthExpDate.length !== 2
+              || /^[0-9]+$/.test(editCardHolderInput.cardMonthExpDate) !== true
+              // || (editCardHolderInput.cardYearExpDate > new Date().getFullYear() + 10 
+              || editCardHolderInput.cardYearExpDate < new Date().getFullYear() 
+              || editCardHolderInput.cardYearExpDate === ""
+              || editCardHolderInput.cardYearExpDate === undefined
+              || /^[0-9]+$/.test(editCardHolderInput.cardYearExpDate) !== true
+              || editCardHolderInput.cardYearExpDate.length !== 4
+              ||  (editCardHolderInput.cardYearExpDate === new Date().getFullYear().toString() && (Number(editCardHolderInput.cardMonthExpDate) < new Date().getMonth() + 1) )
+            }>
+                Next
+            </Button>
+          </div>
         </form>
       </Modal>
       {/* Modal that is used to edit the payment method billing address section*/}
       <Modal
+        id="profile-payment-modal"
         shouldCloseOnOverlayClick={overlayClickCloseEditPaymentModal}
         isOpen={editModalTwoIsOpen}
         onRequestClose={closeEditModalTwo}
         style={customStyles}
         contentLabel="Edit Payment Modal"
         >
-        <form className="form">
-        <h2>Edit Your Card Information</h2>
+        <form id="profile-payment-form" classes={classes.root} noValidate autoComplete="off">
+        <h2>Edit Payment</h2>
+
         {/* Input regarding the first name of the editing payment method billing address modal */}
-        <input 
+        {/* <input 
         value={editBillingInput.editBillingFirstName || ""} 
         name="editBillingFirstName" 
         placeholder="First Name" 
         type="text"
-        onChange={handleEditBillingChange}/>
+        onChange={handleEditBillingChange}/> */}
         {/* Appears when the input for first name has anything other than letters and certain characters like apostrophes, commas, periods and hyphens */}
-        {(/^[a-z ,.'-]+$/i.test(editBillingInput.editBillingFirstName) !== true 
+        {/* {(/^[a-z ,.'-]+$/i.test(editBillingInput.editBillingFirstName) !== true 
         && editBillingInput.editBillingFirstName !== "") 
-        && <div className="warning">You must enter only letters as your first name</div>}
+        && <div className="warning">You must enter only letters as your first name</div>} */}
+        <div id="profile-payment-names-container">
+          <div id="profile-payment-firstName">
+            <TextField
+            label="First Name"
+            className="filled-margin-none"
+            placeholder="Enter First Name"
+            className={classes.textField}
+            variant="filled"
+            required
+            fullWidth
+            error={profileFirstNameInputError(editBillingInput) || onFirstNameBlurEvent}
+            onFocus={() => setOnFirstNameBlurEvent(false)}
+            onBlur={() => {
+                if(profileFirstNameInputError2(editBillingInput)) setOnFirstNameBlurEvent(true)
+            }}
+            helperText={(onFirstNameBlurEvent &&  "Required field") ||(profileFirstNameInputError(editBillingInput) && "Only letters and ', . ' -' are allowed") || ""}
+            value={editBillingInput.editBillingFirstName || ""} 
+            name="editBillingFirstName" 
+            onChange={handleEditBillingChange}
+            />
+          </div>
+
         {/* Input regarding the last name of the editing payment method billing address modal */}
-        <input 
+        {/* <input 
         value={editBillingInput.editBillingLastName || ""} 
         name="editBillingLastName" 
         placeholder="Last Name" 
         type="text"
-        onChange={handleEditBillingChange}/>
+        onChange={handleEditBillingChange}/> */}
         {/* Appears when the input for last name has anything other than letters and certain characters like apostrophes, commas, periods and hyphens */}
-        {(/^[a-z ,.'-]+$/i.test(editBillingInput.editBillingLastName) !== true 
+        {/* {(/^[a-z ,.'-]+$/i.test(editBillingInput.editBillingLastName) !== true 
         && editBillingInput.editBillingLastName !== "") 
-        && <div className="warning">You must enter only letters as your last name</div>}
+        && <div className="warning">You must enter only letters as your last name</div>} */}
+          <div id="profile-payment-lastName">
+            <TextField
+            label="Last Name"
+            className="filled-margin-none"
+            placeholder="Enter Last Name"
+            variant="filled"
+            className={classes.textField}
+            required
+            fullWidth
+            onFocus={() => setOnLastNameBlurEvent(false)}
+            onBlur={() => {
+                if(profileLastNameInputError2(editBillingInput)) setOnLastNameBlurEvent(true)
+            }}
+            error={profileLastNameInputError(editBillingInput) || onLastNameBlurEvent} 
+            helperText={(onLastNameBlurEvent &&  "Required field")  ||(profileLastNameInputError(editBillingInput) && "Only letters and ', . ' -' are allowed") || ""}
+            value={ editBillingInput.editBillingLastName || ""} 
+            name="editBillingLastName"
+            onChange={handleEditBillingChange}
+            />
+          </div>
+        </div>
+
         {/* Input regarding the first address line of the editing payment method billing address modal */}
-        <input 
+        {/* <input 
         value={editBillingInput.editBillingFirstAddressLine || ""} name="editBillingFirstAddressLine" 
         placeholder="Address Line One" 
         type="text"
-        onChange={handleEditBillingChange}/>
+        onChange={handleEditBillingChange}/> */}
         {/* Appears when the input for first address line has no input */}
-        {editBillingInput.editBillingFirstAddressLine === "" 
-        && <div className="warning">You must enter an address</div>}
+        {/* {editBillingInput.editBillingFirstAddressLine === "" 
+        && <div className="warning">You must enter an address</div>} */}
+        <div id="profile-payment-line1">
+          <TextField
+          label="Address Line One"
+          className="filled-margin-none"
+          placeholder="Enter Address"
+          variant="filled"
+          fullWidth
+          className={classes.textField}
+          required
+          onFocus={() => setOnLine1BlurEvent(false)}
+          onBlur={() => {
+              if(profileAddressLineOneInputError(editBillingInput)) setOnLine1BlurEvent(true)
+          }}
+          error={onLine1BlurEvent}
+          helperText={onLine1BlurEvent && "Required field"}
+          value={ editBillingInput.editBillingFirstAddressLine || ""} 
+          name="editBillingFirstAddressLine"
+          onChange={handleEditBillingChange}
+          />
+        </div>
+
         {/* Input regarding the second address line of the editing payment method billing address modal */}
-        <input 
+        {/* <input 
         value={editBillingInput.editBillingSecondAddressLine || ""} name="editBillingSecondAddressLine" 
         placeholder="Address Line Two" 
         type="text"
-        onChange={handleEditBillingChange}/>
+        onChange={handleEditBillingChange}/> */}
+        <div id="profile-payment-line2">
+          <TextField
+          label="Address Line Two"
+          className="filled-margin-none"
+          placeholder="Apartment, Floor, Suite"
+          variant="filled"
+          fullWidth
+          className={classes.textField}
+          value={ editBillingInput.editBillingSecondAddressLine  || ""}
+          name="editBillingSecondAddressLine"
+          onChange={handleEditBillingChange}
+          />
+        </div>
+
+
         {/* Input regarding the city of the editing payment method billing address modal */}
-        <input 
+        {/* <input 
         value={editBillingInput.editBillingCity || ""} 
         name="editBillingCity" 
         placeholder="City" 
         type="text"
-        onChange={handleEditBillingChange}/>
+        onChange={handleEditBillingChange}/> */}
         {/* Appears when the input for city has anything other than letters and certain characters like apostrophes, commas, periods and hyphens */}
-        {(/^[a-z ,.'-]+$/i.test(editBillingInput.editBillingCity) !== true 
+        {/* {(/^[a-z ,.'-]+$/i.test(editBillingInput.editBillingCity) !== true 
         && editBillingInput.editBillingCity !== "") 
-        && <div className="warning">You must enter only letters as your city</div>}
+        && <div className="warning">You must enter only letters as your city</div>} */}
+        <div id="profile-payment-city">
+          <TextField
+          label="City"
+          fullWidth
+          className="filled-margin-none"
+          placeholder="Enter City"
+          variant="filled"
+          className={classes.textField}
+          required
+          onFocus={() => setOnCityBlurEvent(false)}
+          onBlur={() => {
+              if(profileCityInputError2(editBillingInput)) setOnCityBlurEvent(true)
+          }}
+          error={profileCityInputError(editBillingInput) || onCityBlurEvent}
+          helperText={(onCityBlurEvent && "Required field") ||  (profileCityInputError(editBillingInput) && "Only letters and ', . ' -' are allowed") || ""}
+          value={ editBillingInput.editBillingCity|| ""} 
+          name="editBillingCity"
+          onChange={handleEditBillingChange}
+          />
+        </div>
+
         {/* Input regarding the state of the editing payment method billing address modal */}  
-        <input 
+        {/* <input 
         value={editBillingInput.editBillingState || ""} 
         name="editBillingState" 
         placeholder="State" 
         type="text"
         maxLength="2"
-        onChange={handleEditBillingChange}/>
+        onChange={handleEditBillingChange}/> */}
         {/* Appears when the input for state has anything other than letters */}
-        {(/^[a-z][a-z\s]*$/i.test(editBillingInput.editBillingState) !== true 
+        {/* {(/^[a-z][a-z\s]*$/i.test(editBillingInput.editBillingState) !== true 
         && editBillingInput.editBillingState !== "") 
-        && <div className="warning">You must enter only letters as your state</div>}
+        && <div className="warning">You must enter only letters as your state</div>} */}
+        <div className="profile-payment-state-zipcode">
+          <div id="profile-payment-state">
+            <FormControl variant="filled" className={classes.formControl}>
+              <InputLabel htmlFor="filled-age-native-simple">State</InputLabel>    
+              <Select
+              label="State"
+              labelId="demo-simple-select-filled-label"
+              fullWidth
+              id="demo-simple-select-filled"
+              value={ editBillingInput.editBillingState || "Select"} 
+              onFocus={() => setOnStateBlurEvent(false)}
+              onBlur={() => {
+                  if(profileStateInputError(editBillingInput)) setOnStateBlurEvent(true)
+              }}
+              onChange={handleBillingStateChange}
+              >
+              <MenuItem disabled value="Select">Select</MenuItem>
+              {usStates.map((state) => { return (
+                <MenuItem key={state.abbreviation} value={state.name}>{state.name}</MenuItem>
+              )})}
+              </Select>
+
+              {onStateBlurEvent && <FormHelperText>Required state field</FormHelperText>}
+            </FormControl>
+          </div>
+
         {/* Input regarding the zipcode of the editing payment method billing address modal */}  
-        <input 
+        {/* <input 
         value={editBillingInput.editBillingZipcode || ""} 
         name="editBillingZipcode" 
         placeholder="Zipcode" 
         type="text"
         maxLength="5"
         pattern="\d*"
-        onChange={handleEditBillingChange}/>
+        onChange={handleEditBillingChange}/> */}
         {/* Appears when the input for zipcode has anything other than numbers */}
-        {(/^[0-9]+$/.test(editBillingInput.editBillingZipcode) !== true 
+        {/* {(/^[0-9]+$/.test(editBillingInput.editBillingZipcode) !== true 
         && editBillingInput.editBillingZipcode !== "") 
-        && <div className="warning">You must enter only numbers as your zip code</div>}
+        && <div className="warning">You must enter only numbers as your zip code</div>} */}
+          <div id="profile-payment-zipcode">
+            <TextField
+            label="Zipcode"
+            className="filled-margin-none"
+            placeholder="Enter zipcode"
+            variant="filled"
+            fullWidth
+            className={classes.textField}
+            inputProps={{
+                type: "number",
+                maxLength: 5
+            }}
+            required
+            onInput={handleMaxExpOrZipcodeLength}
+            onKeyDown={handleNonNumericExpirationOrZipcode}
+            onFocus={() => setOnPostalCodeBlurEvent(false)}
+            onBlur={() => {
+                if(profileZipcodeInputError3(editBillingInput) || profileZipcodeInputError2(editBillingInput)) setOnPostalCodeBlurEvent(true)
+            }}
+            error={profileZipcodeInputError(editBillingInput) || onPostalCodeBlurEvent}
+            helperText={(onPostalCodeBlurEvent && "Required field") || (profileZipcodeInputError(editBillingInput) && "You must enter only numbers for your zip code") || ""}
+            value={ editBillingInput.editBillingZipcode || ""} 
+            name="editBillingZipcode"
+            onChange={handleEditBillingChange}
+            />
+          </div>
+        </div>
+
         {/* Button will be disabled if the input fields are not filled in (except for the address line two input field) */}
-        <button 
-        form="form"
-        style={{marginTop: '1rem'}}
-        onClick={handleEditPaymentSubmit}
-        disabled={(/^[a-z ,.'-]+$/i.test(editBillingInput.editBillingFirstName) !== true 
-        || editBillingInput.editBillingFirstName === "") 
-        || (/^[a-z ,.'-]+$/i.test(editBillingInput.editBillingLastName) !== true 
-        || editBillingInput.editBillingLastName === "") 
-        || editBillingInput.editBillingFirstAddressLine === "" 
-        || (/^[a-z ,.'-]+$/i.test(editBillingInput.editBillingCity) !== true 
-        || editBillingInput.editBillingCity === "") 
-        || (/^[a-z][a-z\s]*$/i.test(editBillingInput.editBillingState) !== true 
-        || editBillingInput.editBillingState === ""
-        || editBillingInput.editBillingState === undefined
-        || editBillingInput.editBillingState.length !== 2) 
-        || (/^[0-9]+$/.test(editBillingInput.editBillingZipcode) !== true 
-        || editBillingInput.editBillingZipcode === ""
-        || editBillingInput.editBillingZipcode === undefined
-        || editBillingInput.editBillingZipcode.length !== 5)
-        || disabledOnSubmitEditPaymentModal}>
-            Submit
-        </button>
+          <div id="profile-payment-edit-buttons-container">
+            <Button 
+            id="profile-payment-edit-back-button"
+            size="lg"
+            variant="dark"
+            style={{marginTop: '1rem'}}
+            onClick={() => {
+              setEditModalIsOpen(true)
+              setEditModalTwoIsOpen(false)
+            }}>
+              Back
+            </Button>
+
+            <Button 
+            form="form"
+            id="profile-payment-edit-submit-button"
+            size="lg"
+            variant="dark"
+            style={{marginTop: '1rem'}}
+            onClick={handleEditPaymentSubmit}
+            disabled={(/^[a-z ,.'-]+$/i.test(editBillingInput.editBillingFirstName) !== true 
+            || editBillingInput.editBillingFirstName === "") 
+            || (/^[a-z ,.'-]+$/i.test(editBillingInput.editBillingLastName) !== true 
+            || editBillingInput.editBillingLastName === "") 
+            || editBillingInput.editBillingFirstAddressLine === "" 
+            || (/^[a-z ,.'-]+$/i.test(editBillingInput.editBillingCity) !== true 
+            || editBillingInput.editBillingCity === "") 
+            || editBillingInput.editBillingState === "Select"
+            // || (/^[a-z][a-z\s]*$/i.test(editBillingInput.editBillingState) !== true 
+            // || editBillingInput.editBillingState === ""
+            // || editBillingInput.editBillingState === undefined
+            // || editBillingInput.editBillingState.length !== 2) 
+            || (/^[0-9]+$/.test(editBillingInput.editBillingZipcode) !== true 
+            || editBillingInput.editBillingZipcode === ""
+            || editBillingInput.editBillingZipcode === undefined
+            || editBillingInput.editBillingZipcode.length !== 5)
+            || disabledOnSubmitEditPaymentModal}>
+                Submit
+            </Button>
+          </div>
         </form>
       </Modal>
       {/* Modal used to delete the address */}
       <Modal
+      id="profile-delete-payment-modal"
       shouldCloseOnOverlayClick={overlayClickCloseDeletePaymentModal}
       isOpen={deletePaymentModalIsOpen}
       onRequestClose={closeDeleteModal}
@@ -778,20 +1095,26 @@ function PaymentContainer ({ backend, payment, defaultFirstPayment, grabPaymentD
       contentLabel="Delete Your Payment"
       >
         <form className="form" id="delete-payment-form">
-          <div style={{'marginBottom':'1rem'}}>Are you sure you want to delete this payment?</div>
+          <div style={{'marginBottom':'1rem'}}><b>Are you sure you want to delete this payment?</b></div>
           <div className="submit-default-button-container">
-          <button id={payment._id} 
+          <Button id={payment._id} 
+          variant="dark"
+          type="lg"
           type="submit"
           form="delete-address-form"
           value="Submit"
           // When user clicks to submit, the payment method will be deleted
           onClick={handleDeletePayment}
           disabled={disabledOnSubmitDeletePaymentModal}
-          >Delete</button>
-          <button 
+          >Delete
+          </Button>
+          <Button 
+          variant="dark"
+          type="lg"
           onClick={closeDeleteModal}
           disabled={disabledOnSubmitDeletePaymentModal}
-          >Cancel</button>
+          >Cancel
+          </Button>
           </div>
         </form>
       </Modal>

@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import ReviewForm from '../../components/Reviews/ReviewForm';
+import UserReviewComponent from '../../components/UserProfile/UserReview'
+
 import Modal from 'react-modal';
 import { makeStyles } from '@material-ui/core/styles';
 import { Pagination } from '@material-ui/lab';
-import '../../styles/UserProfile/ReviewContainer.css'
-import UserReviewComponent from '../../components/UserProfile/UserReview'
+import Button from 'react-bootstrap/Button'
 
+import '../../styles/UserProfile/ReviewContainer.css'
 
 const paginationUseStyles = makeStyles((theme) => ({
     root: {
@@ -231,19 +233,23 @@ export default function UserReviews({ backend, loggedIn, reviewData, grabReviewD
                 </div>
                 {editReviewForm && (
                     <Modal isOpen={editReviewForm} onRequestClose={closeEditReviewModal} ariaHideApp={false} contentLabel="Edit Review">
-                        <form onSubmit={handleUpdateReview}>
+                        <form id="profile-update-review-form" onSubmit={handleUpdateReview}>
                             <p><b>{brandName} {itemName} </b></p>
                             <ReviewForm ratingValue={ratingValue} grabRatingValue={grabRatingValue} ratingHover={ratingHover} grabRatingHover={grabRatingHover} commentsValue={commentsValue} handleCommentsChange={handleCommentsChange} />
-                            <button disabled={!commentsValue || disableButtonAfterFetching}>Submit</button>
-                            <button onClick={closeEditReviewModal}>Cancel</button>
+                            <div id="profile-review-update-buttons-container">
+                                <Button size="lg" variant="dark" disabled={!commentsValue || disableButtonAfterFetching}>Submit</Button>
+                                <Button size="lg" variant="dark" onClick={closeEditReviewModal}>Cancel</Button>
+                            </div>
                         </form>
                     </Modal>
                 )}
                 {deleteReviewForm && (
-                    <Modal isOpen={deleteReviewForm} onRequestClose={closeDeleteReviewModal} ariaHideApp={false} contentLabel="Delete Review">
+                    <Modal id="profile-delete-review-modal" isOpen={deleteReviewForm} onRequestClose={closeDeleteReviewModal} ariaHideApp={false} contentLabel="Delete Review">
                         <p><b>Are you sure you want to delete?</b></p>
-                        <button disabled={disableButtonAfterFetching} onClick={handleDeleteReview}>Yes</button>
-                        <button onClick={closeDeleteReviewModal}>Cancel</button>
+                        <div id="profile-review-delete-buttons-container">
+                            <Button size="lg" variant="dark" disabled={disableButtonAfterFetching} onClick={handleDeleteReview}>Yes</Button>
+                            <Button size="lg" variant="dark" onClick={closeDeleteReviewModal}>Cancel</Button>
+                        </div>
                     </Modal>
                 )}
                 </>

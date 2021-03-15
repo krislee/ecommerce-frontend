@@ -143,6 +143,18 @@
     #shipping-form  .MuiInputBase-root, #shipping-phoneNumber > .MuiFormLabel-root, #shipping-form  label{
         font-size: 0.9rem !important;
     }
+
+    /* NAME */
+    #names-container {
+        display: block;
+    }
+    
+    #first-name-container {
+        margin-right: 0px;
+        margin-bottom: 10px;
+    }
+
+    /* STATE */
     #checkout-shipping-state-container .MuiSelect-root {
         padding-top: 1.25rem !important;
     }

@@ -151,6 +151,12 @@ input[type=checkbox] {
     align-items: center;
 }
 
+/* MODAL HEIGHT */
+
+#profile-delete-address-modal, #profile-edit-payment-modal, #profile-delete-payment-modal, #profile-delete-review-modal {
+    height: min-content !important;
+}
+
 @media screen and (max-width: 599px) {
 
     .left-bar {
@@ -191,6 +197,20 @@ input[type=checkbox] {
     }
 }
 
+@media only screen and (max-width: 500px) {
+
+    /* Center add address, edit address, and delete address modals under 500px */
+    #profile-add-modal, #profile-edit-modal {
+        transform: translate(0%, -50%) !important;
+        margin-bottom: 0;
+    }
+
+    /* MODAL POSITION */
+    #profile-delete-address-modal, #profile-edit-payment-modal, #profile-delete-payment-modal, #profile-delete-review-modal {
+        transform: translate(0%, 0%) !important;
+    }
+    
+}
 @media screen and (max-width: 399px) {
 
     .left-bar > div > div {

@@ -8,11 +8,9 @@ import CardForm from './CardForm'
 import brandImage from '../../components/Checkout/creditcardIcons.jsx'
 import TextField from '@material-ui/core/TextField';
 import Input from '@material-ui/core/Input';
-import InputLabel from '@material-ui/core/InputLabel';
-import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
 
-import {firstNameInputError, firstNameInputError2, lastNameInputError, lastNameInputError2, line1InputError, cityInputError, cityInputError2, stateInputError, stateInputError2, postalCodeInputError, postalCodeInputError2, postalCodeInputError3, cardholderNameInputError, cardholderNameInputError2, invalidMonthInput, invalidYearInput, monthInputError, yearInputError, monthLengthInputError, yearLengthInputError, expInvalidInput} from '../../components/Checkout/inputsErrors'
+import {cardholderNameInputError, cardholderNameInputError2, invalidMonthInput, invalidYearInput, monthInputError, yearInputError, monthLengthInputError, yearLengthInputError, expInvalidInput} from '../../components/Checkout/inputsErrors'
 
 import Button from 'react-bootstrap/Button';
 import Spinner from 'react-bootstrap/Spinner'
@@ -102,14 +100,13 @@ function PaymentMethod ({ backend, processing, loggedIn, error, grabError, disab
     // Speed Dial State and Functions
     const classes = useStyles();
     const [open, setOpen] = useState(false);
-
     const handleOpen = () => {
         setOpen(true);
     };
-
     const handleClose = () => {
         setOpen(false);
     };
+
     // const [processingPayment, setProcessingPayment] = useState(false) // for saved cards users processingPayment truthy state will disable the Confirm Payment button  
     const [savedCards, setSavedCards] = useState([])
     const [showModal, setShowModal] = useState(false)
@@ -118,6 +115,7 @@ function PaymentMethod ({ backend, processing, loggedIn, error, grabError, disab
     const [onMonthBlur, setOnMonthBlur] = useState(false)
     const [onYearBlur, setOnYearBlur] = useState(false)
 
+    const [invalidCardYearUpdate, setInvalidCardYearUpdate] = useState(false)
     // const [disableButtonAfterMakingRequest, setDisableButtonAfterMakingRequest] = useState(false)
 
     useEffect(() => {
@@ -193,6 +191,8 @@ function PaymentMethod ({ backend, processing, loggedIn, error, grabError, disab
     const handleEditExpiration = (event) => {
         const { name, value } = event.target
         grabEditExpiration((prevEditExpiration) => ({...prevEditExpiration, [name]: value }))
+        setInvalidCardYearUpdate(false)
+        if(disableButtonAfterMakingRequest) grabDisableButtonAfterMakingRequest(false)
     }
     
     const handleMaxExpOrZipcodeLength = (event) => {
@@ -242,7 +242,7 @@ function PaymentMethod ({ backend, processing, loggedIn, error, grabError, disab
             
             const updatePaymentMethodData = await updatePaymentMethodReponse.json()
             console.log("updated payment: ", updatePaymentMethodData);
-
+            if(updatePaymentMethodData.invalidCardYear) return setInvalidCardYearUpdate(true)
             grabPaymentMethod(updatePaymentMethodData) // update the paymentMethod, billingDetails, collectCVV states with the server response
             grabEditPayment(false) // editPayment state represents we are editing; after clicking Save button, we are no longer editing, so update the editPayment state to false 
             setShowModal(false) // close the modal
@@ -419,8 +419,10 @@ function PaymentMethod ({ backend, processing, loggedIn, error, grabError, disab
           || editExpiration.month.length < 2
           || editExpiration.year.length < 4
           || Number(editExpiration.month)> 12
-          || Number(editExpiration.year) < 2021
-          || (editExpiration.year === '2021' && (Number(editExpiration.month) < new Date().getMonth() + 1) )
+          || Number(editExpiration.month)< 1
+          || Number(editExpiration.year) < new Date().getFullYear() 
+          || (editExpiration.year === new Date().getFullYear().toString() && (Number(editExpiration.month) < new Date().getMonth() + 1) )
+          || invalidCardYearUpdate
         )
     }
 
@@ -672,7 +674,7 @@ function PaymentMethod ({ backend, processing, loggedIn, error, grabError, disab
                                 if(yearInputError(editExpiration) || yearLengthInputError(editExpiration)) setOnYearBlur(true)
                             }} 
                             error={invalidYearInput(editExpiration) || onYearBlur || expInvalidInput(editExpiration)}
-                            helperText={(onYearBlur && "Required field") ||  (invalidYearInput(editExpiration) && "Invalid Year")}
+                            helperText={(onYearBlur && "Required field") ||  ((invalidYearInput(editExpiration) || invalidCardYearUpdate) && "Invalid Year")}
                             />
                         </div>
                         {expInvalidInput(editExpiration) && <FormHelperText>Expiration date is invalid</FormHelperText>}
@@ -683,7 +685,7 @@ function PaymentMethod ({ backend, processing, loggedIn, error, grabError, disab
                         <div id="edit-buttons-container">
                             <Button size='lg' variant='dark' className="edit-buttons" onClick={closeEditModal}>Close</Button>
                             <Button size='lg' variant='dark' className="edit-buttons" type="submit" disabled={ billingInputErrorDisableButton() || editExpirationError() || disableButtonAfterMakingRequest || billing.state === 'Select'}>Save</Button>
-                            {/* <button type="button" onClick={() => console.log("disable after making request: ", disableButtonAfterMakingRequest, "billing input: ", billingInputErrorDisableButton(), "edit exp error: ", editExpirationError(), "postal code: ", billingInputErrorDisableButton(), "billing state: ", billing.state)}>click</button> */}
+                            <button type="button" onClick={() => console.log("disable after making request: ", disableButtonAfterMakingRequest, "billing input: ", billingInputErrorDisableButton(), "edit exp error: ", editExpirationError(), "postal code: ", billingInputErrorDisableButton(), "billing state: ", billing.state)}>click</button>
                         </div>
                     
                     </div>
