@@ -118,7 +118,12 @@ function Checkout ({ backend, loggedIn,loggedOut, grabLoggedOut, cartID, grabCar
     const grabBilling = (billing) => {
         console.log(billing)
         if (billing) {
-            const name = billing.name.split(", ")
+            let name
+            if (billing.name.indexOf(',') > -1) {
+                name = billing.name.split(',')
+            } else {
+                name = billing.name.split(" ")
+            }
             console.log("name after splitting: ", name)
             console.log(billing.address.line2, typeof billing.address.line2)
             let billingline2

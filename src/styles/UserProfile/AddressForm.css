@@ -2,6 +2,10 @@
     box-shadow: none;
     padding: 20px 20px 0px;
 }
+#delete-address-form {
+    box-shadow: none;
+    padding: 10px;
+}
 #profile-form > h2, .profile-edit-form > h2 {
     padding-top: 0;
     margin-bottom: 0;
@@ -70,21 +74,40 @@
     margin-left: 10px
 }
 
+/* BUTTONS */
+
 #profile-submit-button-container {
     display: flex;
     width: 100%;
     justify-content: flex-end;
 }
+
+#profile-edit-address-submit-button, .profile-edit-address-default {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+
 #profile-submit-button-container > button {
     width: 30%;
     margin-top: 1rem;
     margin-bottom: 1rem;
     float: right;
 }
+
+/* MEDIA QUERIES */
+
 @media only screen and (max-width: 600px) {
     #profile-form, .profile-edit-form {
         padding: 10px 10px 0px;
     }
+    /* NAMES */
+    #profile-names-container {
+        display: block;
+    }
+    #profile-firstName, #profile-lastName {
+        width: 100%;
+    }
+    /* STATE & ZIPCODE */
    .profile-state-zipcode {
        display: block;
    }
@@ -96,5 +119,11 @@
     }
     #profile-state .MuiSelect-root {
         font-size: 0.75rem;
+    }
+
+    /* BUTTON */
+    #profile-edit-address-submit-button, .profile-edit-address-default {
+        width: auto !important;
+        padding: 5px !important;
     }
 }

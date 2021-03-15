@@ -151,6 +151,10 @@ input[type=checkbox] {
     align-items: center;
 }
 
+#profile-delete-address-modal, #profile-edit-payment-modal {
+    height: min-content !important;
+}
+
 @media screen and (max-width: 599px) {
 
     .left-bar {
@@ -192,9 +196,15 @@ input[type=checkbox] {
 }
 
 @media only screen and (max-width: 500px) {
-    #profile-add-modal {
+
+    /* Center add address, edit address, and delete address modals under 500px */
+    #profile-add-modal, #profile-edit-modal {
         transform: translate(0%, -50%) !important;
         margin-bottom: 0;
+    }
+
+    #profile-delete-address-modal, #profile-edit-payment-modal {
+        transform: translate(0%, 0%) !important;
     }
     
 }

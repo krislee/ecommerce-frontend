@@ -21,6 +21,7 @@ import {firstNameInputError, firstNameInputError2, lastNameInputError, lastNameI
 
 import '../../styles/UserProfile/AddressForm.css'
 
+// TextField Inputs Styles
 const useStyles = makeStyles((theme) => ({
     root: {
       '& .MuiTextField-root': {
@@ -62,7 +63,7 @@ const customStyles = {
         bottom: 'auto',
         transform: 'translate(-50%, -50%)'
     }
-    };
+};
 
 Modal.setAppElement('#root');
 
@@ -359,6 +360,7 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
             </div>
             {/* Modal that is used to edit the address */}
             <Modal
+            id="profile-edit-modal"
             shouldCloseOnOverlayClick={overlayClickCloseEditAddressModal}
             isOpen={isEditModalIsOpen}
             onRequestClose={closeModal}
@@ -625,18 +627,22 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
             className="submit-default-button-container" 
             style={{marginTop: '1rem'}}>
             {/* Based off whether or not defaultAddress is true or false, we display the button that allows users to remove default if the address is the default, or the button to make the address a default if it is not currently the default address */}
-            {!defaultAddress ? <div className="update-default-container">
-                <Button id={address._id} onClick={handleEditAddressDefaultStatus}>Make Default</Button>
-                </div> :
-                <div>
-                <Button id={address._id} onClick={handleEditAddressDefaultStatus}>Remove Default</Button>
+            {!defaultAddress ? 
+            <div className="update-default-container">
+                <Button size="lg" variant="dark" id={address._id} onClick={handleEditAddressDefaultStatus} className="profile-edit-address-default">Make Default</Button>
+            </div>
+            : <div>
+                <Button size="lg" variant="dark" id={address._id} onClick={handleEditAddressDefaultStatus} className="profile-edit-address-default" >Remove Default</Button>
             </div>}
 
 
 
             {/* Button will be disabled if the input fields are not filled in (except for the address line two input field) */}
             <Button id={address._id}
+            id="profile-edit-address-submit-button"
             type="submit"
+            variant="dark"
+            size="lg"
             value="Submit"
             disabled={
             (/^[a-z ,.'-]+$/i.test(editAddress.firstName) !== true 
@@ -660,8 +666,10 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
             </div>
             </form>
             </Modal>
+
             {/* Modal used to delete the address */}
             <Modal
+            id="profile-delete-address-modal"
             shouldCloseOnOverlayClick={overlayClickCloseDeleteAddressModal}
             isOpen={isDeleteModalIsOpen}
             onRequestClose={closeModal}
@@ -671,17 +679,19 @@ function AddressContainer ({ index, address, backend, grabAddressData, defaultFi
             <form className="form" id="delete-address-form">
             <div style={{'marginBottom':'1rem'}}>Are you sure you want to delete this address?</div>
             <div className="submit-default-button-container">
-            <button id={address._id} 
+            <Button id={address._id} 
             type="submit"
+            variant="dark"
             form="delete-address-form"
             value="Submit"
             // When user clicks to submit, the address will be deleted
             onClick={handleDeleteAddress}
             disabled={disabledOnSubmitDeleteAddressModal}>
-            Delete</button>
-            <button 
+            Delete</Button>
+            <Button 
+            variant="dark"
             onClick={closeModal}
-            disabled={disabledOnSubmitDeleteAddressModal}>Cancel</button>
+            disabled={disabledOnSubmitDeleteAddressModal}>Cancel</Button>
             </div>
             </form>
             </Modal>
