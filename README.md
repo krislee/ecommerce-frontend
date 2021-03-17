@@ -42,7 +42,7 @@ REACT_APP_loadStripe=some_stripe_publishable_API_key
 ## Issues
 Currently, you can experience the full user functionalities of the deployed website on desktop.
 
-Please bear with us as we work on resolving the following issues for mobile/tablet:
+Please bear with us as we work on resolving the following issues for the website on mobile/tablet:
 - Unable to add items to cart 
 - Unable to checkout 
 - Unable to view order confirmation 
