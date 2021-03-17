@@ -1,4 +1,3 @@
-require('dotenv').config()
 import React, {useState, useEffect} from 'react'
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
 
