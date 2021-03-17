@@ -32,7 +32,7 @@ function App() {
 
   /* ------- VARIABLES ------- */
   const stripePromise = loadStripe(process.env.REACT_APP_loadStripe)
-  const backend = `https://elecommerce.herokuapp.com`
+  const backend = process.env.REACT_APP_server_URL
 
   /* ------- STATES ------- */
   const [url, setURL] = useState('');

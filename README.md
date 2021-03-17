@@ -8,11 +8,18 @@ Click [here](https://elecommerce.netlify.app/) to view our online electronics st
 npm i 
 ````
 
-2. Configure Stripe library with Stripe's publishable API Key. Add the API key to ```.env``` file. 
+2. Create a ```.env``` file at the root.
+- Configure Stripe library with Stripe's publishable API Key. Add the API key as an environmental variabe in ```.env``` file.
 ```
-REACT_APP_loadStripe=some_stripe_publishable_API_key
+REACT_APP_loadStripe=some_stripe_publishable_API_key 
+```
+- Add the server URL in ```.env``` file.
+```
+REACT_APP_server_URL='localhost:3001'
 ```
 
+3. Click [here](https://github.com/krislee/ecommerce-backend/blob/main/README.md#run-locally) to run server locally. 
+4. Run ```npm start```.
 ## Main Functional Components
 1. Login
 2. Register
@@ -35,7 +42,7 @@ REACT_APP_loadStripe=some_stripe_publishable_API_key
 - stripe-js
     - Stripe's card elements used to collect card information at checkout or saving credit card under user profile tab
 - socket.io-client
-    - Establishes a communication with the server to send the id of the cart to server and receive complete order information from server
+    - Establishes a communication with the server to send the ID of the cart to server and receive complete order information from server
 - Material-UI
 - React Bootstrap
 
@@ -48,8 +55,8 @@ Please bear with us as we work on resolving the following issues for the website
 - Unable to view order confirmation 
 - Modals under User Profile are off centered
 
-## Client-side Code Source
-Click [here](https://github.com/krislee/ecommerce-frontend) to view the client-side code repository.
+## Backend Code Source
+Click [here](https://github.com/krislee/ecommerce-backend) to view the backend code repository.
 
 
 
