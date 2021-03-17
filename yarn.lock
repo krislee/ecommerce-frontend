@@ -4064,7 +4064,7 @@
   "resolved" "https://registry.npmjs.org/dotenv-expand/-/dotenv-expand-4.2.0.tgz"
   "version" "4.2.0"
 
-"dotenv@6.0.0":
+"dotenv@^6.0.0", "dotenv@6.0.0":
   "integrity" "sha512-FlWbnhgjtwD+uNLUGHbMykMOYQaTivdHEmYwAKFjn6GKe/CqY0fNae93ZHTd20snh9ZLr8mTzIL9m0APQ1pjQg=="
   "resolved" "https://registry.npmjs.org/dotenv/-/dotenv-6.0.0.tgz"
   "version" "6.0.0"
