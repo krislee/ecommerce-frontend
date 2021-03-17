@@ -20,10 +20,13 @@ export default function Homepage({ backend, loggedIn, totalCartQuantity, grabTot
         <>
         {/* <NavBar backend={backend} loggedIn={loggedIn} totalCartQuantity={totalCartQuantity} grabTotalCartQuantity={grabTotalCartQuantity} /> */}
         <div id="video-button-container">
-            <div id="video-container">
+            {/* <div id="video-container">
                 <video width="100%" autoPlay defaultMuted loop playsInline>
                     <source src={require("../styles/Homepage/circuit.mp4")} type="video/mp4"/>
                 </video>
+            </div> */}
+            <div id="homepage-image-container">
+                <img src={require('../styles/Homepage/homepage2.png')} />
             </div>
 
             <div id="shop-all-button-container">

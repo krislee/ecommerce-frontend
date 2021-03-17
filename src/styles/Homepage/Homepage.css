@@ -16,7 +16,10 @@
     position: relative;
     display: flex;
     justify-content: center;
-    bottom: 50%;
+    /* For video: */
+    /* bottom: 50%;  */
+    /* For image: */
+    bottom: 80%;
     /* z-index: 300000 */
 }
 
