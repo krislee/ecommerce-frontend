@@ -36,7 +36,7 @@ function AddCartButton ({ name, id, loggedIn, backend, quantity, differenceQuant
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': loggedIn()
+                    'Authorization': localStorage.getItem('token')
                 },
                 body: JSON.stringify({
                     Quantity: difference ? difference : quantity
