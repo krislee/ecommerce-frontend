@@ -11,6 +11,7 @@ function AddCartButton ({ name, id, loggedIn, backend, quantity, differenceQuant
         if(loggedIn()) {
              // Check how many of that item is already in the cart:
              const token = loggedIn()
+             console.log(14, `${backend}/buyer/cart-item/${id}/?token=${token}`)
              const itemQuantityResponse = await fetch(`${backend}/buyer/cart-item/${id}/?token=${token}`, {
                 method: 'GET',
                 headers: {
