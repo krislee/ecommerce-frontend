@@ -14,7 +14,7 @@ function AddCartButton ({ name, id, loggedIn, backend, quantity, differenceQuant
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                    //'Authorization': loggedIn()
+                    'Authorization': loggedIn()
                 },
             })
             const itemQuantityData = await itemQuantityResponse.json()
@@ -36,7 +36,7 @@ function AddCartButton ({ name, id, loggedIn, backend, quantity, differenceQuant
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                   //'Authorization': loggedIn(),
+                    'Authorization': loggedIn(),
                 },
                 credentials: 'include',
                 body: JSON.stringify({
