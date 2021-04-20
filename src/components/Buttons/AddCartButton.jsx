@@ -32,7 +32,7 @@ function AddCartButton ({ name, id, loggedIn, backend, quantity, differenceQuant
                 }
             }
             console.log(34, quantity)
-            const addItemResponse = await fetch(`${backend}/buyer/electronic/cart/${id}`, {
+            const addItemResponse = await fetch(`${backend}/buyer/electronic/cart/${id}/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
