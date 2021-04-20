@@ -1,0 +1,142 @@
+#profile-form , .profile-edit-form{
+    box-shadow: none;
+    padding: 20px 20px 0px;
+}
+#delete-address-form {
+    box-shadow: none;
+    padding: 10px;
+}
+#profile-form > h2, .profile-edit-form > h2 {
+    padding-top: 0;
+    margin-bottom: 0;
+}
+#profile-firstName, #profile-lastName, #profile-line1, #profile-line2,#profile-city, #profile-state, #profile-zipcode, #profile-phoneNumber {
+    margin-bottom: 10px;
+}
+
+#profile-names-container {
+    display: flex;
+}
+#profile-firstName, #profile-lastName {
+    width: 50%;
+}
+#profile-firstName {
+    margin-right: 10px;
+}
+
+/* INPUTS */
+#profile-form .MuiInputBase-root, .profile-edit-form .MuiInputBase-root {
+    padding: 10px;
+}
+
+#profile-form input, .profile-edit-form input {
+    padding-top: 1rem !important;
+    padding-bottom: 0rem !important
+}
+
+/* STATE */
+#profile-state .MuiFormControl-root {
+    margin: 0px;
+    width: 100%;
+}
+#profile-state .MuiSelect-root {
+    padding-top: 1rem;
+    padding-bottom: 0rem;
+}
+#profile-state .MuiInputBase-root {
+    padding: 9px;
+    margin-right: 10px;
+}
+.profile-state-zipcode {
+    display: flex;
+}
+#profile-state, #profile-zipcode {
+    width: 50%;
+}
+
+/* PHONE */
+#profile-phoneNumber .MuiFormControl-root {
+    width: 100%;
+    background-color: #DEDEDE;
+    border-radius: 3px;
+}
+#profile-phoneNumber .MuiFormLabel-root {
+    padding-left: 1rem;
+    padding-top: 5px;
+}
+#profile-phoneNumber .MuiInputBase-root {
+    padding-top: 0;
+}
+#profile-phoneNumber input {
+    padding-top: 5px !important;
+}
+#profile-phoneNumber .MuiFormHelperText-root {
+    margin-left: 10px
+}
+
+/* BUTTONS */
+
+#profile-submit-button-container {
+    display: flex;
+    width: 100%;
+    justify-content: flex-end;
+}
+
+#profile-edit-address-submit-button, .profile-edit-address-default {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+
+#profile-submit-button-container > button {
+    width: 30%;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    float: right;
+}
+
+.profile-delete-address-button-container {
+    display: flex;
+    justify-content: space-between;
+}
+.profile-delete-address-button-container button {
+    margin-top: 0;
+}
+
+/* MEDIA QUERIES */
+
+@media only screen and (max-width: 600px) {
+    #profile-form, .profile-edit-form {
+        padding: 10px 10px 0px;
+    }
+    /* NAMES */
+    #profile-names-container {
+        display: block;
+    }
+    #profile-firstName, #profile-lastName {
+        width: 100%;
+    }
+    /* STATE & ZIPCODE */
+   .profile-state-zipcode {
+       display: block;
+   }
+   #profile-state, #profile-zipcode {
+        width: 100%;
+    }
+    #profile-state .MuiInputBase-root {
+        margin-right: 0px;
+    }
+    #profile-state .MuiSelect-root {
+        font-size: 0.75rem;
+    }
+
+    /* BUTTON */
+    #profile-edit-address-submit-button, .profile-edit-address-default {
+        width: auto !important;
+        padding: 5px !important;
+    }
+
+    .profile-delete-address-button-container button {
+        width: auto;
+        padding: 5px !important;
+    }
+}

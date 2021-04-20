@@ -1,14 +1,23 @@
 @import url('https://fonts.googleapis.com/css2?family=Average+Sans&display=swap');
 
-#order-complete-container {
+#order-complete-process-payment-heading {
+    margin-top: 7rem;
+    font-size: 3rem;
+}
+#order-complete-container, #profile-order-complete-container  {
     width: 75%;
     margin: auto;
     padding-left: 3rem;
-    padding-right: 5rem;
+    padding-right: 3rem;
     margin-top: 5rem;
     font-family: 'Average Sans', sans-serif;
     font-size: 1rem;
+    padding-bottom: 5rem;
 }
+#profile-order-complete-container  {
+    margin-top: 8rem;
+}
+
 #order-complete-heading {
     text-align: center;
 }
@@ -20,9 +29,13 @@
 #order-complete-details-shipping-container, #order-complete-pm-billing-container {
     display: grid;
     grid-template-columns: 50% 50%;
-    grid-gap: 3rem;
+    /* grid-gap: 3rem; */
     word-wrap: break-word;
     margin-bottom: 3rem;
+}
+
+#order-complete-details-container, #order-complete-pm-container {
+    margin-right: 2rem;
 }
 
 .order-complete-name, .order-complete-line1, .order-complete-line2, .order-complete-cityStatePostal, #order-completecard-number  {
@@ -94,29 +107,33 @@
 /* MEDIA QUERIES */
 
 @media only screen and (max-width: 1000px) {
-    #order-complete-container {
+    #order-complete-container, #profile-order-complete-container {
        font-size: 0.85rem;
     }
 }
 @media only screen and (max-width: 800px) {
-    #order-complete-container {
+    #order-complete-container, #profile-order-complete-container {
         width: 100%;
-        padding-right: 6rem;
+        /* padding-right: 6rem; */
         font-size: 0.75rem;
     }
 }
 @media only screen and (max-width: 600px) {
-    #order-complete-container {
+    #order-complete-container, #profile-order-complete-container {
        font-size: 0.75rem;
        padding-left: 1rem;
        padding-right: 1rem;
     }
     #order-complete-details-shipping-container, #order-complete-pm-billing-container {
-        grid-gap: 2rem;
+        /* grid-gap: 2rem; */
+    }
+    #order-complete-process-payment-heading {
+        font-size: 2rem;
     }
 }
 @media only screen and (max-width: 400px) {
-    #order-complete-container {
+    #order-complete-container, #profile-order-complete-container {
        font-size: 0.5rem;
+       padding-bottom: 0rem;
     }
 }

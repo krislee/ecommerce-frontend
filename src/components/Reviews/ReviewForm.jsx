@@ -13,9 +13,10 @@ const ratingLabels = {
 
 const useStyles = makeStyles({
     root: {
-        width: 200,
+        // width: 200,
         display: 'flex',
         alignItems: 'center',
+        justifyContent: 'center'
     },
 });
 
@@ -23,7 +24,7 @@ export default function ReviewForm({ratingValue, grabRatingValue, ratingHover, g
     const classes = useStyles();
 
     return (
-        <>
+        <div id="add-review-container">
             <div className={classes.root}>
                 <Rating
                     name="ratings-hover"
@@ -43,6 +44,6 @@ export default function ReviewForm({ratingValue, grabRatingValue, ratingHover, g
             
             <label htmlFor="comments"></label>
             <textarea name="comments" rows="6" cols="50" placeholder="Write your comment here." value={commentsValue} onChange={handleCommentsChange}></textarea>
-        </>
+        </div>
     )
 }

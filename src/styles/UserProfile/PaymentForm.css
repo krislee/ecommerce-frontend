@@ -1,0 +1,158 @@
+#profile-payment-form {
+    box-shadow: none;
+    padding: 20px 20px 0px;
+}
+#profile-payment-form > h2 {
+    padding-top: 0;
+    margin-bottom: 0;
+}
+#profile-payment-firstName, #profile-payment-astName, #profile-payment-line1, #profile-payment-line2, #profile-payment-city, #profile-payment-state, #profile-payment-zipcode {
+    margin-bottom: 10px;
+}
+
+/* NAMES */
+#profile-payment-names-container {
+    display: flex;
+}
+#profile-payment-firstName, #profile-payment-lastName {
+    width: 50%;
+}
+#profile-payment-firstName {
+    margin-right: 10px;
+}
+
+/* INPUTS */
+#profile-payment-form .MuiInputBase-root {
+    padding: 10px;
+}
+
+#profile-payment-form input {
+    padding-top: 1rem !important;
+    padding-bottom: 0rem !important
+}
+
+/* STATE */
+#profile-payment-state .MuiFormControl-root {
+    margin: 0px;
+    width: 100%;
+}
+#profile-payment-state .MuiSelect-root {
+    padding-top: 1rem;
+    padding-bottom: 0rem;
+}
+#profile-payment-state .MuiInputBase-root {
+    padding: 9px;
+    margin-right: 10px;
+}
+.profile-payment-state-zipcode {
+    display: flex;
+}
+#profile-payment-state, #profile-payment-zipcode {
+    width: 50%;
+}
+#profile-payment-state {
+    margin-right: 10px;
+}
+
+/* ADD CARD */
+#card-number-element, #card-expiration-element, #card-cvc-element {
+    margin-bottom: 10px;
+    padding: 1rem;
+    background-color: #DEDEDE;
+    border-radius: 3px;
+    border-bottom: 1px solid rgb(114, 112, 112);
+}
+#card-number-element {
+    margin-top: 10px;
+}
+
+/* EDIT EXPIRATION DATES */
+#profile-payment-exp-date-container {
+    display: flex;
+    justify-content: space-between;
+}
+#profile-payment-month {
+    margin-right: 10px;
+    width: 100%;
+}
+#profile-payment-year {
+    width: 100%;
+}
+
+/* BUTTONS */
+#profile-payment-add-button-div, #profile-payment-edit-button-div {
+    display: flex;
+    width: 100%;
+    justify-content: flex-end;
+}
+#profile-payment-add-buttons-container, #profile-payment-edit-buttons-container {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+}
+#profile-payment-add-submit-button, #profile-payment-add-next-button, #profile-payment-add-back-button {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+
+#delete-payment-form button {
+    margin-top: 0;
+}
+
+/* DELETE */
+#delete-payment-form {
+    box-shadow: none
+}
+
+@media only screen and (max-width: 600px) {
+    #profile-payment-form {
+        padding: 10px 10px 0px;
+    }
+
+    /* NAME */
+    #profile-payment-names-container {
+        display: block;
+    }
+    #profile-payment-firstName, #profile-payment-lastName {
+        width: 100%;
+    }
+    #profile-payment-firstName {
+        margin-right: 0px;
+    }
+    #profile-payment-lastName {
+        margin-bottom: 10px;
+    }
+
+    /* STATE & ZIPCODE */
+   .profile-payment-state-zipcode {
+       display: block;
+   }
+    #profile-payment-state, #profile-payment-zipcode {
+        width: 100%;
+    }
+    #profile-payment-state {
+        margin-right: 0;
+    }
+    #profile-payment-state .MuiInputBase-root {
+        margin-right: 0px;
+    }
+    #profile-payment-state .MuiSelect-root {
+        font-size: 0.75rem;
+    }
+
+    /* BUTTONS */
+    #profile-payment-add-back-button, #profile-payment-add-submit-button, #profile-payment-edit-back-button, #profile-payment-edit-submit-button, #delete-payment-form button {
+        width: auto;
+        padding: 5px !important
+    }
+
+}
+
+
+@media only screen and (max-width: 500px) {
+    #profile-payment-modal {
+        transform: translate(0%, -50%) !important;
+        margin-bottom: 0;
+    }
+    
+}

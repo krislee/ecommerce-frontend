@@ -1,5 +1,5 @@
 import React from 'react';
-import '../../styles/Button.css'
+import Button from 'react-bootstrap/Button'
 
 function AddCartButton ({ name, id, loggedIn, backend, quantity, differenceQuantity, grabDifferenceQuantity, grabTotalCartQuantity, prevLoggedIn, grabShowAddItemAlert, grabShowAddItemDifferenceAlert }) {
     
@@ -93,10 +93,10 @@ function AddCartButton ({ name, id, loggedIn, backend, quantity, differenceQuant
     }
 
     return (
-        <div id={id} className="button">
-            <button 
+        <div id={id} className="add-item-button-container">
+            <Button variant="dark" size='lg' className="add-item-button"
                 // disabled={cartQuantity > 10 } 
-                onClick={addItem}>{name}</button>
+                onClick={addItem}>{name}</Button>
         </div>
     )
 }

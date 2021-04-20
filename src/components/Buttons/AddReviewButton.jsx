@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Modal from 'react-modal';
+import Button from 'react-bootstrap/Button'
 import Toast from 'react-bootstrap/Toast'
-import '../../styles/Button.css'
 import ReviewForm from '../Reviews/ReviewForm'
 
 export default function AddReviewButton ({ backend, loggedIn, electronicID, grabReview, grabTotalCartQuantity }) {
@@ -79,27 +79,34 @@ export default function AddReviewButton ({ backend, loggedIn, electronicID, grab
 
     return(
         <>
-        {!showReviewForm && <button onClick={() => {
+        {!showReviewForm && <Button size="sm" variant="dark" onClick={() => {
             if(!loggedIn()) {
                 setLoginToReview(true)
                 return grabTotalCartQuantity(0)
             }
             setShowReviewForm(true)
-        }}>Write a review</button>}
+        }}>Write a review</Button>}
         
         <Modal isOpen={showReviewForm} onRequestClose={closeReviewModal} ariaHideApp={false} contentLabel="Create Review">
-            <form onSubmit={submitReview}>
+            <form id="add-review-form" onSubmit={submitReview}>
                 <ReviewForm ratingValue={ratingValue} grabRatingValue={grabRatingValue} ratingHover={ratingHover} grabRatingHover={grabRatingHover} commentsValue={commentsValue} handleCommentsChange={handleCommentsChange}/>
-                <button disabled={ !commentsValue || disableSubmit }>Submit</button>
-                <button type="button" onClick={closeReviewModal}>Close</button>
+                <div id="add-review-button-container">
+                    <Button type="button" variant="dark" size="lg" onClick={closeReviewModal}>Close</Button>
+                    <Button type="submit" variant="dark" size="lg" disabled={ !commentsValue || disableSubmit }>Submit</Button>
+                </div>
+                
             </form>
         </Modal>
 
-        <Toast onClose={() => setReviewError(false)} show={reviewError} delay={3000} autohide>
+        <Toast onClose={() => setReviewError(false)} show={reviewError} 
+        // delay={3000} autohide
+        >
             <Toast.Body>You have already made a review for this item.</Toast.Body>
         </Toast>
 
-        <Toast onClose={() => setUnverifiedReviewError(false)} show={unverifiedReviewError} delay={3000} autohide>
+        <Toast onClose={() => setUnverifiedReviewError(false)} show={unverifiedReviewError} 
+        // delay={3000} autohide
+        >
             <Toast.Body>Please write a review on any verfied purchased items.</Toast.Body>
         </Toast>
 

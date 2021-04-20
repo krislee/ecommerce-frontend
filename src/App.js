@@ -31,8 +31,8 @@ const socketConnection = io.connect('wss://elecommerce.herokuapp.com',  { transp
 function App() {
 
   /* ------- VARIABLES ------- */
-  const stripePromise = loadStripe('pk_test_51HnnIMIYuoOQip6pUnsYnuXlHlEZDBIrXMRatY8FOKakcOsFN08ptoIPrHIthMNBo8n58lvQGNoh5bYAfJFmgc6R00ufne9cZV')
-  const backend = `https://elecommerce.herokuapp.com`
+  const stripePromise = loadStripe(process.env.REACT_APP_loadStripe)
+  const backend = process.env.REACT_APP_server_URL
 
   /* ------- STATES ------- */
   const [url, setURL] = useState('');
