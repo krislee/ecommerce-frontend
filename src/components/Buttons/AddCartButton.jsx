@@ -16,6 +16,9 @@ function AddCartButton ({ name, id, loggedIn, backend, quantity, differenceQuant
                     'Content-Type': 'application/json',
                     'Authorization': loggedIn()
                 },
+                // body: {
+                //     Authorization: loggedIn()
+                // }
             })
             const itemQuantityData = await itemQuantityResponse.json()
             console.log(21, itemQuantityData)
@@ -32,14 +35,16 @@ function AddCartButton ({ name, id, loggedIn, backend, quantity, differenceQuant
                 }
             }
             console.log(34, quantity)
-            const addItemResponse = await fetch(`${backend}/buyer/electronic/cart/${id}/`, {
+            const addItemResponse = await fetch(`${backend}/buyer/electronic/cart/${id}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': localStorage.getItem('token')
+                    'Authorization': loggedIn(),
                 },
+                credentials: 'include',
                 body: JSON.stringify({
-                    Quantity: difference ? difference : quantity
+                    Quantity: difference ? difference : quantity,
+                    // Authorization: loggedIn()
                 })
             });
             const addItemData = await addItemResponse.json();
