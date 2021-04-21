@@ -17,7 +17,7 @@ function AddCartButton ({ name, id, loggedIn, backend, quantity, differenceQuant
                     // 'Authorization': loggedIn()
                 },
                 body: {
-                    'Authorization': loggedIn()
+                    Authorization: loggedIn()
                 }
             })
             const itemQuantityData = await itemQuantityResponse.json()
@@ -44,7 +44,7 @@ function AddCartButton ({ name, id, loggedIn, backend, quantity, differenceQuant
                 credentials: 'include',
                 body: JSON.stringify({
                     Quantity: difference ? difference : quantity,
-                    'Authorization': loggedIn()
+                    Authorization: loggedIn()
                 })
             });
             const addItemData = await addItemResponse.json();
