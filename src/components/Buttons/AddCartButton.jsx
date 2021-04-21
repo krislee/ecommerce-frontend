@@ -11,14 +11,14 @@ function AddCartButton ({ name, id, loggedIn, backend, quantity, differenceQuant
         if(loggedIn()) {
              // Check how many of that item is already in the cart:
              const itemQuantityResponse = await fetch(`${backend}/buyer/cart-item/${id}`, {
-                method: 'POST',
+                method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': loggedIn()
                 },
-                body: {
-                    Authorization: loggedIn()
-                }
+                // body: {
+                //     Authorization: loggedIn()
+                // }
             })
             const itemQuantityData = await itemQuantityResponse.json()
             console.log(21, itemQuantityData)
@@ -44,7 +44,7 @@ function AddCartButton ({ name, id, loggedIn, backend, quantity, differenceQuant
                 credentials: 'include',
                 body: JSON.stringify({
                     Quantity: difference ? difference : quantity,
-                    Authorization: loggedIn()
+                    // Authorization: loggedIn()
                 })
             });
             const addItemData = await addItemResponse.json();
