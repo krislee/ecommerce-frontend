@@ -14,7 +14,7 @@ function AddCartButton ({ name, id, loggedIn, backend, quantity, differenceQuant
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    // 'Authorization': loggedIn()
+                    'Authorization': loggedIn()
                 },
                 body: {
                     Authorization: loggedIn()
@@ -39,7 +39,7 @@ function AddCartButton ({ name, id, loggedIn, backend, quantity, differenceQuant
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    //'Authorization': loggedIn(),
+                    'Authorization': loggedIn(),
                 },
                 credentials: 'include',
                 body: JSON.stringify({
