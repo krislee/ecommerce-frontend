@@ -58,7 +58,7 @@ function AddCartButton ({ name, id, loggedIn, backend, quantity, differenceQuant
             // if(prevLoggedIn && !loggedIn())return window.location.href = window.location.href // This does cause user who clicks log out on item page instead of clearing local storage, the page would refresh when trying to click on Add to Cart the first time after clicking log out
 
             // Check how many of that item is already in the cart:
-            const itemQuantityResponse = await fetch(`${backend}/buyer/cart-item/${id}`, {
+            const itemQuantityResponse = await fetch(`${backend}/buyer/cart-item/1/${id}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json'
@@ -80,7 +80,7 @@ function AddCartButton ({ name, id, loggedIn, backend, quantity, differenceQuant
             }
 
             // If user was always logged out, then run the following:
-            const addItemResponse = await fetch(`${backend}/buyer/electronic/cart/${id}`, {
+            const addItemResponse = await fetch(`${backend}/buyer/electronic/cart/1/${id}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
