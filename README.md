@@ -1,5 +1,10 @@
 ## Deployed Website 
 Click [here](https://elecommerce.netlify.app/) to view our online electronics store, Elecommerce! 
+### Safari Users
+If you want to view our website on the Safari mobile/iPad app, please turn off Prevent Cross-site Tracking in the Safari setting. If you want to view our website on Mac's Safari, please click on Safari, then Preferences, then Privacy, and then turn off Prevent Cross-site Tracking. 
+
+### Mobile/Tablet Google Chrome Users
+Please be aware that guest users may be experiencing issues on our website when using the mobile or tablet Chrome app. Please create an account to proceed our website instead.
 ## Run Locally
 
 1. Install all dependencies
@@ -50,10 +55,8 @@ REACT_APP_server_URL='localhost:3001'
 Currently, you can experience the full user functionalities of the deployed website on desktop.
 
 Please bear with us as we work on resolving the following issues for the website on mobile/tablet:
-- Unable to add items to cart 
-- Unable to checkout 
-- Unable to view order confirmation 
-- Modals under User Profile are off centered
+- Guests cannot make orders on Google Chrome app 
+- CSS and UI are skewed
 
 ## Backend Code Source
 Click [here](https://github.com/krislee/ecommerce-backend) to view the backend code repository.
