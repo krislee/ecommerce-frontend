@@ -237,7 +237,7 @@ export default function UserReviews({ backend, loggedIn, reviewData, grabReviewD
                             <p><b>{brandName} {itemName} </b></p>
                             <ReviewForm ratingValue={ratingValue} grabRatingValue={grabRatingValue} ratingHover={ratingHover} grabRatingHover={grabRatingHover} commentsValue={commentsValue} handleCommentsChange={handleCommentsChange} />
                             <div id="profile-review-update-buttons-container">
-                                <Button size="lg" variant="dark" disabled={!commentsValue || disableButtonAfterFetching}>Submit</Button>
+                                <Button size="lg" variant="dark" disabled={!commentsValue || disableButtonAfterFetching} type="submit">Submit</Button>
                                 <Button size="lg" variant="dark" onClick={closeEditReviewModal}>Cancel</Button>
                             </div>
                         </form>
